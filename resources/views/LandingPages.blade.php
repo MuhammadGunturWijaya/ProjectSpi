@@ -52,7 +52,7 @@
         /* Hero Banner */
         #heroCarousel {
             position: relative;
-            max-width: 1300px;
+            max-width: 1200px;
             margin: auto;
         }
 
@@ -217,10 +217,10 @@
                             Profil
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#">SEJARAH</a></li>
-                            <li><a class="dropdown-item" href="#">VISI, MISI, DAN TUJUAN</a></li>
-                            <li><a class="dropdown-item" href="#">STRUKTUR ORGANISASI</a></li>
-                            <li><a class="dropdown-item" href="#">SUMBER DAYA MANUSIA</a></li>
+                            <li><a class="dropdown-item" href="#">Sejarah</a></li>
+                            <li><a class="dropdown-item" href="#">Visi, Misi, Tujuan</a></li>
+                            <li><a class="dropdown-item" href="{{ route('struktur.organisasi') }}">Struktur Organisasi</a></li>
+                            <li><a class="dropdown-item" href="{{ route('profile.spi') }}">Tentang Kami</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">

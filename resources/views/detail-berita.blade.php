@@ -49,6 +49,8 @@
 </head>
 
 <body>
+@include('layouts.navbar')
+
 
     <div class="container berita-container">
         <!-- Breadcrumb -->
@@ -96,7 +98,7 @@
             margin-right: 4px;
         }
     </style>
-
+ @include('layouts.NavbarBawah')
 </body>
 
 </html>
