@@ -116,48 +116,49 @@
 
         /* Dropdown background */
         .navbar .dropdown-menu {
-            background-color: #1c2833;
-            /* biru */
+            background-color: #ffffff;
             border: none;
-            /* hilangin border */
-            display: block;
-            /* biar bisa di-animate */
+            border-radius: 3px;
+            box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.15);
             opacity: 0;
-            /* transparan */
             transform: translateY(10px);
-            /* geser ke bawah dikit */
             visibility: hidden;
-            /* biar gak bisa diklik */
             transition: all 0.3s ease;
+            padding: 8px 0;
+            min-width: 220px;
+            /* biar konsisten */
         }
 
-        /* Saat dropdown aktif (show) */
+        /* Efek muncul */
         .navbar .dropdown-menu.show {
             opacity: 1;
             transform: translateY(0);
             visibility: visible;
-            margin-top: 10px;
         }
 
-        /* Dropdown item default */
+        /* Item dropdown */
         .navbar .dropdown-menu .dropdown-item {
-            color: white;
-            /* teks putih */
+            color: #0d2d50;
+            padding: 10px 16px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            border-radius: 6px;
         }
 
-        /* Dropdown item saat hover */
+        /* Hover effect */
         .navbar .dropdown-menu .dropdown-item:hover {
-            background-color: #0084ffff;
-            /* kuning */
-            color: #000;
-            /* teks jadi hitam */
+            background-color: #0084ff;
+            color: #fff;
+            transform: translateX(5px);
+            /* efek geser halus */
         }
 
-        /* Dropdown muncul saat hover */
+        /* Supaya muncul saat hover (desktop) */
         .nav-item.dropdown:hover .dropdown-menu {
             display: block;
-            margin-top: 0;
-            /* biar posisinya rapi */
+            opacity: 1;
+            transform: translateY(0);
+            visibility: visible;
         }
     </style>
 </head>
@@ -219,7 +220,8 @@
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item" href="#">Sejarah</a></li>
                             <li><a class="dropdown-item" href="#">Visi, Misi, Tujuan</a></li>
-                            <li><a class="dropdown-item" href="{{ route('struktur.organisasi') }}">Struktur Organisasi</a></li>
+                            <li><a class="dropdown-item" href="{{ route('struktur.organisasi') }}">Struktur
+                                    Organisasi</a></li>
                             <li><a class="dropdown-item" href="{{ route('profile.spi') }}">Tentang Kami</a></li>
                         </ul>
                     </li>
@@ -255,13 +257,17 @@
 
         <!-- Tombol navigasi -->
         <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+            <span class="carousel-control-prev-icon p-1" style="width:30px; height:30px;"
+                aria-hidden="true"></span>
             <span class="visually-hidden">Previous</span>
         </button>
+
         <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon bg-dark rounded-circle p-3" aria-hidden="true"></span>
+            <span class="carousel-control-next-icon p-1" style="width:30px; height:30px;"
+                aria-hidden="true"></span>
             <span class="visually-hidden">Next</span>
         </button>
+
     </div>
 
     <!-- Sekilas Tentang Kami -->
@@ -322,6 +328,65 @@
             </div>
         </div>
     </section>
+
+    <!-- Search Bar -->
+    <div class="container my-5">
+        <h6 class="text-center mb-4">Cari Informasi Seputaran Berita, Artikel, Profile ...</h6>
+        <form action="{{ route('search') }}" method="GET" class="search-box d-flex align-items-center mx-auto">
+            <input type="text" name="q" class="form-control search-input"
+                placeholder="🔍 Cari berita, artikel, atau profil..." value="{{ request('q') }}">
+            <button type="submit" class="btn search-btn">Cari</button>
+        </form>
+    </div>
+
+    <style>
+        /* Wrapper */
+        .search-box {
+            max-width: 600px;
+            background: #fff;
+            border-radius: 50px;
+            padding: 5px 10px;
+            box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .search-box:hover {
+            box-shadow: 0 10px 18px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+
+        /* Input */
+        .search-input {
+            border: none;
+            box-shadow: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            font-size: 16px;
+        }
+
+        .search-input:focus {
+            outline: none;
+            box-shadow: none;
+        }
+
+        /* Tombol */
+        .search-btn {
+            background: linear-gradient(135deg, #0066ff, #0099ff);
+            border: none;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            background: linear-gradient(135deg, #0052cc, #0088cc);
+            transform: scale(1.05);
+        }
+    </style>
+
+
 
     <!-- Berita, Artikel, Profil -->
     <div class="container my-5">

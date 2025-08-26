@@ -79,7 +79,8 @@
     .main-nav {
         background-color: #0d2d50;
         position: sticky;
-        top: 38px; /* tinggi top-nav */
+        top: 38px;
+        /* tinggi top-nav */
         z-index: 1020;
     }
 
@@ -106,33 +107,48 @@
 
     /* Dropdown background */
     .navbar .dropdown-menu {
-        background-color: #1c2833;
+        background-color: #ffffff;
         border: none;
-        display: block;
+        border-radius: 3px;
+        box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.15);
         opacity: 0;
         transform: translateY(10px);
         visibility: hidden;
         transition: all 0.3s ease;
+        padding: 8px 0;
+        min-width: 220px;
+        /* biar konsisten */
     }
 
+    /* Efek muncul */
     .navbar .dropdown-menu.show {
         opacity: 1;
         transform: translateY(0);
         visibility: visible;
-        margin-top: 10px;
     }
 
+    /* Item dropdown */
     .navbar .dropdown-menu .dropdown-item {
-        color: white;
+        color: #0d2d50;
+        padding: 10px 16px;
+        font-size: 14px;
+        transition: all 0.2s ease;
+        border-radius: 6px;
     }
 
+    /* Hover effect */
     .navbar .dropdown-menu .dropdown-item:hover {
-        background-color: #0084ffff;
-        color: #000;
+        background-color: #0084ff;
+        color: #fff;
+        transform: translateX(5px);
+        /* efek geser halus */
     }
 
+    /* Supaya muncul saat hover (desktop) */
     .nav-item.dropdown:hover .dropdown-menu {
         display: block;
-        margin-top: 0;
+        opacity: 1;
+        transform: translateY(0);
+        visibility: visible;
     }
 </style>
