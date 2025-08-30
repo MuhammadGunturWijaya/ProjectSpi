@@ -9,108 +9,78 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
-        .org-chart {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            font-family: Arial, sans-serif;
-            padding: 20px;
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            background-color: #f9fafb;
+            overflow-x: hidden;
         }
 
-        .box {
-            border: 1px solid black;
-            padding: 10px 20px;
-            margin: 10px;
-            text-align: center;
-            background-color: #f9f9f9;
-            border-radius: 5px;
+        h2,
+        h3 {
+            font-weight: 700;
+            color: #1e293b;
         }
 
-        .line-container {
-            display: flex;
-            justify-content: center;
-        }
-
-        .vertical-line {
-            width: 2px;
-            height: 30px;
-            background-color: black;
-        }
-
-        .line-container.multiple {
-            height: 50px;
-            position: relative;
-            width: 100%;
-        }
-
-        .line-container.multiple .horizontal-line {
-            position: absolute;
-            top: 0;
-            left: 20%;
-            right: 20%;
-            height: 2px;
-            background-color: black;
-        }
-
-        .line-container.multiple .vertical-line.down {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            height: 50px;
-            transform: translateX(-50%);
-        }
-
-        .middle-level {
-            display: flex;
-            justify-content: center;
-        }
-
-        .bottom-level {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-        }
-
-        .bottom-level .box {
-            position: relative;
-            margin: 10px;
-            flex: 1;
-        }
-
-        .bottom-level .box::before {
-            content: '';
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 2px;
-            height: 10px;
-            background-color: black;
-        }
-
-        .sub-box {
-            border: 1px solid black;
-            padding: 8px;
-            margin-top: 15px;
-            background-color: #fff;
-        }
-
-        /* CSS sebelumnya untuk memusatkan gambar */
-        .img-container {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-            /* Jarak antara gambar dan teks di bawahnya */
-        }
-
-        /* CSS baru untuk membuat gambar responsif */
         .img-container img {
             max-width: 100%;
-            /* Gambar tidak akan melebihi lebar kontainer induknya */
-            height: auto;
-            /* Ketinggian akan diatur otomatis sesuai rasio lebar */
-            display: block;
-            /* Opsional: Memastikan gambar berperilaku seperti blok untuk pemusatan yang konsisten */
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            overflow: hidden;
+            transition: all 0.4s ease-in-out;
+            background: white;
+        }
+
+        .card:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+        }
+
+        .card-img-top {
+            height: 220px;
+            object-fit: cover;
+            border-bottom: 5px solid #2563eb;
+        }
+
+        .card-body {
+            background: #ffffff;
+            color: #1e293b;
+            padding: 18px;
+        }
+
+        .card-body h5 {
+            font-weight: bold;
+            margin-bottom: 6px;
+        }
+
+        .card-body p {
+            margin: 0;
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        .row-cols-custom {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            justify-content: center;
+        }
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(25px);
+            animation: fadeInUp 0.8s ease forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
     </style>
 </head>
@@ -118,51 +88,88 @@
 <body>
     @include('layouts.navbar')
 
-    <div class="container mt-5"> {{-- Tambahkan container dan margin top untuk memberi jarak dari navbar --}}
-        <h2 class="text-center">Struktur Organisasi Satuan Pengawas Internal (SPI)</h2>
-        <div class="img-container">
-            <img src="{{ asset('images/organisasi.png') }}" alt="Struktur Organisasi">
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Struktur Organisasi Satuan Pengawas Internal (SPI)</h2>
+        <div class="img-container text-center mb-3 fade-in">
+            <img src="{{ asset('images/struktur.jpg') }}" alt="Struktur Organisasi">
         </div>
-        <div class="container mt-5 content-section">
-            <p>Melaksanakan langkah yang telah disusun Deputi Pengawasan atau ketua tim terkait dalam penugasan
-                pengawasan.
-                Tim SPI UB yang terlibat dalam organisasi dapat dilihat di halaman <a href="URL_KE_HALAMAN_SDM">Sumber
-                    Daya Manusia</a></p>
 
-            <p>Sesuai struktur organisasi SPI UB menetapkan tugas pokok dan fungsi masing-masing personil sebagai
-                berikut:</p>
+        {{-- Button edit hanya muncul untuk admin --}}
+        @if(Auth::check() && Auth::user()->role == 'admin')
+            <div class="text-center mb-5">
+                <a href="{{ route('struktur.edit') }}" class="btn btn-warning btn-sm">
+                    ✏️ Edit Struktur Organisasi
+                </a>
+            </div>
+        @endif
+    </div>
 
-            <h4>Ketua SPI</h4>
-            <ul>
-                <li>Koordinasi dan penyusunan rencana, program, dan anggaran SPI;</li>
-                <li>Mewakili Ketua SPI dalam hal berhalangan atau ditugaskan;</li>
-                <li>Fasilitasi pelaksanaan penataan kelembagaan dan reformasi birokrasi, serta pemantauan, evaluasi, dan
-                    pelaporan SPI;</li>
-                <li>Pelaksanaan hubungan masyarakat;</li>
-                <li>Pelaksanaan urusan kepegawaian di lingkungan SPI;</li>
-                <li>Pelaksanaan urusan keuangan di lingkungan SPI;</li>
-                <li>Pengelolaan barang milik UB atau milik negara di lingkungan SPI;</li>
-                <li>Pelaksanaan hubungan masyarakat dan tata usaha SPI; dan</li>
-                <li>Melaksanakan tugas lainnya dari Ketua SPI.</li>
-            </ul>
+    <h3 class="text-center mt-5 mb-4">Pengurus SPI</h3>
+    <div class="container px-4">
+        <div class="row-cols-custom">
 
-            <h4>Sekretaris SPI</h4>
-            <ul>
-                <li>Koordinasi dan penyusunan rencana, program, dan anggaran SPI;</li>
-                <li>Mewakili Ketua SPI dalam hal berhalangan atau ditugaskan;</li>
-                <li>Fasilitasi pelaksanaan penataan kelembagaan dan reformasi birokrasi, serta pemantauan, evaluasi, dan
-                    pelaporan SPI;</li>
-                <li>Pelaksanaan hubungan masyarakat;</li>
-                <li>Pelaksanaan urusan kepegawaian di lingkungan SPI;</li>
-                <li>Pelaksanaan urusan keuangan di lingkungan SPI;</li>
-                <li>Pengelolaan barang milik UB atau milik negara di lingkungan SPI; dan</li>
-                <li>Pelaksanaan hubungan masyarakat dan tata usaha SPI.</li>
-            </ul>
+            <!-- Ketua -->
+            <div class="fade-in" style="animation-delay:0.1s;">
+                <div class="card shadow-sm">
+                    <img src="{{ asset('images/bapakmunih.jpg') }}" class="card-img-top" alt="Ketua SPI">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Nama Ketua</h5>
+                        <p class="card-text">Ketua SPI</p>
+                        @if(Auth::check() && Auth::user()->role == 'admin')
+                            <a href="{{ route('pengurus.edit', ['id' => 1]) }}" class="btn btn-sm btn-primary mt-2">✏️ Edit</a>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sekretaris -->
+            <div class="fade-in" style="animation-delay:0.2s;">
+                <div class="card shadow-sm">
+                    <img src="{{ asset('images/ajiseto.jpg') }}" class="card-img-top" alt="Sekretaris SPI">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Nama Sekretaris</h5>
+                        <p class="card-text">Sekretaris SPI</p>
+                        @if(Auth::check() && Auth::user()->role == 'admin')
+                            <a href="{{ route('pengurus.edit', ['id' => 2]) }}" class="btn btn-sm btn-primary mt-2">✏️ Edit</a>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <!-- Anggota 1 -->
+            <div class="fade-in" style="animation-delay:0.3s;">
+                <div class="card shadow-sm">
+                    <img src="{{ asset('images/bapakmunih.jpg') }}" class="card-img-top" alt="Anggota 1 SPI">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Nama Anggota 1</h5>
+                        <p class="card-text">Anggota SPI</p>
+                        @if(Auth::check() && Auth::user()->role == 'admin')
+                            <a href="{{ route('pengurus.edit', ['id' => 3]) }}" class="btn btn-sm btn-primary mt-2">✏️ Edit</a>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
+            <!-- Anggota 2 -->
+            <div class="fade-in" style="animation-delay:0.4s;">
+                <div class="card shadow-sm">
+                    <img src="{{ asset('images/ajiseto.jpg') }}" class="card-img-top" alt="Anggota SPI">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Nama Anggota 2</h5>
+                        <p class="card-text">Anggota SPI</p>
+                        @if(Auth::check() && Auth::user()->role == 'admin')
+                            <a href="{{ route('pengurus.edit', ['id' => 4]) }}" class="btn btn-sm btn-primary mt-2">✏️ Edit</a>
+                        @endif
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <p></p>
     @include('layouts.NavbarBawah')
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

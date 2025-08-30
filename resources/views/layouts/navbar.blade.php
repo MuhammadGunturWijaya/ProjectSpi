@@ -28,7 +28,7 @@
         </button>
 
         <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-            <ul class="navbar-nav">
+            <ul class="navbar-nav me-3">
                 <li class="nav-item"><a class="nav-link highlight" href="{{ route('landingpage') }}">Beranda</a></li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
@@ -36,10 +36,12 @@
                         Profil
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                        <li><a class="dropdown-item" href="#">SEJARAH</a></li>
-                        <li><a class="dropdown-item" href="#">VISI, MISI, DAN TUJUAN</a></li>
-                        <li><a class="dropdown-item" href="#">STRUKTUR ORGANISASI</a></li>
-                        <li><a class="dropdown-item" href="#">SUMBER DAYA MANUSIA</a></li>
+                        <li><a class="dropdown-item" href="#">Sejarah</a></li>
+                        <li><a class="dropdown-item" href="{{ route('visi-misi.index') }}">Visi, Misi, Tujuan</a>
+                        </li>
+                        <li><a class="dropdown-item" href="{{ route('struktur.index') }}">Struktur Organisasi</a>
+                        </li>
+                        <li><a class="dropdown-item" href="{{ route('profile.spi') }}">Tentang Kami</a></li>
                     </ul>
                 </li>
                 <li class="nav-item dropdown">
@@ -50,6 +52,32 @@
                     </ul>
                 </li>
             </ul>
+
+            @guest
+                <!-- Jika belum login -->
+                <a href="{{ route('login') }}" class="nav-link fw-bold text-white ms-2">
+                    Login
+                </a>
+            @endguest
+
+            @auth
+                <!-- Jika sudah login -->
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle fw-bold text-white ms-2" href="#" id="profileDropdown" role="button"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        👤 {{ Auth::user()->name }}
+                    </a>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                        <li><a class="dropdown-item" href="#">Profile</a></li>
+                        <li>
+                            <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                                @csrf
+                                <button type="submit" class="dropdown-item">Logout</button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            @endauth
         </div>
     </div>
 </nav>

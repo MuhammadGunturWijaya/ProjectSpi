@@ -160,6 +160,27 @@
             transform: translateY(0);
             visibility: visible;
         }
+
+        .btn-login {
+            background: linear-gradient(135deg, #0066ff, #0099ff);
+            border: none;
+            color: #fff !important;
+            padding: 8px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-login:hover {
+            background: linear-gradient(135deg, #0052cc, #0088cc);
+            transform: scale(1.05);
+        }
+
+        .nav-link.fw-bold.text-white.ms-2:hover {
+            color: #0084ff !important;
+            text-decoration: underline;
+            transition: all 0.3s ease;
+        }
     </style>
 </head>
 
@@ -210,7 +231,7 @@
             </button>
 
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav me-3">
                     <li class="nav-item"><a class="nav-link highlight" href="#">Beranda</a></li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
@@ -219,9 +240,11 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item" href="#">Sejarah</a></li>
-                            <li><a class="dropdown-item" href="#">Visi, Misi, Tujuan</a></li>
-                            <li><a class="dropdown-item" href="{{ route('struktur.organisasi') }}">Struktur
-                                    Organisasi</a></li>
+                            <li><a class="dropdown-item" href="{{ route('visi-misi.index') }}">Visi, Misi, Tujuan</a>
+                            </li>
+
+                            <li><a class="dropdown-item" href="{{ route('struktur.index') }}">Struktur Organisasi</a>
+                            </li>
                             <li><a class="dropdown-item" href="{{ route('profile.spi') }}">Tentang Kami</a></li>
                         </ul>
                     </li>
@@ -234,9 +257,36 @@
                         </ul>
                     </li>
                 </ul>
+
+                @guest
+                    <!-- Jika belum login -->
+                    <a href="{{ route('login') }}" class="nav-link fw-bold text-white ms-2">
+                        Login
+                    </a>
+                @endguest
+
+                @auth
+                    <!-- Jika sudah login -->
+                    <div class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle fw-bold text-white ms-2" href="#" id="profileDropdown"
+                            role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            👤 {{ Auth::user()->name }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                            <li><a class="dropdown-item" href="#">Profile</a></li>
+                            <li>
+                                <form action="{{ route('logout') }}" method="POST" class="d-inline">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item">Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                @endauth
             </div>
         </div>
     </nav>
+
 
 
     <!-- Hero Banner -->
@@ -257,14 +307,12 @@
 
         <!-- Tombol navigasi -->
         <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon p-1" style="width:30px; height:30px;"
-                aria-hidden="true"></span>
+            <span class="carousel-control-prev-icon p-1" style="width:30px; height:30px;" aria-hidden="true"></span>
             <span class="visually-hidden">Previous</span>
         </button>
 
         <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon p-1" style="width:30px; height:30px;"
-                aria-hidden="true"></span>
+            <span class="carousel-control-next-icon p-1" style="width:30px; height:30px;" aria-hidden="true"></span>
             <span class="visually-hidden">Next</span>
         </button>
 
@@ -450,7 +498,7 @@
         </div>
     </div>
 
-    <!-- Laporan Pelanggaran -->
+    <!-- PENGADUAN MASYARAKAT -->
     <section class="report-section py-5 bg-light">
         <div class="container text-center">
             <div class="report-box p-5 rounded-4 shadow-lg text-white"
@@ -462,7 +510,7 @@
                 </div>
 
                 <!-- Judul -->
-                <h2 class="fw-bold mb-3">Laporan Pelanggaran</h2>
+                <h2 class="fw-bold mb-3">Pengaduan Masyarakat</h2>
 
                 <!-- Deskripsi -->
                 <p class="mb-4">
@@ -471,7 +519,7 @@
                 </p>
 
                 <!-- Tombol -->
-                <a href="#" class="btn btn-lg btn-danger fw-bold px-5 py-3"
+                <a href="{{ route('pengaduan.create') }}" class="btn btn-lg btn-danger fw-bold px-5 py-3"
                     style="border-radius:50px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: all 0.3s;">
                     Laporkan Sekarang!
                 </a>
