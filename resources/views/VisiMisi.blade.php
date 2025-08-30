@@ -78,7 +78,7 @@
             <!-- Judul -->
             <h2>Visi, Misi, Tujuan</h2>
             <div class="meta-info mb-4">
-                <i class="bi bi-calendar"></i> 10 Oktober 2022, 14.17 &nbsp; | &nbsp;
+                <i class="bi bi-calendar"></i> 10 Oktober 2025, 14.17 &nbsp; | &nbsp;
                 <i class="bi bi-person"></i> Oleh: SPI &nbsp; | &nbsp;
             </div>
 

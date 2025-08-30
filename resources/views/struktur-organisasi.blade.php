@@ -106,64 +106,34 @@
 
     <h3 class="text-center mt-5 mb-4">Pengurus SPI</h3>
     <div class="container px-4">
-        <div class="row-cols-custom">
+        @if(Auth::check() && Auth::user()->role == 'admin')
+            <div class="text-center mb-4">
+                <a href="{{ route('pengurus.create') }}" class="btn btn-success btn-sm">
+                    ➕ Tambah Pengurus
+                </a>
+            </div>
+        @endif
+        <div class="row-cols-custom" style="cursor: pointer;">
 
             <!-- Ketua -->
-            <div class="fade-in" style="animation-delay:0.1s;">
-                <div class="card shadow-sm">
-                    <img src="{{ asset('images/bapakmunih.jpg') }}" class="card-img-top" alt="Ketua SPI">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Nama Ketua</h5>
-                        <p class="card-text">Ketua SPI</p>
-                        @if(Auth::check() && Auth::user()->role == 'admin')
-                            <a href="{{ route('pengurus.edit', ['id' => 1]) }}" class="btn btn-sm btn-primary mt-2">✏️ Edit</a>
-                        @endif
+            @foreach($pengurus as $index => $p)
+                <div class="fade-in" style="animation-delay: {{ 0.1 + $index * 0.1 }}s;">
+                    <div class="card shadow-sm">
+                        <img src="{{ $p->foto ? asset('images/' . $p->foto) : asset('images/default.jpg') }}"
+                            class="card-img-top" alt="{{ $p->nama }}">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">{{ $p->nama }}</h5>
+                            <p class="card-text">{{ $p->jabatan }}</p>
+                            @if(Auth::check() && Auth::user()->role == 'admin')
+                                <a href="{{ route('pengurus.edit', ['id' => $p->id]) }}" class="btn btn-sm btn-primary mt-2">✏️
+                                    Edit</a>
+                            @endif
+                        </div>
                     </div>
                 </div>
-            </div>
+            @endforeach
 
             <!-- Sekretaris -->
-            <div class="fade-in" style="animation-delay:0.2s;">
-                <div class="card shadow-sm">
-                    <img src="{{ asset('images/ajiseto.jpg') }}" class="card-img-top" alt="Sekretaris SPI">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Nama Sekretaris</h5>
-                        <p class="card-text">Sekretaris SPI</p>
-                        @if(Auth::check() && Auth::user()->role == 'admin')
-                            <a href="{{ route('pengurus.edit', ['id' => 2]) }}" class="btn btn-sm btn-primary mt-2">✏️ Edit</a>
-                        @endif
-                    </div>
-                </div>
-            </div>
-
-            <!-- Anggota 1 -->
-            <div class="fade-in" style="animation-delay:0.3s;">
-                <div class="card shadow-sm">
-                    <img src="{{ asset('images/bapakmunih.jpg') }}" class="card-img-top" alt="Anggota 1 SPI">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Nama Anggota 1</h5>
-                        <p class="card-text">Anggota SPI</p>
-                        @if(Auth::check() && Auth::user()->role == 'admin')
-                            <a href="{{ route('pengurus.edit', ['id' => 3]) }}" class="btn btn-sm btn-primary mt-2">✏️ Edit</a>
-                        @endif
-                    </div>
-                </div>
-            </div>
-
-            <!-- Anggota 2 -->
-            <div class="fade-in" style="animation-delay:0.4s;">
-                <div class="card shadow-sm">
-                    <img src="{{ asset('images/ajiseto.jpg') }}" class="card-img-top" alt="Anggota SPI">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Nama Anggota 2</h5>
-                        <p class="card-text">Anggota SPI</p>
-                        @if(Auth::check() && Auth::user()->role == 'admin')
-                            <a href="{{ route('pengurus.edit', ['id' => 4]) }}" class="btn btn-sm btn-primary mt-2">✏️ Edit</a>
-                        @endif
-                    </div>
-                </div>
-            </div>
-
         </div>
     </div>
 

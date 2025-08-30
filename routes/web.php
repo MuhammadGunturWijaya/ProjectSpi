@@ -60,4 +60,10 @@ Route::middleware(['auth'])->group(function () {
     // Edit pengurus
     Route::get('/pengurus/{id}/edit', [PengurusController::class, 'edit'])->name('pengurus.edit');
     Route::post('/pengurus/{id}/update', [PengurusController::class, 'update'])->name('pengurus.update');
+    Route::get('/pengurus/create', [PengurusController::class, 'create'])->name('pengurus.create');
+    Route::post('/pengurus/store', [PengurusController::class, 'store'])->name('pengurus.store');
+    //  route delete 
+    Route::delete('/pengurus/{id}', [PengurusController::class, 'destroy'])->name('pengurus.destroy');
+    Route::get('/pengurus', [PengurusController::class, 'index'])->name('pengurus.index');
+
 });

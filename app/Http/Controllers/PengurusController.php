@@ -3,35 +3,96 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Pengurus;
 
 class PengurusController extends Controller
 {
-    // Form edit pengurus
-    public function edit($id)
+    // Form tambah pengurus baru
+    // Form tambah pengurus
+
+    public function index()
     {
-        // misalnya ambil data pengurus dari database
-        // kalau datanya statis (cuma gambar di public/images), cukup kirim id
-        return view('admin.editPengurus', compact('id'));
+        $penguruses = Pengurus::all(); // ambil semua data pengurus
+        return redirect()->route('pengurus.index')->with('success', 'Pengurus berhasil dihapus.');
+
     }
 
-    // Proses update pengurus
-    public function update(Request $request, $id)
+    public function create()
+    {
+        return view('admin.createPengurus');
+    }
+
+    // Simpan data pengurus baru
+    public function store(Request $request)
     {
         $request->validate([
-            'foto' => 'image|mimes:jpg,jpeg,png|max:2048',
-            'nama' => 'required|string|max:100',
-            'jabatan' => 'required|string|max:100',
+            'nama' => 'required|string|max:255',
+            'jabatan' => 'required|string|max:255',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
+
+        $pengurus = new Pengurus();
+        $pengurus->nama = $request->nama;
+        $pengurus->jabatan = $request->jabatan;
 
         if ($request->hasFile('foto')) {
             $file = $request->file('foto');
-            $fileName = 'pengurus_'.$id.'.jpg'; // contoh: pengurus_1.jpg
-            $file->move(public_path('images'), $fileName);
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('images'), $filename);
+            $pengurus->foto = $filename;
         }
 
-        // kalau pakai DB: update nama & jabatan ke tabel pengurus
-        // misalnya Pengurus::where('id',$id)->update([...]);
+        $pengurus->save();
 
-        return redirect()->back()->with('success', 'Data pengurus berhasil diperbarui.');
+        return redirect()->route('struktur.index')->with('success', 'Pengurus berhasil ditambahkan!');
     }
+
+    // Form edit pengurus
+    public function edit($id)
+    {
+        $pengurus = Pengurus::findOrFail($id);
+        return view('admin.editPengurus', compact('pengurus'));
+    }
+
+    // Update data pengurus
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'jabatan' => 'required|string|max:255',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $pengurus = Pengurus::findOrFail($id);
+        $pengurus->nama = $request->nama;
+        $pengurus->jabatan = $request->jabatan;
+
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('images'), $filename);
+            $pengurus->foto = $filename;
+        }
+
+        $pengurus->save();
+
+        return redirect()->route('struktur.index')->with('success', 'Pengurus berhasil diperbarui!');
+    }
+
+    public function destroy($id)
+    {
+        $pengurus = Pengurus::findOrFail($id);
+
+        if ($pengurus->foto && file_exists(public_path('images/pengurus/' . $pengurus->foto))) {
+            unlink(public_path('images/pengurus/' . $pengurus->foto));
+        }
+
+        $pengurus->delete();
+
+        // Redirect ke halaman struktur karena pengurusIndex tidak ada
+        return redirect()->route('struktur.index')->with('success', 'Pengurus berhasil dihapus.');
+    }
+
+
+
 }
