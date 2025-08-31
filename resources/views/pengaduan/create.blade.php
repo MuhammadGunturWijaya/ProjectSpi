@@ -96,12 +96,14 @@
 
                 <div class="mb-3">
                     <label for="nama" class="form-label">Nama</label>
-                    <input type="text" class="form-control shadow-sm" id="nama" name="nama" placeholder="Masukkan nama lengkap Anda" required>
+                    <input type="text" class="form-control shadow-sm" id="nama" name="nama"
+                        placeholder="Masukkan nama lengkap Anda" required>
                 </div>
 
                 <div class="mb-3">
                     <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control shadow-sm" id="email" name="email" placeholder="contoh@email.com" required>
+                    <input type="email" class="form-control shadow-sm" id="email" name="email"
+                        placeholder="contoh@email.com" required>
                 </div>
 
                 <div class="mb-3">
@@ -118,22 +120,34 @@
 
                 <div class="mb-3">
                     <label for="judul" class="form-label">Judul</label>
-                    <input type="text" class="form-control shadow-sm" id="judul" name="judul" placeholder="Tuliskan judul pengaduan" required>
+                    <input type="text" class="form-control shadow-sm" id="judul" name="judul"
+                        placeholder="Tuliskan judul pengaduan" required>
                 </div>
 
                 <div class="mb-3">
                     <label for="kritik_saran" class="form-label">Kritik / Saran</label>
-                    <textarea class="form-control shadow-sm" id="kritik_saran" name="kritik_saran" rows="5" placeholder="Tuliskan pengaduan, kritik, atau saran Anda di sini..." required></textarea>
+                    <textarea class="form-control shadow-sm" id="kritik_saran" name="kritik_saran" rows="5"
+                        placeholder="Tuliskan pengaduan, kritik, atau saran Anda di sini..." required></textarea>
                 </div>
 
                 <div class="mb-3">
                     <label for="bukti_foto" class="form-label">Bukti Foto (opsional)</label>
-                    <input class="form-control shadow-sm" type="file" id="bukti_foto" name="bukti_foto" accept="image/*">
+                    <input class="form-control shadow-sm" type="file" id="bukti_foto" name="bukti_foto"
+                        accept="image/*">
                 </div>
 
                 <div class="d-flex justify-content-between mt-4">
                     <button type="reset" class="btn btn-outline-secondary px-4">Reset</button>
-                    <button type="submit" class="btn btn-primary px-4">Kirim Pengaduan</button>
+
+                    {{-- Jika login tampil tombol submit, kalau tidak login arahkan ke login --}}
+                    @auth
+                        <button type="submit" class="btn btn-primary px-4">Kirim Pengaduan</button>
+                    @else
+                        <a href="{{ route('login', ['redirect' => route('pengaduan.create')]) }}"
+                            class="btn btn-primary px-4">
+                            Login untuk Kirim
+                        </a>
+                    @endauth
                 </div>
             </form>
         </div>

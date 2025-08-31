@@ -44,13 +44,6 @@
                         <li><a class="dropdown-item" href="{{ route('profile.spi') }}">Tentang Kami</a></li>
                     </ul>
                 </li>
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Aktivitas</a>
-                    <ul class="dropdown-menu">
-                        <li><a class="dropdown-item" href="#">Kegiatan</a></li>
-                        <li><a class="dropdown-item" href="#">Agenda</a></li>
-                    </ul>
-                </li>
             </ul>
 
             @guest

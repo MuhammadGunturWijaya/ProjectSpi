@@ -181,6 +181,23 @@
             text-decoration: underline;
             transition: all 0.3s ease;
         }
+
+        .carousel-img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: 10px;
+        }
+
+
+        @media (max-width: 768px) {
+            .carousel-img {
+                height: 200px;
+                /* tinggi tetap */
+                border-radius: 0;
+                /* hilangkan border-radius */
+            }
+        }
     </style>
 </head>
 
@@ -246,14 +263,6 @@
                             <li><a class="dropdown-item" href="{{ route('struktur.index') }}">Struktur Organisasi</a>
                             </li>
                             <li><a class="dropdown-item" href="{{ route('profile.spi') }}">Tentang Kami</a></li>
-                        </ul>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button"
-                            data-bs-toggle="dropdown">Aktivitas</a>
-                        <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Kegiatan</a></li>
-                            <li><a class="dropdown-item" href="#">Agenda</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -377,15 +386,7 @@
         </div>
     </section>
 
-    <!-- Search Bar -->
-    <div class="container my-5">
-        <h6 class="text-center mb-4">Cari Informasi Seputaran Berita, Artikel, Profile ...</h6>
-        <form action="{{ route('search') }}" method="GET" class="search-box d-flex align-items-center mx-auto">
-            <input type="text" name="q" class="form-control search-input"
-                placeholder="🔍 Cari berita, artikel, atau profil..." value="{{ request('q') }}">
-            <button type="submit" class="btn search-btn">Cari</button>
-        </form>
-    </div>
+
 
     <style>
         /* Wrapper */
@@ -436,66 +437,60 @@
 
 
 
-    <!-- Berita, Artikel, Profil -->
+    <!-- Berita -->
     <div class="container my-5">
-        <div class="row">
-            <div class="col-md-4">
-                <h4 class="section-title">Berita</h4>
-                @foreach($beritas as $b)
-                    <div class="card mb-3">
-                        <img src="{{ $b->gambar }}" class="card-img-top" alt="berita">
-                        <div class="card-body">
+        <h2 class="fw-bold text-center mb-4">Berita Terbaru</h2>
+        <p class="text-center text-muted mb-5">
+            Dapatkan informasi terkini seputar kegiatan dan aktivitas SPI Politeknik Negeri Jember
+        </p>
+
+        <!-- Search Bar -->
+        <div class="container my-5">
+            <form action="{{ route('search') }}" method="GET" class="search-box d-flex align-items-center mx-auto">
+                <input type="text" name="q" class="form-control search-input"
+                    placeholder="🔍 Cari berita, artikel, atau profil..." value="{{ request('q') }}">
+                <button type="submit" class="btn search-btn">Cari</button>
+            </form>
+        </div>
+
+        <!-- Tombol Tambah Berita (hanya admin) -->
+        @auth
+            @if(Auth::user()->role === 'admin')
+                <div class="text-end mb-3">
+                    <a href="{{ route('berita.create') }}" class="btn btn-outline-primary rounded-pill shadow-sm">
+                        + Tambah Berita
+                    </a>
+                </div>
+            @endif
+        @endauth
+
+        <div class="row g-4">
+            @foreach($beritas as $b)
+                <div class="col-md-4">
+                    <div class="card h-100 border-0 shadow-lg rounded-4 overflow-hidden">
+                        <img src="{{ $b->gambar }}" class="card-img-top" alt="berita"
+                            style="height:200px; object-fit:cover;">
+                        <div class="card-body d-flex flex-column">
                             <small class="text-muted">{{ $b->tanggal }}</small>
-                            <p>{{ Str::limit($b->judul, 50) }}</p>
-                            <!-- Tombol ke detail berita -->
-                            <a href="{{ route('berita.show', $b->id) }}" class="btn btn-sm btn-primary">Read More</a>
+                            <h5 class="fw-bold mt-2">{{ Str::limit($b->judul, 60) }}</h5>
+                            <p class="text-muted flex-grow-1">{{ Str::limit($b->isi, 100) }}</p>
+                            <a href="{{ route('berita.show', $b->id) }}" class="btn btn-primary btn-sm mt-2 rounded-pill">
+                                Baca Selengkapnya →
+                            </a>
                         </div>
                     </div>
-                @endforeach
-            </div>
-            <div class="col-md-4">
-                <h4 class="section-title">Artikel</h4>
-                <div class="card mb-3">
-                    <img src="https://tse4.mm.bing.net/th/id/OIP.4Ul8MXTZJD0is63kwJlt6AHaE7?rs=1&pid=ImgDetMain&o=7&rm=3"
-                        class="card-img-top" alt="artikel">
-                    <div class="card-body">
-                        <small class="text-muted">24 Agustus 2025</small>
-                        <p>Pelatihan Pemberian keterangan ...</p>
-                        <a href="#" class="btn btn-sm btn-primary">View All</a>
-                    </div>
                 </div>
-                <div class="card mb-3">
-                    <img src="https://tse4.mm.bing.net/th/id/OIP.4Ul8MXTZJD0is63kwJlt6AHaE7?rs=1&pid=ImgDetMain&o=7&rm=3"
-                        class="card-img-top" alt="artikel">
-                    <div class="card-body">
-                        <small class="text-muted">24 Agustus 2025</small>
-                        <p>Pelatihan Pemberian keterangan ...</p>
-                        <a href="#" class="btn btn-sm btn-primary">View All</a>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <h4 class="section-title">Profil</h4>
-                <div class="card mb-3">
-                    <img src="https://tse2.mm.bing.net/th/id/OIP.hH-uhyGKljkPY5gacLuIwQHaFG?rs=1&pid=ImgDetMain&o=7&rm=3"
-                        class="card-img-top" alt="profil">
-                    <div class="card-body">
-                        <small class="text-muted">24 Agustus 2025</small>
-                        <p>Pelatihan Pemberian keterangan ...</p>
-                        <a href="#" class="btn btn-sm btn-primary">View All</a>
-                    </div>
-                </div>
-                <div class="card mb-3">
-                    <img src="https://tse2.mm.bing.net/th/id/OIP.hH-uhyGKljkPY5gacLuIwQHaFG?rs=1&pid=ImgDetMain&o=7&rm=3"
-                        class="card-img-top" alt="profil">
-                    <div class="card-body">
-                        <small class="text-muted">24 Agustus 2025</small>
-                        <p>Pelatihan Pemberian keterangan ...</p>
-                        <a href="#" class="btn btn-sm btn-primary">View All</a>
-                    </div>
-                </div>
-            </div>
+            @endforeach
         </div>
+
+        <!-- Tombol Lihat Semua -->
+        <div class="text-center mt-5">
+            <a href="{{ route('berita.index') }}" class="btn btn-outline-primary btn-lg px-5 rounded-pill shadow-sm">
+                Lihat Semua Berita
+            </a>
+        </div>
+    </div>
+
     </div>
 
     <!-- PENGADUAN MASYARAKAT -->
@@ -503,6 +498,7 @@
         <div class="container text-center">
             <div class="report-box p-5 rounded-4 shadow-lg text-white"
                 style="background: #0d2d50; max-width: 700px; margin: auto; transition: transform 0.3s;">
+
                 <!-- Ikon -->
                 <div class="mb-3">
                     <img src="https://cdn-icons-png.flaticon.com/512/564/564619.png" alt="Warning Icon"
@@ -518,14 +514,27 @@
                     cepat.
                 </p>
 
-                <!-- Tombol -->
-                <a href="{{ route('pengaduan.create') }}" class="btn btn-lg btn-danger fw-bold px-5 py-3"
+                <!-- Tombol untuk masyarakat -->
+                <a href="{{ route('pengaduan.create') }}" class="btn btn-lg btn-danger fw-bold px-5 py-3 mb-2"
                     style="border-radius:50px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: all 0.3s;">
                     Laporkan Sekarang!
                 </a>
+
+                <!-- Tombol tambahan untuk admin -->
+                @auth
+                    @if(Auth::user()->role === 'admin')
+                        <a href="{{ route('pengaduan.index') }}" class="btn btn-lg btn-primary fw-bold px-5 py-3 mt-2"
+                            style="border-radius:50px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: all 0.3s;">
+                            Lihat Pengaduan
+                        </a>
+                    @endif
+                @endauth
+
+
             </div>
         </div>
     </section>
+
 
     <style>
         /* Animasi hover pada box */
@@ -537,6 +546,12 @@
         /* Animasi hover pada tombol */
         .report-box .btn-danger:hover {
             background-color: #ff4b4b;
+            transform: scale(1.05);
+        }
+
+        /* Animasi hover pada tombol Lihat Pengaduan */
+        .report-box .btn-primary:hover {
+            background-color: #0056b3;
             transform: scale(1.05);
         }
     </style>

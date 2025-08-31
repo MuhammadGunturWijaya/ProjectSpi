@@ -19,6 +19,12 @@ Route::get('/landing', [LandingPageController::class, 'index'])->name('landing')
 Route::get('/berita', [BeritaController::class, 'index'])->name('berita.index');
 Route::get('/berita/{id}', [BeritaController::class, 'show'])->name('berita.show');
 
+// Berita (admin only)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/berita/create', [BeritaController::class, 'create'])->name('berita.create');
+    Route::post('/admin/berita/store', [BeritaController::class, 'store'])->name('berita.store');
+});
+
 // Struktur organisasi - halaman publik
 Route::get('/struktur-organisasi', [StrukturController::class, 'index'])->name('struktur.index');
 
@@ -28,9 +34,23 @@ Route::get('/profile-spi', [App\Http\Controllers\PageController::class, 'Profile
 // Pencarian
 Route::get('/search', [SearchController::class, 'index'])->name('search');
 
+// Route admin (harus login & role admin)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/pengaduan', [PengaduanController::class, 'index'])->name('pengaduan.index');
+    Route::get('/admin/pengaduan/{id}', [PengaduanController::class, 'show'])->name('pengaduan.show');
+    Route::delete('/admin/pengaduan/{id}', [PengaduanController::class, 'destroy'])->name('pengaduan.destroy');
+});
+
+
+
 // Pengaduan
 Route::get('/pengaduan', [PengaduanController::class, 'create'])->name('pengaduan.create');
 Route::post('/pengaduan', [PengaduanController::class, 'store'])->name('pengaduan.store');
+
+// Hanya user login yang boleh kirim
+Route::middleware(['auth'])->group(function () {
+    Route::post('/pengaduan', [PengaduanController::class, 'store'])->name('pengaduan.store');
+});
 
 // Visi Misi
 Route::get('/visi-misi', [VisiMisiController::class, 'index'])->name('visi-misi.index');

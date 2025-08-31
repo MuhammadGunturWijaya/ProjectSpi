@@ -181,6 +181,10 @@
             <div class="mb-3">
                 <input type="password" name="password" class="form-control" placeholder="Password" required>
             </div>
+            <!-- fungsi untuk masuk ke url terakhir -->
+            @if(request()->has('redirect'))
+                <input type="hidden" name="redirect" value="{{ request()->redirect }}">
+            @endif
             <button type="submit" class="btn btn-login">Login</button>
         </form>
 

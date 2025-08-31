@@ -27,8 +27,16 @@ class AuthController extends Controller
         // Coba autentikasi
         if (Auth::attempt($request->only('email', 'password'))) {
             $request->session()->regenerate();
+
+            // Jika ada redirect (dari query string)
+            if ($request->has('redirect')) {
+                return redirect()->to($request->redirect)->with('success', 'Login berhasil!');
+            }
+
+            // Default: redirect intended (atau ke landing)
             return redirect()->intended('/landing')->with('success', 'Login berhasil!');
         }
+
 
         // Jika gagal
         return back()->withErrors([
