@@ -25,8 +25,21 @@
 
         /* Navbar utama */
         .main-nav {
-            background-color: #0d2d50;
+            background: transparent;
+            transition: background-color 0.4s ease, box-shadow 0.4s ease;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
         }
+
+        /* Saat discroll */
+        .main-nav.scrolled {
+            background-color: #0d2d50;
+            /* warna solid */
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
 
         .main-nav .nav-link {
             color: white !important;
@@ -61,21 +74,6 @@
             height: 400px;
             object-fit: cover;
             border-radius: 10px;
-        }
-
-        #heroCarousel .carousel-control-prev,
-        #heroCarousel .carousel-control-next {
-            top: 50%;
-            transform: translateY(-50%);
-            width: auto;
-        }
-
-        #heroCarousel .carousel-control-prev {
-            left: 20px;
-        }
-
-        #heroCarousel .carousel-control-next {
-            right: 20px;
         }
 
         .section-title {
@@ -198,71 +196,144 @@
                 /* hilangkan border-radius */
             }
         }
+
+        .dropdown-submenu {
+            position: relative;
+        }
+
+        /* Submenu muncul ke kanan */
+        .dropdown-submenu>.dropdown-menu {
+            top: 0;
+            left: 100%;
+            /* geser ke kanan parent */
+            margin-top: -1px;
+            display: none;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(10px);
+            transition: all 0.3s ease;
+        }
+
+        /* Saat hover submenu tampil */
+        .dropdown-submenu:hover>.dropdown-menu {
+            display: block;
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0);
+        }
     </style>
 </head>
 
 <script>
-    document.querySelectorAll('.nav-item.dropdown').forEach(function (el) {
-        el.addEventListener('mouseenter', function () {
-            let dropdown = new bootstrap.Dropdown(el.querySelector('.dropdown-toggle'));
-            dropdown.show();
-        });
-        el.addEventListener('mouseleave', function () {
-            let dropdown = new bootstrap.Dropdown(el.querySelector('.dropdown-toggle'));
-            dropdown.hide();
-        });
+    document.addEventListener("scroll", function () {
+        const navbar = document.querySelector(".main-nav");
+        if (window.scrollY > 50) {
+            navbar.classList.add("scrolled");
+        } else {
+            navbar.classList.remove("scrolled");
+        }
     });
-
 </script>
+
 
 <body>
 
-    <!-- Navbar Atas -->
-    <div class="top-nav d-flex justify-content-between align-items-center px-3 py-1">
-        <div>
-            <a href="#">Polije</a>
-            <a href="#">Perpustakaan</a>
-            <a href="#">E-Learning</a>
-            <a href="#">Research</a>
-        </div>
-        <form class="d-flex" role="search">
-            <input class="form-control form-control-sm text-white border-0" style="background-color:#495057;"
-                type="search" placeholder="Pencarian ..." aria-label="Search">
-            <button class="btn btn-dark btn-sm ms-2" type="submit">🔍</button>
-        </form>
-
-    </div>
 
     <!-- Navbar Utama -->
     <nav class="main-nav navbar navbar-expand-lg">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center" href="#">
+        <div class="container d-flex justify-content-between align-items-center">
+            <!-- Logo kiri -->
+            <a class="navbar-brand d-flex align-items-center ms-2" href="#">
                 <img src="{{ asset('images/logoPolije.png') }}" alt="Logo" width="40" height="40">
                 <span class="logo-text ms-2">
                     SATUAN PENGAWAS INTERNAL<br>
                     POLITEKNIK NEGERI JEMBER
                 </span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+
+            <!-- Toggler untuk mobile -->
+            <button class="navbar-toggler me-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
 
+
+            <!-- Menu kanan -->
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                <ul class="navbar-nav me-3">
+                <ul class="navbar-nav me-2">
                     <li class="nav-item"><a class="nav-link highlight" href="#">Beranda</a></li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                            data-bs-toggle="dropdown" aria-expanded="false">
-                            Profil
-                        </a>
-                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Profil</a>
+                        <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="#">Sejarah</a></li>
                             <li><a class="dropdown-item" href="{{ route('visi-misi.index') }}">Visi, Misi, Tujuan</a>
                             </li>
-
                             <li><a class="dropdown-item" href="{{ route('struktur.index') }}">Struktur Organisasi</a>
                             </li>
                             <li><a class="dropdown-item" href="{{ route('profile.spi') }}">Tentang Kami</a></li>
+                            <li><a class="dropdown-item" href="{{ route('profile.spi') }}">Sumber Daya Manusia</a></li>
+                            <li><a class="dropdown-item" href="{{ route('profile.spi') }}">Proses Bisnis SPI</a></li>
+                            <li><a class="dropdown-item" href="{{ route('profile.spi') }}">Kode Etik SPI</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Dokumen Kerja
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{{ route('visi-misi.index') }}">Piagam SPI</a>
+                            </li>
+                            <!-- Submenu Pedoman Pengawasan -->
+                            <li class="dropdown-submenu">
+                                <a class="dropdown-item dropdown-toggle" href="#">Pedoman Pengawasan</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="{{ route('visi-misi.index') }}">Pedoman Audit</a>
+                                    </li>
+                                    <li><a class="dropdown-item" href="{{ route('visi-misi.index') }}">Pedoman Monev</a>
+                                    </li>
+                                    <li><a class="dropdown-item" href="{{ route('visi-misi.index') }}">Pedoman Reviu</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ route('profile.spi') }}">POS AP Pengaawasan</a></li>
+                            <li><a class="dropdown-item" href="{{ route('profile.spi') }}">Instrumen Pengawasan</a></li>
+                            <li><a class="dropdown-item" href="{{ route('profile.spi') }}">Program Kerja SPI</a></li>
+                            <li><a class="dropdown-item" href="{{ route('profile.spi') }}">Konsideran SPI</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Manajemen Risiko
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{{ route('visi-misi.index') }}">Pedoman MR </a>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ route('struktur.index') }}">Identifikasi Risiko </a>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ route('profile.spi') }}">Penilaian , Evaluasi MR dan
+                                    Mitigasi</a></li>
+                            <li><a class="dropdown-item" href="{{ route('pengaduan.create') }}">Pelaporan</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Zona integritas
+                        </a>
+                        <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="{{ route('visi-misi.index') }}">Manajemen Perubahan </a>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ route('struktur.index') }}">Penataan Tata Kelola </a>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ route('profile.spi') }}">Penataan Sistem Manajemen SDM
+                                    dan Aparatur</a></li>
+                            <li><a class="dropdown-item" href="{{ route('pengaduan.create') }}">Penguatan
+                                    Akuntabilitas</a></li>
+                            <li><a class="dropdown-item" href="{{ route('pengaduan.create') }}">Penguatan Pengawasaan
+                                </a></li>
+                            <li><a class="dropdown-item" href="{{ route('pengaduan.create') }}">Peningkatan Kualitas
+                                    Pelayanan Publik</a></li>
                         </ul>
                     </li>
                 </ul>
@@ -299,36 +370,96 @@
 
 
     <!-- Hero Banner -->
-    <div id="heroCarousel" class="carousel slide mt-4 mb-4" data-bs-ride="carousel">
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img src="https://polije.ac.id/wp-content/uploads/2024/04/Web-Banner-Zona-Integritas.png"
-                    class="carousel-img" alt="Banner 1">
-            </div>
-            <div class="carousel-item">
-                <img src="https://i.ytimg.com/vi/TxJmgu6VaXw/maxresdefault.jpg" class="carousel-img" alt="Banner 2">
-            </div>
-            <div class="carousel-item">
-                <img src="https://polije.ac.id/wp-content/uploads/2024/04/Web-Banner-Zona-Integritas.png"
-                    class="carousel-img" alt="Banner 3">
-            </div>
+    <section class="hero-banner d-flex align-items-center justify-content-center text-center">
+        <div class="hero-text text-white">
+            <h1 class="fw-bold display-4">SATUAN PENGAWAS INTERNAL</h1>
+            <p class="lead">Politeknik Negeri Jember</p>
+            <a href="#tentang-kami" class="scroll-down-btn">
+                ⌄
+            </a>
         </div>
+    </section>
 
-        <!-- Tombol navigasi -->
-        <button class="carousel-control-prev" type="button" data-bs-target="#heroCarousel" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon p-1" style="width:30px; height:30px;" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-        </button>
+    <style>
+        .hero-banner {
+            width: 100%;
+            height: 100vh;
+            /* full layar */
+            background: url('https://tender-indonesia.com/newsrectory/events/15(6).png') no-repeat center center;
+            background-size: cover;
+            background-attachment: fixed;
+            /* ini bikin parallax */
+            position: relative;
+        }
 
-        <button class="carousel-control-next" type="button" data-bs-target="#heroCarousel" data-bs-slide="next">
-            <span class="carousel-control-next-icon p-1" style="width:30px; height:30px;" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-        </button>
+        .hero-banner::after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            /* overlay gelap biar teks kontras */
+        }
+
+
+        .hero-banner .hero-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(70%);
+            /* agak gelap biar teks kontras */
+        }
+
+        .hero-banner .hero-text {
+            position: relative;
+            z-index: 2;
+        }
+
+        .scroll-down-btn {
+            display: inline-block;
+            margin-top: 40px;
+            font-size: 40px;
+            color: #fff;
+            text-decoration: none;
+            animation: bounce 1.5s infinite;
+            transition: color 0.3s ease;
+        }
+
+        .scroll-down-btn:hover {
+            color: #0084ff;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(8px);
+            }
+
+            60% {
+                transform: translateY(4px);
+            }
+        }
+
+           html {
+            scroll-behavior: smooth;
+        }
+    </style>
+
 
     </div>
 
     <!-- Sekilas Tentang Kami -->
-    <section class="py-5 bg-light">
+    <section class="py-5 bg-light" id="tentang-kami">
         <div class="container text-center">
             <!-- Judul -->
             <h2 class="fw-bold mb-3">Sekilas Tentang Kami</h2>
