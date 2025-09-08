@@ -221,6 +221,49 @@
             visibility: visible;
             transform: translateX(0);
         }
+
+        #loading-overlay {
+            position: fixed;
+            /* Membuat overlay tetap di tempatnya saat di-scroll */
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            /* Warna putih transparan */
+            display: none;
+            /* Awalnya disembunyikan */
+            justify-content: center;
+            /* Pusatkan spinner secara horizontal */
+            align-items: center;
+            /* Pusatkan spinner secara vertikal */
+            z-index: 9999;
+            /* Pastikan overlay berada di atas semua elemen lain */
+            transition: opacity 0.3s ease;
+        }
+
+        /* Gaya untuk spinner (contoh spinner sederhana) */
+        .spinner {
+            border: 8px solid #f3f3f3;
+            /* Light grey */
+            border-top: 8px solid #0084ff;
+            /* Blue */
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            animation: spin 1s linear infinite;
+            /* Animasi berputar */
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
     </style>
 </head>
 
@@ -237,6 +280,56 @@
 
 
 <body>
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Fungsi untuk menampilkan overlay
+            function showLoadingOverlay() {
+                const overlay = document.getElementById('loading-overlay');
+                if (overlay) {
+                    overlay.style.display = 'flex';
+                }
+            }
+
+            // Fungsi untuk menyembunyikan overlay setelah halaman dimuat
+            function hideLoadingOverlay() {
+                const overlay = document.getElementById('loading-overlay');
+                if (overlay) {
+                    overlay.style.display = 'none';
+                }
+            }
+
+            // Tangkap semua link yang mengarah ke halaman lain
+            const navLinks = document.querySelectorAll('a[href]:not([href^="#"])');
+
+            navLinks.forEach(link => {
+                link.addEventListener('click', function (event) {
+                    if (this.href && this.href !== window.location.href) {
+                        event.preventDefault(); // cegah pindah halaman langsung
+                        showLoadingOverlay();   // tampilkan overlay
+
+                        // delay 3 detik sebelum pindah
+                        setTimeout(() => {
+                            window.location.href = this.href;
+                        }, 1500);
+                    }
+                });
+            });
+
+            // Sembunyikan overlay setelah halaman selesai dimuat
+            window.addEventListener('load', hideLoadingOverlay);
+            window.addEventListener('pageshow', function (event) {
+                if (event.persisted) {
+                    hideLoadingOverlay();
+                }
+            });
+        });
+    </script>
+
+
 
 
     <!-- Navbar Utama -->
@@ -270,7 +363,7 @@
                             <li><a class="dropdown-item" href="{{ route('struktur.index') }}">Struktur Organisasi</a>
                             </li>
                             <li><a class="dropdown-item" href="{{ route('profile.spi') }}">Tentang Kami</a></li>
-                            <li><a class="dropdown-item" href="{{ route('profile.spi') }}">Sumber Daya Manusia</a></li>
+                            <li><a class="dropdown-item" href="{{ route('sdm.index') }}">Sumber Daya Manusia</a></li>
                             <li><a class="dropdown-item" href="{{ route('profile.spi') }}">Proses Bisnis SPI</a></li>
                             <li><a class="dropdown-item" href="{{ route('profile.spi') }}">Kode Etik SPI</a></li>
                         </ul>
@@ -417,6 +510,59 @@
             z-index: 2;
         }
 
+        .hero-text h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            animation: fadeInDown 1.2s ease-in-out;
+        }
+
+        .hero-text p {
+            font-size: 1.3rem;
+            margin-top: 10px;
+            animation: fadeInUp 1.5s ease-in-out;
+        }
+
+        .hero-btn {
+            margin-top: 30px;
+            padding: 12px 35px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            background: linear-gradient(135deg, #0066ff, #00c3ff);
+            border: none;
+            color: #fff;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .hero-btn:hover {
+            transform: translateY(-3px) scale(1.05);
+            background: linear-gradient(135deg, #0052cc, #0099ff);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         .scroll-down-btn {
             display: inline-block;
             margin-top: 40px;
@@ -450,7 +596,7 @@
             }
         }
 
-           html {
+        html {
             scroll-behavior: smooth;
         }
     </style>

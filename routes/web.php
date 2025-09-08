@@ -10,6 +10,7 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\StrukturController;
 use App\Http\Controllers\PengurusController;
+use App\Http\Controllers\SdmController;
 
 // Halaman landing
 Route::get('/', [LandingPageController::class, 'index'])->name('landingpage');
@@ -87,3 +88,20 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pengurus', [PengurusController::class, 'index'])->name('pengurus.index');
 
 });
+
+//Sumber daya manusia
+Route::get('/SumberDayaManusia', function () {
+    return view('Sumber-Daya-Manusia');
+});
+
+Route::get('/Sumber-Daya-Manusia', [SdmController::class, 'index'])->name('sdm.index');
+
+Route::get('/sumber-daya-manusia', [SdmController::class, 'index'])->name('sdm.index');
+Route::get('/sumber-daya-manusia/create', [SdmController::class, 'create'])->name('sdm.create');
+Route::post('/sumber-daya-manusia/store', [SdmController::class, 'store'])->name('sdm.store');
+Route::get('/sumber-daya-manusia/{id}/edit', [SdmController::class, 'edit'])->name('sdm.edit');
+Route::post('/sumber-daya-manusia/{id}/update', [SdmController::class, 'update'])->name('sdm.update');
+Route::delete('/sumber-daya-manusia/{id}', [SdmController::class, 'destroy'])->name('sdm.destroy');
+
+Route::get('/sumber-daya-manusia/{id}/edit', [SdmController::class, 'edit'])->name('sdm.edit');
+Route::post('/sumber-daya-manusia/{id}/update', [SdmController::class, 'update'])->name('sdm.update');
