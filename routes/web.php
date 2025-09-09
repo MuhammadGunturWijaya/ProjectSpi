@@ -11,6 +11,16 @@ use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\StrukturController;
 use App\Http\Controllers\PengurusController;
 use App\Http\Controllers\SdmController;
+use App\Http\Controllers\ProsesBisnisSPIController;
+use App\Http\Controllers\KodeEtikSPIController;
+use App\Http\Controllers\KonsideranSPIController;
+use App\Http\Controllers\PiagamSPIController;
+use App\Http\Controllers\PedomanAuditController;
+use App\Http\Controllers\PedomanMonevController;
+use App\Http\Controllers\PedomanReviuController;
+use App\Http\Controllers\PosApAuditController;
+
+
 
 // Halaman landing
 Route::get('/', [LandingPageController::class, 'index'])->name('landingpage');
@@ -105,3 +115,33 @@ Route::delete('/sumber-daya-manusia/{id}', [SdmController::class, 'destroy'])->n
 
 Route::get('/sumber-daya-manusia/{id}/edit', [SdmController::class, 'edit'])->name('sdm.edit');
 Route::post('/sumber-daya-manusia/{id}/update', [SdmController::class, 'update'])->name('sdm.update');
+
+// Route ke halaman Proses Bisnis SPI
+Route::get('/proses-bisnis-spi', [ProsesBisnisSPIController::class, 'index'])
+    ->name('proses-bisnis-spi');
+
+// Route ke halaman Kode Etik SPI
+Route::get('/kode-etik-spi', [KodeEtikSPIController::class, 'index'])
+    ->name('kode-etik-spi');
+
+// Route Ke halaman Konsideran SPI
+Route::get('/konsideran-spi', [KonsideranSPIController::class, 'index'])
+    ->name('konsideran-spi');
+
+// Route Ke halaman piagam SPI
+Route::get('/piagam-spi', [PiagamSPIController::class, 'index'])
+    ->name('piagam-spi');
+
+
+// Route Ke halaman pedoman audit SPI
+Route::get('/pedoman-audit', [PedomanAuditController::class, 'index'])
+    ->name('pedoman-audit');
+
+// Route Ke halaman pedoman monev SPI
+Route::get('/pedoman-monev', [PedomanMonevController::class, 'index'])->name('pedoman-monev');
+
+// Route Ke halaman pedoman reviu SPI
+Route::get('/pedoman-reviu', [PedomanReviuController::class, 'index'])->name('pedoman-reviu');
+
+// Route Ke halaman POS AP Audit
+Route::get('/pos-ap-audit', [PosApAuditController::class, 'index'])->name('pos-ap-audit');
