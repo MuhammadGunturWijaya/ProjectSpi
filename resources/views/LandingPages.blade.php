@@ -364,8 +364,9 @@
                             </li>
                             <li><a class="dropdown-item" href="{{ route('profile.spi') }}">Tentang Kami</a></li>
                             <li><a class="dropdown-item" href="{{ route('sdm.index') }}">Sumber Daya Manusia</a></li>
-                            <li><a class="dropdown-item" href="{{ route('profile.spi') }}">Proses Bisnis SPI</a></li>
-                            <li><a class="dropdown-item" href="{{ route('profile.spi') }}">Kode Etik SPI</a></li>
+                            <li><a class="dropdown-item" href="{{ route('proses-bisnis-spi') }}">Proses Bisnis SPI</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ route('kode-etik-spi') }}">Kode Etik SPI</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -374,24 +375,34 @@
                             Dokumen Kerja
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{{ route('visi-misi.index') }}">Piagam SPI</a>
-                            </li>
+                            <li><a class="dropdown-item" href="{{ route('piagam-spi') }}">Piagam SPI</a></li>
                             <!-- Submenu Pedoman Pengawasan -->
                             <li class="dropdown-submenu">
                                 <a class="dropdown-item dropdown-toggle" href="#">Pedoman Pengawasan</a>
                                 <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="{{ route('visi-misi.index') }}">Pedoman Audit</a>
+                                    <li><a class="dropdown-item" href="{{ route('pedoman-audit') }}">Pedoman Audit</a>
                                     </li>
-                                    <li><a class="dropdown-item" href="{{ route('visi-misi.index') }}">Pedoman Monev</a>
+                                    <li><a class="dropdown-item" href="{{ route('pedoman-monev') }}">Pedoman Monev</a>
                                     </li>
-                                    <li><a class="dropdown-item" href="{{ route('visi-misi.index') }}">Pedoman Reviu</a>
+                                    <li><a class="dropdown-item" href="{{ route('pedoman-reviu') }}">Pedoman Reviu</a>
                                     </li>
                                 </ul>
                             </li>
-                            <li><a class="dropdown-item" href="{{ route('profile.spi') }}">POS AP Pengaawasan</a></li>
+                            <li class="dropdown-submenu">
+                                <a class="dropdown-item" href="{{ route('profile.spi') }}">POS AP Pengaawasan</a>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="{{ route('pos-ap-audit') }}">POS AP Audit</a>
+                                    </li>
+                                    <li><a class="dropdown-item" href="{{ route('pedoman-monev') }}">POS AP Monev</a>
+                                    </li>
+                                    <li><a class="dropdown-item" href="{{ route('pedoman-reviu') }}">POS AP Kinerja Keuangan </a>
+                                    </li>
+                                </ul>
+                            </li>
                             <li><a class="dropdown-item" href="{{ route('profile.spi') }}">Instrumen Pengawasan</a></li>
                             <li><a class="dropdown-item" href="{{ route('profile.spi') }}">Program Kerja SPI</a></li>
-                            <li><a class="dropdown-item" href="{{ route('profile.spi') }}">Konsideran SPI</a></li>
+                            <li><a class="dropdown-item" href="{{ route('konsideran-spi') }}">Konsideran SPI</a></li>
+
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
