@@ -264,6 +264,49 @@
                 transform: rotate(360deg);
             }
         }
+
+        /* Submenu dasar */
+        .dropdown-menu1 {
+            background-color: #ffffff;
+            border: none;
+            border-radius: 3px;
+            box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.15);
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 100%;
+            margin-top: -1px;
+            min-width: 220px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateX(10px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        /* Saat hover parent submenu */
+        .dropdown-submenu:hover>.dropdown-menu1 {
+            display: block;
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(0);
+        }
+
+        /* Item submenu */
+        .dropdown-menu1 .dropdown-item {
+            color: #0d2d50;
+            padding: 10px 16px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            border-radius: 6px;
+        }
+
+        /* Hover effect */
+        .dropdown-menu1 .dropdown-item:hover {
+            background-color: #0084ff;
+            color: #fff;
+            transform: translateX(5px);
+        }
     </style>
 </head>
 
@@ -350,6 +393,7 @@
             </button>
 
 
+
             <!-- Menu kanan -->
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav me-2">
@@ -379,7 +423,7 @@
                             <!-- Submenu Pedoman Pengawasan -->
                             <li class="dropdown-submenu">
                                 <a class="dropdown-item dropdown-toggle" href="#">Pedoman Pengawasan</a>
-                                <ul class="dropdown-menu">
+                                <ul class="dropdown-menu1">
                                     <li><a class="dropdown-item" href="{{ route('visi-misi.index') }}">Pedoman Audit</a>
                                     </li>
                                     <li><a class="dropdown-item" href="{{ route('visi-misi.index') }}">Pedoman Monev</a>
