@@ -19,7 +19,7 @@ use App\Http\Controllers\PedomanAuditController;
 use App\Http\Controllers\PedomanMonevController;
 use App\Http\Controllers\PedomanReviuController;
 use App\Http\Controllers\PosApAuditController;
-
+use App\Http\Controllers\SurveyController;
 
 
 // Halaman landing
@@ -34,6 +34,10 @@ Route::get('/berita/{id}', [BeritaController::class, 'show'])->name('berita.show
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin/berita/create', [BeritaController::class, 'create'])->name('berita.create');
     Route::post('/admin/berita/store', [BeritaController::class, 'store'])->name('berita.store');
+});
+Route::middleware(['auth'])->group(function () {
+    Route::get('/berita/{id}/edit', [BeritaController::class, 'edit'])->name('berita.edit');
+    Route::put('/berita/{id}', [BeritaController::class, 'update'])->name('berita.update');
 });
 
 // Struktur organisasi - halaman publik
@@ -145,3 +149,10 @@ Route::get('/pedoman-reviu', [PedomanReviuController::class, 'index'])->name('pe
 
 // Route Ke halaman POS AP Audit
 Route::get('/pos-ap-audit', [PosApAuditController::class, 'index'])->name('pos-ap-audit');
+
+// Route Ke halaman SURVEY
+Route::post('/survey', [SurveyController::class, 'store'])->name('survey.store');
+
+Route::middleware('auth')->group(function () {
+    Route::post('/survey', [SurveyController::class, 'store'])->name('survey.store');
+});

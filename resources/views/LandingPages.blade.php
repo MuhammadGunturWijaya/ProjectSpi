@@ -439,7 +439,8 @@
                                     </li>
                                     <li><a class="dropdown-item" href="{{ route('pedoman-monev') }}">POS AP Monev</a>
                                     </li>
-                                    <li><a class="dropdown-item" href="{{ route('pedoman-reviu') }}">POS AP Kinerja Keuangan </a>
+                                    <li><a class="dropdown-item" href="{{ route('pedoman-reviu') }}">POS AP Kinerja
+                                            Keuangan </a>
                                     </li>
                                 </ul>
                             </li>
@@ -771,43 +772,60 @@
 
     <!-- Berita -->
     <div class="container my-5">
-        <h2 class="fw-bold text-center mb-4">Berita Terbaru</h2>
-        <p class="text-center text-muted mb-5">
-            Dapatkan informasi terkini seputar kegiatan dan aktivitas SPI Politeknik Negeri Jember
-        </p>
+        <!-- Judul Section -->
+        <div class="text-center mb-5">
+            <h2 class="fw-bold display-6">📰 Berita Terbaru</h2>
+            <p class="text-muted fs-5">
+                Dapatkan informasi terkini seputar kegiatan dan aktivitas
+                <span class="fw-semibold text-primary">SPI Politeknik Negeri Jember</span>
+            </p>
+        </div>
 
         <!-- Search Bar -->
-        <div class="container my-5">
-            <form action="{{ route('search') }}" method="GET" class="search-box d-flex align-items-center mx-auto">
-                <input type="text" name="q" class="form-control search-input"
-                    placeholder="🔍 Cari berita, artikel, atau profil..." value="{{ request('q') }}">
-                <button type="submit" class="btn search-btn">Cari</button>
+        <div class="search-wrapper mb-5">
+            <form action="{{ route('search') }}" method="GET" class="d-flex justify-content-center">
+                <div class="input-group shadow-lg rounded-pill" style="max-width: 600px;">
+                    <input type="text" name="q" class="form-control border-0 rounded-start-pill ps-4 py-3"
+                        placeholder="🔍 Cari berita, artikel, atau profil..." value="{{ request('q') }}">
+                    <button type="submit" class="btn btn-primary rounded-end-pill px-4 fw-bold">
+                        Cari
+                    </button>
+                </div>
             </form>
         </div>
 
         <!-- Tombol Tambah Berita (hanya admin) -->
         @auth
             @if(Auth::user()->role === 'admin')
-                <div class="text-end mb-3">
-                    <a href="{{ route('berita.create') }}" class="btn btn-outline-primary rounded-pill shadow-sm">
+                <div class="text-end mb-4">
+                    <a href="{{ route('berita.create') }}" class="btn btn-outline-primary rounded-pill shadow-sm px-4 fw-bold">
                         + Tambah Berita
                     </a>
                 </div>
             @endif
         @endauth
 
+        <!-- Grid Berita -->
         <div class="row g-4">
             @foreach($beritas as $b)
                 <div class="col-md-4">
-                    <div class="card h-100 border-0 shadow-lg rounded-4 overflow-hidden">
-                        <img src="{{ $b->gambar }}" class="card-img-top" alt="berita"
-                            style="height:200px; object-fit:cover;">
-                        <div class="card-body d-flex flex-column">
+                    <div class="card h-100 border-0 shadow-lg rounded-4 overflow-hidden berita-card">
+                        <div class="card-img-wrapper">
+                            <img src="{{ $b->gambar }}" class="card-img-top" alt="berita"
+                                style="height:220px; object-fit:cover;">
+                            <div class="overlay">
+                                <a href="{{ route('berita.show', $b->id) }}" class="btn btn-light rounded-pill">
+                                    Baca Selengkapnya →
+                                </a>
+                            </div>
+                        </div>
+                        <div class="card-body d-flex flex-column p-4">
                             <small class="text-muted">{{ $b->tanggal }}</small>
                             <h5 class="fw-bold mt-2">{{ Str::limit($b->judul, 60) }}</h5>
                             <p class="text-muted flex-grow-1">{{ Str::limit($b->isi, 100) }}</p>
-                            <a href="{{ route('berita.show', $b->id) }}" class="btn btn-primary btn-sm mt-2 rounded-pill">
-                                Baca Selengkapnya →
+                            <a href="{{ route('berita.show', $b->id) }}"
+                                class="btn btn-outline-primary btn-sm mt-2 rounded-pill align-self-start">
+                                Baca Selengkapnya
                             </a>
                         </div>
                     </div>
@@ -817,11 +835,57 @@
 
         <!-- Tombol Lihat Semua -->
         <div class="text-center mt-5">
-            <a href="{{ route('berita.index') }}" class="btn btn-outline-primary btn-lg px-5 rounded-pill shadow-sm">
-                Lihat Semua Berita
+            <a href="{{ route('berita.index') }}"
+                class="btn btn-primary btn-lg px-5 py-3 rounded-pill shadow-lg fw-bold">
+                📚 Lihat Semua Berita
             </a>
         </div>
     </div>
+    <!-- Styling Custom -->
+    <style>
+        /* Hover Card */
+        .berita-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .berita-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
+        }
+
+        /* Overlay Image */
+        .card-img-wrapper {
+            position: relative;
+        }
+
+        .card-img-wrapper .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            opacity: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.3s ease;
+        }
+
+        .card-img-wrapper:hover .overlay {
+            opacity: 1;
+        }
+
+        .overlay .btn {
+            font-weight: bold;
+        }
+
+        /* Search Input */
+        .search-wrapper input:focus {
+            box-shadow: none;
+            outline: none;
+        }
+    </style>
 
     </div>
 
@@ -887,6 +951,121 @@
             transform: scale(1.05);
         }
     </style>
+
+    <!-- SURVEY KEPUASAN -->
+    <section class="container my-5" id="survey">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="fw-bold display-6 text-primary">📊 Survey Kepuasan</h2>
+                <p class="text-muted fs-5">
+                    Pendapat Anda sangat berharga untuk peningkatan layanan <br>
+                    <span class="fw-semibold text-dark">Satuan Pengawas Internal Politeknik Negeri Jember</span>.
+                </p>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card shadow-lg border-0 rounded-4">
+                        <div class="card-body p-5">
+                            @guest
+                                <!-- Jika belum login -->
+                                <div class="text-center">
+                                    <p class="fs-5 text-muted mb-4">Anda harus login terlebih dahulu untuk mengisi survey.
+                                    </p>
+                                    <button class="btn btn-primary px-4 py-2 rounded-pill shadow-sm fw-bold"
+                                        data-bs-toggle="modal" data-bs-target="#loginModal">
+                                        <i class="bi bi-box-arrow-in-right me-2"></i> Isi Survey
+                                    </button>
+                                </div>
+                            @endguest
+
+                            @auth
+                                <!-- Jika sudah login tampilkan form survey -->
+                                <form action="{{ route('survey.store') }}" method="POST">
+                                    @csrf
+                                    <!-- Pertanyaan 1 -->
+                                    <div class="mb-4">
+                                        <label class="form-label fw-bold fs-5 mb-2">
+                                            Bagaimana tingkat kepuasan Anda terhadap layanan SPI?
+                                        </label>
+                                        <select name="kepuasan" class="form-select form-select-lg shadow-sm" required>
+                                            <option value="">-- Pilih Jawaban --</option>
+                                            <option value="Sangat Puas">🌟 Sangat Puas</option>
+                                            <option value="Puas">😊 Puas</option>
+                                            <option value="Cukup Puas">😐 Cukup Puas</option>
+                                            <option value="Kurang Puas">🙁 Kurang Puas</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Pertanyaan 2 -->
+                                    <div class="mb-4">
+                                        <label class="form-label fw-bold fs-5 mb-2">Saran atau masukan Anda</label>
+                                        <textarea name="saran" rows="4" class="form-control shadow-sm"
+                                            placeholder="Tuliskan saran Anda di sini..."></textarea>
+                                    </div>
+
+                                    <!-- Tombol Kirim -->
+                                    <div class="text-center">
+                                        <button type="submit"
+                                            class="btn btn-success btn-lg px-5 py-2 rounded-pill shadow fw-bold">
+                                            <i class="bi bi-send-fill me-2"></i> Kirim Survey
+                                        </button>
+                                    </div>
+                                </form>
+                            @endauth
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal Login -->
+    <div class="modal fade" id="loginModal" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 shadow">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold" id="loginModalLabel">🔒 Login Diperlukan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body text-center">
+                    <p class="text-muted mb-4">Silakan login terlebih dahulu untuk mengisi survey kepuasan.</p>
+                    <a href="{{ route('login') }}" class="btn btn-primary px-4 py-2 rounded-pill">
+                        <i class="bi bi-box-arrow-in-right me-2"></i> Login Sekarang
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Terima Kasih -->
+    <div class="modal fade" id="thankYouModal" tabindex="-1" aria-labelledby="thankYouLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4 shadow text-center p-4">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold text-success" id="thankYouLabel">🎉 Terima Kasih!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="fs-5">Survey Anda sudah terkirim. Pendapat Anda sangat berharga bagi kami 🙏</p>
+                    <button type="button" class="btn btn-success px-4 py-2 rounded-pill" data-bs-dismiss="modal">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script untuk otomatis tampilkan modal jika ada session sukses -->
+    @if(session('survey_success'))
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                var thankYouModal = new bootstrap.Modal(document.getElementById('thankYouModal'));
+                thankYouModal.show();
+            });
+        </script>
+    @endif
+
 
 
     <!-- Footer -->

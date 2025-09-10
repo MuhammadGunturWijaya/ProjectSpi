@@ -70,12 +70,19 @@
                                 <p class="text-muted mb-2" style="font-size: 0.9rem;">
                                     <i class="bi bi-calendar-event me-1"></i> {{ $berita->tanggal }}
                                 </p>
-                                <div class="mt-auto">
+                                <div class="mt-auto d-flex justify-content-between">
                                     <a href="{{ route('berita.show', $berita->id) }}"
                                         class="btn btn-outline-primary btn-sm px-3">
                                         <i class="bi bi-eye"></i> Detail
                                     </a>
+
+                                    @if(Auth::user() && Auth::user()->role === 'admin')
+                                        <a href="{{ route('berita.edit', $berita->id) }}" class="btn btn-warning btn-sm px-3">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </a>
+                                    @endif
                                 </div>
+
                             </div>
                         </div>
                     </div>
