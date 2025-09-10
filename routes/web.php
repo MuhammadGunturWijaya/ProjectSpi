@@ -160,3 +160,14 @@ Route::post('/survey', [SurveyController::class, 'store'])->name('survey.store')
 Route::middleware('auth')->group(function () {
     Route::post('/survey', [SurveyController::class, 'store'])->name('survey.store');
 });
+
+// route ke halaman instrumen pengawasan
+Route::get('/instrumen-pengawasan', [InstrumenPengawasanController::class, 'index'])->name('instrumen.pengawasan');
+// route ke halaman program kerja SPI
+Route::get('/program-kerja', [ProgramKerjaController::class, 'index'])->name('program.kerja');
+// route ke halaman penataan sdm aparatur
+Route::get('/penataan-sdm-aparatur', [SDMAparaturController::class, 'index'])
+    ->name('penataan.sdm.aparatur');
+// route ke halaman penguatan akuntabilitas
+Route::get('/penguatan-akuntabilitas', [AkuntabilitasController::class, 'index'])
+    ->name('penguatan.akuntabilitas');
