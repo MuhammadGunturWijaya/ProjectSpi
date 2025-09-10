@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\InstrumenPengawasanController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\LandingPageController;
@@ -20,6 +20,10 @@ use App\Http\Controllers\PedomanMonevController;
 use App\Http\Controllers\PedomanReviuController;
 use App\Http\Controllers\PosApAuditController;
 use App\Http\Controllers\SurveyController;
+use App\Http\Controllers\ProgramKerjaController;
+use App\Http\Controllers\SDMAparaturController;
+use App\Http\Controllers\AkuntabilitasController;
+
 
 
 // Halaman landing
