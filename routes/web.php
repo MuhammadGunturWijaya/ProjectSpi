@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\InstrumenPengawasanController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\LandingPageController;
@@ -19,6 +19,9 @@ use App\Http\Controllers\PedomanAuditController;
 use App\Http\Controllers\PedomanMonevController;
 use App\Http\Controllers\PedomanReviuController;
 use App\Http\Controllers\PosApAuditController;
+use App\Http\Controllers\ProgramKerjaController;
+use App\Http\Controllers\SDMAparaturController;
+use App\Http\Controllers\AkuntabilitasController;
 
 
 
@@ -145,3 +148,14 @@ Route::get('/pedoman-reviu', [PedomanReviuController::class, 'index'])->name('pe
 
 // Route Ke halaman POS AP Audit
 Route::get('/pos-ap-audit', [PosApAuditController::class, 'index'])->name('pos-ap-audit');
+
+// route ke halaman instrumen pengawasan
+Route::get('/instrumen-pengawasan', [InstrumenPengawasanController::class, 'index'])->name('instrumen.pengawasan');
+// route ke halaman program kerja SPI
+Route::get('/program-kerja', [ProgramKerjaController::class, 'index'])->name('program.kerja');
+// route ke halaman penataan sdm aparatur
+Route::get('/penataan-sdm-aparatur', [SDMAparaturController::class, 'index'])
+    ->name('penataan.sdm.aparatur');
+// route ke halaman penguatan akuntabilitas
+ Route::get('/penguatan-akuntabilitas', [AkuntabilitasController::class, 'index'])
+    ->name('penguatan.akuntabilitas');
