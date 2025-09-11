@@ -436,13 +436,13 @@
                             Manajemen Risiko
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{{ route('pedoman.mr') }}">Pedoman MR </a>
+                            <li><a class="dropdown-item" href="#">Pedoman MR </a>
                             </li>
-                            <li><a class="dropdown-item" href="{{ route('struktur.index') }}">Identifikasi Risiko </a>
+                            <li><a class="dropdown-item" href="#">Identifikasi Risiko </a>
                             </li>
-                            <li><a class="dropdown-item" href="{{ route('profile.spi') }}">Penilaian , Evaluasi MR dan
+                            <li><a class="dropdown-item" href="#">Penilaian , Evaluasi MR dan
                                     Mitigasi</a></li>
-                            <li><a class="dropdown-item" href="{{ route('pengaduan.create') }}">Pelaporan</a></li>
+                            <li><a class="dropdown-item" href="#">Pelaporan</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -451,18 +451,18 @@
                             Zona integritas
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{{ route('manajemen-perubahan') }}">Manajemen Perubahan </a>
+                            <li><a class="dropdown-item" href="#">Manajemen Perubahan </a>
                             </li>
-                            <li><a class="dropdown-item" href="{{ route('penataan.index') }}">Penataan Tata Kelola </a>
+                            <li><a class="dropdown-item" href="#">Penataan Tata Kelola </a>
                             </li>
-                            <li><a class="dropdown-item" href="{{ route('penataan.sdm.aparatur') }}">Penataan Sistem
+                            <li><a class="dropdown-item" href="#">Penataan Sistem
                                     Manajemen SDM
                                     dan Aparatur</a></li>
-                            <li><a class="dropdown-item" href="{{ route('penguatan.akuntabilitas') }}">Penguatan
+                            <li><a class="dropdown-item" href="#">Penguatan
                                     Akuntabilitas</a></li>
-                            <li><a class="dropdown-item" href="{{ route('pengawasan.index') }}">Penguatan Pengawasaan
+                            <li><a class="dropdown-item" href="#">Penguatan Pengawasaan
                                 </a></li>
-                            <li><a class="dropdown-item" href="{{ route('pelayanan') }}">Peningkatan Kualitas
+                            <li><a class="dropdown-item" href="#">Peningkatan Kualitas
                                     Pelayanan Publik</a></li>
                         </ul>
                     </li>
