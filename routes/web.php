@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\InstrumenPengawasanController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\LandingPageController;
@@ -19,6 +19,10 @@ use App\Http\Controllers\PedomanAuditController;
 use App\Http\Controllers\PedomanMonevController;
 use App\Http\Controllers\PedomanReviuController;
 use App\Http\Controllers\PosApAuditController;
+use App\Http\Controllers\SurveyController;
+use App\Http\Controllers\ProgramKerjaController;
+use App\Http\Controllers\SDMAparaturController;
+use App\Http\Controllers\AkuntabilitasController;
 use App\Http\Controllers\PedomanMRController;
 use App\Http\Controllers\ManajemenPerubahanController;
 use App\Http\Controllers\PenataanTataKelolaController;
@@ -37,6 +41,10 @@ Route::get('/berita/{id}', [BeritaController::class, 'show'])->name('berita.show
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin/berita/create', [BeritaController::class, 'create'])->name('berita.create');
     Route::post('/admin/berita/store', [BeritaController::class, 'store'])->name('berita.store');
+});
+Route::middleware(['auth'])->group(function () {
+    Route::get('/berita/{id}/edit', [BeritaController::class, 'edit'])->name('berita.edit');
+    Route::put('/berita/{id}', [BeritaController::class, 'update'])->name('berita.update');
 });
 
 // Struktur organisasi - halaman publik
@@ -163,3 +171,36 @@ Route::get('/penguatan-pengawasan', [PenguatanPengawasanController::class, 'inde
 
 // Route Ke halaman PeningkatanPelayanan
 Route::get('/pelayanan', [PeningkatanPelayananController::class, 'index'])->name('pelayanan');
+
+// Route Ke halaman pedoman mr 
+Route::get('/pedoman/mr', [PedomanMRController::class, 'index'])->name('pedoman.mr');
+
+// Route Ke halaman manajemen perubahan
+Route::get('/manajemen-perubahan', [ManajemenPerubahanController::class, 'index'])->name('manajemen-perubahan');
+
+// Route Ke halaman PenataanTataKelola
+Route::get('/penataan-tata-kelola', [PenataanTataKelolaController::class, 'index'])->name('penataan.index');
+
+// Route Ke halaman PenguatanPengawasan
+Route::get('/penguatan-pengawasan', [PenguatanPengawasanController::class, 'index'])->name('pengawasan.index');
+
+// Route Ke halaman PeningkatanPelayanan
+Route::get('/pelayanan', [PeningkatanPelayananController::class, 'index'])->name('pelayanan');
+
+// Route Ke halaman SURVEY
+Route::post('/survey', [SurveyController::class, 'store'])->name('survey.store');
+
+Route::middleware('auth')->group(function () {
+    Route::post('/survey', [SurveyController::class, 'store'])->name('survey.store');
+});
+
+// route ke halaman instrumen pengawasan
+Route::get('/instrumen-pengawasan', [InstrumenPengawasanController::class, 'index'])->name('instrumen.pengawasan');
+// route ke halaman program kerja SPI
+Route::get('/program-kerja', [ProgramKerjaController::class, 'index'])->name('program.kerja');
+// route ke halaman penataan sdm aparatur
+Route::get('/penataan-sdm-aparatur', [SDMAparaturController::class, 'index'])
+    ->name('penataan.sdm.aparatur');
+// route ke halaman penguatan akuntabilitas
+Route::get('/penguatan-akuntabilitas', [AkuntabilitasController::class, 'index'])
+    ->name('penguatan.akuntabilitas');
