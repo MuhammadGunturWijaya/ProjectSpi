@@ -19,8 +19,11 @@ use App\Http\Controllers\PedomanAuditController;
 use App\Http\Controllers\PedomanMonevController;
 use App\Http\Controllers\PedomanReviuController;
 use App\Http\Controllers\PosApAuditController;
-
-
+use App\Http\Controllers\PedomanMRController;
+use App\Http\Controllers\ManajemenPerubahanController;
+use App\Http\Controllers\PenataanTataKelolaController;
+use App\Http\Controllers\PenguatanPengawasanController;
+use App\Http\Controllers\PeningkatanPelayananController;
 
 // Halaman landing
 Route::get('/', [LandingPageController::class, 'index'])->name('landingpage');
@@ -145,3 +148,18 @@ Route::get('/pedoman-reviu', [PedomanReviuController::class, 'index'])->name('pe
 
 // Route Ke halaman POS AP Audit
 Route::get('/pos-ap-audit', [PosApAuditController::class, 'index'])->name('pos-ap-audit');
+
+// Route Ke halaman pedoman mr 
+Route::get('/pedoman/mr', [PedomanMRController::class, 'index'])->name('pedoman.mr');
+
+// Route Ke halaman manajemen perubahan
+Route::get('/manajemen-perubahan', [ManajemenPerubahanController::class, 'index'])->name('manajemen-perubahan');
+
+// Route Ke halaman PenataanTataKelola
+Route::get('/penataan-tata-kelola', [PenataanTataKelolaController::class, 'index'])->name('penataan.index');
+
+// Route Ke halaman PenguatanPengawasan
+Route::get('/penguatan-pengawasan', [PenguatanPengawasanController::class, 'index'])->name('pengawasan.index');
+
+// Route Ke halaman PeningkatanPelayanan
+Route::get('/pelayanan', [PeningkatanPelayananController::class, 'index'])->name('pelayanan');
