@@ -86,7 +86,7 @@
     <nav class="navbar navbar-expand-lg bg-white shadow-sm py-2">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="{{ route('landingpage') }}">
-                <img src="{{ asset('images/logoPolije.png') }}" alt="Logo" height="40">
+                <img src="{{ asset('images/logoPolije.webp') }}" alt="Logo" height="40">
                 <span class="ms-2">
                     <strong>SATUAN PENGAWAS INTERNAL</strong><br>POLITEKNIK NEGERI JEMBER
                 </span>

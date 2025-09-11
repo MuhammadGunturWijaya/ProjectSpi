@@ -380,7 +380,7 @@
         <div class="container d-flex justify-content-between align-items-center">
             <!-- Logo kiri -->
             <a class="navbar-brand d-flex align-items-center ms-2" href="#">
-                <img src="{{ asset('images/logoPolije.png') }}" alt="Logo" width="40" height="40">
+                 <img src="{{ asset('images/logoPolije.webp') }}" alt="Logo" height="40">
                 <span class="logo-text ms-2">
                     SATUAN PENGAWAS INTERNAL<br>
                     POLITEKNIK NEGERI JEMBER
@@ -1053,11 +1053,11 @@
     <footer class="text-center text-white py-4" style="background-color: #0d2d50;">
         <div class="container">
             <!-- Logo -->
-            <img src="{{ asset('images/logoPolije.png') }}" alt="Logo Polije" class="mb-3" style="max-height: 80px;">
+            <img src="{{ asset('images/logoPolije.webp') }}" alt="Logo Polije" class="mb-3" style="max-height: 80px;">
 
             <!-- Alamat -->
             <p>
-                Satuan Pengawas Internal Politeknik Negeri Jember <br>
+                Satuan Pengawas Internal Politeknik Negeri Jember <br>logo
                 Jl. Mastrip PO BOX 164, Jember - Jawa Timur, Indonesia
             </p>
 

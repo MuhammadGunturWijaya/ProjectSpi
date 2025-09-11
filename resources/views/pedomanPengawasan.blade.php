@@ -161,18 +161,32 @@
             margin-bottom: 25px;
         }
 
+        /* Update Carousel Wrapper */
         .carousel-wrapper {
             overflow: hidden;
             position: relative;
             max-width: 1000px;
             margin: auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            /* Jarak antara tombol dan carousel */
+            padding: 0 40px;
+            /* Memberikan ruang untuk tombol */
+        }
+
+        .carousel-track-container {
+            overflow: hidden;
+            flex: 1;
         }
 
         .carousel-track {
             display: flex;
             gap: 20px;
-            animation: slide 25s linear infinite;
+            /* animation: slide 30s linear infinite; <-- Hapus ini */
+            transition: transform 0.5s ease;
         }
+
 
         .card-item {
             background: var(--primary);
@@ -197,10 +211,31 @@
             transform: translateY(-4px);
         }
 
-        .carousel-track:hover {
-            animation-play-state: paused;
+        /* Tombol Navigasi Carousel */
+        .carousel-btn {
+            background: rgba(10, 77, 146, 0.85);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s, transform 0.2s;
+            flex-shrink: 0;
         }
 
+        .carousel-btn:hover {
+            background: var(--primary-dark);
+            transform: scale(1.05);
+        }
+
+        .carousel-btn:active {
+            transform: scale(0.95);
+        }
 
         /* Animasi geser */
         @keyframes slide {
@@ -222,6 +257,7 @@
         }
 
         /* Classification Section */
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
         .classification {
             max-width: 1180px;
             margin: 40px auto;
@@ -481,7 +517,6 @@
         <button class="adv-btn"><i class="fa fa-sliders-h"></i> Adv. Search</button>
     </div>
 
-    <!-- Advanced Search Modal -->
     <div id="advModal" class="modal">
         <div class="modal-box">
             <span class="close">&times;</span>
@@ -557,34 +592,86 @@
     <section class="popular">
         <h2>Peraturan Terpopuler 2 Minggu Terakhir</h2>
         <div class="carousel-wrapper">
-            <div class="carousel-track">
-                <div class="card-item">
-                    <span>UU No. 1 Tahun 2023</span>
-                    <small>Kitab Undang-Undang Hukum Pidana</small>
-                </div>
-                <div class="card-item">
-                    <span>UU No. 11 Tahun 2020</span>
-                    <small>Cipta Kerja</small>
-                </div>
-                <div class="card-item">
-                    <span>UU No. 23 Tahun 2014</span>
-                    <small>Pemerintahan Daerah</small>
-                </div>
-                <div class="card-item">
-                    <span>Peraturan BPK No. 2 Tahun 2023</span>
-                    <small>Tentang Pemeriksaan Keuangan</small>
-                </div>
-                <div class="card-item">
-                    <span>UU No. 5 Tahun 2014</span>
-                    <small>Aparatur Sipil Negara</small>
-                </div>
-                <div class="card-item">
-                    <span>PP No. 45 Tahun 2013</span>
-                    <small>Tata Cara Pelaksanaan APBN</small>
+            <button id="carousel-prev" class="carousel-btn prev-btn"><i class="fas fa-chevron-left"></i></button>
+            <div class="carousel-track-container">
+                <div class="carousel-track">
+                    <div class="card-item">
+                        <span>UU No. 1 Tahun 2023</span>
+                        <small>Kitab Undang-Undang Hukum Pidana</small>
+                    </div>
+                    <div class="card-item">
+                        <span>UU No. 11 Tahun 2020</span>
+                        <small>Cipta Kerja</small>
+                    </div>
+                    <div class="card-item">
+                        <span>UU No. 23 Tahun 2014</span>
+                        <small>Pemerintahan Daerah</small>
+                    </div>
+                    <div class="card-item">
+                        <span>Peraturan BPK No. 2 Tahun 2023</span>
+                        <small>Tentang Pemeriksaan Keuangan</small>
+                    </div>
+                    <div class="card-item">
+                        <span>UU No. 5 Tahun 2014</span>
+                        <small>Aparatur Sipil Negara</small>
+                    </div>
+                    <div class="card-item">
+                        <span>PP No. 45 Tahun 2013</span>
+                        <small>Tata Cara Pelaksanaan APBN</small>
+                    </div>
                 </div>
             </div>
+            <button id="carousel-next" class="carousel-btn next-btn"><i class="fas fa-chevron-right"></i></button>
         </div>
     </section>
+
+    <script>
+        const carouselTrack = document.querySelector('.carousel-track');
+        const prevBtn = document.getElementById('carousel-prev');
+        const nextBtn = document.getElementById('carousel-next');
+        const cardItems = document.querySelectorAll('.card-item');
+
+        const cardWidth = cardItems[0].offsetWidth + 20;
+        let currentIndex = 0;
+        let autoScroll;   // interval id
+
+        function updateCarousel() {
+            carouselTrack.style.transform = `translateX(${-currentIndex * cardWidth}px)`;
+        }
+
+        function nextSlide() {
+            currentIndex = (currentIndex + 1) % cardItems.length;
+            updateCarousel();
+        }
+
+        function prevSlide() {
+            currentIndex = (currentIndex - 1 + cardItems.length) % cardItems.length;
+            updateCarousel();
+        }
+
+        // tombol
+        nextBtn.addEventListener('click', () => {
+            nextSlide();
+            resetAuto();
+        });
+
+        prevBtn.addEventListener('click', () => {
+            prevSlide();
+            resetAuto();
+        });
+
+        // auto scroll
+        function startAuto() {
+            autoScroll = setInterval(nextSlide, 3000); // 3 detik
+        }
+        function resetAuto() {
+            clearInterval(autoScroll);
+            startAuto();
+        }
+
+        startAuto();
+    </script>
+
 
     <section class="classification">
         <div class="classification-header">
