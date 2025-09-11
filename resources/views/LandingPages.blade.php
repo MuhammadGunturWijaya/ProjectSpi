@@ -421,30 +421,10 @@
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item" href="{{ route('piagam-spi') }}">Piagam SPI</a></li>
                             <!-- Submenu Pedoman Pengawasan -->
-                            <li class="dropdown-submenu">
-                                <a class="dropdown-item dropdown-toggle" href="#">Pedoman Pengawasan</a>
-                                <ul class="dropdown-menu1">
-                                    <li><a class="dropdown-item" href="{{ route('visi-misi.index') }}">Pedoman Audit</a>
-                                    </li>
-                                    <li><a class="dropdown-item" href="{{ route('pedoman-monev') }}">Pedoman Monev</a>
-                                    </li>
-                                    <li><a class="dropdown-item" href="{{ route('pedoman-reviu') }}">Pedoman Reviu</a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="dropdown-submenu">
-                                <a class="dropdown-item" href="{{ route('profile.spi') }}">POS AP Pengaawasan</a>
-                                <ul class="dropdown-menu1">
-                                    <li><a class="dropdown-item" href="{{ route('pos-ap-audit') }}">POS AP Audit</a>
-                                    </li>
-                                    <li><a class="dropdown-item" href="{{ route('pedoman-monev') }}">POS AP Monev</a>
-                                    </li>
-                                    <li><a class="dropdown-item" href="{{ route('pedoman-reviu') }}">POS AP Kinerja
-                                            Keuangan </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li><a class="dropdown-item" href="{{ route('instrumen.pengawasan') }}">Instrumen Pengawasan</a></li>
+                            <li class="dropdown-submenu"><a class="dropdown-item" href="{{ route('pedoman.pengawasan') }}">Pedoman Pengawasan</a></li>
+                            <li class="dropdown-submenu"><a class="dropdown-item" href="{{ route('profile.spi') }}">POS AP Pengaawasan</a></li>
+                            <li><a class="dropdown-item" href="{{ route('instrumen.pengawasan') }}">Instrumen
+                                    Pengawasan</a></li>
                             <li><a class="dropdown-item" href="{{ route('program.kerja') }}">Program Kerja SPI</a></li>
                             <li><a class="dropdown-item" href="{{ route('konsideran-spi') }}">Konsideran SPI</a></li>
 
@@ -475,7 +455,8 @@
                             </li>
                             <li><a class="dropdown-item" href="{{ route('struktur.index') }}">Penataan Tata Kelola </a>
                             </li>
-                            <li><a class="dropdown-item" href="{{ route('penataan.sdm.aparatur') }}">Penataan Sistem Manajemen SDM
+                            <li><a class="dropdown-item" href="{{ route('penataan.sdm.aparatur') }}">Penataan Sistem
+                                    Manajemen SDM
                                     dan Aparatur</a></li>
                             <li><a class="dropdown-item" href="{{ route('penguatan.akuntabilitas') }}">Penguatan
                                     Akuntabilitas</a></li>

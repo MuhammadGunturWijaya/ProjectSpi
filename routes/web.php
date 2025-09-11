@@ -15,15 +15,11 @@ use App\Http\Controllers\ProsesBisnisSPIController;
 use App\Http\Controllers\KodeEtikSPIController;
 use App\Http\Controllers\KonsideranSPIController;
 use App\Http\Controllers\PiagamSPIController;
-use App\Http\Controllers\PedomanAuditController;
-use App\Http\Controllers\PedomanMonevController;
-use App\Http\Controllers\PedomanReviuController;
-use App\Http\Controllers\PosApAuditController;
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\ProgramKerjaController;
 use App\Http\Controllers\SDMAparaturController;
 use App\Http\Controllers\AkuntabilitasController;
-
+use App\Http\Controllers\PedomanPengawasanController;
 
 
 // Halaman landing
@@ -140,20 +136,6 @@ Route::get('/konsideran-spi', [KonsideranSPIController::class, 'index'])
 Route::get('/piagam-spi', [PiagamSPIController::class, 'index'])
     ->name('piagam-spi');
 
-
-// Route Ke halaman pedoman audit SPI
-Route::get('/pedoman-audit', [PedomanAuditController::class, 'index'])
-    ->name('pedoman-audit');
-
-// Route Ke halaman pedoman monev SPI
-Route::get('/pedoman-monev', [PedomanMonevController::class, 'index'])->name('pedoman-monev');
-
-// Route Ke halaman pedoman reviu SPI
-Route::get('/pedoman-reviu', [PedomanReviuController::class, 'index'])->name('pedoman-reviu');
-
-// Route Ke halaman POS AP Audit
-Route::get('/pos-ap-audit', [PosApAuditController::class, 'index'])->name('pos-ap-audit');
-
 // Route Ke halaman SURVEY
 Route::post('/survey', [SurveyController::class, 'store'])->name('survey.store');
 
@@ -171,3 +153,6 @@ Route::get('/penataan-sdm-aparatur', [SDMAparaturController::class, 'index'])
 // route ke halaman penguatan akuntabilitas
 Route::get('/penguatan-akuntabilitas', [AkuntabilitasController::class, 'index'])
     ->name('penguatan.akuntabilitas');
+
+
+Route::get('/pedoman-pengawasan', [PedomanPengawasanController::class, 'index'])->name('pedoman.pengawasan');
