@@ -20,7 +20,7 @@ use App\Http\Controllers\ProgramKerjaController;
 use App\Http\Controllers\SDMAparaturController;
 use App\Http\Controllers\AkuntabilitasController;
 use App\Http\Controllers\PedomanPengawasanController;
-
+use App\Http\Controllers\detailPedomanController;
 
 // Halaman landing
 Route::get('/', [LandingPageController::class, 'index'])->name('landingpage');
@@ -154,5 +154,8 @@ Route::get('/penataan-sdm-aparatur', [SDMAparaturController::class, 'index'])
 Route::get('/penguatan-akuntabilitas', [AkuntabilitasController::class, 'index'])
     ->name('penguatan.akuntabilitas');
 
-
+// route ke halaman pedoman pengawasan 
 Route::get('/pedoman-pengawasan', [PedomanPengawasanController::class, 'index'])->name('pedoman.pengawasan');
+
+// route ke halaman detai pedoman 
+Route::get('/pedoman/detail', [detailPedomanController::class, 'index'])->name('detail-pedoman');

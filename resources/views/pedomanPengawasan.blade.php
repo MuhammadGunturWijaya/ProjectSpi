@@ -53,6 +53,41 @@
             font-size: 2.2rem;
             font-weight: 700;
             line-height: 1.4;
+            /* Properti baru untuk efek menyala */
+            animation: pulseGlow 2s infinite alternate;
+        }
+
+        /* Container baru untuk teks */
+        .header-text-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 360px;
+            /* Sesuaikan dengan tinggi header */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: #fff;
+            z-index: 10;
+            /* Pastikan teks di atas lapisan gelap */
+        }
+
+        .header-text-container h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            line-height: 1.4;
+        }
+
+        @keyframes pulseGlow {
+            from {
+                text-shadow: 0 0 10px #5721bbff, 0 0 20px #fff, 0 0 30px #0a4d92, 0 0 40px #0a4d92;
+            }
+
+            to {
+                text-shadow: 0 0 15px #176da7ff, 0 0 25px #fff, 0 0 40px #0a4d92, 0 0 50px #0a4d92;
+            }
         }
 
         /* Search box */
@@ -61,13 +96,14 @@
             margin: -50px auto 40px;
             background: var(--white);
             border-radius: 50px;
-            /* lebih bulat */
             box-shadow: var(--shadow);
             display: flex;
             align-items: center;
             gap: 10px;
             padding: 10px 14px;
             position: relative;
+            z-index: 10;
+            /* This is the new line you should add */
         }
 
         .search-wrapper .input-group {
@@ -187,6 +223,80 @@
             transition: transform 0.5s ease;
         }
 
+        /* --- NEW STYLES FOR POPULAR CARDS --- */
+        .card-item-new {
+            width: 280px;
+            padding: 24px;
+            border-radius: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            transition: transform 0.4s ease, box-shadow 0.4s ease;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+        }
+
+        .card-item-new:hover {
+            transform: translateY(-8px) scale(1.02) perspective(1px) translateZ(0);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-icon-new {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            min-width: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #fff;
+        }
+
+        .card-content-new {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-title-new {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            line-height: 1.2;
+        }
+
+        .card-subtitle-new {
+            font-size: 0.85rem;
+            color: rgba(255, 255, 255, 0.85);
+            margin-bottom: 8px;
+        }
+
+        .card-type-new {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.7);
+            padding: 4px 8px;
+            border-radius: 5px;
+            background-color: rgba(0, 0, 0, 0.1);
+            align-self: flex-start;
+        }
+
+        /* Update original carousel styles to accommodate the new card width */
+        .carousel-track {
+            gap: 25px;
+            /* Increase gap for new card size */
+        }
+
+        @media(max-width: 768px) {
+            .card-item-new {
+                width: 240px;
+            }
+        }
+
 
         .card-item {
             background: var(--primary);
@@ -258,10 +368,10 @@
 
         /* Classification Section */
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
+
         .classification {
             max-width: 1180px;
             margin: 40px auto;
-            /* Adjust margin for standalone display */
             background: var(--white);
             padding: 40px 30px;
             border-radius: 20px;
@@ -305,51 +415,88 @@
         }
 
         .card {
-            background: #f9fbfd;
-            border-radius: 12px;
+            background: linear-gradient(145deg, #f9fbfd, #e9eef5);
+            border-radius: 16px;
             padding: 24px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-            transition: box-shadow .3s;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
         }
 
         .card:hover {
-            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+            transform: translateY(-5px);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
         }
 
-        .card i {
+        .card-icon-wrapper {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 18px;
+            box-shadow: 0 4px 10px rgba(10, 77, 146, 0.2);
+        }
+
+        .card-icon-wrapper i {
             font-size: 1.8rem;
-            color: var(--primary);
-            margin-bottom: 14px;
+            color: #fff;
+            margin-bottom: 0;
         }
 
-        .card h3 {
-            font-size: 1.05rem;
-            font-weight: 600;
-            margin-bottom: 6px;
+        .card-content h3 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--primary-dark);
         }
 
-        .card p {
-            font-size: .9rem;
+        .card-content p {
+            font-size: .95rem;
             line-height: 1.5;
             color: #555;
-            margin-bottom: 12px;
+            margin-bottom: 16px;
         }
 
-        .card a {
+        .card-link {
             text-decoration: none;
             font-weight: 600;
             color: var(--primary);
-            font-size: .9rem;
+            font-size: .95rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.3s, transform 0.3s;
         }
 
-        .card a:hover {
+        .card-link:hover {
+            color: var(--primary-dark);
             text-decoration: underline;
+            transform: translateX(3px);
         }
 
         /* Media Queries for Responsiveness */
         @media (max-width: 768px) {
             .classification {
                 padding: 30px 20px;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .card-icon-wrapper {
+                width: 50px;
+                height: 50px;
+            }
+
+            .card-icon-wrapper i {
+                font-size: 1.6rem;
             }
         }
 
@@ -505,8 +652,11 @@
     @include('layouts.navbar')
 
     <header>
-        <h1>SELAMAT DATANG<br>DI DATABASE PERATURAN JDIH BPK</h1>
+        <div class="header-text-container">
+            <h1>SELAMAT DATANG<br>DI SATUAN PENGAWAS INTERNAL </h1>
+        </div>
     </header>
+
 
     <div class="search-wrapper">
         <div class="input-group">
@@ -595,29 +745,65 @@
             <button id="carousel-prev" class="carousel-btn prev-btn"><i class="fas fa-chevron-left"></i></button>
             <div class="carousel-track-container">
                 <div class="carousel-track">
-                    <div class="card-item">
-                        <span>UU No. 1 Tahun 2023</span>
-                        <small>Kitab Undang-Undang Hukum Pidana</small>
+                    <div class="card-item-new">
+                        <div class="card-icon-new">
+                            <i class="fas fa-gavel"></i>
+                        </div>
+                        <div class="card-content-new">
+                            <span class="card-title-new">UU No. 1 Tahun 2023</span>
+                            <small class="card-subtitle-new">Kitab Undang-Undang Hukum Pidana</small>
+                            <span class="card-type-new">📜 Undang-Undang</span>
+                        </div>
                     </div>
-                    <div class="card-item">
-                        <span>UU No. 11 Tahun 2020</span>
-                        <small>Cipta Kerja</small>
+                    <div class="card-item-new">
+                        <div class="card-icon-new">
+                            <i class="fas fa-file-invoice"></i>
+                        </div>
+                        <div class="card-content-new">
+                            <span class="card-title-new">UU No. 11 Tahun 2020</span>
+                            <small class="card-subtitle-new">Cipta Kerja</small>
+                            <span class="card-type-new">📜 Undang-Undang</span>
+                        </div>
                     </div>
-                    <div class="card-item">
-                        <span>UU No. 23 Tahun 2014</span>
-                        <small>Pemerintahan Daerah</small>
+                    <div class="card-item-new">
+                        <div class="card-icon-new">
+                            <i class="fas fa-landmark"></i>
+                        </div>
+                        <div class="card-content-new">
+                            <span class="card-title-new">UU No. 23 Tahun 2014</span>
+                            <small class="card-subtitle-new">Pemerintahan Daerah</small>
+                            <span class="card-type-new">📜 Undang-Undang</span>
+                        </div>
                     </div>
-                    <div class="card-item">
-                        <span>Peraturan BPK No. 2 Tahun 2023</span>
-                        <small>Tentang Pemeriksaan Keuangan</small>
+                    <div class="card-item-new">
+                        <div class="card-icon-new">
+                            <i class="fas fa-file-contract"></i>
+                        </div>
+                        <div class="card-content-new">
+                            <span class="card-title-new">Peraturan BPK No. 2 Tahun 2023</span>
+                            <small class="card-subtitle-new">Tentang Pemeriksaan Keuangan</small>
+                            <span class="card-type-new">📄 Peraturan BPK</span>
+                        </div>
                     </div>
-                    <div class="card-item">
-                        <span>UU No. 5 Tahun 2014</span>
-                        <small>Aparatur Sipil Negara</small>
+                    <div class="card-item-new">
+                        <div class="card-icon-new">
+                            <i class="fas fa-users-cog"></i>
+                        </div>
+                        <div class="card-content-new">
+                            <span class="card-title-new">UU No. 5 Tahun 2014</span>
+                            <small class="card-subtitle-new">Aparatur Sipil Negara</small>
+                            <span class="card-type-new">📜 Undang-Undang</span>
+                        </div>
                     </div>
-                    <div class="card-item">
-                        <span>PP No. 45 Tahun 2013</span>
-                        <small>Tata Cara Pelaksanaan APBN</small>
+                    <div class="card-item-new">
+                        <div class="card-icon-new">
+                            <i class="fas fa-piggy-bank"></i>
+                        </div>
+                        <div class="card-content-new">
+                            <span class="card-title-new">PP No. 45 Tahun 2013</span>
+                            <small class="card-subtitle-new">Tata Cara Pelaksanaan APBN</small>
+                            <span class="card-type-new">📚 Peraturan Pemerintah</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -629,11 +815,16 @@
         const carouselTrack = document.querySelector('.carousel-track');
         const prevBtn = document.getElementById('carousel-prev');
         const nextBtn = document.getElementById('carousel-next');
-        const cardItems = document.querySelectorAll('.card-item');
 
-        const cardWidth = cardItems[0].offsetWidth + 20;
+        // Gunakan nama kelas yang baru: '.card-item-new'
+        const cardItems = document.querySelectorAll('.card-item-new');
+
+        // Menghitung lebar kartu baru secara dinamis
+        // Lebar kartu: 280px + gap: 25px
+        // Tambahkan 25px untuk memperhitungkan 'gap'
+        const cardWidth = cardItems[0].offsetWidth + 25;
         let currentIndex = 0;
-        let autoScroll;   // interval id
+        let autoScroll;
 
         function updateCarousel() {
             carouselTrack.style.transform = `translateX(${-currentIndex * cardWidth}px)`;
@@ -649,7 +840,7 @@
             updateCarousel();
         }
 
-        // tombol
+        // Tombol navigasi
         nextBtn.addEventListener('click', () => {
             nextSlide();
             resetAuto();
@@ -660,15 +851,17 @@
             resetAuto();
         });
 
-        // auto scroll
+        // Auto scroll
         function startAuto() {
             autoScroll = setInterval(nextSlide, 3000); // 3 detik
         }
+
         function resetAuto() {
             clearInterval(autoScroll);
             startAuto();
         }
 
+        // Mulai otomatis saat halaman dimuat
         startAuto();
     </script>
 
@@ -680,28 +873,44 @@
         </div>
         <div class="grid">
             <div class="card">
-                <i class="fa fa-file-alt"></i>
-                <h3>Peraturan BPK</h3>
-                <p>Kumpulan Peraturan Badan Pemeriksa Keuangan.</p>
-                <a href="#">Lihat Peraturan →</a>
+                <div class="card-icon-wrapper">
+                    <i class="fa fa-file-alt"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Peraturan BPK</h3>
+                    <p>Kumpulan Peraturan Badan Pemeriksa Keuangan.</p>
+                </div>
+                <a href="#" class="card-link">Lihat Peraturan →</a>
             </div>
             <div class="card">
-                <i class="fa fa-file-alt"></i>
-                <h3>Peraturan Perundang-undangan Pusat</h3>
-                <p>UU, PP, Perpres, dan lainnya.</p>
-                <a href="#">Lihat Peraturan →</a>
+                <div class="card-icon-wrapper">
+                    <i class="fa fa-landmark"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Peraturan Perundang-undangan Pusat</h3>
+                    <p>UU, PP, Perpres, dan lainnya.</p>
+                </div>
+                <a href="#" class="card-link">Lihat Peraturan →</a>
             </div>
             <div class="card">
-                <i class="fa fa-file-alt"></i>
-                <h3>Peraturan Kementerian/Lembaga</h3>
-                <p>Permendagri, Permenkeu, dan lainnya.</p>
-                <a href="#">Lihat Peraturan →</a>
+                <div class="card-icon-wrapper">
+                    <i class="fa fa-building"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Peraturan Kementerian/Lembaga</h3>
+                    <p>Permendagri, Permenkeu, dan lainnya.</p>
+                </div>
+                <a href="{{ route('detail-pedoman') }}" class="card-link">Lihat Peraturan →</a>
             </div>
             <div class="card">
-                <i class="fa fa-file-alt"></i>
-                <h3>Peraturan Daerah</h3>
-                <p>Perda, Pergub, Perwali, dan lainnya.</p>
-                <a href="#">Lihat Peraturan →</a>
+                <div class="card-icon-wrapper">
+                    <i class="fa fa-map-marked-alt"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Peraturan Daerah</h3>
+                    <p>Perda, Pergub, Perwali, dan lainnya.</p>
+                </div>
+                <a href="#" class="card-link">Lihat Peraturan →</a>
             </div>
         </div>
     </section>
