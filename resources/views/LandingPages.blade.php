@@ -436,7 +436,7 @@
                             Manajemen Risiko
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{{ route('visi-misi.index') }}">Pedoman MR </a>
+                            <li><a class="dropdown-item" href="{{ route('pedoman.mr') }}">Pedoman MR </a>
                             </li>
                             <li><a class="dropdown-item" href="{{ route('struktur.index') }}">Identifikasi Risiko </a>
                             </li>
@@ -451,18 +451,18 @@
                             Zona integritas
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{{ route('visi-misi.index') }}">Manajemen Perubahan </a>
+                            <li><a class="dropdown-item" href="{{ route('manajemen-perubahan') }}">Manajemen Perubahan </a>
                             </li>
-                            <li><a class="dropdown-item" href="{{ route('struktur.index') }}">Penataan Tata Kelola </a>
+                            <li><a class="dropdown-item" href="{{ route('penataan.index') }}">Penataan Tata Kelola </a>
                             </li>
                             <li><a class="dropdown-item" href="{{ route('penataan.sdm.aparatur') }}">Penataan Sistem
                                     Manajemen SDM
                                     dan Aparatur</a></li>
                             <li><a class="dropdown-item" href="{{ route('penguatan.akuntabilitas') }}">Penguatan
                                     Akuntabilitas</a></li>
-                            <li><a class="dropdown-item" href="{{ route('pengaduan.create') }}">Penguatan Pengawasaan
+                            <li><a class="dropdown-item" href="{{ route('pengawasan.index') }}">Penguatan Pengawasaan
                                 </a></li>
-                            <li><a class="dropdown-item" href="{{ route('pengaduan.create') }}">Peningkatan Kualitas
+                            <li><a class="dropdown-item" href="{{ route('pelayanan') }}">Peningkatan Kualitas
                                     Pelayanan Publik</a></li>
                         </ul>
                     </li>
