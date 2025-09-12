@@ -14,7 +14,9 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: linear-gradient(270deg, #0066ff, #0099ff, #00ccff, #0066ff);
+            background: linear-gradient(135deg, rgba(255,255,255,1), rgba(255,192,203,0.95), rgba(255,0,0,0.9), rgba(128,0,0,0.95));
+
+
             background-size: 800% 800%;
             animation: gradientMove 15s ease infinite;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -147,7 +149,7 @@
 </head>
 
 <body>
-    <div class="login-box">
+    <div class="login-box" style="background-color: red;">
         <!-- Logo -->
         <img src="{{ asset('images/logoPolije.png') }}" alt="Logo Polije" class="logo">
 

@@ -38,7 +38,7 @@
 
     <div class="container">
         <div class="content-wrapper">
-            <h2>Instrumen Pengawasan SPI - Penataan Sistem Manajemen SDM dan Aparatur</h2>
+            <h2>Penataan Sistem Manajemen SDM dan Aparatur</h2>
 
             <div class="table-responsive">
                 <table class="table table-bordered table-striped align-middle">

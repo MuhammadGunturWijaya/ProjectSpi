@@ -172,21 +172,6 @@ Route::get('/penguatan-pengawasan', [PenguatanPengawasanController::class, 'inde
 // Route Ke halaman PeningkatanPelayanan
 Route::get('/pelayanan', [PeningkatanPelayananController::class, 'index'])->name('pelayanan');
 
-// Route Ke halaman pedoman mr 
-Route::get('/pedoman/mr', [PedomanMRController::class, 'index'])->name('pedoman.mr');
-
-// Route Ke halaman manajemen perubahan
-Route::get('/manajemen-perubahan', [ManajemenPerubahanController::class, 'index'])->name('manajemen-perubahan');
-
-// Route Ke halaman PenataanTataKelola
-Route::get('/penataan-tata-kelola', [PenataanTataKelolaController::class, 'index'])->name('penataan.index');
-
-// Route Ke halaman PenguatanPengawasan
-Route::get('/penguatan-pengawasan', [PenguatanPengawasanController::class, 'index'])->name('pengawasan.index');
-
-// Route Ke halaman PeningkatanPelayanan
-Route::get('/pelayanan', [PeningkatanPelayananController::class, 'index'])->name('pelayanan');
-
 // Route Ke halaman SURVEY
 Route::post('/survey', [SurveyController::class, 'store'])->name('survey.store');
 

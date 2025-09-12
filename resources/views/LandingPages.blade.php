@@ -35,7 +35,7 @@
 
         /* Saat discroll */
         .main-nav.scrolled {
-            background-color: #0d2d50;
+            background-color: #650c16ff;
             /* warna solid */
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
         }
@@ -145,7 +145,7 @@
 
         /* Hover effect */
         .navbar .dropdown-menu .dropdown-item:hover {
-            background-color: #0084ff;
+            background-color: #bc0016ff;
             color: #fff;
             transform: translateX(5px);
             /* efek geser halus */
@@ -424,7 +424,7 @@
                             <li class="dropdown-submenu">
                                 <a class="dropdown-item dropdown-toggle" href="#">Pedoman Pengawasan</a>
                                 <ul class="dropdown-menu1">
-                                    <li><a class="dropdown-item" href="{{ route('visi-misi.index') }}">Pedoman Audit</a>
+                                    <li><a class="dropdown-item" href="{{ route('pedoman-audit') }}">Pedoman Audit</a>
                                     </li>
                                     <li><a class="dropdown-item" href="{{ route('pedoman-monev') }}">Pedoman Monev</a>
                                     </li>
@@ -444,7 +444,8 @@
                                     </li>
                                 </ul>
                             </li>
-                            <li><a class="dropdown-item" href="{{ route('instrumen.pengawasan') }}">Instrumen Pengawasan</a></li>
+                            <li><a class="dropdown-item" href="{{ route('instrumen.pengawasan') }}">Instrumen
+                                    Pengawasan</a></li>
                             <li><a class="dropdown-item" href="{{ route('program.kerja') }}">Program Kerja SPI</a></li>
                             <li><a class="dropdown-item" href="{{ route('konsideran-spi') }}">Konsideran SPI</a></li>
 
@@ -471,11 +472,13 @@
                             Zona integritas
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{{ route('manajemen-perubahan') }}">Manajemen Perubahan </a>
+                            <li><a class="dropdown-item" href="{{ route('manajemen-perubahan') }}">Manajemen Perubahan
+                                </a>
                             </li>
                             <li><a class="dropdown-item" href="{{ route('penataan.index') }}">Penataan Tata Kelola </a>
                             </li>
-                            <li><a class="dropdown-item" href="{{ route('penataan.sdm.aparatur') }}">Penataan Sistem Manajemen SDM
+                            <li><a class="dropdown-item" href="{{ route('penataan.sdm.aparatur') }}">Penataan Sistem
+                                    Manajemen SDM
                                     dan Aparatur</a></li>
                             <li><a class="dropdown-item" href="{{ route('penguatan.akuntabilitas') }}">Penguatan
                                     Akuntabilitas</a></li>
@@ -953,23 +956,27 @@
     </style>
 
     <!-- SURVEY KEPUASAN -->
-    <section class="container my-5" id="survey">
+    <section class="survey-section py-5" id="survey">
         <div class="container">
+            <!-- Header -->
             <div class="text-center mb-5">
-                <h2 class="fw-bold display-6 text-primary">📊 Survey Kepuasan</h2>
+                <h2 class="fw-bold display-6 text-gradient">📊 Survey Kepuasan</h2>
                 <p class="text-muted fs-5">
                     Pendapat Anda sangat berharga untuk peningkatan layanan <br>
                     <span class="fw-semibold text-dark">Satuan Pengawas Internal Politeknik Negeri Jember</span>.
                 </p>
             </div>
 
+            <!-- Card Survey -->
             <div class="row justify-content-center">
                 <div class="col-lg-8">
-                    <div class="card shadow-lg border-0 rounded-4">
+                    <div class="card survey-card border-0 shadow-lg rounded-4">
                         <div class="card-body p-5">
                             @guest
                                 <!-- Jika belum login -->
                                 <div class="text-center">
+                                    <img src="https://cdn-icons-png.flaticon.com/512/747/747376.png" width="100"
+                                        class="mb-3 opacity-75">
                                     <p class="fs-5 text-muted mb-4">Anda harus login terlebih dahulu untuk mengisi survey.
                                     </p>
                                     <button class="btn btn-primary px-4 py-2 rounded-pill shadow-sm fw-bold"
@@ -980,15 +987,16 @@
                             @endguest
 
                             @auth
-                                <!-- Jika sudah login tampilkan form survey -->
-                                <form action="{{ route('survey.store') }}" method="POST">
+                                <!-- Jika sudah login -->
+                                <form action="{{ route('survey.store') }}" method="POST" class="animate-fade">
                                     @csrf
                                     <!-- Pertanyaan 1 -->
                                     <div class="mb-4">
                                         <label class="form-label fw-bold fs-5 mb-2">
                                             Bagaimana tingkat kepuasan Anda terhadap layanan SPI?
                                         </label>
-                                        <select name="kepuasan" class="form-select form-select-lg shadow-sm" required>
+                                        <select name="kepuasan" class="form-select form-select-lg shadow-sm rounded-pill"
+                                            required>
                                             <option value="">-- Pilih Jawaban --</option>
                                             <option value="Sangat Puas">🌟 Sangat Puas</option>
                                             <option value="Puas">😊 Puas</option>
@@ -1000,14 +1008,14 @@
                                     <!-- Pertanyaan 2 -->
                                     <div class="mb-4">
                                         <label class="form-label fw-bold fs-5 mb-2">Saran atau masukan Anda</label>
-                                        <textarea name="saran" rows="4" class="form-control shadow-sm"
-                                            placeholder="Tuliskan saran Anda di sini..."></textarea>
+                                        <textarea name="saran" rows="4" class="form-control shadow-sm rounded-4"
+                                            placeholder="✍️ Tuliskan saran Anda di sini..."></textarea>
                                     </div>
 
                                     <!-- Tombol Kirim -->
                                     <div class="text-center">
                                         <button type="submit"
-                                            class="btn btn-success btn-lg px-5 py-2 rounded-pill shadow fw-bold">
+                                            class="btn btn-gradient btn-lg px-5 py-2 rounded-pill shadow fw-bold">
                                             <i class="bi bi-send-fill me-2"></i> Kirim Survey
                                         </button>
                                     </div>
@@ -1025,12 +1033,12 @@
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 shadow">
                 <div class="modal-header border-0">
-                    <h5 class="modal-title fw-bold" id="loginModalLabel">🔒 Login Diperlukan</h5>
+                    <h5 class="modal-title fw-bold text-primary" id="loginModalLabel">🔒 Login Diperlukan</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body text-center">
                     <p class="text-muted mb-4">Silakan login terlebih dahulu untuk mengisi survey kepuasan.</p>
-                    <a href="{{ route('login') }}" class="btn btn-primary px-4 py-2 rounded-pill">
+                    <a href="{{ route('login') }}" class="btn btn-gradient px-4 py-2 rounded-pill">
                         <i class="bi bi-box-arrow-in-right me-2"></i> Login Sekarang
                     </a>
                 </div>
@@ -1048,7 +1056,7 @@
                 </div>
                 <div class="modal-body">
                     <p class="fs-5">Survey Anda sudah terkirim. Pendapat Anda sangat berharga bagi kami 🙏</p>
-                    <button type="button" class="btn btn-success px-4 py-2 rounded-pill" data-bs-dismiss="modal">
+                    <button type="button" class="btn btn-gradient px-4 py-2 rounded-pill" data-bs-dismiss="modal">
                         Tutup
                     </button>
                 </div>
@@ -1056,7 +1064,7 @@
         </div>
     </div>
 
-    <!-- Script untuk otomatis tampilkan modal jika ada session sukses -->
+    <!-- Script untuk modal sukses -->
     @if(session('survey_success'))
         <script>
             document.addEventListener("DOMContentLoaded", function () {
@@ -1065,6 +1073,52 @@
             });
         </script>
     @endif
+
+    <!-- Custom CSS -->
+    <style>
+        .text-gradient {
+            background: linear-gradient(45deg, #0d6efd, #20c997);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .survey-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .survey-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-gradient {
+            background: linear-gradient(45deg, #0d6efd, #20c997);
+            color: white;
+            border: none;
+        }
+
+        .btn-gradient:hover {
+            opacity: 0.9;
+            color: #fff;
+        }
+
+        .animate-fade {
+            animation: fadeInUp 0.6s ease-in-out;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+
 
 
 
