@@ -201,7 +201,8 @@
         .carousel-wrapper {
             overflow: hidden;
             position: relative;
-            max-width: 1000px;
+            overflow-x: auto;
+            max-width: 1600px;
             margin: auto;
             display: flex;
             align-items: center;
@@ -212,14 +213,25 @@
         }
 
         .carousel-track-container {
+
+            display: inline-block;
+            /* supaya lebarnya sesuai isi */
+            max-width: 1600px;
+            /* batas maksimum */
             overflow: hidden;
-            flex: 1;
+            /* sembunyikan yang keluar */
+            margin: 0 auto;
+            /* tetap di tengah */
         }
 
+
         .carousel-track {
-            display: flex;
-            gap: 20px;
-            /* animation: slide 30s linear infinite; <-- Hapus ini */
+            display: inline-flex;
+            /* lebar otomatis sesuai isi */
+            gap: 25px;
+            /* jarak antar card */
+            width: max-content;
+            /* biar muat sesuai jumlah card */
             transition: transform 0.5s ease;
         }
 
@@ -336,6 +348,7 @@
             justify-content: center;
             transition: background 0.3s, transform 0.2s;
             flex-shrink: 0;
+
         }
 
         .carousel-btn:hover {
@@ -653,7 +666,7 @@
 
     <header>
         <div class="header-text-container">
-            <h1>SELAMAT DATANG<br>DI SATUAN PENGAWAS INTERNAL </h1>
+            <h1>PEDOMAN PENGAWASAN </h1>
         </div>
     </header>
 
@@ -767,44 +780,45 @@
                     </div>
                     <div class="card-item-new">
                         <div class="card-icon-new">
-                            <i class="fas fa-landmark"></i>
+                            <i class="fas fa-gavel"></i>
                         </div>
                         <div class="card-content-new">
-                            <span class="card-title-new">UU No. 23 Tahun 2014</span>
-                            <small class="card-subtitle-new">Pemerintahan Daerah</small>
+                            <span class="card-title-new">UU No. 1 Tahun 2023</span>
+                            <small class="card-subtitle-new">Kitab Undang-Undang Hukum Pidana</small>
                             <span class="card-type-new">📜 Undang-Undang</span>
                         </div>
                     </div>
                     <div class="card-item-new">
                         <div class="card-icon-new">
-                            <i class="fas fa-file-contract"></i>
+                            <i class="fas fa-file-invoice"></i>
                         </div>
                         <div class="card-content-new">
-                            <span class="card-title-new">Peraturan BPK No. 2 Tahun 2023</span>
-                            <small class="card-subtitle-new">Tentang Pemeriksaan Keuangan</small>
-                            <span class="card-type-new">📄 Peraturan BPK</span>
-                        </div>
-                    </div>
-                    <div class="card-item-new">
-                        <div class="card-icon-new">
-                            <i class="fas fa-users-cog"></i>
-                        </div>
-                        <div class="card-content-new">
-                            <span class="card-title-new">UU No. 5 Tahun 2014</span>
-                            <small class="card-subtitle-new">Aparatur Sipil Negara</small>
+                            <span class="card-title-new">UU No. 11 Tahun 2020</span>
+                            <small class="card-subtitle-new">Cipta Kerja</small>
                             <span class="card-type-new">📜 Undang-Undang</span>
                         </div>
                     </div>
                     <div class="card-item-new">
                         <div class="card-icon-new">
-                            <i class="fas fa-piggy-bank"></i>
+                            <i class="fas fa-gavel"></i>
                         </div>
                         <div class="card-content-new">
-                            <span class="card-title-new">PP No. 45 Tahun 2013</span>
-                            <small class="card-subtitle-new">Tata Cara Pelaksanaan APBN</small>
-                            <span class="card-type-new">📚 Peraturan Pemerintah</span>
+                            <span class="card-title-new">UU No. 1 Tahun 2023</span>
+                            <small class="card-subtitle-new">Kitab Undang-Undang Hukum Pidana</small>
+                            <span class="card-type-new">📜 Undang-Undang</span>
                         </div>
                     </div>
+                    <div class="card-item-new">
+                        <div class="card-icon-new">
+                            <i class="fas fa-file-invoice"></i>
+                        </div>
+                        <div class="card-content-new">
+                            <span class="card-title-new">UUU No. 11 Tahun 2020</span>
+                            <small class="card-subtitle-new">Cipta Kerja</small>
+                            <span class="card-type-new">📜 Undang-Undang</span>
+                        </div>
+                    </div>
+
                 </div>
             </div>
             <button id="carousel-next" class="carousel-btn next-btn"><i class="fas fa-chevron-right"></i></button>
@@ -816,28 +830,63 @@
         const prevBtn = document.getElementById('carousel-prev');
         const nextBtn = document.getElementById('carousel-next');
 
-        // Gunakan nama kelas yang baru: '.card-item-new'
+        // Mengambil semua elemen kartu
         const cardItems = document.querySelectorAll('.card-item-new');
 
-        // Menghitung lebar kartu baru secara dinamis
-        // Lebar kartu: 280px + gap: 25px
-        // Tambahkan 25px untuk memperhitungkan 'gap'
+        // Menghitung lebar total satu kartu, termasuk gap
         const cardWidth = cardItems[0].offsetWidth + 25;
+
+        // Indeks untuk melacak posisi
         let currentIndex = 0;
         let autoScroll;
+
+        // Duplikasi kartu untuk menciptakan efek loop
+        cardItems.forEach(card => {
+            const clone = card.cloneNode(true);
+            carouselTrack.appendChild(clone);
+        });
 
         function updateCarousel() {
             carouselTrack.style.transform = `translateX(${-currentIndex * cardWidth}px)`;
         }
 
         function nextSlide() {
-            currentIndex = (currentIndex + 1) % cardItems.length;
-            updateCarousel();
+            currentIndex++;
+            if (currentIndex >= cardItems.length) {
+                // Jika sudah mencapai akhir, segera kembali ke awal tanpa transisi
+                carouselTrack.style.transition = 'none';
+                currentIndex = 0;
+                updateCarousel();
+
+                // Atur timeout untuk mengaktifkan kembali transisi dan geser ke slide pertama
+                setTimeout(() => {
+                    carouselTrack.style.transition = 'transform 0.5s ease';
+                    currentIndex = 1;
+                    updateCarousel();
+                }, 10);
+
+            } else {
+                updateCarousel();
+            }
         }
 
         function prevSlide() {
-            currentIndex = (currentIndex - 1 + cardItems.length) % cardItems.length;
-            updateCarousel();
+            if (currentIndex === 0) {
+                // Jika di awal, geser ke akhir duplikat tanpa transisi
+                carouselTrack.style.transition = 'none';
+                currentIndex = cardItems.length;
+                updateCarousel();
+
+                // Atur timeout untuk mengaktifkan kembali transisi dan geser mundur
+                setTimeout(() => {
+                    carouselTrack.style.transition = 'transform 0.5s ease';
+                    currentIndex--;
+                    updateCarousel();
+                }, 10);
+            } else {
+                currentIndex--;
+                updateCarousel();
+            }
         }
 
         // Tombol navigasi
@@ -865,7 +914,121 @@
         startAuto();
     </script>
 
+    <!-- disini letak pilih pedoman -->
+    <style>
+        /* Container */
+        .pedoman-buttons-wrapper {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 0 20px;
+        }
 
+        .pedoman-buttons-wrapper h2 {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 35px;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Tombol container */
+        .pedoman-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        /* Tombol */
+        .pedoman-btn {
+            background: linear-gradient(145deg, var(--primary), var(--primary-dark));
+            color: #fff;
+            padding: 20px 34px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 8px 28px rgba(10, 77, 146, 0.25);
+            transition: all .4s ease;
+        }
+
+        /* Efek cahaya */
+        .pedoman-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: skewX(-25deg);
+            transition: left .5s ease;
+        }
+
+        /* Hover tombol */
+        .pedoman-btn:hover::after {
+            left: 100%;
+        }
+
+        .pedoman-btn:hover {
+            transform: translateY(-6px) scale(1.02);
+            box-shadow: 0 14px 36px rgba(10, 77, 146, 0.35);
+        }
+
+        /* Ikon */
+        .pedoman-btn i {
+            font-size: 1.8rem;
+            transition: transform .4s ease, color .4s ease;
+            color: #ffd34e;
+        }
+
+        .pedoman-btn:hover i {
+            transform: scale(1.2) rotate(-5deg);
+            color: #fff;
+        }
+
+        /* Responsive */
+        @media (max-width: 600px) {
+            .pedoman-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 18px;
+            }
+
+            .pedoman-btn {
+                width: 100%;
+                justify-content: center;
+                padding: 18px 20px;
+                font-size: 1rem;
+            }
+
+            .pedoman-btn i {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+
+    <div class="pedoman-buttons-wrapper">
+        <h2>Pilih Pedoman</h2>
+        <div class="pedoman-buttons">
+            <a href="#" class="pedoman-btn">
+                <i class="fa fa-file-invoice-dollar"></i> Lihat Pedoman Audit
+            </a>
+            <a href="#" class="pedoman-btn">
+                <i class="fa fa-search-plus"></i> Lihat Pedoman Reviu
+            </a>
+            <a href="#" class="pedoman-btn">
+                <i class="fa fa-tasks"></i> Lihat Pedoman Monev
+            </a>
+        </div>
+    </div>
+
+    <!-- pedoman audit -->
     <section class="classification">
         <div class="classification-header">
             <h2>Pedoman <span class="audit-text">Audit</span></h2>
