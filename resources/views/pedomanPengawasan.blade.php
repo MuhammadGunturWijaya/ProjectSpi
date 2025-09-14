@@ -383,115 +383,179 @@
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap');
 
         .classification {
-            max-width: 1180px;
-            margin: 40px auto;
-            background: var(--white);
-            padding: 40px 30px;
-            border-radius: 20px;
-            box-shadow: var(--shadow);
+            max-width: 1400px;
+            margin: 50px auto;
+            padding: 50px 40px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 30px;
+            box-shadow: 0 8px 32px rgba(10, 77, 146, 0.12);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(10, 77, 146, 0.2);
+            font-family: 'Poppins', sans-serif;
+            color: #1a1a1a;
+            transition: background 0.3s ease;
         }
 
         .classification-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 35px;
+            margin-bottom: 40px;
+            border-bottom: 3px solid var(--primary);
+            padding-bottom: 12px;
         }
 
+        .header-actions {
+            display: flex;
+            gap: 12px;
+            /* jarak antara "Lihat Lebih" dan "Tambah Pedoman" */
+        }
+
+
         .classification-header h2 {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--primary);
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--primary-dark);
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            position: relative;
+        }
+
+        .classification-header h2::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 0;
+            width: 80px;
+            height: 5px;
+            background: var(--primary);
+            border-radius: 3px;
+            box-shadow: 0 0 15px var(--primary);
+            transition: width 0.3s ease;
         }
 
         .classification-header a {
             background: var(--primary);
             color: #fff;
-            padding: 8px 18px;
-            border-radius: 8px;
+            padding: 12px 28px;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 1.1rem;
             text-decoration: none;
-            font-weight: 600;
             display: flex;
             align-items: center;
-            gap: 6px;
-            transition: background .3s;
+            gap: 10px;
+            box-shadow: 0 8px 20px rgba(10, 77, 146, 0.35);
+            transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.25s ease;
         }
 
         .classification-header a:hover {
             background: var(--primary-dark);
+            box-shadow: 0 12px 30px rgba(8, 60, 114, 0.6);
+            transform: translateY(-4px);
         }
 
         .grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 22px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 32px;
         }
 
         .card {
-            background: linear-gradient(145deg, #f9fbfd, #e9eef5);
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 24px;
+            padding: 32px 28px;
+            box-shadow: 0 12px 30px rgba(10, 77, 146, 0.1);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1.5px solid rgba(255, 255, 255, 0.3);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             height: 100%;
+            transition: transform 0.5s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.5s ease, border-color 0.5s ease;
+            cursor: pointer;
         }
 
         .card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+            transform: translateY(-15px) rotateX(5deg) scale(1.05);
+            box-shadow: 0 25px 50px rgba(10, 77, 146, 0.3);
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.4);
         }
 
         .card-icon-wrapper {
-            width: 60px;
-            height: 60px;
+            width: 80px;
+            height: 80px;
             border-radius: 50%;
-            background-color: var(--primary);
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 18px;
-            box-shadow: 0 4px 10px rgba(10, 77, 146, 0.2);
+            margin-bottom: 28px;
+            box-shadow: 0 10px 25px rgba(10, 77, 146, 0.4);
+            transition: transform 0.5s ease, box-shadow 0.5s ease;
+        }
+
+        .card:hover .card-icon-wrapper {
+            transform: scale(1.3) rotate(15deg);
+            box-shadow: 0 15px 40px rgba(10, 77, 146, 0.6);
         }
 
         .card-icon-wrapper i {
-            font-size: 1.8rem;
+            font-size: 2.8rem;
             color: #fff;
-            margin-bottom: 0;
+            transition: color 0.5s ease;
+        }
+
+        .card:hover .card-icon-wrapper i {
+            color: #ffd34e;
         }
 
         .card-content h3 {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 8px;
+            font-size: 1.4rem;
+            font-weight: 800;
+            margin-bottom: 14px;
             color: var(--primary-dark);
+            transition: color 0.4s ease;
+        }
+
+        .card:hover .card-content h3 {
+            color: var(--primary);
         }
 
         .card-content p {
-            font-size: .95rem;
-            line-height: 1.5;
-            color: #555;
-            margin-bottom: 16px;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: #444;
+            margin-bottom: 24px;
+            transition: color 0.4s ease;
+        }
+
+        .card:hover .card-content p {
+            color: #222;
         }
 
         .card-link {
-            text-decoration: none;
-            font-weight: 600;
+            font-weight: 700;
+            font-size: 1.05rem;
             color: var(--primary);
-            font-size: .95rem;
+            text-decoration: none;
             display: inline-flex;
             align-items: center;
-            gap: 6px;
-            transition: color 0.3s, transform 0.3s;
+            gap: 10px;
+            border-bottom: 3px solid transparent;
+            padding-bottom: 4px;
+            transition: color 0.4s ease, border-color 0.4s ease, transform 0.3s ease;
         }
 
         .card-link:hover {
             color: var(--primary-dark);
-            text-decoration: underline;
-            transform: translateX(3px);
+            border-color: var(--primary-dark);
+            transform: translateX(8px);
         }
+
 
         /* Media Queries for Responsiveness */
         @media (max-width: 768px) {
@@ -924,12 +988,11 @@
         }
 
         .pedoman-buttons-wrapper h2 {
-            text-align: center;
-            font-size: 2rem;
+            font-size: 1.7rem;
             font-weight: 700;
             color: var(--primary);
-            margin-bottom: 35px;
-            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 25px;
+            text-align: center;
         }
 
         /* Tombol container */
@@ -1016,10 +1079,10 @@
     <div class="pedoman-buttons-wrapper">
         <h2>Pilih Pedoman</h2>
         <div class="pedoman-buttons">
-            <a href="#" class="pedoman-btn">
+            <a href="#pedomanaudit" class="pedoman-btn">
                 <i class="fa fa-file-invoice-dollar"></i> Lihat Pedoman Audit
             </a>
-            <a href="#" class="pedoman-btn">
+            <a href="#pedomanreviu" class="pedoman-btn">
                 <i class="fa fa-search-plus"></i> Lihat Pedoman Reviu
             </a>
             <a href="#" class="pedoman-btn">
@@ -1029,10 +1092,68 @@
     </div>
 
     <!-- pedoman audit -->
-    <section class="classification">
+    <section class="classification" id="pedomanaudit">
         <div class="classification-header">
             <h2>Pedoman <span class="audit-text">Audit</span></h2>
-            <a href="#"><i class="fa fa-chart-bar"></i> Lihat Statistik</a>
+            <div class="header-actions">
+                <a href="#"><i class="fa fa-chart-bar"></i> Lihat Lebih</a>
+
+                @if(Auth::check() && Auth::user()->role === 'admin')
+                    <a href="#" id="btnTambahAudit">
+                        <i class="fa fa-plus"></i> Tambah Pedoman
+                    </a>
+                @endif
+            </div>
+        </div>
+        <div class="grid">
+            <div class="card">
+                <div class="card-icon-wrapper">
+                    <i class="fa fa-file-alt"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Peraturan BPK</h3>
+                    <p>Kumpulan Peraturan Badan Pemeriksa Keuangan.</p>
+                </div>
+                <a href="#" class="card-link">Lihat Peraturan →</a>
+            </div>
+            <div class="card">
+                <div class="card-icon-wrapper">
+                    <i class="fa fa-landmark"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Peraturan Perundang-undangan Pusat</h3>
+                    <p>UU, PP, Perpres, dan lainnya.</p>
+                </div>
+                <a href="#" class="card-link">Lihat Peraturan →</a>
+            </div>
+            <div class="card">
+                <div class="card-icon-wrapper">
+                    <i class="fa fa-building"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Peraturan Kementerian/Lembaga</h3>
+                    <p>Permendagri, Permenkeu, dan lainnya.</p>
+                </div>
+                <a href="{{ route('detail-pedoman') }}" class="card-link">Lihat Peraturan →</a>
+            </div>
+            <div class="card">
+                <div class="card-icon-wrapper">
+                    <i class="fa fa-map-marked-alt"></i>
+                </div>
+                <div class="card-content">
+                    <h3>Peraturan Daerah</h3>
+                    <p>Perda, Pergub, Perwali, dan lainnya.</p>
+                </div>
+                <a href="#" class="card-link">Lihat Peraturan →</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- pedoman reviu -->
+    <section class="classification" id="pedomanreviu">
+        <div class="classification-header">
+            <h2>Pedoman <span class="audit-text">Reviu</span></h2>
+            <a href="#"><i class="fa fa-chart-bar"></i> Lihat Lebih</a>
         </div>
         <div class="grid">
             <div class="card">
