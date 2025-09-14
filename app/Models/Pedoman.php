@@ -10,14 +10,12 @@ class Pedoman extends Model
     protected $table = 'pedoman';
 
     protected $fillable = [
-        // Materi Pokok
+        'jenis', // 👈 tambah ini
         'judul',
         'tahun',
         'kata_kunci',
         'abstrak',
         'catatan',
-
-        // Metadata
         'tipe_dokumen',
         'judul_meta',
         'teu',
@@ -35,8 +33,6 @@ class Pedoman extends Model
         'bahasa',
         'lokasi',
         'bidang',
-
-        // File & Status
         'file_pdf',
         'mencabut'
     ];

@@ -12,6 +12,8 @@ class TambahPedomanController extends Controller
     {
         try {
             $validated = $request->validate([
+                'jenis' => 'required|string|in:audit,reviu,monev', // ✅ jenis pedoman
+
                 // Materi Pokok
                 'judul' => 'required|string|max:255',
                 'tahun' => 'nullable|integer|min:1900|max:' . date('Y'),
@@ -43,6 +45,7 @@ class TambahPedomanController extends Controller
                 'mencabut' => 'nullable|string|max:255',
             ]);
 
+            // Upload file kalau ada
             if ($request->hasFile('file_pdf')) {
                 $validated['file_pdf'] = $request->file('file_pdf')
                     ->store('pedoman_pdfs', 'public');
@@ -52,7 +55,8 @@ class TambahPedomanController extends Controller
 
             return redirect()->back()->with('success', 'Pedoman berhasil ditambahkan!');
         } catch (Exception $e) {
-            return redirect()->back()->withInput()->with('error', 'Gagal menyimpan: ' . $e->getMessage());
+            return redirect()->back()->withInput()
+                ->with('error', 'Gagal menyimpan: ' . $e->getMessage());
         }
     }
 }

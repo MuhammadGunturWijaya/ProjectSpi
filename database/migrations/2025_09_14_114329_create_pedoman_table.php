@@ -10,17 +10,20 @@ return new class extends Migration {
         Schema::create('pedoman', function (Blueprint $table) {
             $table->id();
 
+            // ===== Jenis Pedoman =====
+            $table->enum('jenis', ['audit', 'reviu', 'monev']); // ✅ jenis pedoman
+
             // ===== MATERI POKOK PERATURAN =====
-            $table->string('judul');                       // Judul materi
-            $table->year('tahun')->nullable();             // Tahun
-            $table->string('kata_kunci')->nullable();      // Kata kunci
-            $table->text('abstrak')->nullable();           // Abstrak
-            $table->text('catatan')->nullable();           // Catatan
+            $table->string('judul');
+            $table->year('tahun')->nullable();
+            $table->string('kata_kunci')->nullable();
+            $table->text('abstrak')->nullable();
+            $table->text('catatan')->nullable();
 
             // ===== METADATA PERATURAN =====
             $table->string('tipe_dokumen')->nullable();
-            $table->string('judul_meta')->nullable();      // Judul metadata
-            $table->string('teu')->nullable();             // T.E.U
+            $table->string('judul_meta')->nullable();
+            $table->string('teu')->nullable();
             $table->string('nomor')->nullable();
             $table->string('bentuk')->nullable();
             $table->string('bentuk_singkat')->nullable();
@@ -37,8 +40,8 @@ return new class extends Migration {
             $table->string('bidang')->nullable();
 
             // ===== FILE & STATUS =====
-            $table->string('file_pdf')->nullable();        // path pdf
-            $table->string('mencabut')->nullable();        // status mencabut
+            $table->string('file_pdf')->nullable();
+            $table->string('mencabut')->nullable();
 
             $table->timestamps();
         });

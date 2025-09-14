@@ -1253,6 +1253,16 @@
                         <p class="section-desc">Informasi dasar dokumen seperti judul, tahun, dan ringkasan.</p>
                     </div>
                     <div class="form-group">
+                        <label>Pilih Jenis Pedoman <span class="required">*</span></label>
+                        <div class="button-group">
+                            <button type="button" class="btn btn-outline" data-jenis="audit">Pedoman Audit</button>
+                            <button type="button" class="btn btn-outline" data-jenis="reviu">Pedoman Reviu</button>
+                            <button type="button" class="btn btn-outline" data-jenis="monev">Pedoman Monev</button>
+                        </div>
+                        <input type="hidden" name="jenis" id="jenisPedoman" required>
+                    </div>
+
+                    <div class="form-group">
                         <label for="judul">Judul <span class="required">*</span></label>
                         <input type="text" id="judul" name="judul" required placeholder="Masukkan judul peraturan">
                     </div>
@@ -1431,6 +1441,34 @@
     </div>
 
     <style>
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .button-group .btn-outline {
+            background: #ecf0f1;
+            color: #34495e;
+            border: 1px solid #bdc3c7;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .button-group .btn-outline:hover {
+            background: #3498db;
+            color: #fff;
+            border-color: #2980b9;
+        }
+
+        .button-group .btn-outline.active {
+            background: #2980b9;
+            color: #fff;
+            border-color: #2980b9;
+        }
+
         select {
             width: 100%;
             padding: 12px 18px;
@@ -1849,6 +1887,21 @@
             const submitBtn = document.getElementById("submitBtn");
             let currentStep = 0;
 
+            // --- Button Jenis Pedoman ---
+            const jenisButtons = document.querySelectorAll('.button-group .btn-outline');
+            const jenisInput = document.getElementById('jenisPedoman');
+
+            jenisButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Hapus active dari semua tombol
+                    jenisButtons.forEach(b => b.classList.remove('active'));
+                    // Aktifkan tombol yang diklik
+                    btn.classList.add('active');
+                    // Set value hidden input
+                    jenisInput.value = btn.getAttribute('data-jenis');
+                });
+            });
+
             // Function to show/hide steps and buttons
             function showStep(index) {
                 contents.forEach((c, i) => c.classList.toggle("active", i === index));
@@ -1885,7 +1938,6 @@
                 btn.addEventListener("click", function (e) {
                     e.preventDefault();
                     modalTambah.style.display = "block";
-                    // Reset to the first step whenever the modal is opened
                     currentStep = 0;
                     showStep(currentStep);
                 });
@@ -1937,7 +1989,7 @@
             // Initial state
             showStep(currentStep);
 
-            // Additional listener for file input to show file name
+            // --- File input display ---
             const fileInput = document.getElementById("file_pdf");
             const fileNameDisplay = document.getElementById("file-name");
 
@@ -1952,6 +2004,7 @@
             }
         });
     </script>
+
     @include('layouts.NavbarBawah')
 </body>
 
