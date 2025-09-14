@@ -12,6 +12,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <style>
+        /* ==== style yang sudah ada ==== */
         :root {
             --primary-color: #0a6f8b;
             --primary-dark: #074e61;
@@ -105,12 +106,6 @@
             align-items: center;
             max-width: 1200px;
             margin: 0 auto;
-        }
-
-        .navbar-bawah-brand {
-            font-size: 1.4rem;
-            font-weight: 700;
-            text-transform: uppercase;
         }
 
         .navbar-bawah-links {
@@ -236,8 +231,6 @@
             padding: 1rem 1.5rem;
             background-color: var(--light-gray);
             border-bottom: 1px solid var(--light-gray);
-            display: flex;
-            align-items: center;
         }
 
         .metadata-item dd {
@@ -246,18 +239,12 @@
             color: var(--light-text);
         }
 
-        .metadata-item:last-child dt,
-        .metadata-item:last-child dd {
-            border-bottom: none;
-        }
-
         .social-share {
             margin-top: 1.5rem;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 0.75rem;
-            text-align: center;
         }
 
         .social-share .share-text {
@@ -280,66 +267,10 @@
             transition: background-color var(--transition-speed), transform var(--transition-speed);
         }
 
-        .social-share .social-icon.twitter {
-            color: #1da1f2;
-        }
-
-        .social-share .social-icon.facebook {
-            color: #3b5998;
-        }
-
-        .social-share .social-icon.whatsapp {
-            color: #25d366;
-        }
-
         .social-share .social-icon:hover {
             transform: translateY(-3px);
             background-color: var(--primary-color);
             color: var(--white);
-        }
-
-        .abstract-content {
-            color: var(--light-text);
-            font-size: 1rem;
-        }
-
-        .related-regulations ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .related-regulations li {
-            margin-bottom: 0.75rem;
-        }
-
-        .related-regulations a {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-size: 0.95rem;
-            transition: color var(--transition-speed), text-decoration var(--transition-speed);
-        }
-
-        .related-regulations a:hover {
-            color: var(--primary-dark);
-            text-decoration: underline;
-        }
-
-        .status-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 1rem;
-            font-size: 1rem;
-        }
-
-        .status-item i {
-            color: var(--primary-color);
-            font-size: 1.2rem;
-        }
-
-        .status-item .status-label {
-            font-weight: 600;
-            margin-bottom: 0.5rem;
         }
 
         .file-card-content {
@@ -369,10 +300,48 @@
                 flex-direction: column;
                 gap: 1rem;
             }
+        }
 
-            .navbar-bawah-links {
-                gap: 1rem;
-            }
+        /* ===== Tambahan: Popup Admin ===== */
+        .popup-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.55);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .popup-content {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            width: 90%;
+            max-width: 500px;
+            padding: 2rem;
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .popup-content h3 {
+            margin-bottom: 1rem;
+            color: var(--primary-dark);
+        }
+
+        .popup-actions {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .close-popup {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.2rem;
+            color: var(--light-text);
+            cursor: pointer;
         }
     </style>
 </head>
@@ -388,7 +357,7 @@
 
     <div class="navbar-bawah">
         <div class="navbar-bawah-container">
-           
+
             <div class="navbar-bawah-links center">
                 <a href="#"><i class="fas fa-home"></i> Beranda</a>
                 <a href="#"><i class="fas fa-book"></i> Peraturan</a>
@@ -403,8 +372,9 @@
                 <div class="card">
                     <div class="card-header">
                         <h2><i class="fas fa-info-circle"></i> Ringkasan Peraturan</h2>
-                        <a href="#" class="btn-primary">Lihat Selengkapnya</a>
+                        <a href="#" class="btn-primary" id="openPopup">Lihat Selengkapnya</a>
                     </div>
+
                     <p class="abstract-content">
                         Peraturan ini mengatur tentang ketentuan umum, kedudukan, tugas dan fungsi, susunan organisasi,
                         tata kerja, penataan organisasi, sumber daya manusia, ketentuan pelatihan, dan ketentuan penutup
@@ -537,8 +507,38 @@
                 </div>
             </div>
         </div>
+
+
     </main>
+
     @include('layouts.NavbarBawah')
+    <!-- ===== Popup admin ===== -->
+    <div class="popup-overlay" id="popup">
+        <div class="popup-content">
+            <span class="close-popup" id="closePopup">&times;</span>
+            <h3>Kelola Peraturan</h3>
+            <p>Pilih aksi untuk mengelola peraturan ini:</p>
+            <div class="popup-actions">
+                <a href="#" class="btn btn-primary">Edit</a>
+                <a href="#" class="btn btn-secondary">Hapus</a>
+                <a href="#" class="btn btn-primary">Tambah Baru</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const openPopup = document.getElementById('openPopup');
+        const closePopup = document.getElementById('closePopup');
+        const popup = document.getElementById('popup');
+        openPopup.addEventListener('click', e => {
+            e.preventDefault();
+            popup.style.display = 'flex';
+        });
+        closePopup.addEventListener('click', () => popup.style.display = 'none');
+        popup.addEventListener('click', e => {
+            if (e.target === popup) popup.style.display = 'none';
+        });
+    </script>
 </body>
 
 </html>

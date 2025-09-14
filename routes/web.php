@@ -22,6 +22,8 @@ use App\Http\Controllers\AkuntabilitasController;
 use App\Http\Controllers\PedomanPengawasanController;
 use App\Http\Controllers\detailPedomanController;
 
+use App\Http\Controllers\TambahPedomanController;
+
 // Halaman landing
 Route::get('/', [LandingPageController::class, 'index'])->name('landingpage');
 Route::get('/landing', [LandingPageController::class, 'index'])->name('landing');
@@ -159,3 +161,7 @@ Route::get('/pedoman-pengawasan', [PedomanPengawasanController::class, 'index'])
 
 // route ke halaman detai pedoman 
 Route::get('/pedoman/detail', [detailPedomanController::class, 'index'])->name('detail-pedoman');
+
+
+Route::post('/pedoman', [TambahPedomanController::class, 'store'])
+    ->name('pedoman.store');

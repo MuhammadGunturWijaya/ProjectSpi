@@ -709,18 +709,16 @@
         }
 
         .btn-cancel {
-            background: #f1f2f5;
-            color: #555;
-            padding: 10px 24px;
+            background: #ccc;
+            color: #333;
+            padding: 8px 16px;
             border: none;
-            border-radius: 40px;
-            font-weight: 600;
+            border-radius: 5px;
             cursor: pointer;
-            transition: background .3s;
         }
 
         .btn-cancel:hover {
-            background: #e3e5ea;
+            background: #aaa;
         }
     </style>
 </head>
@@ -1153,7 +1151,15 @@
     <section class="classification" id="pedomanreviu">
         <div class="classification-header">
             <h2>Pedoman <span class="audit-text">Reviu</span></h2>
-            <a href="#"><i class="fa fa-chart-bar"></i> Lihat Lebih</a>
+            <div class="header-actions">
+                <a href="#"><i class="fa fa-chart-bar"></i> Lihat Lebih</a>
+
+                @if(Auth::check() && Auth::user()->role === 'admin')
+                    <a href="#" id="btnTambahAudit">
+                        <i class="fa fa-plus"></i> Tambah Pedoman
+                    </a>
+                @endif
+            </div>
         </div>
         <div class="grid">
             <div class="card">
@@ -1199,6 +1205,753 @@
         </div>
     </section>
 
+    <!-- Modal Tambah Pedoman -->
+    <div id="modalTambahPedoman" class="modal">
+        <div class="modal-box">
+            <button class="close" id="closeModalTambah" aria-label="Close modal">&times;</button>
+            <h2 class="modal-title">Tambah Dokumen Pedoman</h2>
+            {{-- Pesan error umum (misal gagal simpan) --}}
+            @if (session('error'))
+                <div class="alert alert-danger" role="alert">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            {{-- Pesan validasi dari Laravel --}}
+            @if ($errors->any())
+                <div class="alert alert-danger" role="alert">
+                    <ul style="margin:0; padding-left:20px;">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            <div class="stepper-nav" role="tablist" aria-label="Form Steps">
+                <button class="step-nav-item active" data-step="1" role="tab" aria-selected="true"
+                    aria-controls="step1-content" id="step1">
+                    <span class="step-number">1</span> Materi Pokok
+                </button>
+                <button class="step-nav-item" data-step="2" role="tab" aria-selected="false"
+                    aria-controls="step2-content" id="step2">
+                    <span class="step-number">2</span> Metadata
+                </button>
+                <button class="step-nav-item" data-step="3" role="tab" aria-selected="false"
+                    aria-controls="step3-content" id="step3">
+                    <span class="step-number">3</span> Berkas & Status
+                </button>
+            </div>
+
+            <form id="formTambahPedoman" action="{{ route('pedoman.store') }}" method="POST"
+                enctype="multipart/form-data" novalidate>
+                @csrf
+
+                <section class="step-content active" data-step="1" id="step1-content" role="tabpanel"
+                    aria-labelledby="step1">
+                    <div class="form-section-header">
+                        <h4>Materi Pokok Dokumen</h4>
+                        <p class="section-desc">Informasi dasar dokumen seperti judul, tahun, dan ringkasan.</p>
+                    </div>
+                    <div class="form-group">
+                        <label for="judul">Judul <span class="required">*</span></label>
+                        <input type="text" id="judul" name="judul" required placeholder="Masukkan judul peraturan">
+                    </div>
+                    <div class="form-group">
+                        <label for="tahun">Tahun <span class="required">*</span></label>
+                        <select id="tahun" name="tahun" required>
+                            <option value="">Pilih Tahun</option>
+                            @for ($y = date('Y'); $y >= 1900; $y--)
+                                <option value="{{ $y }}">{{ $y }}</option>
+                            @endfor
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="kata_kunci">Kata Kunci</label>
+                        <input type="text" id="kata_kunci" name="kata_kunci"
+                            placeholder="Pisahkan dengan koma, contoh: pajak, bea cukai">
+                    </div>
+                    <div class="form-group">
+                        <label for="abstrak">Abstrak</label>
+                        <textarea id="abstrak" name="abstrak" rows="4"
+                            placeholder="Tuliskan ringkasan isi peraturan"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="catatan">Catatan</label>
+                        <textarea id="catatan" name="catatan" rows="2"
+                            placeholder="Catatan atau informasi tambahan"></textarea>
+                    </div>
+                </section>
+
+                <section class="step-content" data-step="2" id="step2-content" role="tabpanel" aria-labelledby="step2">
+                    <div class="form-section-header">
+                        <h4>Metadata Dokumen</h4>
+                        <p class="section-desc">Detail teknis dokumen seperti nomor, tanggal, dan sumber.</p>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label for="tipe_dokumen">Tipe Dokumen</label>
+                            <input type="text" id="tipe_dokumen" name="tipe_dokumen"
+                                placeholder="Contoh: Peraturan Pemerintah">
+                        </div>
+                        <div class="form-group">
+                            <label for="judul_meta">Judul Metadata</label>
+                            <input type="text" id="judul_meta" name="judul_meta" placeholder="Judul metadata">
+                        </div>
+                        <div class="form-group">
+                            <label for="teu">T.E.U.</label>
+                            <input type="text" id="teu" name="teu" placeholder="Tanda Efektif Umum">
+                        </div>
+                        <div class="form-group">
+                            <label for="nomor">Nomor</label>
+                            <input type="text" id="nomor" name="nomor" placeholder="Nomor peraturan">
+                        </div>
+                        <div class="form-group">
+                            <label for="bentuk">Bentuk</label>
+                            <input type="text" id="bentuk" name="bentuk" placeholder="Bentuk peraturan">
+                        </div>
+                        <div class="form-group">
+                            <label for="bentuk_singkat">Bentuk Singkat</label>
+                            <input type="text" id="bentuk_singkat" name="bentuk_singkat" placeholder="Singkatan bentuk">
+                        </div>
+                        <div class="form-group">
+                            <label for="tahun_meta">Tahun Metadata</label>
+                            <select id="tahun_meta" name="tahun_meta">
+                                <option value="">Pilih Tahun</option>
+                                @for ($y = date('Y'); $y >= 1900; $y--)
+                                    <option value="{{ $y }}">{{ $y }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="tempat_penetapan">Tempat Penetapan</label>
+                            <input type="text" id="tempat_penetapan" name="tempat_penetapan"
+                                placeholder="Lokasi penetapan">
+                        </div>
+                        <div class="form-group">
+                            <label for="tanggal_penetapan">Tanggal Penetapan</label>
+                            <input type="date" id="tanggal_penetapan" name="tanggal_penetapan">
+                        </div>
+                        <div class="form-group">
+                            <label for="tanggal_pengundangan">Tanggal Pengundangan</label>
+                            <input type="date" id="tanggal_pengundangan" name="tanggal_pengundangan">
+                        </div>
+                        <div class="form-group">
+                            <label for="tanggal_berlaku">Tanggal Berlaku</label>
+                            <input type="date" id="tanggal_berlaku" name="tanggal_berlaku">
+                        </div>
+                        <div class="form-group">
+                            <label for="sumber">Sumber</label>
+                            <input type="text" id="sumber" name="sumber" placeholder="Sumber peraturan">
+                        </div>
+                        <div class="form-group">
+                            <label for="subjek">Subjek</label>
+                            <input type="text" id="subjek" name="subjek" placeholder="Subjek terkait">
+                        </div>
+                        <div class="form-group">
+                            <label for="status">Status</label>
+                            <input type="text" id="status" name="status" placeholder="Status peraturan">
+                        </div>
+                        <div class="form-group">
+                            <label for="bahasa">Bahasa</label>
+                            <input type="text" id="bahasa" name="bahasa" placeholder="Bahasa dokumen">
+                        </div>
+                        <div class="form-group">
+                            <label for="lokasi">Lokasi</label>
+                            <input type="text" id="lokasi" name="lokasi" placeholder="Lokasi penyimpanan">
+                        </div>
+                        <div class="form-group">
+                            <label for="bidang">Bidang</label>
+                            <input type="text" id="bidang" name="bidang" placeholder="Bidang terkait">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="step-content" data-step="3" id="step3-content" role="tabpanel" aria-labelledby="step3">
+                    <div class="form-section-header">
+                        <h4>Berkas Dokumen & Status</h4>
+                        <p class="section-desc">Unggah file dokumen dan isi informasi status.</p>
+                    </div>
+                    <div class="form-group file-upload-group">
+                        <label for="file_pdf" class="file-label">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="icon-upload">
+                                <path
+                                    d="M4 14.899V20a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5.101M16 16l-4-4-4 4M12 12.5V2.5" />
+                            </svg>
+                            Pilih Berkas PDF
+                        </label>
+                        <input type="file" id="file_pdf" name="file_pdf" accept="application/pdf"
+                            aria-describedby="fileHelp" />
+                        <span id="file-name" class="file-name-display">Belum ada file yang dipilih.</span>
+                        <small id="fileHelp" class="file-help">Format: PDF, maksimal 10MB.</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mencabut">Mencabut</label>
+                        <input type="text" id="mencabut" name="mencabut" placeholder="Tuliskan peraturan yang dicabut">
+                    </div>
+                </section>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="prevStep"
+                        aria-label="Kembali ke langkah sebelumnya" style="display:none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="icon-arrow">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        Kembali
+                    </button>
+                    <button type="button" class="btn btn-primary" id="nextStep"
+                        aria-label="Lanjut ke langkah berikutnya">
+                        Lanjut
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="icon-arrow">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
+                    <button type="submit" class="btn btn-submit" id="submitBtn" style="display:none"
+                        aria-label="Simpan data">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="icon-save">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                            <polyline points="7 3 7 8 15 8"></polyline>
+                        </svg>
+                        Simpan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <style>
+        select {
+            width: 100%;
+            padding: 12px 18px;
+            font-size: 1rem;
+            border: 1px solid #dfe6e9;
+            border-radius: 10px;
+            background-color: #f7f9fb;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            color: #2c3e50;
+        }
+
+        select:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.2);
+            background-color: #fff;
+            outline: none;
+        }
+
+        .alert {
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background: #e8f8f5;
+            border: 1px solid #a3e4d7;
+            color: #117864;
+        }
+
+        .alert-danger {
+            background: #fdecea;
+            border: 1px solid #f5c2c7;
+            color: #b71c1c;
+        }
+
+
+        /* Styling improvements for a modern look */
+        body {
+            font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #e9eff5;
+            color: #34495e;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            inset: 0;
+            background: rgba(44, 62, 80, 0.7);
+            backdrop-filter: blur(8px);
+            padding: 30px 15px;
+            overflow-y: auto;
+            transition: all 0.4s ease;
+        }
+
+        .modal-box {
+            background: #ffffff;
+            max-width: 700px;
+            margin: 40px auto;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            padding: 40px 50px;
+            position: relative;
+            animation: modalPop 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        .close {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 2.5rem;
+            color: #aeb6bf;
+            background: none;
+            border: none;
+            cursor: pointer;
+            transition: color 0.3s ease, transform 0.2s ease;
+            line-height: 1;
+        }
+
+        .close:hover {
+            color: #e74c3c;
+            transform: rotate(90deg);
+        }
+
+        .modal-title {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #34495e;
+            text-align: center;
+            margin-bottom: 25px;
+            position: relative;
+        }
+
+        .modal-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: #3498db;
+            margin: 10px auto 0;
+            border-radius: 2px;
+        }
+
+        /* Stepper Navigation */
+        .stepper-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 40px;
+            position: relative;
+        }
+
+        .stepper-nav::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: #ecf0f1;
+            z-index: 1;
+            transform: translateY(-50%);
+        }
+
+        .stepper-nav .step-nav-item {
+            flex: 1;
+            background: #ecf0f1;
+            color: #95a5a6;
+            font-weight: 600;
+            font-size: 1rem;
+            padding: 12px 10px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 2;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .step-nav-item .step-number {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #bdc3c7;
+            color: #fff;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .stepper-nav .step-nav-item.active {
+            background: #3498db;
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.4);
+            transform: translateY(-5px);
+        }
+
+        .stepper-nav .step-nav-item.active .step-number {
+            background: #2980b9;
+        }
+
+        .stepper-nav .step-nav-item:hover:not(.active) {
+            background: #d4e6f1;
+            color: #2c3e50;
+        }
+
+        .stepper-nav .step-nav-item:focus-visible {
+            outline: 3px solid #85c1e9;
+            outline-offset: 4px;
+        }
+
+        .step-content {
+            display: none;
+            animation: fadeInContent 0.5s cubic-bezier(0.39, 0.575, 0.565, 1) forwards;
+        }
+
+        .step-content.active {
+            display: block;
+        }
+
+        /* Form Sections */
+        .form-section-header {
+            margin-bottom: 25px;
+            border-bottom: 1px solid #dfe6e9;
+            padding-bottom: 15px;
+        }
+
+        .form-section-header h4 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #34495e;
+            margin-bottom: 5px;
+        }
+
+        .form-section-header .section-desc {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #555;
+            font-size: 0.95rem;
+        }
+
+        .required {
+            color: #e74c3c;
+            margin-left: 2px;
+        }
+
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        textarea {
+            width: 100%;
+            padding: 12px 18px;
+            font-size: 1rem;
+            border: 1px solid #dfe6e9;
+            border-radius: 10px;
+            background-color: #f7f9fb;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            color: #2c3e50;
+        }
+
+        input:focus,
+        textarea:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.2);
+            background-color: #fff;
+            outline: none;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        /* File Upload */
+        .file-upload-group {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .file-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: #3498db;
+            color: #fff;
+            padding: 12px 22px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.3s ease, box-shadow 0.3s ease;
+            font-size: 1rem;
+            box-shadow: 0 4px 12px rgba(52, 152, 219, 0.2);
+        }
+
+        .file-label:hover {
+            background: #2980b9;
+            box-shadow: 0 6px 15px rgba(41, 128, 185, 0.3);
+        }
+
+        .icon-upload {
+            width: 22px;
+            height: 22px;
+        }
+
+        .file-name-display {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #555;
+            font-style: italic;
+        }
+
+        .file-help {
+            font-size: 0.8rem;
+            color: #95a5a6;
+            margin-top: 4px;
+        }
+
+        /* Buttons */
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 40px;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 25px;
+            font-weight: 600;
+            font-size: 1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+            border: none;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+            box-shadow: 0 5px 15px rgba(41, 128, 185, 0.3);
+        }
+
+        .btn-secondary {
+            background: #ecf0f1;
+            color: #7f8c8d;
+            border: 1px solid #bdc3c7;
+        }
+
+        .btn-secondary:hover {
+            background: #d4e6f1;
+            color: #34495e;
+        }
+
+        .btn-submit {
+            flex-grow: 1;
+            background: #2980b9;
+            color: #fff;
+            font-weight: 700;
+            font-size: 1.1rem;
+            padding: 15px 0;
+            box-shadow: 0 5px 20px rgba(46, 204, 113, 0.3);
+        }
+
+        .btn-submit:hover {
+            background: #27ae60;
+            box-shadow: 0 8px 25px rgba(39, 174, 96, 0.4);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .modal-box {
+                padding: 30px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+
+            .stepper-nav {
+                flex-direction: column;
+                gap: 15px;
+                margin-bottom: 30px;
+            }
+
+            .stepper-nav::before {
+                display: none;
+            }
+
+            .stepper-nav .step-nav-item {
+                width: 100%;
+                justify-content: flex-start;
+                padding-left: 20px;
+            }
+        }
+    </style>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const modalTambah = document.getElementById("modalTambahPedoman");
+            const btnOpenModal = document.querySelectorAll("#btnTambahAudit, #btnTambahReviu");
+            const btnCloseModal = document.getElementById("closeModalTambah");
+
+            const steps = document.querySelectorAll(".step-nav-item");
+            const contents = document.querySelectorAll(".step-content");
+            const nextBtn = document.getElementById("nextStep");
+            const prevBtn = document.getElementById("prevStep");
+            const submitBtn = document.getElementById("submitBtn");
+            let currentStep = 0;
+
+            // Function to show/hide steps and buttons
+            function showStep(index) {
+                contents.forEach((c, i) => c.classList.toggle("active", i === index));
+                steps.forEach((s, i) => s.classList.toggle("active", i === index));
+
+                prevBtn.style.display = index === 0 ? "none" : "inline-flex";
+                nextBtn.style.display = index === contents.length - 1 ? "none" : "inline-flex";
+                submitBtn.style.display = index === contents.length - 1 ? "inline-flex" : "none";
+            }
+
+            // Function to validate the current step
+            function validateStep(index) {
+                const currentContent = contents[index];
+                const requiredInputs = currentContent.querySelectorAll("[required]");
+                let isValid = true;
+
+                requiredInputs.forEach(input => {
+                    if (!input.value) {
+                        input.classList.add("is-invalid");
+                        isValid = false;
+                    } else {
+                        input.classList.remove("is-invalid");
+                    }
+                });
+
+                if (!isValid) {
+                    alert("Harap lengkapi semua bidang yang wajib diisi (*).");
+                }
+                return isValid;
+            }
+
+            // --- Event Listeners for Modal Control ---
+            btnOpenModal.forEach(btn => {
+                btn.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    modalTambah.style.display = "block";
+                    // Reset to the first step whenever the modal is opened
+                    currentStep = 0;
+                    showStep(currentStep);
+                });
+            });
+
+            if (btnCloseModal) {
+                btnCloseModal.addEventListener("click", function () {
+                    modalTambah.style.display = "none";
+                });
+            }
+
+            window.addEventListener("click", function (e) {
+                if (e.target === modalTambah) {
+                    modalTambah.style.display = "none";
+                }
+            });
+
+            // --- Event Listeners for Stepper ---
+            steps.forEach((step, idx) => {
+                step.addEventListener("click", () => {
+                    if (idx < currentStep) {
+                        currentStep = idx;
+                        showStep(currentStep);
+                    } else if (idx > currentStep) {
+                        if (validateStep(currentStep)) {
+                            currentStep = idx;
+                            showStep(currentStep);
+                        }
+                    }
+                });
+            });
+
+            nextBtn.addEventListener("click", () => {
+                if (validateStep(currentStep)) {
+                    if (currentStep < contents.length - 1) {
+                        currentStep++;
+                        showStep(currentStep);
+                    }
+                }
+            });
+
+            prevBtn.addEventListener("click", () => {
+                if (currentStep > 0) {
+                    currentStep--;
+                    showStep(currentStep);
+                }
+            });
+
+            // Initial state
+            showStep(currentStep);
+
+            // Additional listener for file input to show file name
+            const fileInput = document.getElementById("file_pdf");
+            const fileNameDisplay = document.getElementById("file-name");
+
+            if (fileInput && fileNameDisplay) {
+                fileInput.addEventListener("change", function () {
+                    if (this.files.length > 0) {
+                        fileNameDisplay.textContent = this.files[0].name;
+                    } else {
+                        fileNameDisplay.textContent = "Belum ada file yang dipilih.";
+                    }
+                });
+            }
+        });
+    </script>
     @include('layouts.NavbarBawah')
 </body>
 
