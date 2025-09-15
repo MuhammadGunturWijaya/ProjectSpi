@@ -369,19 +369,20 @@
     <main class="container">
         <div class="main-content">
             <div class="left-column">
+                <!-- Ringkasan Peraturan -->
                 <div class="card">
                     <div class="card-header">
                         <h2><i class="fas fa-info-circle"></i> Ringkasan Peraturan</h2>
-                        <a href="#" class="btn-primary" id="openPopup">Lihat Selengkapnya</a>
+                        <a href="#" class="btn-primary openPopup" data-id="{{ $pedoman->id }}">
+                            Lihat Selengkapnya
+                        </a>
                     </div>
-
                     <p class="abstract-content">
-                        Peraturan ini mengatur tentang ketentuan umum, kedudukan, tugas dan fungsi, susunan organisasi,
-                        tata kerja, penataan organisasi, sumber daya manusia, ketentuan pelatihan, dan ketentuan penutup
-                        dari Sekretariat Komite Stabilitas Sistem Keuangan.
+                        {{ $pedoman->abstrak ?? 'Tidak ada ringkasan tersedia.' }}
                     </p>
                 </div>
 
+                <!-- Metadata Peraturan -->
                 <div class="card" style="margin-top: 2rem;">
                     <div class="card-header">
                         <h2><i class="fas fa-tags"></i> Metadata Peraturan</h2>
@@ -389,156 +390,346 @@
                     <dl class="metadata-grid">
                         <div class="metadata-item">
                             <dt>Tipe Dokumen</dt>
-                            <dd>Peraturan Perundang-undangan</dd>
+                            <dd>{{ $pedoman->tipe_dokumen ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Judul</dt>
-                            <dd>Peraturan Menteri Keuangan Nomor 64 Tahun 2025 tentang Organisasi dan Tata Kerja
-                                Sekretariat Komite Stabilitas Sistem Keuangan</dd>
+                            <dd>{{ $pedoman->judul_meta ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>T.E.U.</dt>
-                            <dd>Indonesia. Kementerian Keuangan</dd>
+                            <dd>{{ $pedoman->teu ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Nomor</dt>
-                            <dd>64</dd>
+                            <dd>{{ $pedoman->nomor ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Bentuk</dt>
-                            <dd>Peraturan Menteri Keuangan</dd>
+                            <dd>{{ $pedoman->bentuk ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Bentuk Singkat</dt>
-                            <dd>PMK</dd>
+                            <dd>{{ $pedoman->bentuk_singkat ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Tahun</dt>
-                            <dd>2025</dd>
+                            <dd>{{ $pedoman->tahun_meta ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Tempat Penetapan</dt>
-                            <dd>Jakarta</dd>
+                            <dd>{{ $pedoman->tempat_penetapan ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Tanggal Penetapan</dt>
-                            <dd>28 Agustus 2025</dd>
+                            <dd>{{ $pedoman->tanggal_penetapan?->format('d F Y') ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Tanggal Pengundangan</dt>
-                            <dd>04 September 2025</dd>
+                            <dd>{{ $pedoman->tanggal_pengundangan?->format('d F Y') ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Tanggal Berlaku</dt>
-                            <dd>04 September 2025</dd>
+                            <dd>{{ $pedoman->tanggal_berlaku?->format('d F Y') ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Sumber</dt>
-                            <dd>BN.2025 (666)/4 hlm</dd>
+                            <dd>{{ $pedoman->sumber ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Subjek</dt>
-                            <dd>STRUKTUR ORGANISASI</dd>
+                            <dd>{{ $pedoman->subjek ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Status</dt>
-                            <dd>Berlaku</dd>
+                            <dd>{{ $pedoman->status ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Bahasa</dt>
-                            <dd>Bahasa Indonesia</dd>
+                            <dd>{{ $pedoman->bahasa ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Lokasi</dt>
-                            <dd>Kementerian Keuangan</dd>
+                            <dd>{{ $pedoman->lokasi ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Bidang</dt>
-                            <dd>HUKUM TATA NEGARA</dd>
+                            <dd>{{ $pedoman->bidang ?? '-' }}</dd>
                         </div>
                     </dl>
                     <div class="social-share">
-                        <span class="share-text">Halaman ini telah diakses 52 kali</span>
+                        <span class="share-text">Halaman ini telah diakses {{ $pedoman->view_count ?? 0 }} kali</span>
                         <a href="#" class="social-icon twitter"><i class="fab fa-twitter"></i></a>
                         <a href="#" class="social-icon facebook"><i class="fab fa-facebook-f"></i></a>
                         <a href="#" class="social-icon whatsapp"><i class="fab fa-whatsapp"></i></a>
                     </div>
                 </div>
 
+                <!-- Uji Materi -->
                 <div class="card" style="margin-top: 2rem;">
                     <div class="card-header">
                         <h2><i class="fas fa-balance-scale"></i> Uji Materi</h2>
                     </div>
-                    <p class="abstract-content">Belum Tersedia</p>
+                    <p class="abstract-content">{{ $pedoman->uji_materi ?? 'Belum Tersedia' }}</p>
                 </div>
             </div>
 
+            <!-- Right Column -->
             <div class="right-column">
+                <!-- File Peraturan -->
                 <div class="card">
                     <div class="card-header">
                         <h2><i class="fas fa-file-download"></i> File Peraturan</h2>
                     </div>
                     <div class="file-card-content">
                         <i class="fas fa-file-pdf file-icon"></i>
-                        <div class="file-name">64 th 2025.pdf</div>
+                        <div class="file-name">{{ $pedoman->file_pdf ?? 'Tidak ada file' }}</div>
                         <div class="btn-group">
-                            <a href="#" class="btn btn-secondary">Preview</a>
-                            <a href="#" class="btn btn-primary">Download</a>
+                            @php
+                                $filePath = $pedoman->file_pdf ? asset('storage/' . trim($pedoman->file_pdf)) : null;
+                            @endphp
+
+                            @if($filePath)
+                                <a href="{{ $filePath }}" class="btn btn-secondary" target="_blank">Preview</a>
+                                <a href="{{ $filePath }}" class="btn btn-primary" download>Download</a>
+                            @else
+                                <span class="btn btn-secondary disabled">Preview</span>
+                                <span class="btn btn-primary disabled">Download</span>
+                            @endif
                         </div>
                     </div>
                 </div>
 
+                <!-- Status Peraturan -->
                 <div class="card" style="margin-top: 2rem;">
                     <div class="card-header">
                         <h2><i class="fas fa-check-circle"></i> Status Peraturan</h2>
                     </div>
                     <div class="related-regulations">
-                        <div class="status-item">
-                            <i class="fas fa-arrow-circle-right"></i>
-                            <div>
-                                <div class="status-label">Mencabut:</div>
-                                <ul>
-                                    <li><a href="#">PMK No. 92/PMK.01/2017 tentang Organisasi dan Tata Kerja Sekretariat
-                                            Komite Stabilitas Sistem Keuangan</a></li>
-                                </ul>
+                        @if($pedoman->mencabut)
+                            <div class="status-item">
+                                <i class="fas fa-arrow-circle-right"></i>
+                                <div>
+                                    <div class="status-label">Mencabut:</div>
+                                    <ul>
+                                        @foreach(explode("\n", $pedoman->mencabut) as $item)
+                                            <li>{{ $item }}</li>
+                                        @endforeach
+                                    </ul>
+                                </div>
                             </div>
-                        </div>
+                        @else
+                            <p>Tidak ada status mencabut.</p>
+                        @endif
                     </div>
                 </div>
             </div>
+
         </div>
-
-
     </main>
 
+
     @include('layouts.NavbarBawah')
-    <!-- ===== Popup admin ===== -->
-    <div class="popup-overlay" id="popup">
+    <div class="popup-overlay" id="popup" style="display:none;">
         <div class="popup-content">
             <span class="close-popup" id="closePopup">&times;</span>
-            <h3>Kelola Peraturan</h3>
-            <p>Pilih aksi untuk mengelola peraturan ini:</p>
-            <div class="popup-actions">
-                <a href="#" class="btn btn-primary">Edit</a>
-                <a href="#" class="btn btn-secondary">Hapus</a>
-                <a href="#" class="btn btn-primary">Tambah Baru</a>
+            <h2 id="popup-judul"></h2>
+            <p><strong>Tahun: </strong><span id="popup-tahun"></span></p>
+            <p><strong>Kata Kunci: </strong><span id="popup-kata_kunci"></span></p>
+
+            <h3>Abstrak:</h3>
+            <ul id="popup-abstrak"></ul>
+
+            <h3>Catatan:</h3>
+            <ul id="popup-catatan"></ul>
+
+            <div class="popup-footer">
+                <button class="btn close-btn" id="closeBtnPopup">Tutup</button>
             </div>
         </div>
     </div>
 
+
+
+    <style>
+        /* --- Design based on the provided image --- */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .popup-content.original-style {
+            background-color: #f7f7f7;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            max-width: 850px;
+            width: 90%;
+            position: relative;
+            font-family: 'Times New Roman', Times, serif;
+            /* Using a classic font to match the document feel */
+            line-height: 1.6;
+            color: #333;
+        }
+
+        .close-popup {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 2.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .close-popup:hover {
+            color: #000;
+        }
+
+        .document-section {
+            margin-bottom: 1.5rem;
+        }
+
+        .doc-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 1rem;
+            color: #222;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-align: center;
+            margin: 0;
+        }
+
+        .section-heading {
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            text-decoration: underline;
+            text-transform: uppercase;
+        }
+
+        .abstract-list,
+        .notes-list {
+            list-style-type: none;
+            /* Remove default list bullets */
+            padding-left: 0;
+            margin-bottom: 1.5rem;
+        }
+
+        .abstract-list li,
+        .notes-list li {
+            position: relative;
+            padding-left: 1.5rem;
+            /* Space for the custom bullet */
+            margin-bottom: 1rem;
+        }
+
+        .abstract-list li::before {
+            content: "•";
+            /* Custom bullet point */
+            color: #333;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .notes-list li::before {
+            content: "•";
+            color: #333;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .popup-footer {
+            text-align: right;
+            margin-top: 2rem;
+            border-top: 1px solid #ccc;
+            padding-top: 1rem;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .close-btn {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .close-btn:hover {
+            background-color: #5a6268;
+        }
+
+        /* Make content scrollable for smaller screens */
+        .popup-content.original-style {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+    </style>
     <script>
-        const openPopup = document.getElementById('openPopup');
-        const closePopup = document.getElementById('closePopup');
-        const popup = document.getElementById('popup');
-        openPopup.addEventListener('click', e => {
-            e.preventDefault();
-            popup.style.display = 'flex';
+        // Gunakan selector sesuai tombol di HTML
+        document.querySelectorAll('.openPopup').forEach(link => {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                const pedomanId = this.dataset.id;
+
+                fetch(`/pedoman/detail/${pedomanId}`)
+                    .then(res => res.json())
+                    .then(data => {
+                        document.getElementById('popup-judul').textContent = data.judul;
+                        document.getElementById('popup-tahun').textContent = data.tahun;
+                        document.getElementById('popup-kata_kunci').textContent = data.kata_kunci || '';
+
+                        const abstrakList = document.getElementById('popup-abstrak');
+                        abstrakList.innerHTML = '';
+                        if (data.abstrak) {
+                            data.abstrak.split('\n').forEach(item => {
+                                const li = document.createElement('li');
+                                li.textContent = item;
+                                abstrakList.appendChild(li);
+                            });
+                        }
+
+                        const catatanList = document.getElementById('popup-catatan');
+                        catatanList.innerHTML = '';
+                        if (data.catatan) {
+                            data.catatan.split('\n').forEach(item => {
+                                const li = document.createElement('li');
+                                li.textContent = item;
+                                catatanList.appendChild(li);
+                            });
+                        }
+
+                        document.getElementById('popup').style.display = 'flex';
+                    })
+                    .catch(err => console.error('Error fetching pedoman:', err));
+            });
         });
-        closePopup.addEventListener('click', () => popup.style.display = 'none');
-        popup.addEventListener('click', e => {
-            if (e.target === popup) popup.style.display = 'none';
-        });
+
     </script>
+
+
 </body>
 
 </html>

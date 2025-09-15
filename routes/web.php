@@ -22,6 +22,8 @@ use App\Http\Controllers\AkuntabilitasController;
 use App\Http\Controllers\PedomanPengawasanController;
 use App\Http\Controllers\detailPedomanController;
 
+
+
 use App\Http\Controllers\TambahPedomanController;
 
 // Halaman landing
@@ -159,9 +161,18 @@ Route::get('/penguatan-akuntabilitas', [AkuntabilitasController::class, 'index']
 // route ke halaman pedoman pengawasan 
 Route::get('/pedoman-pengawasan', [PedomanPengawasanController::class, 'index'])->name('pedoman.pengawasan');
 
-// route ke halaman detai pedoman 
-Route::get('/pedoman/detail', [detailPedomanController::class, 'index'])->name('detail-pedoman');
+//
+Route::get('/pedoman/{id}', [PedomanPengawasanController::class, 'show'])->name('pedoman.show');
+
+// Halaman detail pedoman
+Route::get('/pedoman/{id}', [PedomanPengawasanController::class, 'show'])->name('pedoman.show');
+
+// 
+Route::get('/pedoman/detail/{id}', [PedomanPengawasanController::class, 'getDetail'])->name('pedoman.detail');
+Route::get('/pedoman/detail/{id}', [PedomanPengawasanController::class, 'getDetail']);
 
 
+//route ke halaman tambah pedoman
 Route::post('/pedoman', [TambahPedomanController::class, 'store'])
     ->name('pedoman.store');
+

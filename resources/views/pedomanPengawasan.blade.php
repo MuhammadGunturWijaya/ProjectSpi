@@ -1103,49 +1103,34 @@
                 @endif
             </div>
         </div>
+
         <div class="grid">
-            <div class="card">
-                <div class="card-icon-wrapper">
-                    <i class="fa fa-file-alt"></i>
+            @forelse($pedomanAudit as $pedoman)
+                <div class="card">
+                    <div class="card-icon-wrapper">
+                        <i class="fa fa-file-alt"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>{{ $pedoman->judul }}</h3>
+                        <p>Tahun: {{ $pedoman->tahun ?? '-' }}</p>
+                    </div>
+                    @if($pedoman->file_pdf)
+                        <a href="#" class="card-link" data-id="{{ $pedoman->id }}">
+                            Lihat Peraturan →
+                        </a>
+                    @else
+                        <a href="{{ route('pedoman.show', $pedoman->id) }}" class="card-link">
+                            Lihat Peraturan →
+                        </a>
+
+                    @endif
                 </div>
-                <div class="card-content">
-                    <h3>Peraturan BPK</h3>
-                    <p>Kumpulan Peraturan Badan Pemeriksa Keuangan.</p>
-                </div>
-                <a href="#" class="card-link">Lihat Peraturan →</a>
-            </div>
-            <div class="card">
-                <div class="card-icon-wrapper">
-                    <i class="fa fa-landmark"></i>
-                </div>
-                <div class="card-content">
-                    <h3>Peraturan Perundang-undangan Pusat</h3>
-                    <p>UU, PP, Perpres, dan lainnya.</p>
-                </div>
-                <a href="#" class="card-link">Lihat Peraturan →</a>
-            </div>
-            <div class="card">
-                <div class="card-icon-wrapper">
-                    <i class="fa fa-building"></i>
-                </div>
-                <div class="card-content">
-                    <h3>Peraturan Kementerian/Lembaga</h3>
-                    <p>Permendagri, Permenkeu, dan lainnya.</p>
-                </div>
-                <a href="{{ route('detail-pedoman') }}" class="card-link">Lihat Peraturan →</a>
-            </div>
-            <div class="card">
-                <div class="card-icon-wrapper">
-                    <i class="fa fa-map-marked-alt"></i>
-                </div>
-                <div class="card-content">
-                    <h3>Peraturan Daerah</h3>
-                    <p>Perda, Pergub, Perwali, dan lainnya.</p>
-                </div>
-                <a href="#" class="card-link">Lihat Peraturan →</a>
-            </div>
+            @empty
+                <p>Tidak ada pedoman audit.</p>
+            @endforelse
         </div>
     </section>
+
 
     <!-- pedoman reviu -->
     <section class="classification" id="pedomanreviu">
@@ -1190,7 +1175,8 @@
                     <h3>Peraturan Kementerian/Lembaga</h3>
                     <p>Permendagri, Permenkeu, dan lainnya.</p>
                 </div>
-                <a href="{{ route('detail-pedoman') }}" class="card-link">Lihat Peraturan →</a>
+                <a href="{{ route('pedoman.show', $pedoman->id) }}" class="card-link">Lihat Peraturan →</a>
+
             </div>
             <div class="card">
                 <div class="card-icon-wrapper">

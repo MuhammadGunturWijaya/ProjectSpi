@@ -36,4 +36,9 @@ class Pedoman extends Model
         'file_pdf',
         'mencabut'
     ];
+    protected $casts = [
+        'tanggal_penetapan' => 'datetime',
+        'tanggal_pengundangan' => 'datetime',
+        'tanggal_berlaku' => 'datetime',
+    ];
 }
