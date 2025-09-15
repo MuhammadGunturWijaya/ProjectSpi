@@ -57,9 +57,25 @@ class PedomanPengawasanController extends Controller
             'bidang' => $pedoman->bidang ?? '',
 
             // File & Status
-            'file_pdf' => $pedoman->file_pdf ? trim(asset('storage/' . $pedoman->file_pdf)) : '',
-            'mencabut' => $pedoman->mencabut ? trim($pedoman->mencabut) : '',
+            'file_pdf' => $pedoman->file_pdf ? asset('storage/' . trim($pedoman->file_pdf)) : null,
+            'mencabut' => $pedoman->mencabut ? str_replace("\r", '', trim($pedoman->mencabut)) : null,
 
+        ]);
+    }
+
+    public function detailJson($id)
+    {
+        $pedoman = Pedoman::find($id);
+        if (!$pedoman) {
+            return response()->json(['error' => 'Data tidak ditemukan'], 404);
+        }
+
+        return response()->json([
+            'judul' => $pedoman->judul_meta,
+            'tahun' => $pedoman->tahun_meta,
+            'kata_kunci' => $pedoman->kata_kunci,
+            'abstrak' => $pedoman->abstrak,
+            'catatan' => $pedoman->catatan,
         ]);
     }
 

@@ -302,46 +302,160 @@
             }
         }
 
-        /* ===== Tambahan: Popup Admin ===== */
+        /* ===== Popup Modern Minimalis ===== */
         .popup-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0, 0, 0, 0.55);
+            background: rgba(0, 0, 0, 0.5);
+            /* overlay transparan lembut */
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 9999;
+            backdrop-filter: blur(12px);
+            /* blur ringan, elegan */
+            padding: 1.5rem;
+            transition: background 0.3s ease, backdrop-filter 0.3s ease;
+        }
+
+        .popup-overlay.active {
+            display: flex;
         }
 
         .popup-content {
-            background: var(--white);
-            border-radius: var(--border-radius);
+            position: relative;
+            background: rgba(255, 255, 255, 0.95);
+            /* latar semi-transparan */
+            border-radius: 20px;
             width: 90%;
-            max-width: 500px;
+            max-width: 650px;
+            max-height: 85vh;
             padding: 2rem;
-            box-shadow: var(--shadow);
-            text-align: center;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            text-align: left;
+            transform: translateY(-30px) scale(0.97);
+            opacity: 0;
+            animation: slideDownFade 0.5s forwards ease-out;
         }
 
-        .popup-content h3 {
+        /* border halus */
+        .popup-content::before {
+            content: "";
+            position: absolute;
+            top: -2px;
+            bottom: -2px;
+            left: -2px;
+            right: -2px;
+            border-radius: 22px;
+            border: 2px solid rgba(10, 111, 139, 0.3);
+            pointer-events: none;
+        }
+
+        .popup-content::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        .popup-content::-webkit-scrollbar-thumb {
+            background-color: rgba(10, 111, 139, 0.3);
+            border-radius: 5px;
+        }
+
+        .popup-content h2 {
+            font-size: 2rem;
             margin-bottom: 1rem;
-            color: var(--primary-dark);
+            color: #0a6f8b;
+            text-align: center;
+            font-weight: 700;
         }
 
-        .popup-actions {
-            margin-top: 1.5rem;
+        .popup-content p,
+        .popup-content ul {
+            font-size: 1rem;
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .popup-content ul {
+            padding-left: 1.5rem;
+            list-style: none;
+        }
+
+        .popup-content ul li::before {
+            content: '•';
+            /* bullet sederhana */
+            color: #0a6f8b;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .popup-footer {
             display: flex;
             justify-content: center;
-            gap: 1rem;
+            gap: 1.5rem;
+            margin-top: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .popup-footer .btn {
+            padding: 0.8rem 2rem;
+            border-radius: 25px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            text-transform: uppercase;
+            user-select: none;
+        }
+
+        .popup-footer .btn-confirm {
+            background-color: #0a6f8b;
+            color: #fff;
+        }
+
+        .popup-footer .btn-confirm:hover {
+            background-color: #0e88a0;
+            transform: translateY(-3px);
+        }
+
+        .popup-footer .btn-cancel {
+            background-color: #f44336;
+            color: #fff;
+        }
+
+        .popup-footer .btn-cancel:hover {
+            background-color: #e53935;
+            transform: translateY(-3px);
         }
 
         .close-popup {
             position: absolute;
             top: 15px;
             right: 20px;
-            font-size: 1.2rem;
-            color: var(--light-text);
+            font-size: 1.8rem;
+            color: #0a6f8b;
             cursor: pointer;
+            transition: color 0.3s ease, transform 0.3s ease;
+        }
+
+        .close-popup:hover {
+            color: #4caf50;
+            transform: rotate(180deg) scale(1.2);
+        }
+
+        /* ===== Animations ===== */
+        @keyframes slideDownFade {
+            from {
+                transform: translateY(-30px) scale(0.97);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
         }
     </style>
 </head>
@@ -350,8 +464,7 @@
     @include('layouts.navbar')
     <header>
         <div class="header-text-container">
-            <h1>Selamat Datang di <BR>SATUAN PENGAWAS INTERNAL</BR></h1>
-            <p>Organisasi dan Tata Kerja Sekretariat Komite Stabilitas Sistem Keuangan</p>
+            <h1>{{  $pedoman->judul_meta ?? '-'  }}</h1>
         </div>
     </header>
 
@@ -486,8 +599,9 @@
                         <div class="file-name">{{ $pedoman->file_pdf ?? 'Tidak ada file' }}</div>
                         <div class="btn-group">
                             @php
-                                $filePath = $pedoman->file_pdf ? asset('storage/' . trim($pedoman->file_pdf)) : null;
+                                $filePath = $pedoman->file_pdf ? asset('storage/' . urlencode(trim($pedoman->file_pdf))) : null;
                             @endphp
+
 
                             @if($filePath)
                                 <a href="{{ $filePath }}" class="btn btn-secondary" target="_blank">Preview</a>
@@ -512,9 +626,10 @@
                                 <div>
                                     <div class="status-label">Mencabut:</div>
                                     <ul>
-                                        @foreach(explode("\n", $pedoman->mencabut) as $item)
+                                        @foreach(explode("\n", str_replace("\r", '', $pedoman->mencabut)) as $item)
                                             <li>{{ $item }}</li>
                                         @endforeach
+
                                     </ul>
                                 </div>
                             </div>
@@ -528,9 +643,8 @@
         </div>
     </main>
 
-
     @include('layouts.NavbarBawah')
-    <div class="popup-overlay" id="popup" style="display:none;">
+    <div class="popup-overlay" id="popup">
         <div class="popup-content">
             <span class="close-popup" id="closePopup">&times;</span>
             <h2 id="popup-judul"></h2>
@@ -550,183 +664,73 @@
     </div>
 
 
-
-    <style>
-        /* --- Design based on the provided image --- */
-        .popup-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .popup-content.original-style {
-            background-color: #f7f7f7;
-            padding: 2rem;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-            max-width: 850px;
-            width: 90%;
-            position: relative;
-            font-family: 'Times New Roman', Times, serif;
-            /* Using a classic font to match the document feel */
-            line-height: 1.6;
-            color: #333;
-        }
-
-        .close-popup {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            font-size: 2.5rem;
-            cursor: pointer;
-            color: #666;
-        }
-
-        .close-popup:hover {
-            color: #000;
-        }
-
-        .document-section {
-            margin-bottom: 1.5rem;
-        }
-
-        .doc-title {
-            font-size: 1.8rem;
-            font-weight: bold;
-            text-align: center;
-            margin-bottom: 1rem;
-            color: #222;
-        }
-
-        .subtitle {
-            font-size: 1.1rem;
-            font-weight: bold;
-            text-align: center;
-            margin: 0;
-        }
-
-        .section-heading {
-            font-weight: bold;
-            font-size: 1.2rem;
-            margin-bottom: 0.5rem;
-            text-decoration: underline;
-            text-transform: uppercase;
-        }
-
-        .abstract-list,
-        .notes-list {
-            list-style-type: none;
-            /* Remove default list bullets */
-            padding-left: 0;
-            margin-bottom: 1.5rem;
-        }
-
-        .abstract-list li,
-        .notes-list li {
-            position: relative;
-            padding-left: 1.5rem;
-            /* Space for the custom bullet */
-            margin-bottom: 1rem;
-        }
-
-        .abstract-list li::before {
-            content: "•";
-            /* Custom bullet point */
-            color: #333;
-            font-weight: bold;
-            position: absolute;
-            left: 0;
-            top: 0;
-        }
-
-        .notes-list li::before {
-            content: "•";
-            color: #333;
-            font-weight: bold;
-            position: absolute;
-            left: 0;
-            top: 0;
-        }
-
-        .popup-footer {
-            text-align: right;
-            margin-top: 2rem;
-            border-top: 1px solid #ccc;
-            padding-top: 1rem;
-        }
-
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .close-btn {
-            background-color: #6c757d;
-            color: white;
-        }
-
-        .close-btn:hover {
-            background-color: #5a6268;
-        }
-
-        /* Make content scrollable for smaller screens */
-        .popup-content.original-style {
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-    </style>
     <script>
-        // Gunakan selector sesuai tombol di HTML
-        document.querySelectorAll('.openPopup').forEach(link => {
-            link.addEventListener('click', function (e) {
-                e.preventDefault();
+        document.addEventListener('DOMContentLoaded', () => {
+            // Selectors
+            const popup = document.getElementById('popup');
+            const openPopupBtn = document.querySelectorAll('.openPopup');
+            const closePopupBtn = document.getElementById('closeBtnPopup');
+            const closePopupIcon = document.getElementById('closePopup');
 
-                const pedomanId = this.dataset.id;
+            // Event listener untuk membuka pop-up
+            openPopupBtn.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const pedomanId = this.dataset.id;
 
-                fetch(`/pedoman/detail/${pedomanId}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        document.getElementById('popup-judul').textContent = data.judul;
-                        document.getElementById('popup-tahun').textContent = data.tahun;
-                        document.getElementById('popup-kata_kunci').textContent = data.kata_kunci || '';
+                    fetch(`/pedoman/detail/${pedomanId}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            // Mengisi konten pop-up dengan data
+                            document.getElementById('popup-judul').textContent = data.judul;
+                            document.getElementById('popup-tahun').textContent = data.tahun;
+                            document.getElementById('popup-kata_kunci').textContent = data.kata_kunci || '';
 
-                        const abstrakList = document.getElementById('popup-abstrak');
-                        abstrakList.innerHTML = '';
-                        if (data.abstrak) {
-                            data.abstrak.split('\n').forEach(item => {
-                                const li = document.createElement('li');
-                                li.textContent = item;
-                                abstrakList.appendChild(li);
-                            });
-                        }
+                            // Mengisi abstrak
+                            const abstrakList = document.getElementById('popup-abstrak');
+                            abstrakList.innerHTML = '';
+                            if (data.abstrak) {
+                                data.abstrak.split('\n').forEach(item => {
+                                    const li = document.createElement('li');
+                                    li.textContent = item;
+                                    abstrakList.appendChild(li);
+                                });
+                            }
 
-                        const catatanList = document.getElementById('popup-catatan');
-                        catatanList.innerHTML = '';
-                        if (data.catatan) {
-                            data.catatan.split('\n').forEach(item => {
-                                const li = document.createElement('li');
-                                li.textContent = item;
-                                catatanList.appendChild(li);
-                            });
-                        }
+                            // Mengisi catatan
+                            const catatanList = document.getElementById('popup-catatan');
+                            catatanList.innerHTML = '';
+                            if (data.catatan) {
+                                data.catatan.split('\n').forEach(item => {
+                                    const li = document.createElement('li');
+                                    li.textContent = item;
+                                    catatanList.appendChild(li);
+                                });
+                            }
 
-                        document.getElementById('popup').style.display = 'flex';
-                    })
-                    .catch(err => console.error('Error fetching pedoman:', err));
+                            // Menampilkan pop-up dengan mengubah properti display dari 'none' ke 'flex'
+                            popup.style.display = 'flex';
+                        })
+                        .catch(err => console.error('Error fetching pedoman:', err));
+                });
+            });
+
+            // Event listeners untuk menutup pop-up
+            closePopupBtn.addEventListener('click', () => {
+                popup.style.display = 'none';
+            });
+
+            closePopupIcon.addEventListener('click', () => {
+                popup.style.display = 'none';
+            });
+
+            // Menutup pop-up ketika mengklik area overlay (di luar konten)
+            popup.addEventListener('click', (e) => {
+                if (e.target === popup) {
+                    popup.style.display = 'none';
+                }
             });
         });
-
     </script>
 
 

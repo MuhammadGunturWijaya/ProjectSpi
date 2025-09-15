@@ -170,9 +170,12 @@ Route::get('/pedoman/{id}', [PedomanPengawasanController::class, 'show'])->name(
 // 
 Route::get('/pedoman/detail/{id}', [PedomanPengawasanController::class, 'getDetail'])->name('pedoman.detail');
 Route::get('/pedoman/detail/{id}', [PedomanPengawasanController::class, 'getDetail']);
-
+Route::get('/pedoman/detail/{id}', [PedomanPengawasanController::class, 'detailJson']);
 
 //route ke halaman tambah pedoman
 Route::post('/pedoman', [TambahPedomanController::class, 'store'])
     ->name('pedoman.store');
+
+
+
 
