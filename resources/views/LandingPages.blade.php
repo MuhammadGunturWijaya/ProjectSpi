@@ -380,7 +380,7 @@
         <div class="container d-flex justify-content-between align-items-center">
             <!-- Logo kiri -->
             <a class="navbar-brand d-flex align-items-center ms-2" href="#">
-                <img src="{{ asset('images/logoPolije.png') }}" alt="Logo" width="40" height="40">
+                 <img src="{{ asset('images/logoPolije.webp') }}" alt="Logo" height="40">
                 <span class="logo-text ms-2">
                     SATUAN PENGAWAS INTERNAL<br>
                     POLITEKNIK NEGERI JEMBER
@@ -421,29 +421,8 @@
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item" href="{{ route('piagam-spi') }}">Piagam SPI</a></li>
                             <!-- Submenu Pedoman Pengawasan -->
-                            <li class="dropdown-submenu">
-                                <a class="dropdown-item dropdown-toggle" href="#">Pedoman Pengawasan</a>
-                                <ul class="dropdown-menu1">
-                                    <li><a class="dropdown-item" href="{{ route('pedoman-audit') }}">Pedoman Audit</a>
-                                    </li>
-                                    <li><a class="dropdown-item" href="{{ route('pedoman-monev') }}">Pedoman Monev</a>
-                                    </li>
-                                    <li><a class="dropdown-item" href="{{ route('pedoman-reviu') }}">Pedoman Reviu</a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="dropdown-submenu">
-                                <a class="dropdown-item" href="{{ route('profile.spi') }}">POS AP Pengaawasan</a>
-                                <ul class="dropdown-menu1">
-                                    <li><a class="dropdown-item" href="{{ route('pos-ap-audit') }}">POS AP Audit</a>
-                                    </li>
-                                    <li><a class="dropdown-item" href="{{ route('pedoman-monev') }}">POS AP Monev</a>
-                                    </li>
-                                    <li><a class="dropdown-item" href="{{ route('pedoman-reviu') }}">POS AP Kinerja
-                                            Keuangan </a>
-                                    </li>
-                                </ul>
-                            </li>
+                            <li class="dropdown-submenu"><a class="dropdown-item" href="{{ route('pedoman.pengawasan') }}">Pedoman Pengawasan</a></li>
+                            <li class="dropdown-submenu"><a class="dropdown-item" href="{{ route('profile.spi') }}">POS AP Pengaawasan</a></li>
                             <li><a class="dropdown-item" href="{{ route('instrumen.pengawasan') }}">Instrumen
                                     Pengawasan</a></li>
                             <li><a class="dropdown-item" href="{{ route('program.kerja') }}">Program Kerja SPI</a></li>
@@ -457,13 +436,13 @@
                             Manajemen Risiko
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{{ route('pedoman.mr') }}">Pedoman MR </a>
+                            <li><a class="dropdown-item" href="#">Pedoman MR </a>
                             </li>
-                            <li><a class="dropdown-item" href="{{ route('struktur.index') }}">Identifikasi Risiko </a>
+                            <li><a class="dropdown-item" href="#">Identifikasi Risiko </a>
                             </li>
-                            <li><a class="dropdown-item" href="{{ route('profile.spi') }}">Penilaian , Evaluasi MR dan
+                            <li><a class="dropdown-item" href="#">Penilaian , Evaluasi MR dan
                                     Mitigasi</a></li>
-                            <li><a class="dropdown-item" href="{{ route('pengaduan.create') }}">Pelaporan</a></li>
+                            <li><a class="dropdown-item" href="#">Pelaporan</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -472,19 +451,18 @@
                             Zona integritas
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{{ route('manajemen-perubahan') }}">Manajemen Perubahan
-                                </a>
+                            <li><a class="dropdown-item" href="#">Manajemen Perubahan </a>
                             </li>
-                            <li><a class="dropdown-item" href="{{ route('penataan.index') }}">Penataan Tata Kelola </a>
+                            <li><a class="dropdown-item" href="#">Penataan Tata Kelola </a>
                             </li>
-                            <li><a class="dropdown-item" href="{{ route('penataan.sdm.aparatur') }}">Penataan Sistem
+                            <li><a class="dropdown-item" href="#">Penataan Sistem
                                     Manajemen SDM
                                     dan Aparatur</a></li>
-                            <li><a class="dropdown-item" href="{{ route('penguatan.akuntabilitas') }}">Penguatan
+                            <li><a class="dropdown-item" href="#">Penguatan
                                     Akuntabilitas</a></li>
-                            <li><a class="dropdown-item" href="{{ route('pengawasan.index') }}">Penguatan Pengawasaan
+                            <li><a class="dropdown-item" href="#">Penguatan Pengawasaan
                                 </a></li>
-                            <li><a class="dropdown-item" href="{{ route('pelayanan') }}">Peningkatan Kualitas
+                            <li><a class="dropdown-item" href="#">Peningkatan Kualitas
                                     Pelayanan Publik</a></li>
                         </ul>
                     </li>
@@ -1126,11 +1104,11 @@
     <footer class="text-center text-white py-4" style="background-color: #0d2d50;">
         <div class="container">
             <!-- Logo -->
-            <img src="{{ asset('images/logoPolije.png') }}" alt="Logo Polije" class="mb-3" style="max-height: 80px;">
+            <img src="{{ asset('images/logoPolije.webp') }}" alt="Logo Polije" class="mb-3" style="max-height: 80px;">
 
             <!-- Alamat -->
             <p>
-                Satuan Pengawas Internal Politeknik Negeri Jember <br>
+                Satuan Pengawas Internal Politeknik Negeri Jember <br>logo
                 Jl. Mastrip PO BOX 164, Jember - Jawa Timur, Indonesia
             </p>
 
@@ -1155,4 +1133,5 @@
 git add .
 git commit -m "pesan commit"
 git push
+php -S localhost:8000
 -->

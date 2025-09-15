@@ -15,19 +15,16 @@ use App\Http\Controllers\ProsesBisnisSPIController;
 use App\Http\Controllers\KodeEtikSPIController;
 use App\Http\Controllers\KonsideranSPIController;
 use App\Http\Controllers\PiagamSPIController;
-use App\Http\Controllers\PedomanAuditController;
-use App\Http\Controllers\PedomanMonevController;
-use App\Http\Controllers\PedomanReviuController;
-use App\Http\Controllers\PosApAuditController;
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\ProgramKerjaController;
 use App\Http\Controllers\SDMAparaturController;
 use App\Http\Controllers\AkuntabilitasController;
-use App\Http\Controllers\PedomanMRController;
-use App\Http\Controllers\ManajemenPerubahanController;
-use App\Http\Controllers\PenataanTataKelolaController;
-use App\Http\Controllers\PenguatanPengawasanController;
-use App\Http\Controllers\PeningkatanPelayananController;
+use App\Http\Controllers\PedomanPengawasanController;
+use App\Http\Controllers\detailPedomanController;
+use App\Http\Controllers\DetailPengawasanController;
+
+
+use App\Http\Controllers\TambahPedomanController;
 
 // Halaman landing
 Route::get('/', [LandingPageController::class, 'index'])->name('landingpage');
@@ -189,3 +186,52 @@ Route::get('/penataan-sdm-aparatur', [SDMAparaturController::class, 'index'])
 // route ke halaman penguatan akuntabilitas
 Route::get('/penguatan-akuntabilitas', [AkuntabilitasController::class, 'index'])
     ->name('penguatan.akuntabilitas');
+
+// Halaman utama Pedoman Pengawasan
+Route::get('/pedoman-pengawasan', [PedomanPengawasanController::class, 'index'])
+    ->name('pedoman.pengawasan');
+
+//
+Route::get('/pedoman/{id}', [PedomanPengawasanController::class, 'show'])->name('pedoman.show');
+
+// Halaman detail pedoman
+Route::get('/pedoman/{id}', [PedomanPengawasanController::class, 'show'])->name('pedoman.show');
+
+// 
+Route::get('/pedoman/detail/{id}', [PedomanPengawasanController::class, 'getDetail'])->name('pedoman.detail');
+Route::get('/pedoman/detail/{id}', [PedomanPengawasanController::class, 'getDetail']);
+Route::get('/pedoman/detail/{id}', [PedomanPengawasanController::class, 'detailJson']);
+
+//route ke halaman tambah pedoman
+Route::post('/pedoman', [TambahPedomanController::class, 'store'])
+    ->name('pedoman.store');
+
+// Route untuk Detail Pengawasan
+Route::get('/detail-pengawasan', [DetailPengawasanController::class, 'index'])
+    ->name('detail.pengawasan');
+
+// Route detail pedoman pengawasan
+Route::get('/pedoman-pengawasan/{id}', [DetailPengawasanController::class, 'show'])
+    ->name('pedoman.detail');
+
+Route::delete('/pedoman/{id}', [PedomanPengawasanController::class, 'destroy'])->name('pedoman.destroy');
+Route::delete('/pedoman/audit', [PedomanController::class, 'destroyAll'])->name('pedoman.destroyAll');
+
+Route::get('/pedoman/{id}/edit', [PedomanPengawasanController::class, 'edit'])->name('pedoman.edit');
+Route::put('/pedoman/{id}', [PedomanPengawasanController::class, 'update'])->name('pedoman.update');
+
+// Halaman detail pedoman (Blade)
+Route::get('/pedoman-pengawasan/{id}', [PedomanPengawasanController::class, 'show'])
+    ->name('pedoman.show');
+
+// API detail lengkap (JSON)
+Route::get('/pedoman-pengawasan/{id}/detail', [PedomanPengawasanController::class, 'getDetail'])
+    ->name('pedoman.detail.json');
+
+// API detail ringkas (JSON)
+Route::get('/pedoman-pengawasan/{id}/json', [PedomanPengawasanController::class, 'detailJson'])
+    ->name('pedoman.json');
+
+// Halaman detail pedoman audit (lihat lebih / list audit)
+Route::get('/pedoman-audit', [DetailPengawasanController::class, 'index'])
+    ->name('pedoman.audit');

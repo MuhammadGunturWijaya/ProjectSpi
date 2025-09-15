@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Peraturan JDIH BPK</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="{{ asset('css/pedomanPengawasan.css') }}">
+    <style>
+    </style>
+</head>
+
+<body>
+    @include('layouts.navbar')
+
+    <header>
+        <div class="header-text-container">
+            <h1>LIHAT LEBIH PEDOMAN PENGAWASAN </h1>
+        </div>
+    </header>
+
+
+    <div class="search-wrapper">
+        <div class="input-group">
+            <i class="fa fa-search"></i>
+            <input type="text" placeholder="Cari peraturan ...">
+        </div>
+        <button class="search-btn"><i class="fa fa-search"></i> Cari</button>
+        <button class="adv-btn"><i class="fa fa-sliders-h"></i> Adv. Search</button>
+    </div>
+
+    <div id="advModal" class="modal">
+        <div class="modal-box">
+            <span class="close">&times;</span>
+            <h2 class="modal-title"><i class="fa fa-sliders-h"></i> Advanced Search</h2>
+            <form class="adv-form">
+                <div class="form-group">
+                    <label for="tentang">Tentang</label>
+                    <input type="text" id="tentang" placeholder="Masukkan kata kunci ...">
+                </div>
+
+                <div class="form-group">
+                    <label for="nomor">Nomor</label>
+                    <input type="text" id="nomor" placeholder="Contoh: 12">
+                </div>
+
+                <div class="form-group">
+                    <label for="tahun">Tahun</label>
+                    <input type="number" id="tahun" placeholder="2023">
+                </div>
+
+                <div class="form-group">
+                    <label for="jenis">Jenis</label>
+                    <input type="text" id="jenis" placeholder="Peraturan / UU / PP ...">
+                </div>
+
+                <div class="form-group">
+                    <label for="entitas">Entitas</label>
+                    <input type="text" id="entitas" placeholder="Nama instansi ...">
+                </div>
+
+                <div class="form-group">
+                    <label for="tag">Tag</label>
+                    <input type="text" id="tag" placeholder="Pisahkan dengan koma">
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-submit">
+                        <i class="fa fa-search"></i> Cari
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const advBtn = document.querySelector('.adv-btn');
+        const modal = document.getElementById('advModal');
+        const closeBtn = document.querySelector('.close');
+        const cancelBtn = document.getElementById('cancelBtn');
+
+        advBtn.addEventListener('click', () => {
+            modal.style.display = 'block';
+        });
+
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        cancelBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    </script>
+
+    <script>
+        const carouselTrack = document.querySelector('.carousel-track');
+        const prevBtn = document.getElementById('carousel-prev');
+        const nextBtn = document.getElementById('carousel-next');
+
+        // Mengambil semua elemen kartu
+        const cardItems = document.querySelectorAll('.card-item-new');
+
+        // Menghitung lebar total satu kartu, termasuk gap
+        const cardWidth = cardItems[0].offsetWidth + 25;
+
+        // Indeks untuk melacak posisi
+        let currentIndex = 0;
+        let autoScroll;
+
+        // Duplikasi kartu untuk menciptakan efek loop
+        cardItems.forEach(card => {
+            const clone = card.cloneNode(true);
+            carouselTrack.appendChild(clone);
+        });
+
+        function updateCarousel() {
+            carouselTrack.style.transform = `translateX(${-currentIndex * cardWidth}px)`;
+        }
+
+        function nextSlide() {
+            currentIndex++;
+            if (currentIndex >= cardItems.length) {
+                // Jika sudah mencapai akhir, segera kembali ke awal tanpa transisi
+                carouselTrack.style.transition = 'none';
+                currentIndex = 0;
+                updateCarousel();
+
+                // Atur timeout untuk mengaktifkan kembali transisi dan geser ke slide pertama
+                setTimeout(() => {
+                    carouselTrack.style.transition = 'transform 0.5s ease';
+                    currentIndex = 1;
+                    updateCarousel();
+                }, 10);
+
+            } else {
+                updateCarousel();
+            }
+        }
+
+        function prevSlide() {
+            if (currentIndex === 0) {
+                // Jika di awal, geser ke akhir duplikat tanpa transisi
+                carouselTrack.style.transition = 'none';
+                currentIndex = cardItems.length;
+                updateCarousel();
+
+                // Atur timeout untuk mengaktifkan kembali transisi dan geser mundur
+                setTimeout(() => {
+                    carouselTrack.style.transition = 'transform 0.5s ease';
+                    currentIndex--;
+                    updateCarousel();
+                }, 10);
+            } else {
+                currentIndex--;
+                updateCarousel();
+            }
+        }
+
+        // Tombol navigasi
+        nextBtn.addEventListener('click', () => {
+            nextSlide();
+            resetAuto();
+        });
+
+        prevBtn.addEventListener('click', () => {
+            prevSlide();
+            resetAuto();
+        });
+
+        // Auto scroll
+        function startAuto() {
+            autoScroll = setInterval(nextSlide, 3000); // 3 detik
+        }
+
+        function resetAuto() {
+            clearInterval(autoScroll);
+            startAuto();
+        }
+
+        // Mulai otomatis saat halaman dimuat
+        startAuto();
+    </script>
+
+
+    <!-- pedoman audit -->
+    <section class="classification" id="pedomanaudit">
+        <div class="classification-header">
+            <h2>Pedoman <span class="audit-text">Audit</span></h2>
+            <div class="header-actions">
+                @if(Auth::check() && Auth::user()->role === 'admin')
+                    <form action="{{ route('pedoman.destroyAll') }}" method="POST"
+                        onsubmit="return confirm('Yakin ingin menghapus semua pedoman audit?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fa fa-trash"></i> Hapus Semua
+                        </button>
+                        <a href="#" id="btnTambahAudit">
+                            <i class="fa fa-plus"></i> Tambah Pedoman
+                        </a>
+                    </form>
+                @endif
+            </div>
+        </div>
+
+        <div class="grid">
+            @forelse($pedomanAudit as $pedoman)
+                <div class="card">
+                    <div class="card-icon-wrapper">
+                        <i class="fa fa-file-alt"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>{{ $pedoman->judul }}</h3>
+                        <p>Tahun: {{ $pedoman->tahun ?? '-' }}</p>
+                    </div>
+                    <a href="{{ route('pedoman.show', $pedoman->id) }}" class="card-link">
+                        Lihat Peraturan →
+                    </a>
+
+                    @if(Auth::check() && Auth::user()->role === 'admin')
+                        <div class="d-flex gap-2 mt-2">
+                            <!-- Tombol Edit -->
+                            <button type="button" class="btn btn-warning" onclick="openEditModal(
+                                                                                            {{ $pedoman->id }},
+                                                                                            '{{ $pedoman->judul }}',
+                                                                                            '{{ $pedoman->tahun }}',
+                                                                                            '{{ $pedoman->jenis }}',
+                                                                                            '{{ $pedoman->kata_kunci }}',
+                                                                                            `{{ $pedoman->abstrak }}`,
+                                                                                            `{{ $pedoman->catatan }}`
+                                                                                        )">
+                                <i class="fa fa-edit"></i> Edit
+                            </button>
+
+                            <form action="{{ route('pedoman.destroy', $pedoman->id) }}" method="POST"
+                                onsubmit="return confirm('Yakin ingin menghapus pedoman ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fa fa-trash"></i> Hapus
+                                </button>
+                            </form>
+                        </div>
+                    @endif
+                </div>
+            @empty
+                <p>Tidak ada pedoman audit.</p>
+            @endforelse
+        </div>
+    </section>
+
+
+    <!-- Modal Tambah Pedoman -->
+    <div id="modalTambahPedoman" class="modal">
+        <div class="modal-box">
+            <button class="close" id="closeModalTambah" aria-label="Close modal">&times;</button>
+            <h2 class="modal-title">Tambah Dokumen Pedoman</h2>
+            {{-- Pesan error umum (misal gagal simpan) --}}
+            @if (session('error'))
+                <div class="alert alert-danger" role="alert">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            {{-- Pesan validasi dari Laravel --}}
+            @if ($errors->any())
+                <div class="alert alert-danger" role="alert">
+                    <ul style="margin:0; padding-left:20px;">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+            <div class="stepper-nav" role="tablist" aria-label="Form Steps">
+                <button class="step-nav-item active" data-step="1" role="tab" aria-selected="true"
+                    aria-controls="step1-content" id="step1">
+                    <span class="step-number">1</span> Materi Pokok
+                </button>
+                <button class="step-nav-item" data-step="2" role="tab" aria-selected="false"
+                    aria-controls="step2-content" id="step2">
+                    <span class="step-number">2</span> Metadata
+                </button>
+                <button class="step-nav-item" data-step="3" role="tab" aria-selected="false"
+                    aria-controls="step3-content" id="step3">
+                    <span class="step-number">3</span> Berkas & Status
+                </button>
+            </div>
+
+            <form id="formTambahPedoman" action="{{ route('pedoman.store') }}" method="POST"
+                enctype="multipart/form-data" novalidate>
+                @csrf
+
+                <section class="step-content active" data-step="1" id="step1-content" role="tabpanel"
+                    aria-labelledby="step1">
+                    <div class="form-section-header">
+                        <h4>Materi Pokok Dokumen</h4>
+                        <p class="section-desc">Informasi dasar dokumen seperti judul, tahun, dan ringkasan.</p>
+                    </div>
+                    <div class="form-group">
+                        <label>Pilih Jenis Pedoman <span class="required">*</span></label>
+                        <div class="button-group">
+                            <button type="button" class="btn btn-outline" data-jenis="audit">Pedoman Audit</button>
+                            <button type="button" class="btn btn-outline" data-jenis="reviu">Pedoman Reviu</button>
+                            <button type="button" class="btn btn-outline" data-jenis="monev">Pedoman Monev</button>
+                        </div>
+                        <input type="hidden" name="jenis" id="jenisPedoman" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="judul">Judul <span class="required">*</span></label>
+                        <input type="text" id="judul" name="judul" required placeholder="Masukkan judul peraturan">
+                    </div>
+                    <div class="form-group">
+                        <label for="tahun">Tahun <span class="required">*</span></label>
+                        <select id="tahun" name="tahun" required>
+                            <option value="">Pilih Tahun</option>
+                            @for ($y = date('Y'); $y >= 1900; $y--)
+                                <option value="{{ $y }}">{{ $y }}</option>
+                            @endfor
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="kata_kunci">Kata Kunci</label>
+                        <input type="text" id="kata_kunci" name="kata_kunci"
+                            placeholder="Pisahkan dengan koma, contoh: pajak, bea cukai">
+                    </div>
+                    <div class="form-group">
+                        <label for="abstrak">Abstrak</label>
+                        <textarea id="abstrak" name="abstrak" rows="4"
+                            placeholder="Tuliskan ringkasan isi peraturan"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="catatan">Catatan</label>
+                        <textarea id="catatan" name="catatan" rows="2"
+                            placeholder="Catatan atau informasi tambahan"></textarea>
+                    </div>
+                </section>
+
+                <section class="step-content" data-step="2" id="step2-content" role="tabpanel" aria-labelledby="step2">
+                    <div class="form-section-header">
+                        <h4>Metadata Dokumen</h4>
+                        <p class="section-desc">Detail teknis dokumen seperti nomor, tanggal, dan sumber.</p>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label for="tipe_dokumen">Tipe Dokumen</label>
+                            <input type="text" id="tipe_dokumen" name="tipe_dokumen"
+                                placeholder="Contoh: Peraturan Pemerintah">
+                        </div>
+                        <div class="form-group">
+                            <label for="judul_meta">Judul Metadata</label>
+                            <input type="text" id="judul_meta" name="judul_meta" placeholder="Judul metadata">
+                        </div>
+                        <div class="form-group">
+                            <label for="teu">T.E.U.</label>
+                            <input type="text" id="teu" name="teu" placeholder="Tanda Efektif Umum">
+                        </div>
+                        <div class="form-group">
+                            <label for="nomor">Nomor</label>
+                            <input type="text" id="nomor" name="nomor" placeholder="Nomor peraturan">
+                        </div>
+                        <div class="form-group">
+                            <label for="bentuk">Bentuk</label>
+                            <input type="text" id="bentuk" name="bentuk" placeholder="Bentuk peraturan">
+                        </div>
+                        <div class="form-group">
+                            <label for="bentuk_singkat">Bentuk Singkat</label>
+                            <input type="text" id="bentuk_singkat" name="bentuk_singkat" placeholder="Singkatan bentuk">
+                        </div>
+                        <div class="form-group">
+                            <label for="tahun_meta">Tahun Metadata</label>
+                            <select id="tahun_meta" name="tahun_meta">
+                                <option value="">Pilih Tahun</option>
+                                @for ($y = date('Y'); $y >= 1900; $y--)
+                                    <option value="{{ $y }}">{{ $y }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="tempat_penetapan">Tempat Penetapan</label>
+                            <input type="text" id="tempat_penetapan" name="tempat_penetapan"
+                                placeholder="Lokasi penetapan">
+                        </div>
+                        <div class="form-group">
+                            <label for="tanggal_penetapan">Tanggal Penetapan</label>
+                            <input type="date" id="tanggal_penetapan" name="tanggal_penetapan">
+                        </div>
+                        <div class="form-group">
+                            <label for="tanggal_pengundangan">Tanggal Pengundangan</label>
+                            <input type="date" id="tanggal_pengundangan" name="tanggal_pengundangan">
+                        </div>
+                        <div class="form-group">
+                            <label for="tanggal_berlaku">Tanggal Berlaku</label>
+                            <input type="date" id="tanggal_berlaku" name="tanggal_berlaku">
+                        </div>
+                        <div class="form-group">
+                            <label for="sumber">Sumber</label>
+                            <input type="text" id="sumber" name="sumber" placeholder="Sumber peraturan">
+                        </div>
+                        <div class="form-group">
+                            <label for="subjek">Subjek</label>
+                            <input type="text" id="subjek" name="subjek" placeholder="Subjek terkait">
+                        </div>
+                        <div class="form-group">
+                            <label for="status">Status</label>
+                            <input type="text" id="status" name="status" placeholder="Status peraturan">
+                        </div>
+                        <div class="form-group">
+                            <label for="bahasa">Bahasa</label>
+                            <input type="text" id="bahasa" name="bahasa" placeholder="Bahasa dokumen">
+                        </div>
+                        <div class="form-group">
+                            <label for="lokasi">Lokasi</label>
+                            <input type="text" id="lokasi" name="lokasi" placeholder="Lokasi penyimpanan">
+                        </div>
+                        <div class="form-group">
+                            <label for="bidang">Bidang</label>
+                            <input type="text" id="bidang" name="bidang" placeholder="Bidang terkait">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="step-content" data-step="3" id="step3-content" role="tabpanel" aria-labelledby="step3">
+                    <div class="form-section-header">
+                        <h4>Berkas Dokumen & Status</h4>
+                        <p class="section-desc">Unggah file dokumen dan isi informasi status.</p>
+                    </div>
+                    <div class="form-group file-upload-group">
+                        <label for="file_pdf" class="file-label">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="icon-upload">
+                                <path
+                                    d="M4 14.899V20a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5.101M16 16l-4-4-4 4M12 12.5V2.5" />
+                            </svg>
+                            Pilih Berkas PDF
+                        </label>
+                        <input type="file" id="file_pdf" name="file_pdf" accept="application/pdf"
+                            aria-describedby="fileHelp" />
+                        <span id="file-name" class="file-name-display">Belum ada file yang dipilih.</span>
+                        <small id="fileHelp" class="file-help">Format: PDF, maksimal 10MB.</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mencabut">Mencabut</label>
+                        <input type="text" id="mencabut" name="mencabut" placeholder="Tuliskan peraturan yang dicabut">
+                    </div>
+                </section>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="prevStep"
+                        aria-label="Kembali ke langkah sebelumnya" style="display:none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="icon-arrow">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        Kembali
+                    </button>
+                    <button type="button" class="btn btn-primary" id="nextStep"
+                        aria-label="Lanjut ke langkah berikutnya">
+                        Lanjut
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="icon-arrow">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                            <polyline points="12 5 19 12 12 19"></polyline>
+                        </svg>
+                    </button>
+                    <button type="submit" class="btn btn-submit" id="submitBtn" style="display:none"
+                        aria-label="Simpan data">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="icon-save">
+                            <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                            <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                            <polyline points="7 3 7 8 15 8"></polyline>
+                        </svg>
+                        Simpan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const modalTambah = document.getElementById("modalTambahPedoman");
+            const btnOpenModal = document.querySelectorAll("#btnTambahAudit, #btnTambahReviu");
+            const btnCloseModal = document.getElementById("closeModalTambah");
+            const contents = modalTambah.querySelectorAll(".step-content");
+            const steps = modalTambah.querySelectorAll(".step-nav-item");
+
+
+         
+            const nextBtn = document.getElementById("nextStep");
+            const prevBtn = document.getElementById("prevStep");
+            const submitBtn = document.getElementById("submitBtn");
+            let currentStep = 0;
+
+            // --- Button Jenis Pedoman ---
+            const jenisButtons = document.querySelectorAll('.button-group .btn-outline');
+            const jenisInput = document.getElementById('jenisPedoman');
+
+            jenisButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Hapus active dari semua tombol
+                    jenisButtons.forEach(b => b.classList.remove('active'));
+                    // Aktifkan tombol yang diklik
+                    btn.classList.add('active');
+                    // Set value hidden input
+                    jenisInput.value = btn.getAttribute('data-jenis');
+                });
+            });
+
+            // Function to show/hide steps and buttons
+            function showStep(step) {
+                console.log("Step sekarang:", step, "Total step:", contents.length - 1);
+
+                contents.forEach((c, i) => c.classList.toggle("active", i === step));
+                steps.forEach((s, i) => s.classList.toggle("active", i === step));
+
+                prevBtn.style.display = (step === 0) ? "none" : "inline-block";
+                nextBtn.style.display = (step === contents.length - 1) ? "none" : "inline-block";
+                submitBtn.style.display = (step === contents.length - 1) ? "inline-block" : "none";
+            }
+
+
+
+
+            // Function to validate the current step
+            function validateStep(index) {
+                const currentContent = contents[index];
+                const requiredInputs = currentContent.querySelectorAll("[required]");
+                let isValid = true;
+
+                requiredInputs.forEach(input => {
+                    if (!input.value) {
+                        input.classList.add("is-invalid");
+                        isValid = false;
+                    } else {
+                        input.classList.remove("is-invalid");
+                    }
+                });
+
+                if (!isValid) {
+                    alert("Harap lengkapi semua bidang yang wajib diisi (*).");
+                }
+                return isValid;
+            }
+
+            // --- Event Listeners for Modal Control ---
+            btnOpenModal.forEach(btn => {
+                btn.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    modalTambah.style.display = "block";
+                    currentStep = 0;
+                    showStep(currentStep);
+                });
+            });
+
+            if (btnCloseModal) {
+                btnCloseModal.addEventListener("click", function () {
+                    modalTambah.style.display = "none";
+                });
+            }
+
+            window.addEventListener("click", function (e) {
+                if (e.target === modalTambah) {
+                    modalTambah.style.display = "none";
+                }
+            });
+
+            // --- Event Listeners for Stepper ---
+            steps.forEach((step, idx) => {
+                step.addEventListener("click", () => {
+                    if (idx < currentStep) {
+                        currentStep = idx;
+                        showStep(currentStep);
+                    } else if (idx > currentStep) {
+                        if (validateStep(currentStep)) {
+                            currentStep = idx;
+                            showStep(currentStep);
+                        }
+                    }
+                });
+            });
+
+            nextBtn.addEventListener("click", () => {
+                if (validateStep(currentStep)) {
+                    if (currentStep < contents.length - 1) {
+                        currentStep++;
+                        showStep(currentStep);
+                    }
+                }
+            });
+
+            prevBtn.addEventListener("click", () => {
+                if (currentStep > 0) {
+                    currentStep--;
+                    showStep(currentStep);
+                }
+            });
+
+            // Initial state
+            showStep(currentStep);
+
+            // --- File input display ---
+            const fileInput = document.getElementById("file_pdf");
+            const fileNameDisplay = document.getElementById("file-name");
+
+            if (fileInput && fileNameDisplay) {
+                fileInput.addEventListener("change", function () {
+                    if (this.files.length > 0) {
+                        fileNameDisplay.textContent = this.files[0].name;
+                    } else {
+                        fileNameDisplay.textContent = "Belum ada file yang dipilih.";
+                    }
+                });
+            }
+        });
+    </script>
+
+    <!-- Modal Edit Pedoman -->
+    <div id="modalEditPedoman" class="modal" style="display:none;">
+        <div class="modal-box">
+            <button class="close" id="closeModalEdit">&times;</button>
+            <h2 class="modal-title">Edit Dokumen Pedoman</h2>
+
+            <!-- Stepper Nav -->
+            <div class="stepper-nav">
+                <button class="step-nav-item active" data-step="1">Materi Pokok</button>
+                <button class="step-nav-item" data-step="2">Metadata</button>
+                <button class="step-nav-item" data-step="3">Berkas & Status</button>
+            </div>
+
+            <form id="formEditPedoman" action="#" method="POST" enctype="multipart/form-data">
+                @csrf
+                @method('PUT')
+
+                {{-- Step 1 --}}
+                <section class="step-content active" data-step="1">
+                    <div class="form-group">
+                        <label>Pilih Jenis Pedoman</label>
+                        <div class="button-group" id="editJenisButtons">
+                            <button type="button" class="btn btn-outline" data-jenis="audit">Pedoman Audit</button>
+                            <button type="button" class="btn btn-outline" data-jenis="reviu">Pedoman Reviu</button>
+                            <button type="button" class="btn btn-outline" data-jenis="monev">Pedoman Monev</button>
+                        </div>
+                        <input type="hidden" name="jenis" id="jenisPedomanEdit" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="judul_edit">Judul</label>
+                        <input type="text" id="judul_edit" name="judul" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tahun_edit">Tahun</label>
+                        <select id="tahun_edit" name="tahun" required>
+                            <option value="">Pilih Tahun</option>
+                            @for ($y = date('Y'); $y >= 1900; $y--)
+                                <option value="{{ $y }}">{{ $y }}</option>
+                            @endfor
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="kata_kunci_edit">Kata Kunci</label>
+                        <input type="text" id="kata_kunci_edit" name="kata_kunci">
+                    </div>
+                    <div class="form-group">
+                        <label for="abstrak_edit">Abstrak</label>
+                        <textarea id="abstrak_edit" name="abstrak" rows="3"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="catatan_edit">Catatan</label>
+                        <textarea id="catatan_edit" name="catatan" rows="2"></textarea>
+                    </div>
+                </section>
+
+                {{-- Step 2 --}}
+                <section class="step-content" data-step="2">
+                    <div class="form-group">
+                        <label for="tipe_dokumen_edit">Tipe Dokumen</label>
+                        <input type="text" id="tipe_dokumen_edit" name="tipe_dokumen">
+                    </div>
+                    <div class="form-group">
+                        <label for="nomor_edit">Nomor</label>
+                        <input type="text" id="nomor_edit" name="nomor">
+                    </div>
+                    <div class="form-group">
+                        <label for="instansi_edit">Instansi</label>
+                        <input type="text" id="instansi_edit" name="instansi">
+                    </div>
+                    <div class="form-group">
+                        <label for="tanggal_penetapan_edit">Tanggal Penetapan</label>
+                        <input type="date" id="tanggal_penetapan_edit" name="tanggal_penetapan">
+                    </div>
+                    <div class="form-group">
+                        <label for="status_edit">Status</label>
+                        <select id="status_edit" name="status">
+                            <option value="">Pilih Status</option>
+                            <option value="berlaku">Berlaku</option>
+                            <option value="dicabut">Dicabut</option>
+                        </select>
+                    </div>
+                </section>
+
+                {{-- Step 3 --}}
+                <section class="step-content" data-step="3">
+                    <div class="form-group file-upload-group">
+                        <label for="file_pdf_edit" class="file-label">Berkas PDF</label>
+                        <input type="file" id="file_pdf_edit" name="file_pdf" accept="application/pdf">
+                        <span id="file_name_edit" class="file-name-display">Belum ada file yang dipilih.</span>
+                        <small class="file-help">Format PDF, maksimal 10MB.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="mencabut_edit">Mencabut</label>
+                        <input type="text" id="mencabut_edit" name="mencabut">
+                    </div>
+                </section>
+
+                <!-- Navigasi Step -->
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="prevStepEdit">Kembali</button>
+                    <button type="button" class="btn btn-primary" id="nextStepEdit">Lanjut</button>
+                    <button type="submit" class="btn btn-submit" id="submitBtnEdit">Simpan Perubahan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const modalEdit = document.getElementById("modalEditPedoman");
+        const closeModalEdit = document.getElementById("closeModalEdit");
+        const formEditPedoman = document.getElementById("formEditPedoman");
+
+        // Stepper logic (untuk Edit)
+        let currentStepEdit = 1;
+        const stepEditContents = document.querySelectorAll("#modalEditPedoman .step-content");
+        const stepEditButtons = document.querySelectorAll("#modalEditPedoman .step-nav-item");
+        const prevStepEdit = document.getElementById("prevStepEdit");
+        const nextStepEdit = document.getElementById("nextStepEdit");
+        const submitBtnEdit = document.getElementById("submitBtnEdit");
+
+        function showStepEdit(step) {
+            stepEditContents.forEach(c => c.classList.remove("active"));
+            stepEditButtons.forEach(b => b.classList.remove("active"));
+            document.querySelector(`#modalEditPedoman .step-content[data-step="${step}"]`).classList.add("active");
+            document.querySelector(`#modalEditPedoman .step-nav-item[data-step="${step}"]`).classList.add("active");
+
+            prevStepEdit.style.display = (step === 1) ? "none" : "inline-block";
+            nextStepEdit.style.display = (step === stepEditContents.length) ? "none" : "inline-block";
+            submitBtnEdit.style.display = (step === stepEditContents.length) ? "inline-block" : "none";
+        }
+
+        nextStepEdit.addEventListener("click", () => {
+            if (currentStepEdit < stepEditContents.length) {
+                currentStepEdit++;
+                showStepEdit(currentStepEdit);
+            }
+        });
+        prevStepEdit.addEventListener("click", () => {
+            if (currentStepEdit > 1) {
+                currentStepEdit--;
+                showStepEdit(currentStepEdit);
+            }
+        });
+
+        // Open Modal + isi data
+        function openEditModal(id, judul, tahun, jenis, kata_kunci, abstrak, catatan) {
+            modalEdit.style.display = "block";
+            formEditPedoman.action = `/pedoman/${id}`; // route update
+
+            // Isi field
+            document.getElementById("judul_edit").value = judul;
+            document.getElementById("tahun_edit").value = tahun;
+            document.getElementById("jenisPedomanEdit").value = jenis;
+            document.getElementById("kata_kunci_edit").value = kata_kunci;
+            document.getElementById("abstrak_edit").value = abstrak;
+            document.getElementById("catatan_edit").value = catatan;
+
+            // Highlight button jenis
+            document.querySelectorAll("#editJenisButtons .btn").forEach(btn => {
+                btn.classList.remove("active");
+                if (btn.dataset.jenis === jenis) {
+                    btn.classList.add("active");
+                }
+            });
+
+            currentStepEdit = 1;
+            showStepEdit(currentStepEdit);
+        }
+
+        // Close modal
+        closeModalEdit.addEventListener("click", () => {
+            modalEdit.style.display = "none";
+        });
+        window.addEventListener("click", (e) => {
+            if (e.target === modalEdit) {
+                modalEdit.style.display = "none";
+            }
+        });
+
+        // Ganti jenis pedoman via button
+        document.querySelectorAll("#editJenisButtons .btn").forEach(btn => {
+            btn.addEventListener("click", function () {
+                document.getElementById("jenisPedomanEdit").value = this.dataset.jenis;
+                document.querySelectorAll("#editJenisButtons .btn").forEach(b => b.classList.remove("active"));
+                this.classList.add("active");
+            });
+        });
+
+        // File input label update
+        document.getElementById("file_pdf_edit").addEventListener("change", function () {
+            const fileName = this.files[0] ? this.files[0].name : "Belum ada file yang dipilih.";
+            document.getElementById("file_name_edit").textContent = fileName;
+        });
+
+        // Default step tampilan
+        showStepEdit(currentStepEdit);
+    </script>
+
+
+    @include('layouts.NavbarBawah')
+</body>
+
+</html>
