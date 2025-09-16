@@ -191,8 +191,7 @@ Route::get('/penguatan-akuntabilitas', [AkuntabilitasController::class, 'index']
 Route::get('/pedoman-pengawasan', [PedomanPengawasanController::class, 'index'])
     ->name('pedoman.pengawasan');
 
-//
-Route::get('/pedoman/{id}', [PedomanPengawasanController::class, 'show'])->name('pedoman.show');
+
 
 // Halaman detail pedoman
 Route::get('/pedoman/{id}', [PedomanPengawasanController::class, 'show'])->name('pedoman.show');

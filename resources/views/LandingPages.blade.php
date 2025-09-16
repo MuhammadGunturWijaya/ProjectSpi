@@ -380,7 +380,7 @@
         <div class="container d-flex justify-content-between align-items-center">
             <!-- Logo kiri -->
             <a class="navbar-brand d-flex align-items-center ms-2" href="#">
-                 <img src="{{ asset('images/logoPolije.webp') }}" alt="Logo" height="40">
+                 <img src="{{ asset('images/logoPolije.png') }}" alt="Logo" height="40">
                 <span class="logo-text ms-2">
                     SATUAN PENGAWAS INTERNAL<br>
                     POLITEKNIK NEGERI JEMBER

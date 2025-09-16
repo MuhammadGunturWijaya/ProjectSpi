@@ -599,48 +599,51 @@
                         <div class="file-name">{{ $pedoman->file_pdf ?? 'Tidak ada file' }}</div>
                         <div class="btn-group">
                             @php
-                                $filePath = $pedoman->file_pdf ? asset('storage/' . urlencode(trim($pedoman->file_pdf))) : null;
+                                $filePath = $pedoman->file_pdf
+                                    ? asset('storage/' . trim($pedoman->file_pdf))
+                                    : null;
                             @endphp
 
+                            <div class="btn-group">
+                                @if ($filePath)
+                                    <a href="{{ asset('storage/' . $pedoman->file_pdf) }}" target="_blank" class="btn btn-primary">Preview</a>
 
-                            @if($filePath)
-                                <a href="{{ $filePath }}" class="btn btn-secondary" target="_blank">Preview</a>
-                                <a href="{{ $filePath }}" class="btn btn-primary" download>Download</a>
+                                    <a href="{{ $filePath }}" class="btn btn-primary" download>Download</a>
+                                @else
+                                    <span class="btn btn-secondary disabled">Preview</span>
+                                    <span class="btn btn-primary disabled">Download</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status Peraturan -->
+                    <div class="card" style="margin-top: 2rem;">
+                        <div class="card-header">
+                            <h2><i class="fas fa-check-circle"></i> Status Peraturan</h2>
+                        </div>
+                        <div class="related-regulations">
+                            @if($pedoman->mencabut)
+                                <div class="status-item">
+                                    <i class="fas fa-arrow-circle-right"></i>
+                                    <div>
+                                        <div class="status-label">Mencabut:</div>
+                                        <ul>
+                                            @foreach(explode("\n", str_replace("\r", '', $pedoman->mencabut)) as $item)
+                                                <li>{{ $item }}</li>
+                                            @endforeach
+
+                                        </ul>
+                                    </div>
+                                </div>
                             @else
-                                <span class="btn btn-secondary disabled">Preview</span>
-                                <span class="btn btn-primary disabled">Download</span>
+                                <p>Tidak ada status mencabut.</p>
                             @endif
                         </div>
                     </div>
                 </div>
 
-                <!-- Status Peraturan -->
-                <div class="card" style="margin-top: 2rem;">
-                    <div class="card-header">
-                        <h2><i class="fas fa-check-circle"></i> Status Peraturan</h2>
-                    </div>
-                    <div class="related-regulations">
-                        @if($pedoman->mencabut)
-                            <div class="status-item">
-                                <i class="fas fa-arrow-circle-right"></i>
-                                <div>
-                                    <div class="status-label">Mencabut:</div>
-                                    <ul>
-                                        @foreach(explode("\n", str_replace("\r", '', $pedoman->mencabut)) as $item)
-                                            <li>{{ $item }}</li>
-                                        @endforeach
-
-                                    </ul>
-                                </div>
-                            </div>
-                        @else
-                            <p>Tidak ada status mencabut.</p>
-                        @endif
-                    </div>
-                </div>
             </div>
-
-        </div>
     </main>
 
     @include('layouts.NavbarBawah')

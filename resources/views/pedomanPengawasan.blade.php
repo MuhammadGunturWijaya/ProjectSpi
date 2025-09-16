@@ -69,9 +69,6 @@
                     <button type="submit" class="btn-submit">
                         <i class="fa fa-search"></i> Cari
                     </button>
-                    <button type="button" class="btn-cancel" id="cancelBtn">
-                        Batal
-                    </button>
                 </div>
             </form>
         </div>

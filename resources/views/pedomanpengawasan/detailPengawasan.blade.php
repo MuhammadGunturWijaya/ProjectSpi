@@ -228,16 +228,36 @@
                         <div class="d-flex gap-2 mt-2">
                             <!-- Tombol Edit -->
                             <button type="button" class="btn btn-warning" onclick="openEditModal(
-                                                                                            {{ $pedoman->id }},
-                                                                                            '{{ $pedoman->judul }}',
-                                                                                            '{{ $pedoman->tahun }}',
-                                                                                            '{{ $pedoman->jenis }}',
-                                                                                            '{{ $pedoman->kata_kunci }}',
-                                                                                            `{{ $pedoman->abstrak }}`,
-                                                                                            `{{ $pedoman->catatan }}`
-                                                                                        )">
+                                    {{ $pedoman->id }},
+                                    '{{ $pedoman->judul }}',
+                                    '{{ $pedoman->tahun }}',
+                                    '{{ $pedoman->jenis }}',
+                                    '{{ $pedoman->kata_kunci }}',
+                                    `{{ $pedoman->abstrak }}`,
+                                    `{{ $pedoman->catatan }}`,
+                                    '{{ $pedoman->tipe_dokumen }}',
+                                    '{{ $pedoman->judul_meta }}',
+                                    '{{ $pedoman->teu }}',
+                                    '{{ $pedoman->nomor }}',
+                                    '{{ $pedoman->bentuk }}',
+                                    '{{ $pedoman->bentuk_singkat }}',
+                                    '{{ $pedoman->tahun_meta }}',
+                                    '{{ $pedoman->tempat_penetapan }}',
+                                    '{{ optional($pedoman->tanggal_penetapan)->format("Y-m-d") }}',
+                                    '{{ optional($pedoman->tanggal_pengundangan)->format("Y-m-d") }}',
+                                    '{{ optional($pedoman->tanggal_berlaku)->format("Y-m-d") }}',
+                                    '{{ $pedoman->sumber }}',
+                                    '{{ $pedoman->subjek }}',
+                                    '{{ $pedoman->status }}',
+                                    '{{ $pedoman->bahasa }}',
+                                    '{{ $pedoman->lokasi }}',
+                                    '{{ $pedoman->bidang }}',
+                                    '{{ $pedoman->mencabut }}',
+                                    '{{ $pedoman->file_name }}'
+                                )">
                                 <i class="fa fa-edit"></i> Edit
                             </button>
+
 
                             <form action="{{ route('pedoman.destroy', $pedoman->id) }}" method="POST"
                                 onsubmit="return confirm('Yakin ingin menghapus pedoman ini?')">
@@ -501,7 +521,7 @@
             const steps = modalTambah.querySelectorAll(".step-nav-item");
 
 
-         
+
             const nextBtn = document.getElementById("nextStep");
             const prevBtn = document.getElementById("prevStep");
             const submitBtn = document.getElementById("submitBtn");
@@ -686,32 +706,92 @@
                 </section>
 
                 {{-- Step 2 --}}
-                <section class="step-content" data-step="2">
-                    <div class="form-group">
-                        <label for="tipe_dokumen_edit">Tipe Dokumen</label>
-                        <input type="text" id="tipe_dokumen_edit" name="tipe_dokumen">
+                <section class="step-content" data-step="2" id="step2-content" role="tabpanel" aria-labelledby="step2">
+                    <div class="form-section-header">
+                        <h4>Metadata Dokumen</h4>
+                        <p class="section-desc">Detail teknis dokumen seperti nomor, tanggal, dan sumber.</p>
                     </div>
-                    <div class="form-group">
-                        <label for="nomor_edit">Nomor</label>
-                        <input type="text" id="nomor_edit" name="nomor">
-                    </div>
-                    <div class="form-group">
-                        <label for="instansi_edit">Instansi</label>
-                        <input type="text" id="instansi_edit" name="instansi">
-                    </div>
-                    <div class="form-group">
-                        <label for="tanggal_penetapan_edit">Tanggal Penetapan</label>
-                        <input type="date" id="tanggal_penetapan_edit" name="tanggal_penetapan">
-                    </div>
-                    <div class="form-group">
-                        <label for="status_edit">Status</label>
-                        <select id="status_edit" name="status">
-                            <option value="">Pilih Status</option>
-                            <option value="berlaku">Berlaku</option>
-                            <option value="dicabut">Dicabut</option>
-                        </select>
+
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label for="tipe_dokumen_edit">Tipe Dokumen</label>
+                            <input type="text" id="tipe_dokumen_edit" name="tipe_dokumen"
+                                placeholder="Contoh: Peraturan Pemerintah">
+                        </div>
+                        <div class="form-group">
+                            <label for="judul_meta_edit">Judul Metadata</label>
+                            <input type="text" id="judul_meta_edit" name="judul_meta" placeholder="Judul metadata">
+                        </div>
+                        <div class="form-group">
+                            <label for="teu_edit">T.E.U.</label>
+                            <input type="text" id="teu_edit" name="teu" placeholder="Tanda Efektif Umum">
+                        </div>
+                        <div class="form-group">
+                            <label for="nomor_edit">Nomor</label>
+                            <input type="text" id="nomor_edit" name="nomor" placeholder="Nomor peraturan">
+                        </div>
+                        <div class="form-group">
+                            <label for="bentuk_edit">Bentuk</label>
+                            <input type="text" id="bentuk_edit" name="bentuk" placeholder="Bentuk peraturan">
+                        </div>
+                        <div class="form-group">
+                            <label for="bentuk_singkat_edit">Bentuk Singkat</label>
+                            <input type="text" id="bentuk_singkat_edit" name="bentuk_singkat"
+                                placeholder="Singkatan bentuk">
+                        </div>
+                        <div class="form-group">
+                            <label for="tahun_meta_edit">Tahun Metadata</label>
+                            <select id="tahun_meta_edit" name="tahun_meta">
+                                <option value="">Pilih Tahun</option>
+                                @for ($y = date('Y'); $y >= 1900; $y--)
+                                    <option value="{{ $y }}">{{ $y }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="tempat_penetapan_edit">Tempat Penetapan</label>
+                            <input type="text" id="tempat_penetapan_edit" name="tempat_penetapan"
+                                placeholder="Lokasi penetapan">
+                        </div>
+                        <div class="form-group">
+                            <label for="tanggal_penetapan_edit">Tanggal Penetapan</label>
+                            <input type="date" id="tanggal_penetapan_edit" name="tanggal_penetapan">
+                        </div>
+                        <div class="form-group">
+                            <label for="tanggal_pengundangan_edit">Tanggal Pengundangan</label>
+                            <input type="date" id="tanggal_pengundangan_edit" name="tanggal_pengundangan">
+                        </div>
+                        <div class="form-group">
+                            <label for="tanggal_berlaku_edit">Tanggal Berlaku</label>
+                            <input type="date" id="tanggal_berlaku_edit" name="tanggal_berlaku">
+                        </div>
+                        <div class="form-group">
+                            <label for="sumber_edit">Sumber</label>
+                            <input type="text" id="sumber_edit" name="sumber" placeholder="Sumber peraturan">
+                        </div>
+                        <div class="form-group">
+                            <label for="subjek_edit">Subjek</label>
+                            <input type="text" id="subjek_edit" name="subjek" placeholder="Subjek terkait">
+                        </div>
+                        <div class="form-group">
+                            <label for="status_edit">Status</label>
+                            <input type="text" id="status_edit" name="status" placeholder="Status peraturan">
+                        </div>
+                        <div class="form-group">
+                            <label for="bahasa_edit">Bahasa</label>
+                            <input type="text" id="bahasa_edit" name="bahasa" placeholder="Bahasa dokumen">
+                        </div>
+                        <div class="form-group">
+                            <label for="lokasi_edit">Lokasi</label>
+                            <input type="text" id="lokasi_edit" name="lokasi" placeholder="Lokasi penyimpanan">
+                        </div>
+                        <div class="form-group">
+                            <label for="bidang_edit">Bidang</label>
+                            <input type="text" id="bidang_edit" name="bidang" placeholder="Bidang terkait">
+                        </div>
                     </div>
                 </section>
+
 
                 {{-- Step 3 --}}
                 <section class="step-content" data-step="3">
@@ -738,95 +818,137 @@
     </div>
 
     <script>
-        const modalEdit = document.getElementById("modalEditPedoman");
-        const closeModalEdit = document.getElementById("closeModalEdit");
-        const formEditPedoman = document.getElementById("formEditPedoman");
+        document.addEventListener("DOMContentLoaded", function () {
+            // --- ambil elemen penting ---
+            const modalEdit = document.getElementById("modalEditPedoman");
+            const formEditPedoman = document.getElementById("formEditPedoman");
+            const closeModalEdit = document.getElementById("closeModalEdit");
+            const prevBtn = document.getElementById("prevStepEdit");
+            const nextBtn = document.getElementById("nextStepEdit");
+            const submitBtn = document.getElementById("submitBtnEdit");
 
-        // Stepper logic (untuk Edit)
-        let currentStepEdit = 1;
-        const stepEditContents = document.querySelectorAll("#modalEditPedoman .step-content");
-        const stepEditButtons = document.querySelectorAll("#modalEditPedoman .step-nav-item");
-        const prevStepEdit = document.getElementById("prevStepEdit");
-        const nextStepEdit = document.getElementById("nextStepEdit");
-        const submitBtnEdit = document.getElementById("submitBtnEdit");
+            let currentStepEdit = 1;
 
-        function showStepEdit(step) {
-            stepEditContents.forEach(c => c.classList.remove("active"));
-            stepEditButtons.forEach(b => b.classList.remove("active"));
-            document.querySelector(`#modalEditPedoman .step-content[data-step="${step}"]`).classList.add("active");
-            document.querySelector(`#modalEditPedoman .step-nav-item[data-step="${step}"]`).classList.add("active");
+            // === fungsi tampilkan step ===
+            function showStepEdit(step) {
+                // tampilkan section sesuai step
+                document.querySelectorAll("#modalEditPedoman .step-content").forEach(sec => {
+                    sec.classList.toggle("active", sec.dataset.step == step);
+                });
 
-            prevStepEdit.style.display = (step === 1) ? "none" : "inline-block";
-            nextStepEdit.style.display = (step === stepEditContents.length) ? "none" : "inline-block";
-            submitBtnEdit.style.display = (step === stepEditContents.length) ? "inline-block" : "none";
-        }
+                // highlight step nav di atas
+                document.querySelectorAll("#modalEditPedoman .step-nav-item").forEach(nav => {
+                    nav.classList.toggle("active", nav.dataset.step == step);
+                });
 
-        nextStepEdit.addEventListener("click", () => {
-            if (currentStepEdit < stepEditContents.length) {
-                currentStepEdit++;
-                showStepEdit(currentStepEdit);
+                // kontrol tombol bawah
+                prevBtn.style.display = step === 1 ? "none" : "inline-block";
+                nextBtn.style.display = step === 3 ? "none" : "inline-block";
+                submitBtn.style.display = step === 3 ? "inline-block" : "none";
             }
-        });
-        prevStepEdit.addEventListener("click", () => {
-            if (currentStepEdit > 1) {
-                currentStepEdit--;
-                showStepEdit(currentStepEdit);
-            }
-        });
 
-        // Open Modal + isi data
-        function openEditModal(id, judul, tahun, jenis, kata_kunci, abstrak, catatan) {
-            modalEdit.style.display = "block";
-            formEditPedoman.action = `/pedoman/${id}`; // route update
+            // === event tombol nav di atas ===
+            document.querySelectorAll("#modalEditPedoman .step-nav-item").forEach(nav => {
+                nav.addEventListener("click", function () {
+                    currentStepEdit = parseInt(this.dataset.step);
+                    showStepEdit(currentStepEdit);
+                });
+            });
 
-            // Isi field
-            document.getElementById("judul_edit").value = judul;
-            document.getElementById("tahun_edit").value = tahun;
-            document.getElementById("jenisPedomanEdit").value = jenis;
-            document.getElementById("kata_kunci_edit").value = kata_kunci;
-            document.getElementById("abstrak_edit").value = abstrak;
-            document.getElementById("catatan_edit").value = catatan;
-
-            // Highlight button jenis
-            document.querySelectorAll("#editJenisButtons .btn").forEach(btn => {
-                btn.classList.remove("active");
-                if (btn.dataset.jenis === jenis) {
-                    btn.classList.add("active");
+            // === event tombol Next / Prev ===
+            nextBtn.addEventListener("click", function () {
+                if (currentStepEdit < 3) {
+                    currentStepEdit++;
+                    showStepEdit(currentStepEdit);
                 }
             });
 
-            currentStepEdit = 1;
-            showStepEdit(currentStepEdit);
-        }
-
-        // Close modal
-        closeModalEdit.addEventListener("click", () => {
-            modalEdit.style.display = "none";
-        });
-        window.addEventListener("click", (e) => {
-            if (e.target === modalEdit) {
-                modalEdit.style.display = "none";
-            }
-        });
-
-        // Ganti jenis pedoman via button
-        document.querySelectorAll("#editJenisButtons .btn").forEach(btn => {
-            btn.addEventListener("click", function () {
-                document.getElementById("jenisPedomanEdit").value = this.dataset.jenis;
-                document.querySelectorAll("#editJenisButtons .btn").forEach(b => b.classList.remove("active"));
-                this.classList.add("active");
+            prevBtn.addEventListener("click", function () {
+                if (currentStepEdit > 1) {
+                    currentStepEdit--;
+                    showStepEdit(currentStepEdit);
+                }
             });
-        });
 
-        // File input label update
-        document.getElementById("file_pdf_edit").addEventListener("change", function () {
-            const fileName = this.files[0] ? this.files[0].name : "Belum ada file yang dipilih.";
-            document.getElementById("file_name_edit").textContent = fileName;
-        });
+            // === buka modal + isi data ===
+            window.openEditModal = function (
+                id, judul, tahun, jenis, kata_kunci, abstrak, catatan,
+                tipe_dokumen, judul_meta, teu, nomor, bentuk, bentuk_singkat,
+                tahun_meta, tempat_penetapan, tanggal_penetapan,
+                tanggal_pengundangan, tanggal_berlaku,
+                sumber, subjek, status, bahasa, lokasi, bidang,
+                mencabut, file_name
+            ) {
+                modalEdit.style.display = "block";
+                formEditPedoman.action = `/pedoman/${id}`;
 
-        // Default step tampilan
-        showStepEdit(currentStepEdit);
+                // Step 1
+                document.getElementById("judul_edit").value = judul ?? "";
+                document.getElementById("tahun_edit").value = tahun ?? "";
+                document.getElementById("jenisPedomanEdit").value = jenis ?? "";
+                document.getElementById("kata_kunci_edit").value = kata_kunci ?? "";
+                document.getElementById("abstrak_edit").value = abstrak ?? "";
+                document.getElementById("catatan_edit").value = catatan ?? "";
+
+                document.querySelectorAll("#editJenisButtons .btn").forEach(btn => {
+                    btn.classList.toggle("active", btn.dataset.jenis === jenis);
+                });
+
+                // Step 2
+                document.getElementById("tipe_dokumen_edit").value = tipe_dokumen ?? "";
+                document.getElementById("judul_meta_edit").value = judul_meta ?? "";
+                document.getElementById("teu_edit").value = teu ?? "";
+                document.getElementById("nomor_edit").value = nomor ?? "";
+                document.getElementById("bentuk_edit").value = bentuk ?? "";
+                document.getElementById("bentuk_singkat_edit").value = bentuk_singkat ?? "";
+                document.getElementById("tahun_meta_edit").value = tahun_meta ?? "";
+                document.getElementById("tempat_penetapan_edit").value = tempat_penetapan ?? "";
+                document.getElementById("tanggal_penetapan_edit").value = tanggal_penetapan ?? "";
+                document.getElementById("tanggal_pengundangan_edit").value = tanggal_pengundangan ?? "";
+                document.getElementById("tanggal_berlaku_edit").value = tanggal_berlaku ?? "";
+                document.getElementById("sumber_edit").value = sumber ?? "";
+                document.getElementById("subjek_edit").value = subjek ?? "";
+                document.getElementById("status_edit").value = status ?? "";
+                document.getElementById("bahasa_edit").value = bahasa ?? "";
+                document.getElementById("lokasi_edit").value = lokasi ?? "";
+                document.getElementById("bidang_edit").value = bidang ?? "";
+
+                // Step 3
+                document.getElementById("mencabut_edit").value = mencabut ?? "";
+                document.getElementById("file_name_edit").textContent =
+                    file_name ?? "Belum ada file yang dipilih.";
+
+                currentStepEdit = 1;
+                showStepEdit(currentStepEdit);
+            };
+
+            // === tutup modal ===
+            closeModalEdit.addEventListener("click", () => modalEdit.style.display = "none");
+            window.addEventListener("click", e => {
+                if (e.target === modalEdit) modalEdit.style.display = "none";
+            });
+
+            // === pilih jenis pedoman ===
+            document.querySelectorAll("#editJenisButtons .btn").forEach(btn => {
+                btn.addEventListener("click", function () {
+                    document.getElementById("jenisPedomanEdit").value = this.dataset.jenis;
+                    document.querySelectorAll("#editJenisButtons .btn").forEach(b => b.classList.remove("active"));
+                    this.classList.add("active");
+                });
+            });
+
+            // === update label file ===
+            document.getElementById("file_pdf_edit").addEventListener("change", function () {
+                const name = this.files[0] ? this.files[0].name : "Belum ada file yang dipilih.";
+                document.getElementById("file_name_edit").textContent = name;
+            });
+
+            // tampilkan step awal saat load
+            showStepEdit(currentStepEdit);
+        });
     </script>
+
+
 
 
     @include('layouts.NavbarBawah')

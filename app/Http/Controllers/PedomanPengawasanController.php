@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Pedoman;
+use Illuminate\Support\Facades\Storage;
 
 class PedomanPengawasanController extends Controller
 {
@@ -143,12 +144,15 @@ class PedomanPengawasanController extends Controller
 
         // Update file PDF jika ada upload baru
         if ($request->hasFile('file_pdf')) {
-            $file = $request->file('file_pdf');
-            $fileName = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('uploads/pedoman'), $fileName);
+            // hapus file lama kalau ada
+            if ($pedoman->file_pdf && Storage::disk('public')->exists($pedoman->file_pdf)) {
+                Storage::disk('public')->delete($pedoman->file_pdf);
+            }
 
-            $pedoman->file_pdf = $fileName;
+            $path = $request->file('file_pdf')->store('pedoman_pdfs', 'public');
+            $pedoman->file_pdf = $path;   // simpan full path relatif: pedoman_pdfs/xxx.pdf
         }
+
 
         // Update status pencabutan
         $pedoman->mencabut = $request->mencabut;
