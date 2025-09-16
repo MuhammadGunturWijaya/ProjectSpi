@@ -22,12 +22,15 @@
 
 
     <div class="search-wrapper">
-        <div class="input-group">
-            <i class="fa fa-search"></i>
-            <input type="text" placeholder="Cari peraturan ...">
-        </div>
-        <button class="search-btn"><i class="fa fa-search"></i> Cari</button>
-        <button class="adv-btn"><i class="fa fa-sliders-h"></i> Adv. Search</button>
+        <form action="{{ route('search.searchPedomanPengawasan') }}" method="GET" class="search-form"
+            style="display: contents;">
+            <div class="input-group">
+                <i class="fa fa-search"></i>
+                <input type="text" name="keyword" placeholder="Cari peraturan ..." value="{{ $keyword ?? '' }}">
+            </div>
+            <button type="submit" class="search-btn"><i class="fa fa-search"></i> Cari</button>
+            <button type="button" class="adv-btn"><i class="fa fa-sliders-h"></i> Adv. Search</button>
+        </form>
     </div>
 
     <div id="advModal" class="modal">
@@ -261,7 +264,7 @@
         startAuto();
     </script>
 
-   
+
     <div class="pedoman-buttons-wrapper">
         <h2>Pilih Pedoman</h2>
         <div class="pedoman-buttons">

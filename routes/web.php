@@ -22,7 +22,7 @@ use App\Http\Controllers\AkuntabilitasController;
 use App\Http\Controllers\PedomanPengawasanController;
 use App\Http\Controllers\detailPedomanController;
 use App\Http\Controllers\DetailPengawasanController;
-
+use App\Http\Controllers\SearchPedomanController;
 
 use App\Http\Controllers\TambahPedomanController;
 
@@ -52,6 +52,14 @@ Route::get('/profile-spi', [App\Http\Controllers\PageController::class, 'Profile
 
 // Pencarian
 Route::get('/search', [SearchController::class, 'index'])->name('search');
+
+Route::get('/search/pedoman-pengawasan', function () {
+    return view('search.searchPedomanPengawasan');
+})->name('search.searchPedomanPengawasan');
+
+Route::get('/search-pedoman', [SearchPedomanController::class, 'index'])->name('search.pedoman');
+
+Route::get('/search-pedoman', [SearchPedomanController::class, 'index'])->name('search.searchPedomanPengawasan');
 
 // Route admin (harus login & role admin)
 Route::middleware(['auth'])->group(function () {
@@ -234,3 +242,6 @@ Route::get('/pedoman-pengawasan/{id}/json', [PedomanPengawasanController::class,
 // Halaman detail pedoman audit (lihat lebih / list audit)
 Route::get('/pedoman-audit', [DetailPengawasanController::class, 'index'])
     ->name('pedoman.audit');
+
+
+Route::get('/pedoman/{id}', [App\Http\Controllers\PedomanController::class, 'show'])->name('pedoman.show');
