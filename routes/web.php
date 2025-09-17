@@ -25,6 +25,7 @@ use App\Http\Controllers\DetailPengawasanController;
 use App\Http\Controllers\SearchPedomanController;
 use App\Http\Controllers\PosApPengawasanController;
 use App\Http\Controllers\TambahPedomanController;
+use App\Http\Controllers\PiagamController;
 
 // Halaman landing
 Route::get('/', [LandingPageController::class, 'index'])->name('landingpage');
@@ -144,10 +145,6 @@ Route::get('/kode-etik-spi', [KodeEtikSPIController::class, 'index'])
 Route::get('/konsideran-spi', [KonsideranSPIController::class, 'index'])
     ->name('konsideran-spi');
 
-// Route Ke halaman piagam SPI
-Route::get('/piagam-spi', [PiagamSPIController::class, 'index'])
-    ->name('piagam-spi');
-
 
 // Route Ke halaman pedoman audit SPI
 Route::get('/pedoman-audit', [PedomanAuditController::class, 'index'])
@@ -257,3 +254,12 @@ Route::get('/pos-ap/detail/{id}', [PosApPengawasanController::class, 'detailJson
 Route::get('/posap/detail/{id}', [PosApPengawasanController::class, 'getDetail'])->name('posap.detail');
 Route::get('/posap/audit', [PosApPengawasanController::class, 'showByJenis'])
     ->name('posap.audit');
+
+Route::post('/upload-piagam', [PiagamSPIController::class, 'store'])->name('piagam.store');
+Route::get('/piagam', [PiagamSPIController::class, 'index'])->name('piagam.index');
+Route::get('/piagam/{id}', [PiagamSPIController::class, 'show'])->name('piagam.show');
+
+// Route Ke halaman piagam SPI
+Route::get('/piagam-spi', [PiagamSPIController::class, 'index'])->name('piagam-spi');
+
+

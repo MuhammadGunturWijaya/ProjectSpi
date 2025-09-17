@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Piagam SPI - Pos AP Pengawasan</title>
+    <title>Piagam SPI</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -25,6 +25,7 @@
             background-color: var(--secondary-color);
             margin: 0;
             padding: 0;
+            overflow-x: hidden;
         }
 
         /* Header */
@@ -89,7 +90,7 @@
             max-width: 1200px;
             margin: -80px auto 50px;
             padding: 40px 30px;
-            background: linear-gradient(145deg, #ffffffff, #ffffffff);
+            background: linear-gradient(145deg, #ffffff, #f1f5f9);
             /* gradien halus */
             border-radius: 30px;
             box-shadow: 0 50px 50px var(--shadow-light);
@@ -267,43 +268,268 @@
     <section class="pos-section container">
         <div class="pos-header">
             <h4>Piagam SPI</h4>
-            <button class="btn-add"><i class="bi bi-plus-lg"></i> Tambah Piagam</button>
+            <button class="btn-add" data-bs-toggle="modal" data-bs-target="#modalTambahPiagam">
+                <i class="bi bi-plus-lg"></i> Tambah Piagam
+            </button>
         </div>
 
+
         <div class="pos-cards-container">
-            <a href="#" class="pos-card">
-                <span class="badge-card">Baru</span>
-                <div>
-                    <div class="icon-wrapper">
-                        <i class="bi bi-file-earmark-text"></i>
+            @foreach($piagams as $piagam)
+                <a href="#" class="pos-card btn-detail-piagam" data-bs-toggle="modal" data-bs-target="#modalDetailPiagam"
+                    data-nama="{{ $piagam->nama_piagam }}" data-tahun="{{ $piagam->tahun }}"
+                    data-file="{{ asset('storage/' . $piagam->file_path) }}">
+                    @if($loop->first)
+                        <span class="badge-card">Baru</span>
+                    @endif
+                    <div>
+                        <div class="icon-wrapper">
+                            <i class="bi bi-file-earmark-text"></i>
+                        </div>
+                        <h6>{{ $piagam->nama_piagam }}</h6>
+                        <small>Tahun: {{ $piagam->tahun }}</small>
                     </div>
-                    <h6>Piagam 123123</h6>
-                    <small>Tahun: 2010</small>
-                </div>
-                <span class="link-cta">Lihat Piagam</span>
-            </a>
-            <a href="#" class="pos-card">
-                <div>
-                    <div class="icon-wrapper">
-                        <i class="bi bi-file-earmark-text"></i>
-                    </div>
-                    <h6>Piagam 34C</h6>
-                    <small>Tahun: 2008</small>
-                </div>
-                <span class="link-cta">Lihat Piagam</span>
-            </a>
-            <a href="#" class="pos-card">
-                <div>
-                    <div class="icon-wrapper">
-                        <i class="bi bi-file-earmark-text"></i>
-                    </div>
-                    <h6>Piagam 56D</h6>
-                    <small>Tahun: 2012</small>
-                </div>
-                <span class="link-cta">Lihat Piagam</span>
-            </a>
+                    <span class="link-cta">Lihat Piagam</span>
+                </a>
+            @endforeach
         </div>
     </section>
+
+    <!-- Modal Detail Piagam -->
+    <div class="modal fade" id="modalDetailPiagam" tabindex="-1" aria-labelledby="modalDetailPiagamLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 shadow-lg custom-modal-detail">
+                <div class="modal-header bg-gradient-primary text-white rounded-top-4 p-4">
+                    <h5 class="modal-title fw-bold" id="modalDetailPiagamLabel">
+                        <i class="bi bi-file-earmark-text me-2"></i> Detail Piagam
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-5">
+                    <div class="detail-info mb-4">
+                        <h6 id="detailNamaPiagam" class="fw-semibold text-primary fs-4"></h6>
+                        <p id="detailTahunPiagam" class="text-muted fw-medium"></p>
+                    </div>
+                    <div class="iframe-wrapper">
+                        <iframe id="detailFilePiagam" src="" frameborder="0" style="width:100%; height:500px;"
+                            class="rounded-3 border shadow-sm"></iframe>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4 d-flex justify-content-end">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4 me-2"
+                        data-bs-dismiss="modal">Tutup</button>
+                    <a id="downloadPiagam" href="#"
+                        class="btn btn-primary rounded-pill px-4 btn-animated-primary shadow-sm" download>
+                        <i class="bi bi-download me-2"></i> Unduh Piagam
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Gradient header */
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #4f46e5, #6366f1);
+        }
+
+        .custom-modal-detail {
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .custom-modal-detail:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Detail info styling */
+        .detail-info h6 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+
+        .detail-info p {
+            font-size: 1.1rem;
+            color: #6b7280;
+        }
+
+        /* Iframe hover effect */
+        .iframe-wrapper iframe:hover {
+            transform: scale(1.02);
+            transition: transform 0.3s ease;
+        }
+
+        /* Button animation */
+        .btn-animated-primary {
+            background: #6366f1;
+            color: #fff;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-animated-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(135deg, #4f46e5, #6366f1);
+        }
+    </style>
+
+    <script>
+        const modalDetailPiagam = document.getElementById('modalDetailPiagam');
+        const downloadBtn = document.getElementById('downloadPiagam');
+
+        modalDetailPiagam.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const nama = button.getAttribute('data-nama');
+            const tahun = button.getAttribute('data-tahun');
+            const file = button.getAttribute('data-file');
+
+            document.getElementById('modalDetailPiagamLabel').innerText = 'Detail Piagam';
+            document.getElementById('detailNamaPiagam').innerText = nama;
+            document.getElementById('detailTahunPiagam').innerText = 'Tahun: ' + tahun;
+            document.getElementById('detailFilePiagam').src = file;
+
+            downloadBtn.href = file; // Set link untuk unduh
+        });
+    </script>
+
+
+
+    <div class="modal fade" id="modalTambahPiagam" tabindex="-1" aria-labelledby="modalTambahPiagamLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content border-0 rounded-4 custom-modal-shadow">
+                <form action="/upload-piagam" method="POST" enctype="multipart/form-data">
+                    @csrf
+                    <div class="modal-header bg-gradient-primary text-white rounded-top-4 p-4">
+                        <h5 class="modal-title fw-bold" id="modalTambahPiagamLabel">
+                            <i class="bi bi-award me-2"></i> Tambah Piagam 🏆
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-5">
+                        <div class="mb-4">
+                            <label for="namaPiagam" class="form-label fw-semibold text-muted">Nama Piagam</label>
+                            <input type="text" class="form-control form-control-lg custom-input" id="namaPiagam"
+                                name="nama_piagam" placeholder="Contoh: Juara 1 Lomba Sains Nasional" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="tahunPiagam" class="form-label fw-semibold text-muted">Tahun</label>
+                            <input type="number" class="form-control form-control-lg custom-input" id="tahunPiagam"
+                                name="tahun" placeholder="Contoh: 2023" required>
+                        </div>
+                        <div class="mb-4">
+                            <label for="filePiagam" class="form-label fw-semibold text-muted">Upload File</label>
+                            <div class="file-upload-area" ondragover="event.preventDefault();"
+                                ondrop="handleDrop(event);" onclick="document.getElementById('filePiagam').click()">
+                                <i class="bi bi-file-earmark-arrow-up fs-2 text-primary mb-3"></i>
+                                <p class="mb-0 text-muted">Klik atau seret file ke sini untuk mengunggah</p>
+                                <small class="text-secondary">File didukung: PDF, JPG, PNG | Max 5 MB</small>
+                                <input class="form-control d-none" type="file" id="filePiagam" name="file_piagam"
+                                    required onchange="updateFileLabel(this)">
+                            </div>
+                            <small id="fileName" class="text-success mt-2 d-block text-center fw-semibold"></small>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0 p-4 d-flex justify-content-end">
+                        <button type="button" class="btn btn-secondary rounded-pill px-4 me-2"
+                            data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary rounded-pill px-5 btn-animated-primary shadow-sm">
+                            <i class="bi bi-cloud-arrow-up me-2"></i> Upload
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #f1f5f9;
+            --text-color: #475569;
+            --border-color: #cbd5e1;
+        }
+
+        .custom-modal-shadow {
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #4f46e5, #6366f1);
+        }
+
+        .custom-input {
+            border-radius: 0.75rem;
+            padding: 1rem 1.25rem;
+            background-color: var(--secondary-color);
+            border: 1px solid var(--border-color);
+            transition: all 0.2s ease-in-out;
+        }
+
+        .custom-input:focus {
+            background-color: #fff;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(99, 102, 241, 0.2);
+        }
+
+        .file-upload-area {
+            background-color: var(--secondary-color);
+            border: 2px dashed var(--border-color);
+            border-radius: 0.75rem;
+            padding: 3rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-upload-area:hover {
+            background-color: #e2e8f0;
+            border-color: var(--primary-color);
+        }
+
+        .btn-animated-primary {
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-animated-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(135deg, #4f46e5, #6366f1);
+        }
+    </style>
+
+    <script>
+        function handleDrop(event) {
+            event.preventDefault();
+            const fileInput = document.getElementById('filePiagam');
+            fileInput.files = event.dataTransfer.files;
+            updateFileLabel(fileInput);
+        }
+
+        function updateFileLabel(input) {
+            const fileName = document.getElementById('fileName');
+            const uploadArea = document.querySelector('.file-upload-area');
+            if (input.files.length > 0) {
+                fileName.textContent = "File dipilih: " + input.files[0].name;
+                uploadArea.classList.add('border-success');
+                uploadArea.classList.remove('border-danger');
+            } else {
+                fileName.textContent = "";
+                uploadArea.classList.remove('border-success', 'border-danger');
+            }
+        }
+    </script>
+
 
     @include('layouts.NavbarBawah')
 
