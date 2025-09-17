@@ -126,7 +126,11 @@
                         <ul class="dropdown-menu" aria-labelledby="dokumenDropdown">
                             <li><a class="dropdown-item" href="#">Piagam SPI</a></li>
                             <li><a class="dropdown-item" href="#">Pedoman Pengawasan</a></li>
-                            <li><a class="dropdown-item" href="#">POS AP Pengawasan</a></li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('pos.ap.pengawasan') }}">
+                                    POS AP Pengawasan
+                                </a>
+                            </li>
                             <li><a class="dropdown-item" href="#">Instrumen Pengawasan</a></li>
                             <li><a class="dropdown-item" href="#">Program Kerja SPI</a></li>
                             <li><a class="dropdown-item" href="#">Konsideran SPI</a></li>

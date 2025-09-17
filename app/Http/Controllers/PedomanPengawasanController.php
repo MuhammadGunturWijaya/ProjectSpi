@@ -11,11 +11,12 @@ class PedomanPengawasanController extends Controller
     // Halaman utama pedoman pengawasan
     public function index()
     {
+        $title = "PEDOMAN PENGAWASAN";
         $pedomanAudit = Pedoman::where('jenis', 'audit')->take(4)->get();
         $pedomanReviu = Pedoman::where('jenis', 'reviu')->take(4)->get();
         $pedomanMonev = Pedoman::where('jenis', 'monev')->take(4)->get();
 
-        return view('pedomanPengawasan', compact('pedomanAudit', 'pedomanReviu', 'pedomanMonev'));
+        return view('pedomanPengawasan', compact('title', 'pedomanAudit', 'pedomanReviu', 'pedomanMonev'));
     }
 
     // Halaman detail pedoman berdasarkan ID
@@ -160,6 +161,20 @@ class PedomanPengawasanController extends Controller
         $pedoman->save();
 
         return redirect()->back()->with('success', 'Pedoman berhasil diperbarui.');
+    }
+    public function showByJenis($jenis)
+    {
+        $pedoman = Pedoman::where('jenis', $jenis)->get();
+
+        $judul = match ($jenis) {
+            'pos-ap' => 'POS AP Pengawasan',
+            'audit' => 'Pedoman Audit',
+            'reviu' => 'Pedoman Reviu',
+            'monev' => 'Pedoman Monev',
+            default => 'Pedoman Pengawasan',
+        };
+
+        return view('pedomanPengawasan', compact('pedoman', 'judul'));
     }
 
 

@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Database Peraturan JDIH BPK</title>
+    <title>pos ap</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/pedomanPengawasan.css') }}">
     <style>
@@ -274,43 +274,42 @@
         <h2>Pilih Pedoman</h2>
         <div class="pedoman-buttons">
             <a href="#pedomanaudit" class="pedoman-btn">
-                <i class="fa fa-file-invoice-dollar"></i> Lihat Pedoman Audit
+                <i class="fa fa-file-invoice-dollar"></i> Lihat POS AP Audit
             </a>
             <a href="#pedomanreviu" class="pedoman-btn">
-                <i class="fa fa-search-plus"></i> Lihat Pedoman Reviu
+                <i class="fa fa-search-plus"></i> Lihat POS AP Reviu
             </a>
             <a href="#" class="pedoman-btn">
-                <i class="fa fa-tasks"></i> Lihat Pedoman Monev
+                <i class="fa fa-tasks"></i> Lihat POS AP Monev
             </a>
         </div>
     </div>
 
-    <!-- pedoman audit -->
+    <!-- POS AP audit -->
     <section class="classification" id="pedomanaudit">
         <div class="classification-header">
-            <h2>Pedoman <span class="audit-text">Audit</span></h2>
+            <h2>POS AP <span class="audit-text">Audit</span></h2>
             <div class="header-actions">
-                <a href="{{ route('detail.pengawasan') }}"><i class="fa fa-chart-bar"></i> Lihat Lebih</a>
 
                 @if(Auth::check() && Auth::user()->role === 'admin')
                     <a href="#" id="btnTambahAudit">
-                        <i class="fa fa-plus"></i> Tambah Pedoman
+                        <i class="fa fa-plus"></i> Tambah POS AP
                     </a>
                 @endif
             </div>
         </div>
 
         <div class="grid">
-            @forelse($pedomanAudit as $pedoman)
+            @forelse($PosApAudit as $posAp)
                 <div class="card">
                     <div class="card-icon-wrapper">
                         <i class="fa fa-file-alt"></i>
                     </div>
                     <div class="card-content">
-                        <h3>{{ $pedoman->judul }}</h3>
-                        <p>Tahun: {{ $pedoman->tahun ?? '-' }}</p>
+                        <h3>{{ $posAp->judul }}</h3>
+                        <p>Tahun: {{ $posAp->tahun ?? '-' }}</p>
                     </div>
-                    <a href="{{ route('pedoman.show', $pedoman->id) }}" class="card-link">
+                    <a href="{{ route('posap.show', $posAp->id) }}" class="card-link">
                         Lihat Peraturan →
                     </a>
                 </div>
@@ -320,64 +319,7 @@
         </div>
     </section>
 
-    <!-- pedoman reviu -->
-    <section class="classification" id="pedomanreviu">
-        <div class="classification-header">
-            <h2>Pedoman <span class="audit-text">Reviu</span></h2>
-            <div class="header-actions">
-                <a href="#"><i class="fa fa-chart-bar"></i> Lihat Lebih</a>
-
-                @if(Auth::check() && Auth::user()->role === 'admin')
-                    <a href="#" id="btnTambahAudit">
-                        <i class="fa fa-plus"></i> Tambah Pedoman
-                    </a>
-                @endif
-            </div>
-        </div>
-        <div class="grid">
-            <div class="card">
-                <div class="card-icon-wrapper">
-                    <i class="fa fa-file-alt"></i>
-                </div>
-                <div class="card-content">
-                    <h3>Peraturan BPK</h3>
-                    <p>Kumpulan Peraturan Badan Pemeriksa Keuangan.</p>
-                </div>
-                <a href="#" class="card-link">Lihat Peraturan →</a>
-            </div>
-            <div class="card">
-                <div class="card-icon-wrapper">
-                    <i class="fa fa-landmark"></i>
-                </div>
-                <div class="card-content">
-                    <h3>Peraturan Perundang-undangan Pusat</h3>
-                    <p>UU, PP, Perpres, dan lainnya.</p>
-                </div>
-                <a href="#" class="card-link">Lihat Peraturan →</a>
-            </div>
-            <div class="card">
-                <div class="card-icon-wrapper">
-                    <i class="fa fa-building"></i>
-                </div>
-                <div class="card-content">
-                    <h3>Peraturan Kementerian/Lembaga</h3>
-                    <p>Permendagri, Permenkeu, dan lainnya.</p>
-                </div>
-                <a href="{{ route('pedoman.show', $pedoman->id) }}" class="card-link">Lihat Peraturan →</a>
-
-            </div>
-            <div class="card">
-                <div class="card-icon-wrapper">
-                    <i class="fa fa-map-marked-alt"></i>
-                </div>
-                <div class="card-content">
-                    <h3>Peraturan Daerah</h3>
-                    <p>Perda, Pergub, Perwali, dan lainnya.</p>
-                </div>
-                <a href="#" class="card-link">Lihat Peraturan →</a>
-            </div>
-        </div>
-    </section>
+    
 
     <!-- Modal Tambah Pedoman -->
     <div id="modalTambahPedoman" class="modal">
@@ -416,7 +358,7 @@
                 </button>
             </div>
 
-            <form id="formTambahPedoman" action="{{ route('pedoman.store') }}" method="POST"
+            <form id="formTambahPedoman" action="{{ route('posap.store') }}" method="POST"
                 enctype="multipart/form-data" novalidate>
                 @csrf
 
@@ -429,9 +371,9 @@
                     <div class="form-group">
                         <label>Pilih Jenis Pedoman <span class="required">*</span></label>
                         <div class="button-group">
-                            <button type="button" class="btn btn-outline" data-jenis="audit">Pedoman Audit</button>
-                            <button type="button" class="btn btn-outline" data-jenis="reviu">Pedoman Reviu</button>
-                            <button type="button" class="btn btn-outline" data-jenis="monev">Pedoman Monev</button>
+                            <button type="button" class="btn btn-outline" data-jenis="audit">POS AP Audit</button>
+                            <button type="button" class="btn btn-outline" data-jenis="reviu">POS AP Reviu</button>
+                            <button type="button" class="btn btn-outline" data-jenis="monev">POS AP Monev</button>
                         </div>
                         <input type="hidden" name="jenis" id="jenisPedoman" required>
                     </div>

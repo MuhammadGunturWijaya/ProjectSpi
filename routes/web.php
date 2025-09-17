@@ -23,7 +23,7 @@ use App\Http\Controllers\PedomanPengawasanController;
 use App\Http\Controllers\detailPedomanController;
 use App\Http\Controllers\DetailPengawasanController;
 use App\Http\Controllers\SearchPedomanController;
-
+use App\Http\Controllers\PosApPengawasanController;
 use App\Http\Controllers\TambahPedomanController;
 
 // Halaman landing
@@ -245,3 +245,15 @@ Route::get('/pedoman-audit', [DetailPengawasanController::class, 'index'])
 
 
 Route::get('/pedoman/{id}', [App\Http\Controllers\PedomanController::class, 'show'])->name('pedoman.show');
+
+//HALAMAN POS AP PENGAWASAN 
+Route::get('/pos-ap-pengawasan', [PosApPengawasanController::class, 'index'])->name('pos.ap.pengawasan');
+Route::post('/pos-ap/store', [PosApPengawasanController::class, 'store'])->name('posap.store');
+Route::get('/pos-ap/{id}', [PosApPengawasanController::class, 'show'])->name('posap.show');
+
+// Untuk AJAX detail
+Route::get('/pos-ap/detail/{id}', [PosApPengawasanController::class, 'detailJson']);
+// Route untuk AJAX detail PosAp
+Route::get('/posap/detail/{id}', [PosApPengawasanController::class, 'getDetail'])->name('posap.detail');
+Route::get('/posap/audit', [PosApPengawasanController::class, 'showByJenis'])
+    ->name('posap.audit');
