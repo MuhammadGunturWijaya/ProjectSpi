@@ -154,7 +154,7 @@
                             Zona Integritas
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="ziDropdown">
-                            <li><a class="dropdown-item" href="#">Manajemen Perubahan</a></li>
+                            <li> <a class="dropdown-item" href="{{ route('manajemen.perubahan') }}">Manajemen Perubahan</a></li>
                             <li><a class="dropdown-item" href="#">Penataan Tata Kelola</a></li>
                             <li><a class="dropdown-item" href="#">Penataan Sistem Manajemen SDM dan Aparatur</a></li>
                             <li><a class="dropdown-item" href="#">Penguatan Akuntabilitas</a></li>

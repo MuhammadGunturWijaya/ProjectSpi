@@ -25,7 +25,7 @@ use App\Http\Controllers\DetailPengawasanController;
 use App\Http\Controllers\SearchPedomanController;
 use App\Http\Controllers\PosApPengawasanController;
 use App\Http\Controllers\TambahPedomanController;
-use App\Http\Controllers\PiagamController;
+use App\Http\Controllers\ManajemenPerubahanController;
 
 // Halaman landing
 Route::get('/', [LandingPageController::class, 'index'])->name('landingpage');
@@ -262,4 +262,9 @@ Route::get('/piagam/{id}', [PiagamSPIController::class, 'show'])->name('piagam.s
 // Route Ke halaman piagam SPI
 Route::get('/piagam-spi', [PiagamSPIController::class, 'index'])->name('piagam-spi');
 
+Route::get('/manajemen-perubahan', [ManajemenPerubahanController::class, 'index'])
+    ->name('manajemen.perubahan');
 
+
+Route::get('/manajemen-perubahan', [ManajemenPerubahanController::class, 'index'])->name('manajemen.perubahan');
+Route::post('/upload-Manajemen', [ManajemenPerubahanController::class, 'store'])->name('manajemen.store');
