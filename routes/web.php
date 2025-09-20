@@ -23,9 +23,9 @@ use App\Http\Controllers\PedomanPengawasanController;
 use App\Http\Controllers\detailPedomanController;
 use App\Http\Controllers\DetailPengawasanController;
 use App\Http\Controllers\SearchPedomanController;
-use App\Http\Controllers\PosApPengawasanController;
 use App\Http\Controllers\TambahPedomanController;
 use App\Http\Controllers\ManajemenPerubahanController;
+use App\Http\Controllers\posAp\PosApPengawasanController;
 
 // Halaman landing
 Route::get('/', [LandingPageController::class, 'index'])->name('landingpage');
@@ -156,8 +156,6 @@ Route::get('/pedoman-monev', [PedomanMonevController::class, 'index'])->name('pe
 // Route Ke halaman pedoman reviu SPI
 Route::get('/pedoman-reviu', [PedomanReviuController::class, 'index'])->name('pedoman-reviu');
 
-// Route Ke halaman POS AP Audit
-Route::get('/pos-ap-audit', [PosApAuditController::class, 'index'])->name('pos-ap-audit');
 
 // Route Ke halaman pedoman mr 
 Route::get('/pedoman/mr', [PedomanMRController::class, 'index'])->name('pedoman.mr');
@@ -241,12 +239,9 @@ Route::get('/pedoman-audit', [DetailPengawasanController::class, 'index'])
     ->name('pedoman.audit');
 
 
-Route::get('/pedoman/{id}', [App\Http\Controllers\PedomanController::class, 'show'])->name('pedoman.show');
 
-//HALAMAN POS AP PENGAWASAN 
-Route::get('/pos-ap-pengawasan', [PosApPengawasanController::class, 'index'])->name('pos.ap.pengawasan');
-Route::post('/pos-ap/store', [PosApPengawasanController::class, 'store'])->name('posap.store');
-Route::get('/pos-ap/{id}', [PosApPengawasanController::class, 'show'])->name('posap.show');
+
+
 
 // Untuk AJAX detail
 Route::get('/pos-ap/detail/{id}', [PosApPengawasanController::class, 'detailJson']);
@@ -268,3 +263,20 @@ Route::get('/manajemen-perubahan', [ManajemenPerubahanController::class, 'index'
 
 Route::get('/manajemen-perubahan', [ManajemenPerubahanController::class, 'index'])->name('manajemen.perubahan');
 Route::post('/upload-Manajemen', [ManajemenPerubahanController::class, 'store'])->name('manajemen.store');
+
+//--------------------------------
+
+// routes/web.php
+Route::prefix('posAp')->name('posAp.')->group(function () {
+    Route::get('/', [PosApPengawasanController::class, 'index'])->name('index');
+    Route::post('/store', [PosApPengawasanController::class, 'store'])->name('store');
+    Route::delete('/{id}', [PosApPengawasanController::class, 'destroy'])->name('destroy');
+    Route::get('/{id}/edit', [PosApPengawasanController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [PosApPengawasanController::class, 'update'])->name('update');
+
+    // detail per pos ap
+    Route::get('/show/{id}', [PosApPengawasanController::class, 'show'])->name('show');
+
+    // lihat lebih
+    Route::get('/lihat/{jenis}', [PosApPengawasanController::class, 'lihat'])->name('lihat');
+});

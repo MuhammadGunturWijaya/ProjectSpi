@@ -16,7 +16,7 @@ class PedomanPengawasanController extends Controller
         $pedomanReviu = Pedoman::where('jenis', 'reviu')->take(4)->get();
         $pedomanMonev = Pedoman::where('jenis', 'monev')->take(4)->get();
 
-        return view('pedomanPengawasan', compact('title', 'pedomanAudit', 'pedomanReviu', 'pedomanMonev'));
+        return view('pedomanpengawasan.index', compact('title', 'pedomanAudit', 'pedomanReviu', 'pedomanMonev'));
     }
 
     // Halaman detail pedoman berdasarkan ID

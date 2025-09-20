@@ -1,10 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\posAp;
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\Models\PosAP;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Http\Request;
+use App\Models\Controllers\posApController;
 
 class PosApPengawasanController extends Controller
 {
@@ -16,7 +18,7 @@ class PosApPengawasanController extends Controller
         $PosApReviu = PosAp::where('jenis', 'reviu')->take(4)->get();
         $PosApMonev = PosAp::where('jenis', 'monev')->take(4)->get();
 
-        return view('PosApPengawasan', compact('title', 'PosApAudit', 'PosApReviu', 'PosApMonev'));
+        return view('PosApPengawasan.index', compact('title', 'PosApAudit', 'PosApReviu', 'PosApMonev'));
     }
 
     public function store(Request $request)
@@ -74,9 +76,11 @@ class PosApPengawasanController extends Controller
     // Halaman detail PosAp berdasarkan ID
     public function show($id)
     {
-        $PosAp = PosAp::findOrFail($id);
+        // pastikan model benar: PosAP atau PosAp sesuai definisi model Anda
+        $PosAp = PosAP::findOrFail($id);
         return view('PosApPengawasan.detail-posap', compact('PosAp'));
     }
+
 
 
     // Ambil detail pedoman untuk modal / AJAX
@@ -217,19 +221,31 @@ class PosApPengawasanController extends Controller
     }
     public function showByJenis($jenis)
     {
-        $PosAp = PosAp::where('jenis', $jenis)->get();
+        $posAps = PosAP::where('jenis', $jenis)->get();
 
         $judul = match ($jenis) {
             'pos-ap' => 'POS AP Pengawasan',
-            'audit' => 'PosAp Audit',
-            'reviu' => 'PosAp Reviu',
-            'monev' => 'PosAp Monev',
-            default => 'PosAp Pengawasan',
+            'audit' => 'POS AP Audit',
+            'reviu' => 'POS AP Reviu',
+            'monev' => 'POS AP Monev',
+            default => 'POS AP Pengawasan',
         };
 
-        return view('PosApPengawasan', compact('PosAp', 'judul'));
+        return view('PosApPengawasan.index', compact('posAps', 'judul'));
     }
-    
+
+    public function lihat($jenis)
+    {
+        $title = strtoupper($jenis) . " POS AP";
+
+        // ambil semua data sesuai jenis
+        $posAps = PosAp::where('jenis', $jenis)->get();
+
+        return view('PosApPengawasan.lihat-posAp', compact('title', 'posAps', 'jenis'));
+    }
+
+
+
 
 
 }
