@@ -26,6 +26,7 @@ use App\Http\Controllers\SearchPedomanController;
 use App\Http\Controllers\TambahPedomanController;
 use App\Http\Controllers\ManajemenPerubahanController;
 use App\Http\Controllers\posAp\PosApPengawasanController;
+use App\Http\Controllers\Instrumen\InstrumenController;
 
 // Halaman landing
 Route::get('/', [LandingPageController::class, 'index'])->name('landingpage');
@@ -280,3 +281,27 @@ Route::prefix('posAp')->name('posAp.')->group(function () {
     // lihat lebih
     Route::get('/lihat/{jenis}', [PosApPengawasanController::class, 'lihat'])->name('lihat');
 });
+
+
+// -----------------------------------
+// Halaman daftar instrumen berdasarkan jenis
+Route::get('/instrumen/lihat/{jenis}', [InstrumenController::class, 'lihat'])
+    ->name('instrumen.lihat');
+
+// Halaman index instrumen
+Route::get('/instrumen', [InstrumenController::class, 'index'])
+    ->name('instrumen.index');
+
+// Halaman detail instrumen
+Route::get('/instrumen/{id}', [InstrumenController::class, 'show'])
+    ->name('instrumen.show');
+
+// Route untuk AJAX detail
+Route::get('/instrumen/detail/{id}', [InstrumenController::class, 'getDetail'])
+    ->name('instrumen.getDetail');
+
+// Route untuk menyimpan data instrumen (store)
+Route::post('/instrumen/store', [InstrumenController::class, 'store'])
+    ->name('instrumen.store');
+
+Route::resource('instrumen', InstrumenController::class);

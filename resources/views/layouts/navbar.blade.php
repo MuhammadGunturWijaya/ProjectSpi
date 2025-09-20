@@ -131,7 +131,7 @@
                                     POS AP Pengawasan
                                 </a>
                             </li>
-                            <li><a class="dropdown-item" href="#">Instrumen Pengawasan</a></li>
+                            <li><a class="dropdown-item" href="{{ route('instrumen.index') }}">Instrumen Pengawasan</a></li>
                             <li><a class="dropdown-item" href="#">Program Kerja SPI</a></li>
                             <li><a class="dropdown-item" href="#">Konsideran SPI</a></li>
                         </ul>
