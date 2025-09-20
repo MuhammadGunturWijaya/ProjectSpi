@@ -33,7 +33,7 @@ class BeritaController extends Controller
         $request->validate([
             'judul' => 'required|string|max:255',
             'isi' => 'required|string',
-            'gambar' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
+            'gambar' => 'required|image|max:2048',
             'tanggal' => 'required|date',
         ]);
 
@@ -63,7 +63,7 @@ class BeritaController extends Controller
             'judul' => 'required|string|max:255',
             'isi' => 'required|string',
             'tanggal' => 'required|date',
-            'gambar' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'gambar' => 'required|image|max:2048',
         ]);
 
         $berita = Berita::findOrFail($id);

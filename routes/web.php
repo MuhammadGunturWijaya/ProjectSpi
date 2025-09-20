@@ -27,6 +27,7 @@ use App\Http\Controllers\TambahPedomanController;
 use App\Http\Controllers\ManajemenPerubahanController;
 use App\Http\Controllers\posAp\PosApPengawasanController;
 use App\Http\Controllers\Instrumen\InstrumenController;
+use App\Http\Controllers\SPI\ProgramKerjaSPIController;
 
 // Halaman landing
 Route::get('/', [LandingPageController::class, 'index'])->name('landingpage');
@@ -36,15 +37,15 @@ Route::get('/landing', [LandingPageController::class, 'index'])->name('landing')
 Route::get('/berita', [BeritaController::class, 'index'])->name('berita.index');
 Route::get('/berita/{id}', [BeritaController::class, 'show'])->name('berita.show');
 
-// Berita (admin only)
-Route::middleware(['auth'])->group(function () {
-    Route::get('/admin/berita/create', [BeritaController::class, 'create'])->name('berita.create');
-    Route::post('/admin/berita/store', [BeritaController::class, 'store'])->name('berita.store');
+
+
+Route::middleware(['auth'])->prefix('admin/berita')->group(function () {
+    Route::get('create', [BeritaController::class, 'create'])->name('berita.create');
+    Route::post('store', [BeritaController::class, 'store'])->name('berita.store');
+    Route::get('{id}/edit', [BeritaController::class, 'edit'])->name('berita.edit');
+    Route::put('{id}', [BeritaController::class, 'update'])->name('berita.update');
 });
-Route::middleware(['auth'])->group(function () {
-    Route::get('/berita/{id}/edit', [BeritaController::class, 'edit'])->name('berita.edit');
-    Route::put('/berita/{id}', [BeritaController::class, 'update'])->name('berita.update');
-});
+
 
 // Struktur organisasi - halaman publik
 Route::get('/struktur-organisasi', [StrukturController::class, 'index'])->name('struktur.index');
@@ -305,3 +306,18 @@ Route::post('/instrumen/store', [InstrumenController::class, 'store'])
     ->name('instrumen.store');
 
 Route::resource('instrumen', InstrumenController::class);
+
+
+
+//--------------------------------
+Route::prefix('spi')->name('programKerja.')->group(function () {
+    Route::get('/', [ProgramKerjaSPIController::class, 'index'])->name('index');   // programKerja.index
+    Route::get('/lihat/{jenis?}', [ProgramKerjaSPIController::class, 'lihat'])->name('lihat');
+    // programKerja.lihat
+    Route::get('/create', [ProgramKerjaSPIController::class, 'create'])->name('create'); // programKerja.create
+    Route::post('/store', [ProgramKerjaSPIController::class, 'store'])->name('store'); // programKerja.store
+    Route::get('/{id}', [ProgramKerjaSPIController::class, 'show'])->name('show'); // programKerja.show
+    Route::get('/{id}/edit', [ProgramKerjaSPIController::class, 'edit'])->name('edit'); // programKerja.edit
+    Route::put('/{id}', [ProgramKerjaSPIController::class, 'update'])->name('update'); // programKerja.update
+    Route::delete('/{id}', [ProgramKerjaSPIController::class, 'destroy'])->name('destroy'); // programKerja.destroy
+});
