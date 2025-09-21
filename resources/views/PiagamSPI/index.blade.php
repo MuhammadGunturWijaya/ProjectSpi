@@ -267,37 +267,37 @@
 
 
     <!-- Instrumen Audit -->
-    <section class="classification" id="konsideran-spi">
+    <section class="classification" id="piagam-spi">
         <div class="classification-header">
-            <h2>Konsideran SPI</h2>
+            <h2>Piagam SPI</h2>
             <div class="header-actions">
-                <a href="{{ route('konsideran.lihat') }}">
+                <a href="{{ route('piagam.lihat') }}">
                     <i class="fa fa-chart-bar"></i> Lihat Lebih
                 </a>
                 @if(Auth::check() && Auth::user()->role === 'admin')
-                    <a href="#" id="btnTambahKonsideranSPI">
-                        <i class="fa fa-plus"></i> Tambah Konsideran
+                    <a href="#" id="btnTambahPiagamSPI">
+                        <i class="fa fa-plus"></i> Tambah Piagam
                     </a>
                 @endif
             </div>
         </div>
 
         <div class="grid">
-            @forelse($konsiderans as $Konsideran)
+            @forelse($piagams as $PiagamSPI)
                 <div class="card">
                     <div class="card-icon-wrapper">
                         <i class="fa fa-file-alt"></i>
                     </div>
                     <div class="card-content">
-                        <h3>{{ $Konsideran->judul }}</h3>
-                        <p>Tahun: {{ $Konsideran->tahun ?? '-' }}</p>
+                        <h3>{{ $PiagamSPI->judul }}</h3>
+                        <p>Tahun: {{ $PiagamSPI->tahun ?? '-' }}</p>
                     </div>
-                    <a href="{{ route('konsideran.show', $Konsideran->id) }}" class="card-link">
+                    <a href="{{ route('piagam.show', $PiagamSPI->id) }}" class="card-link">
                         Lihat Dokumen →
                     </a>
                 </div>
             @empty
-                <p>Tidak ada Konsideran SPI.</p>
+                <p>Tidak ada Piagam SPI.</p>
             @endforelse
         </div>
     </section>
@@ -305,10 +305,10 @@
 
 
     <!-- Modal Tambah Instrumen -->
-    <div id="modalTambahKonsideran" class="modal">
+    <div id="modalTambahPiagam" class="modal">
         <div class="modal-box">
-            <button class="close" id="closeModalTambahKonsideran" aria-label="Close modal">&times;</button>
-            <h2 class="modal-title">Tambah Dokumen Konsideran SPI</h2>
+            <button class="close" id="closeModalTambahPiagam" aria-label="Close modal">&times;</button>
+            <h2 class="modal-title">Tambah Dokumen Piagam SPI</h2>
 
             {{-- Pesan error umum --}}
             @if (session('error'))
@@ -344,36 +344,36 @@
 
             <div class="stepper-nav" role="tablist" aria-label="Form Steps">
                 <button class="step-nav-item active" data-step="1" role="tab" aria-selected="true"
-                    aria-controls="step1-content" id="step1-konsideran">
+                    aria-controls="step1-content" id="step1-piagam">
                     <span class="step-number">1</span> Materi Pokok
                 </button>
                 <button class="step-nav-item" data-step="2" role="tab" aria-selected="false"
-                    aria-controls="step2-content" id="step2-konsideran">
+                    aria-controls="step2-content" id="step2-piagam">
                     <span class="step-number">2</span> Metadata
                 </button>
                 <button class="step-nav-item" data-step="3" role="tab" aria-selected="false"
-                    aria-controls="step3-content" id="step3-konsideran">
+                    aria-controls="step3-content" id="step3-piagam">
                     <span class="step-number">3</span> Berkas & Status
                 </button>
             </div>
 
-            <form id="formTambahKonsideran" action="{{ route('konsideran.store') }}" method="POST"
-                enctype="multipart/form-data" novalidate>
+            <form id="formTambahPiagam" action="{{ route('piagam.store') }}" method="POST" enctype="multipart/form-data"
+                novalidate>
                 @csrf
 
-                <section class="step-content active" data-step="1" id="step1-content-konsideran">
+                {{-- STEP 1 --}}
+                <section class="step-content active" data-step="1" id="step1-content-piagam">
                     <div class="form-section-header">
                         <h4>Materi Pokok Dokumen</h4>
                     </div>
 
                     <div class="form-group">
-                        <label for="judul-konsideran">Judul <span class="required">*</span></label>
-                        <input type="text" id="judul-konsideran" name="judul" required
-                            placeholder="Masukkan judul dokumen">
+                        <label for="judul-piagam">Judul <span class="required">*</span></label>
+                        <input type="text" id="judul-piagam" name="judul" required placeholder="Masukkan judul dokumen">
                     </div>
                     <div class="form-group">
-                        <label for="tahun-konsideran">Tahun <span class="required">*</span></label>
-                        <select id="tahun-konsideran" name="tahun" required>
+                        <label for="tahun-piagam">Tahun <span class="required">*</span></label>
+                        <select id="tahun-piagam" name="tahun" required>
                             <option value="">Pilih Tahun</option>
                             @for ($y = date('Y'); $y >= 1900; $y--)
                                 <option value="{{ $y }}">{{ $y }}</option>
@@ -381,59 +381,59 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="kata_kunci-konsideran">Kata Kunci</label>
-                        <input type="text" id="kata_kunci-konsideran" name="kata_kunci"
+                        <label for="kata_kunci-piagam">Kata Kunci</label>
+                        <input type="text" id="kata_kunci-piagam" name="kata_kunci"
                             placeholder="Pisahkan dengan koma, contoh: pajak, bea cukai">
                     </div>
                     <div class="form-group">
-                        <label for="abstrak-konsideran">Abstrak</label>
-                        <textarea id="abstrak-konsideran" name="abstrak" rows="4"
+                        <label for="abstrak-piagam">Abstrak</label>
+                        <textarea id="abstrak-piagam" name="abstrak" rows="4"
                             placeholder="Tuliskan ringkasan isi dokumen"></textarea>
                     </div>
                     <div class="form-group">
-                        <label for="catatan-konsideran">Catatan</label>
-                        <textarea id="catatan-konsideran" name="catatan" rows="2"
+                        <label for="catatan-piagam">Catatan</label>
+                        <textarea id="catatan-piagam" name="catatan" rows="2"
                             placeholder="Catatan atau informasi tambahan"></textarea>
                     </div>
                 </section>
 
-                <section class="step-content" data-step="2" id="step2-content-konsideran" role="tabpanel"
-                    aria-labelledby="step2-konsideran">
+                {{-- STEP 2 --}}
+                <section class="step-content" data-step="2" id="step2-content-piagam" role="tabpanel"
+                    aria-labelledby="step2-piagam">
                     <div class="form-section-header">
                         <h4>Metadata Dokumen</h4>
                         <p class="section-desc">Detail teknis dokumen seperti nomor, tanggal, dan sumber.</p>
                     </div>
                     <div class="grid-2">
                         <div class="form-group">
-                            <label for="tipe_dokumen-konsideran">Tipe Dokumen</label>
-                            <input type="text" id="tipe_dokumen-konsideran" name="tipe_dokumen"
+                            <label for="tipe_dokumen-piagam">Tipe Dokumen</label>
+                            <input type="text" id="tipe_dokumen-piagam" name="tipe_dokumen"
                                 placeholder="Contoh: Peraturan Pemerintah">
                         </div>
                         <div class="form-group">
-                            <label for="judul_meta-konsideran">Judul Metadata</label>
-                            <input type="text" id="judul_meta-konsideran" name="judul_meta"
-                                placeholder="Judul metadata">
+                            <label for="judul_meta-piagam">Judul Metadata</label>
+                            <input type="text" id="judul_meta-piagam" name="judul_meta" placeholder="Judul metadata">
                         </div>
                         <div class="form-group">
-                            <label for="teu-konsideran">T.E.U.</label>
-                            <input type="text" id="teu-konsideran" name="teu" placeholder="Tanda Efektif Umum">
+                            <label for="teu-piagam">T.E.U.</label>
+                            <input type="text" id="teu-piagam" name="teu" placeholder="Tanda Efektif Umum">
                         </div>
                         <div class="form-group">
-                            <label for="nomor-konsideran">Nomor</label>
-                            <input type="text" id="nomor-konsideran" name="nomor" placeholder="Nomor dokumen">
+                            <label for="nomor-piagam">Nomor</label>
+                            <input type="text" id="nomor-piagam" name="nomor" placeholder="Nomor dokumen">
                         </div>
                         <div class="form-group">
-                            <label for="bentuk-konsideran">Bentuk</label>
-                            <input type="text" id="bentuk-konsideran" name="bentuk" placeholder="Bentuk dokumen">
+                            <label for="bentuk-piagam">Bentuk</label>
+                            <input type="text" id="bentuk-piagam" name="bentuk" placeholder="Bentuk dokumen">
                         </div>
                         <div class="form-group">
-                            <label for="bentuk_singkat-konsideran">Bentuk Singkat</label>
-                            <input type="text" id="bentuk_singkat-konsideran" name="bentuk_singkat"
+                            <label for="bentuk_singkat-piagam">Bentuk Singkat</label>
+                            <input type="text" id="bentuk_singkat-piagam" name="bentuk_singkat"
                                 placeholder="Singkatan bentuk">
                         </div>
                         <div class="form-group">
-                            <label for="tahun_meta-konsideran">Tahun Metadata</label>
-                            <select id="tahun_meta-konsideran" name="tahun_meta">
+                            <label for="tahun_meta-piagam">Tahun Metadata</label>
+                            <select id="tahun_meta-piagam" name="tahun_meta">
                                 <option value="">Pilih Tahun</option>
                                 @for ($y = date('Y'); $y >= 1900; $y--)
                                     <option value="{{ $y }}">{{ $y }}</option>
@@ -441,57 +441,58 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="tempat_penetapan-konsideran">Tempat Penetapan</label>
-                            <input type="text" id="tempat_penetapan-konsideran" name="tempat_penetapan"
+                            <label for="tempat_penetapan-piagam">Tempat Penetapan</label>
+                            <input type="text" id="tempat_penetapan-piagam" name="tempat_penetapan"
                                 placeholder="Lokasi penetapan">
                         </div>
                         <div class="form-group">
-                            <label for="tanggal_penetapan-konsideran">Tanggal Penetapan</label>
-                            <input type="date" id="tanggal_penetapan-konsideran" name="tanggal_penetapan">
+                            <label for="tanggal_penetapan-piagam">Tanggal Penetapan</label>
+                            <input type="date" id="tanggal_penetapan-piagam" name="tanggal_penetapan">
                         </div>
                         <div class="form-group">
-                            <label for="tanggal_pengundangan-konsideran">Tanggal Pengundangan</label>
-                            <input type="date" id="tanggal_pengundangan-konsideran" name="tanggal_pengundangan">
+                            <label for="tanggal_pengundangan-piagam">Tanggal Pengundangan</label>
+                            <input type="date" id="tanggal_pengundangan-piagam" name="tanggal_pengundangan">
                         </div>
                         <div class="form-group">
-                            <label for="tanggal_berlaku-konsideran">Tanggal Berlaku</label>
-                            <input type="date" id="tanggal_berlaku-konsideran" name="tanggal_berlaku">
+                            <label for="tanggal_berlaku-piagam">Tanggal Berlaku</label>
+                            <input type="date" id="tanggal_berlaku-piagam" name="tanggal_berlaku">
                         </div>
                         <div class="form-group">
-                            <label for="sumber-konsideran">Sumber</label>
-                            <input type="text" id="sumber-konsideran" name="sumber" placeholder="Sumber dokumen">
+                            <label for="sumber-piagam">Sumber</label>
+                            <input type="text" id="sumber-piagam" name="sumber" placeholder="Sumber dokumen">
                         </div>
                         <div class="form-group">
-                            <label for="subjek-konsideran">Subjek</label>
-                            <input type="text" id="subjek-konsideran" name="subjek" placeholder="Subjek terkait">
+                            <label for="subjek-piagam">Subjek</label>
+                            <input type="text" id="subjek-piagam" name="subjek" placeholder="Subjek terkait">
                         </div>
                         <div class="form-group">
-                            <label for="status-konsideran">Status</label>
-                            <input type="text" id="status-konsideran" name="status" placeholder="Status dokumen">
+                            <label for="status-piagam">Status</label>
+                            <input type="text" id="status-piagam" name="status" placeholder="Status dokumen">
                         </div>
                         <div class="form-group">
-                            <label for="bahasa-konsideran">Bahasa</label>
-                            <input type="text" id="bahasa-konsideran" name="bahasa" placeholder="Bahasa dokumen">
+                            <label for="bahasa-piagam">Bahasa</label>
+                            <input type="text" id="bahasa-piagam" name="bahasa" placeholder="Bahasa dokumen">
                         </div>
                         <div class="form-group">
-                            <label for="lokasi-konsideran">Lokasi</label>
-                            <input type="text" id="lokasi-konsideran" name="lokasi" placeholder="Lokasi penyimpanan">
+                            <label for="lokasi-piagam">Lokasi</label>
+                            <input type="text" id="lokasi-piagam" name="lokasi" placeholder="Lokasi penyimpanan">
                         </div>
                         <div class="form-group">
-                            <label for="bidang-konsideran">Bidang</label>
-                            <input type="text" id="bidang-konsideran" name="bidang" placeholder="Bidang terkait">
+                            <label for="bidang-piagam">Bidang</label>
+                            <input type="text" id="bidang-piagam" name="bidang" placeholder="Bidang terkait">
                         </div>
                     </div>
                 </section>
 
-                <section class="step-content" data-step="3" id="step3-content-konsideran" role="tabpanel"
-                    aria-labelledby="step3-konsideran">
+                {{-- STEP 3 --}}
+                <section class="step-content" data-step="3" id="step3-content-piagam" role="tabpanel"
+                    aria-labelledby="step3-piagam">
                     <div class="form-section-header">
                         <h4>Berkas Dokumen & Status</h4>
                         <p class="section-desc">Unggah file dokumen dan isi informasi status.</p>
                     </div>
                     <div class="form-group file-upload-group">
-                        <label for="file_pdf-konsideran" class="file-label">
+                        <label for="file_pdf-piagam" class="file-label">
                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round" class="icon-upload">
@@ -500,22 +501,21 @@
                             </svg>
                             Pilih Berkas PDF
                         </label>
-                        <input type="file" id="file_pdf-konsideran" name="file_pdf" accept="application/pdf"
+                        <input type="file" id="file_pdf-piagam" name="file_pdf" accept="application/pdf"
                             aria-describedby="fileHelp" />
-                        <span id="file-name-konsideran" class="file-name-display">Belum ada file yang
-                            dipilih.</span>
-                        <small id="fileHelp-konsideran" class="file-help">Format: PDF, maksimal 10MB.</small>
+                        <span id="file-name-piagam" class="file-name-display">Belum ada file yang dipilih.</span>
+                        <small id="fileHelp-piagam" class="file-help">Format: PDF, maksimal 10MB.</small>
                     </div>
 
                     <div class="form-group">
-                        <label for="mencabut-konsideran">Mencabut</label>
-                        <input type="text" id="mencabut-konsideran" name="mencabut"
+                        <label for="mencabut-piagam">Mencabut</label>
+                        <input type="text" id="mencabut-piagam" name="mencabut"
                             placeholder="Tuliskan dokumen yang dicabut">
                     </div>
                 </section>
 
                 <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" id="prevStep-konsideran"
+                    <button type="button" class="btn btn-secondary" id="prevStep-piagam"
                         aria-label="Kembali ke langkah sebelumnya" style="display:none;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -525,7 +525,7 @@
                         </svg>
                         Kembali
                     </button>
-                    <button type="button" class="btn btn-primary" id="nextStep-konsideran"
+                    <button type="button" class="btn btn-primary" id="nextStep-piagam"
                         aria-label="Lanjut ke langkah berikutnya">
                         Lanjut
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -535,7 +535,7 @@
                             <polyline points="12 5 19 12 12 19"></polyline>
                         </svg>
                     </button>
-                    <button type="submit" class="btn btn-submit" id="submitBtn-konsideran" style="display:none"
+                    <button type="submit" class="btn btn-submit" id="submitBtn-piagam" style="display:none"
                         aria-label="Simpan data">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
@@ -551,21 +551,20 @@
         </div>
     </div>
 
-
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const modalTambah = document.getElementById("modalTambahKonsideran");
-            const btnOpenModal = document.querySelectorAll("#btnTambahKonsideranSPI");
-            const btnCloseModal = document.getElementById("closeModalTambahKonsideran");
+            const modalTambah = document.getElementById("modalTambahPiagam");
+            const btnOpenModal = document.querySelectorAll("#btnTambahPiagamSPI");
+            const btnCloseModal = document.getElementById("closeModalTambahPiagam");
 
             const steps = document.querySelectorAll(".step-nav-item");
             const contents = document.querySelectorAll(".step-content");
-            const nextBtn = document.getElementById("nextStep-konsideran");
-            const prevBtn = document.getElementById("prevStep-konsideran");
-            const submitBtn = document.getElementById("submitBtn-konsideran");
+            const nextBtn = document.getElementById("nextStep-piagam");
+            const prevBtn = document.getElementById("prevStep-piagam");
+            const submitBtn = document.getElementById("submitBtn-piagam");
             let currentStep = 0;
 
-            // Function to show/hide steps and buttons
+            // --- Show/Hide steps & buttons ---
             function showStep(index) {
                 if (contents.length && steps.length) {
                     contents.forEach((c, i) => c.classList.toggle("active", i === index));
@@ -577,7 +576,7 @@
                 if (submitBtn) submitBtn.style.display = index === contents.length - 1 ? "inline-flex" : "none";
             }
 
-            // Function to validate the current step
+            // --- Validasi field wajib ---
             function validateStep(index) {
                 const currentContent = contents[index];
                 if (!currentContent) return true;
@@ -598,7 +597,7 @@
                 return isValid;
             }
 
-            // --- Event Listeners for Modal Control ---
+            // --- Modal Control ---
             if (btnOpenModal.length && modalTambah) {
                 btnOpenModal.forEach(btn => {
                     btn.addEventListener("click", function (e) {
@@ -622,7 +621,7 @@
                 }
             });
 
-            // --- Event Listeners for Stepper ---
+            // --- Stepper ---
             if (steps.length) {
                 steps.forEach((step, idx) => {
                     step.addEventListener("click", () => {
@@ -641,6 +640,7 @@
 
             if (nextBtn) {
                 nextBtn.addEventListener("click", () => {
+                    console.log("Next button clicked");
                     if (validateStep(currentStep)) {
                         if (currentStep < contents.length - 1) {
                             currentStep++;
@@ -649,6 +649,7 @@
                     }
                 });
             }
+
 
             if (prevBtn) {
                 prevBtn.addEventListener("click", () => {
@@ -659,12 +660,12 @@
                 });
             }
 
-            // Initial state
+            // Initial
             showStep(currentStep);
 
-            // --- File input display ---
-            const fileInput = document.getElementById("file_pdf-konsideran");
-            const fileNameDisplay = document.getElementById("file-name-konsideran");
+            // --- File input ---
+            const fileInput = document.getElementById("file_pdf-piagam");
+            const fileNameDisplay = document.getElementById("file-name-piagam");
 
             if (fileInput && fileNameDisplay) {
                 fileInput.addEventListener("change", function () {
@@ -677,6 +678,7 @@
             }
         });
     </script>
+
 
     @include('layouts.NavbarBawah')
 </body>

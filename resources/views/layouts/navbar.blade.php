@@ -124,7 +124,7 @@
                             Dokumen Kerja
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="dokumenDropdown">
-                            <li><a class="dropdown-item" href="#">Piagam SPI</a></li>
+                            <li><a class="dropdown-item" href="{{ route('piagam.index') }}">Piagam SPI</a></li>
                             <li><a class="dropdown-item" href="#">Pedoman Pengawasan</a></li>
                             <li>
                                 <a class="dropdown-item" href="{{ route('posAp.index') }}">

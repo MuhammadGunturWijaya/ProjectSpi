@@ -13,7 +13,6 @@ use App\Http\Controllers\PengurusController;
 use App\Http\Controllers\SdmController;
 use App\Http\Controllers\ProsesBisnisSPIController;
 use App\Http\Controllers\KodeEtikSPIController;
-use App\Http\Controllers\PiagamSPIController;
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\ProgramKerjaController;
 use App\Http\Controllers\SDMAparaturController;
@@ -28,6 +27,7 @@ use App\Http\Controllers\posAp\PosApPengawasanController;
 use App\Http\Controllers\Instrumen\InstrumenController;
 use App\Http\Controllers\SPI\ProgramKerjaSPIController;
 use App\Http\Controllers\Konsideran\KonsideranSPIController;
+use App\Http\Controllers\Piagam\PiagamSPIController;
 
 // Halaman landing
 Route::get('/', [LandingPageController::class, 'index'])->name('landingpage');
@@ -345,3 +345,47 @@ Route::put('/konsideran/update/{id}', [KonsideranSPIController::class, 'update']
 Route::delete('/konsideran/destroy/{id}', [KonsideranSPIController::class, 'destroy'])->name('konsideran.destroy');
 
 Route::get('/KonsideranSPI/lihat/', [KonsideranSPIController::class, 'lihat'])->name('konsideran.lihat');
+
+//------------------------------------------
+// Halaman daftar semua Piagam SPI
+Route::get('/piagam', [PiagamSPIController::class, 'index'])
+    ->name('piagam.index');
+
+// Halaman detail Piagam SPI
+Route::get('/piagam/{id}', [PiagamSPIController::class, 'show'])
+    ->name('piagam.show');
+
+// Halaman form tambah Piagam SPI
+Route::get('/piagam/create', [PiagamSPIController::class, 'create'])
+    ->middleware('auth')
+    ->name('piagam.create');
+
+// Simpan data Piagam SPI baru
+Route::post('/piagam', [PiagamSPIController::class, 'store'])
+    ->middleware('auth')
+    ->name('piagam.store');
+
+// Halaman edit Piagam SPI
+Route::get('/piagam/{id}/edit', [PiagamSPIController::class, 'edit'])
+    ->middleware('auth')
+    ->name('piagam.edit');
+
+// Update data Piagam SPI
+Route::put('/piagam/{id}', [PiagamSPIController::class, 'update'])
+    ->middleware('auth')
+    ->name('piagam.update');
+
+// Hapus Piagam SPI
+Route::delete('/piagam/{id}', [PiagamSPIController::class, 'destroy'])
+    ->middleware('auth')
+    ->name('piagam.destroy');
+
+// Halaman daftar Piagam SPI (versi lihat)
+Route::get('/PiagamSPI/lihat', [PiagamSPIController::class, 'lihat'])
+    ->name('piagam.lihat');
+
+// (Opsional) Route pencarian Piagam SPI
+Route::get('/piagam/search', [PiagamSPIController::class, 'search'])
+    ->name('piagam.search');
+
+Route::get('/piagamspi/detail/{id}', [PiagamSPIController::class, 'showJson']);
