@@ -464,7 +464,7 @@
     @include('layouts.navbar')
     <header>
         <div class="header-text-container">
-            <h1>{{  $programKerja->judul ?? '-'  }}</h1>
+            <h1>{{  $Konsideran->judul ?? '-'  }}</h1>
         </div>
     </header>
 
@@ -482,96 +482,96 @@
     <main class="container">
         <div class="main-content">
             <div class="left-column">
-                <!-- Ringkasan Program Kerja SPI -->
+                <!-- Ringkasan Konsideran -->
                 <div class="card">
                     <div class="card-header">
-                        <h2><i class="fas fa-info-circle"></i> Ringkasan Program Kerja SPI</h2>
-                        <a href="#" class="btn-primary openPopup" data-id="{{ $programKerja->id }}">
+                        <h2><i class="fas fa-info-circle"></i> Ringkasan Konsideran SPI</h2>
+                        <a href="#" class="btn-primary openPopup" data-id="{{ $Konsideran->id }}">
                             Lihat Selengkapnya
                         </a>
                     </div>
                     <p class="abstract-content">
-                        {{ $programKerja->abstrak ?? 'Tidak ada ringkasan tersedia.' }}
+                        {{ $Konsideran->abstrak ?? 'Tidak ada ringkasan tersedia.' }}
                     </p>
                 </div>
 
-                <!-- Metadata Program Kerja SPI -->
+                <!-- Metadata Konsideran -->
                 <div class="card" style="margin-top: 2rem;">
                     <div class="card-header">
-                        <h2><i class="fas fa-tags"></i> Metadata Program Kerja SPI</h2>
+                        <h2><i class="fas fa-tags"></i> Metadata Konsideran SPI</h2>
                     </div>
                     <dl class="metadata-grid">
                         <div class="metadata-item">
                             <dt>Tipe Dokumen</dt>
-                            <dd>{{ $programKerja->tipe_dokumen ?? '-' }}</dd>
+                            <dd>{{ $Konsideran->tipe_dokumen ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Judul</dt>
-                            <dd>{{ $programKerja->judul ?? '-' }}</dd>
+                            <dd>{{ $Konsideran->judul_meta ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>T.E.U.</dt>
-                            <dd>{{ $programKerja->teu ?? '-' }}</dd>
+                            <dd>{{ $Konsideran->teu ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Nomor</dt>
-                            <dd>{{ $programKerja->nomor ?? '-' }}</dd>
+                            <dd>{{ $Konsideran->nomor ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Bentuk</dt>
-                            <dd>{{ $programKerja->bentuk ?? '-' }}</dd>
+                            <dd>{{ $Konsideran->bentuk ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Bentuk Singkat</dt>
-                            <dd>{{ $programKerja->bentuk_singkat ?? '-' }}</dd>
+                            <dd>{{ $Konsideran->bentuk_singkat ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Tahun</dt>
-                            <dd>{{ $programKerja->tahun_meta ?? '-' }}</dd>
+                            <dd>{{ $Konsideran->tahun_meta ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Tempat Penetapan</dt>
-                            <dd>{{ $programKerja->tempat_penetapan ?? '-' }}</dd>
+                            <dd>{{ $Konsideran->tempat_penetapan ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Tanggal Penetapan</dt>
-                            <dd>{{ $programKerja->tanggal_penetapan?->format('d F Y') ?? '-' }}</dd>
+                            <dd>{{ $Konsideran->tanggal_penetapan?->format('d F Y') ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Tanggal Pengundangan</dt>
-                            <dd>{{ $programKerja->tanggal_pengundangan?->format('d F Y') ?? '-' }}</dd>
+                            <dd>{{ $Konsideran->tanggal_pengundangan?->format('d F Y') ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Tanggal Berlaku</dt>
-                            <dd>{{ $programKerja->tanggal_berlaku?->format('d F Y') ?? '-' }}</dd>
+                            <dd>{{ $Konsideran->tanggal_berlaku?->format('d F Y') ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Sumber</dt>
-                            <dd>{{ $programKerja->sumber ?? '-' }}</dd>
+                            <dd>{{ $Konsideran->sumber ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Subjek</dt>
-                            <dd>{{ $programKerja->subjek ?? '-' }}</dd>
+                            <dd>{{ $Konsideran->subjek ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Status</dt>
-                            <dd>{{ $programKerja->status ?? '-' }}</dd>
+                            <dd>{{ $Konsideran->status ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Bahasa</dt>
-                            <dd>{{ $programKerja->bahasa ?? '-' }}</dd>
+                            <dd>{{ $Konsideran->bahasa ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Lokasi</dt>
-                            <dd>{{ $programKerja->lokasi ?? '-' }}</dd>
+                            <dd>{{ $Konsideran->lokasi ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Bidang</dt>
-                            <dd>{{ $programKerja->bidang ?? '-' }}</dd>
+                            <dd>{{ $Konsideran->bidang ?? '-' }}</dd>
                         </div>
                     </dl>
                     <div class="social-share">
-                        <span class="share-text">Halaman ini telah diakses {{ $programKerja->view_count ?? 0 }}
+                        <span class="share-text">Halaman ini telah diakses {{ $Konsideran->view_count ?? 0 }}
                             kali</span>
                         <a href="#" class="social-icon twitter"><i class="fab fa-twitter"></i></a>
                         <a href="#" class="social-icon facebook"><i class="fab fa-facebook-f"></i></a>
@@ -584,24 +584,24 @@
                     <div class="card-header">
                         <h2><i class="fas fa-balance-scale"></i> Uji Materi</h2>
                     </div>
-                    <p class="abstract-content">{{ $programKerja->uji_materi ?? 'Belum Tersedia' }}</p>
+                    <p class="abstract-content">{{ $Konsideran->uji_materi ?? 'Belum Tersedia' }}</p>
                 </div>
             </div>
 
             <!-- Right Column -->
             <div class="right-column">
-                <!-- File Program Kerja SPI -->
+                <!-- File Konsideran -->
                 <div class="card">
                     <div class="card-header">
-                        <h2><i class="fas fa-file-download"></i> File Program Kerja SPI</h2>
+                        <h2><i class="fas fa-file-download"></i> File Konsideran SPI</h2>
                     </div>
                     <div class="file-card-content">
                         <i class="fas fa-file-pdf file-icon"></i>
-                        <div class="file-name">{{ $programKerja->file_pdf ?? 'Tidak ada file' }}</div>
+                        <div class="file-name">{{ $Konsideran->file_pdf ?? 'Tidak ada file' }}</div>
                         <div class="btn-group">
                             @php
-                                $filePath = $programKerja->file_pdf
-                                    ? asset('storage/' . trim($programKerja->file_pdf))
+                                $filePath = $Konsideran->file_pdf
+                                    ? asset('storage/' . trim($Konsideran->file_pdf))
                                     : null;
                             @endphp
 
@@ -615,19 +615,19 @@
                         </div>
                     </div>
 
-                    <!-- Status Program Kerja SPI -->
+                    <!-- Status Konsideran -->
                     <div class="card" style="margin-top: 2rem;">
                         <div class="card-header">
-                            <h2><i class="fas fa-check-circle"></i> Status Program Kerja SPI</h2>
+                            <h2><i class="fas fa-check-circle"></i> Status Konsideran SPI</h2>
                         </div>
                         <div class="related-regulations">
-                            @if($programKerja->mencabut)
+                            @if($Konsideran->mencabut)
                                 <div class="status-item">
                                     <i class="fas fa-arrow-circle-right"></i>
                                     <div>
                                         <div class="status-label">Mencabut:</div>
                                         <ul>
-                                            @foreach(explode("\n", str_replace("\r", '', $programKerja->mencabut)) as $item)
+                                            @foreach(explode("\n", str_replace("\r", '', $Konsideran->mencabut)) as $item)
                                                 <li>{{ $item }}</li>
                                             @endforeach
                                         </ul>

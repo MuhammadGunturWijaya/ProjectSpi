@@ -13,7 +13,6 @@ use App\Http\Controllers\PengurusController;
 use App\Http\Controllers\SdmController;
 use App\Http\Controllers\ProsesBisnisSPIController;
 use App\Http\Controllers\KodeEtikSPIController;
-use App\Http\Controllers\KonsideranSPIController;
 use App\Http\Controllers\PiagamSPIController;
 use App\Http\Controllers\SurveyController;
 use App\Http\Controllers\ProgramKerjaController;
@@ -28,6 +27,7 @@ use App\Http\Controllers\ManajemenPerubahanController;
 use App\Http\Controllers\posAp\PosApPengawasanController;
 use App\Http\Controllers\Instrumen\InstrumenController;
 use App\Http\Controllers\SPI\ProgramKerjaSPIController;
+use App\Http\Controllers\Konsideran\KonsideranSPIController;
 
 // Halaman landing
 Route::get('/', [LandingPageController::class, 'index'])->name('landingpage');
@@ -321,3 +321,27 @@ Route::prefix('spi')->name('programKerja.')->group(function () {
     Route::put('/{id}', [ProgramKerjaSPIController::class, 'update'])->name('update'); // programKerja.update
     Route::delete('/{id}', [ProgramKerjaSPIController::class, 'destroy'])->name('destroy'); // programKerja.destroy
 });
+
+//------------------------------------------
+// Halaman daftar semua Konsideran SPI berdasarkan jenis
+Route::get('/konsideran/{jenis?}', [KonsideranSPIController::class, 'index'])->name('konsideran.index');
+
+// Halaman detail Konsideran SPI
+Route::get('/konsideran/detail/{id}', [KonsideranSPIController::class, 'show'])->name('konsideran.show');
+
+// Form tambah Konsideran SPI
+Route::get('/konsideran/tambah', [KonsideranSPIController::class, 'create'])->name('konsideran.create');
+
+// Simpan Konsideran SPI baru
+Route::post('/konsideran/store', [KonsideranSPIController::class, 'store'])->name('konsideran.store');
+
+// Form edit Konsideran SPI
+Route::get('/konsideran/edit/{id}', [KonsideranSPIController::class, 'edit'])->name('konsideran.edit');
+
+// Update Konsideran SPI
+Route::put('/konsideran/update/{id}', [KonsideranSPIController::class, 'update'])->name('konsideran.update');
+
+// Hapus Konsideran SPI
+Route::delete('/konsideran/destroy/{id}', [KonsideranSPIController::class, 'destroy'])->name('konsideran.destroy');
+
+Route::get('/KonsideranSPI/lihat/', [KonsideranSPIController::class, 'lihat'])->name('konsideran.lihat');

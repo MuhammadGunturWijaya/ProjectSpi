@@ -136,7 +136,7 @@
                             <li><a class="dropdown-item" href="{{ route('programKerja.index') }}">Program Kerja SPI</a>
                             </li>
 
-                            <li><a class="dropdown-item" href="#">Konsideran SPI</a></li>
+                            <li><a class="dropdown-item" href="{{ route('konsideran.index') }}">Konsideran SPI</a></li>
                         </ul>
                     </li>
 
