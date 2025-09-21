@@ -160,7 +160,7 @@
                             <li> <a class="dropdown-item" href="{{ route('perubahan.index') }}">Manajemen
                                     Perubahan</a></li>
                             <li><a class="dropdown-item" href="{{ route('penataan.index') }}">Penataan Tata Kelola</a></li>
-                            <li><a class="dropdown-item" href="#">Penataan Sistem Manajemen SDM dan Aparatur</a></li>
+                            <li><a class="dropdown-item" href="{{ route('penataanSistem.index') }}">Penataan Sistem Manajemen SDM dan Aparatur</a></li>
                             <li><a class="dropdown-item" href="#">Penguatan Akuntabilitas</a></li>
                             <li><a class="dropdown-item" href="#">Penguatan Pengawasan</a></li>
                             <li><a class="dropdown-item" href="#">Peningkatan Kualitas Pelayanan Publik</a></li>

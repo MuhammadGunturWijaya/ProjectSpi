@@ -30,6 +30,7 @@ use App\Http\Controllers\SPI\ProgramKerjaSPIController;
 use App\Http\Controllers\Konsideran\KonsideranSPIController;
 use App\Http\Controllers\Piagam\PiagamSPIController;
 use App\Http\Controllers\Penataan\PenataanTataKelolaController;
+use App\Http\Controllers\Penataan\PenataanSistemController;
 
 // Halaman landing
 Route::get('/', [LandingPageController::class, 'index'])->name('landingpage');
@@ -404,3 +405,9 @@ Route::resource('penataan', PenataanTataKelolaController::class);
 
 Route::get('/Penataan/lihat', [PenataanTataKelolaController::class, 'lihat'])
     ->name('penataan.lihat');
+
+Route::resource('penataanSistem', PenataanSistemController::class);
+
+// Route tambahan untuk halaman daftar/lihat
+Route::get('/PenataanSistem/lihat', [PenataanSistemController::class, 'lihat'])
+    ->name('penataanSistem.lihat');
