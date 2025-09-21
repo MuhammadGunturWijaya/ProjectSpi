@@ -1,5 +1,6 @@
 <?php
 use App\Http\Controllers\InstrumenPengawasanController;
+use App\Http\Controllers\Perubahan\PerubahanController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\BeritaController;
 use App\Http\Controllers\LandingPageController;
@@ -22,7 +23,7 @@ use App\Http\Controllers\detailPedomanController;
 use App\Http\Controllers\DetailPengawasanController;
 use App\Http\Controllers\SearchPedomanController;
 use App\Http\Controllers\TambahPedomanController;
-use App\Http\Controllers\ManajemenPerubahanController;
+use App\Http\Controllers\Perubahan\ManajemenPerubahanController;
 use App\Http\Controllers\posAp\PosApPengawasanController;
 use App\Http\Controllers\Instrumen\InstrumenController;
 use App\Http\Controllers\SPI\ProgramKerjaSPIController;
@@ -389,3 +390,11 @@ Route::get('/piagam/search', [PiagamSPIController::class, 'search'])
     ->name('piagam.search');
 
 Route::get('/piagamspi/detail/{id}', [PiagamSPIController::class, 'showJson']);
+
+
+//------------------------------
+Route::resource('perubahan', PerubahanController::class);
+
+// Tambahan untuk method lihat()
+Route::get('/Perubahan/lihat', [PerubahanController::class, 'lihat'])
+    ->name('perubahan.lihat');
