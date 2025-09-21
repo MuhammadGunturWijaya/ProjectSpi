@@ -31,6 +31,7 @@ use App\Http\Controllers\Konsideran\KonsideranSPIController;
 use App\Http\Controllers\Piagam\PiagamSPIController;
 use App\Http\Controllers\Penataan\PenataanTataKelolaController;
 use App\Http\Controllers\Penataan\PenataanSistemController;
+use App\Http\Controllers\IdentifikasiRisikoController;
 
 // Halaman landing
 Route::get('/', [LandingPageController::class, 'index'])->name('landingpage');
@@ -411,3 +412,31 @@ Route::resource('penataanSistem', PenataanSistemController::class);
 // Route tambahan untuk halaman daftar/lihat
 Route::get('/PenataanSistem/lihat', [PenataanSistemController::class, 'lihat'])
     ->name('penataanSistem.lihat');
+
+
+//SURVEY KEPUASAN
+Route::get('/survey-kepuasan', function () {
+    return view('SurveyKepuasan.Survey-Kepuasan');
+})->name('survey.kepuasan');
+
+// Identifikasi Risiko (form edit)
+Route::get('/identifikasi-risiko', function () {
+    return view('identifikasi.editRisiko'); // sesuaikan dengan nama file baru
+})->name('identifikasi.risiko');
+
+// Tampilkan form
+Route::get('/identifikasi-risiko', function () {
+    return view('identifikasi.identifikasiRisiko');
+})->name('identifikasi.risiko');
+
+// Simpan data form
+Route::post('/identifikasi-risiko', [App\Http\Controllers\IdentifikasiRisikoController::class, 'store'])
+    ->name('identifikasi.risiko.store');
+
+// Tampilkan daftar identifikasi risiko
+Route::get('/identifikasi-risiko', [IdentifikasiRisikoController::class, 'index'])
+    ->name('identifikasi.risiko.index');
+
+// Halaman form tambah/edit risiko
+Route::get('/identifikasi-risiko/create', [IdentifikasiRisikoController::class, 'create'])
+    ->name('identifikasi.risiko.create');

@@ -146,7 +146,11 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="mrDropdown">
                             <li><a class="dropdown-item" href="#">Pedoman MR</a></li>
-                            <li><a class="dropdown-item" href="#">Identifikasi Risiko</a></li>
+                            <li>
+                                <a class="dropdown-item" href="{{ route('identifikasi.risiko.index') }}">Identifikasi
+                                    Risiko</a>
+                            </li>
+
                             <li><a class="dropdown-item" href="#">Penilaian, Evaluasi MR & Mitigasi</a></li>
                             <li><a class="dropdown-item" href="#">Pelaporan</a></li>
                         </ul>
@@ -159,11 +163,15 @@
                         <ul class="dropdown-menu" aria-labelledby="ziDropdown">
                             <li> <a class="dropdown-item" href="{{ route('perubahan.index') }}">Manajemen
                                     Perubahan</a></li>
-                            <li><a class="dropdown-item" href="{{ route('penataan.index') }}">Penataan Tata Kelola</a></li>
-                            <li><a class="dropdown-item" href="{{ route('penataanSistem.index') }}">Penataan Sistem Manajemen SDM dan Aparatur</a></li>
+                            <li><a class="dropdown-item" href="{{ route('penataan.index') }}">Penataan Tata Kelola</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ route('penataanSistem.index') }}">Penataan Sistem
+                                    Manajemen SDM dan Aparatur</a></li>
                             <li><a class="dropdown-item" href="#">Penguatan Akuntabilitas</a></li>
                             <li><a class="dropdown-item" href="#">Penguatan Pengawasan</a></li>
                             <li><a class="dropdown-item" href="#">Peningkatan Kualitas Pelayanan Publik</a></li>
+                            <li><a class="dropdown-item" href="{{ route('survey.kepuasan') }}">Survey Kepuasan</a></li>
+
                         </ul>
                     </li>
                 </ul>
