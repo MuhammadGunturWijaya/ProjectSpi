@@ -29,6 +29,7 @@ use App\Http\Controllers\Instrumen\InstrumenController;
 use App\Http\Controllers\SPI\ProgramKerjaSPIController;
 use App\Http\Controllers\Konsideran\KonsideranSPIController;
 use App\Http\Controllers\Piagam\PiagamSPIController;
+use App\Http\Controllers\Penataan\PenataanTataKelolaController;
 
 // Halaman landing
 Route::get('/', [LandingPageController::class, 'index'])->name('landingpage');
@@ -166,8 +167,7 @@ Route::get('/pedoman/mr', [PedomanMRController::class, 'index'])->name('pedoman.
 // Route Ke halaman manajemen perubahan
 Route::get('/manajemen-perubahan', [ManajemenPerubahanController::class, 'index'])->name('manajemen-perubahan');
 
-// Route Ke halaman PenataanTataKelola
-Route::get('/penataan-tata-kelola', [PenataanTataKelolaController::class, 'index'])->name('penataan.index');
+
 
 // Route Ke halaman PenguatanPengawasan
 Route::get('/penguatan-pengawasan', [PenguatanPengawasanController::class, 'index'])->name('pengawasan.index');
@@ -398,3 +398,9 @@ Route::resource('perubahan', PerubahanController::class);
 // Tambahan untuk method lihat()
 Route::get('/Perubahan/lihat', [PerubahanController::class, 'lihat'])
     ->name('perubahan.lihat');
+
+
+Route::resource('penataan', PenataanTataKelolaController::class);
+
+Route::get('/Penataan/lihat', [PenataanTataKelolaController::class, 'lihat'])
+    ->name('penataan.lihat');
