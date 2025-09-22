@@ -118,12 +118,14 @@
                         <div class="col-md-4">
                             <label for="skor_likelihood" class="form-label">Likelihood</label>
                             <input type="number" min="1" max="5" class="form-control" id="skor_likelihood"
-                                name="likelihood" value="{{ old('likelihood', $risiko->likelihood ?? '') }}" required>
+                                name="skor_likelihood"
+                                value="{{ old('skor_likelihood', $risiko->skor_likelihood ?? '') }}" required>
                         </div>
                         <div class="col-md-4">
                             <label for="skor_impact" class="form-label">Impact</label>
-                            <input type="number" min="1" max="5" class="form-control" id="skor_impact" name="impact"
-                                value="{{ old('impact', $risiko->impact ?? '') }}" required>
+                            <input type="number" min="1" max="5" class="form-control" id="skor_impact"
+                                name="skor_impact" value="{{ old('skor_impact', $risiko->skor_impact ?? '') }}"
+                                required>
                         </div>
                         <div class="col-md-4">
                             <label for="skor_level" class="form-label">Level</label>

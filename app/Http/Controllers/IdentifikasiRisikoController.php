@@ -143,6 +143,7 @@ class IdentifikasiRisikoController extends Controller
         $validated = $request->validate([
             'abjad' => 'required|string|max:5',
             'tujuan' => 'required|string',
+            'departemen' => 'nullable|string|max:255',
             'proses_bisnis' => 'required|string',
             'kategori_risiko' => 'required|string',
             'uraian_risiko' => 'required|string',
@@ -150,46 +151,66 @@ class IdentifikasiRisikoController extends Controller
             'sumber_risiko' => 'required|string',
             'akibat' => 'required|string',
             'pemilik_risiko' => 'required|string',
-            'likelihood' => 'required|integer|min:1|max:5',
-            'impact' => 'required|integer|min:1|max:5',
+            'skor_likelihood' => 'required|integer|min:1|max:5',
+            'skor_impact' => 'required|integer|min:1|max:5',
+
+            // pengendalian intern
+            'pengendalian_intern_ada' => 'nullable|in:ya,tidak',
+            'pengendalian_intern_memadai' => 'nullable|in:ya,tidak',
+            'pengendalian_intern_dijalankan' => 'nullable|in:ya,tidak',
+
+            // residu
+            'residu_likelihood' => 'nullable|integer|min:1|max:5',
+            'residu_impact' => 'nullable|integer|min:1|max:5',
+
+            // mitigasi
+            'mitigasi_opsi' => 'nullable|string|max:255',
+            'mitigasi_deskripsi' => 'nullable|string',
+
+            // akhir
+            'akhir_likelihood' => 'nullable|integer|min:1|max:5',
+            'akhir_impact' => 'nullable|integer|min:1|max:5',
         ]);
 
-        // hitung level otomatis
-        $validated['level'] = $validated['likelihood'] * $validated['impact'];
+        // Hitung level-level secara server-side (lebih aman)
+        $validated['skor_level'] = $validated['skor_likelihood'] * $validated['skor_impact'];
+
+        if (isset($validated['residu_likelihood']) && isset($validated['residu_impact'])) {
+            $validated['residu_level'] = $validated['residu_likelihood'] * $validated['residu_impact'];
+        }
+
+        if (isset($validated['akhir_likelihood']) && isset($validated['akhir_impact'])) {
+            $validated['akhir_level'] = $validated['akhir_likelihood'] * $validated['akhir_impact'];
+        }
 
         IdentifikasiRisiko::create($validated);
 
         return redirect()->route('evaluasiMr.index')->with('success', 'Data risiko berhasil ditambahkan!');
-
     }
 
-
-    // Update data risiko
     public function updateEvaluasiMr(Request $request, $id)
     {
         $validated = $request->validate([
-            'abjad' => 'required|string|max:5',
-            'tujuan' => 'required|string',
-            'proses_bisnis' => 'required|string',
-            'kategori_risiko' => 'required|string',
-            'uraian_risiko' => 'required|string',
-            'penyebab_risiko' => 'required|string',
-            'sumber_risiko' => 'required|string',
-            'akibat' => 'required|string',
-            'pemilik_risiko' => 'required|string',
-            'likelihood' => 'required|integer|min:1|max:5',
-            'impact' => 'required|integer|min:1|max:5',
+            // same rules as store...
+            'skor_likelihood' => 'required|integer|min:1|max:5',
+            'skor_impact' => 'required|integer|min:1|max:5',
+            // ... other rules
         ]);
 
-        // hitung level otomatis
-        $validated['level'] = $validated['likelihood'] * $validated['impact'];
+        $validated['skor_level'] = $validated['skor_likelihood'] * $validated['skor_impact'];
+        if (isset($validated['residu_likelihood']) && isset($validated['residu_impact'])) {
+            $validated['residu_level'] = $validated['residu_likelihood'] * $validated['residu_impact'];
+        }
+        if (isset($validated['akhir_likelihood']) && isset($validated['akhir_impact'])) {
+            $validated['akhir_level'] = $validated['akhir_likelihood'] * $validated['akhir_impact'];
+        }
 
         $risiko = IdentifikasiRisiko::findOrFail($id);
         $risiko->update($validated);
 
         return redirect()->route('evaluasiMr.index')->with('success', 'Data risiko berhasil diperbarui!');
-
     }
+
 
     public function destroyEvaluasiMr($id)
     {
