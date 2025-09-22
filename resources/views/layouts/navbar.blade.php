@@ -151,7 +151,7 @@
                                     Risiko</a>
                             </li>
 
-                            <li><a class="dropdown-item" href="#">Penilaian, Evaluasi MR & Mitigasi</a></li>
+                            <li><a class="dropdown-item" href="{{ route('evaluasiMr.index') }}">Penilaian, Evaluasi MR & Mitigasi</a></li>
                             <li><a class="dropdown-item" href="#">Pelaporan</a></li>
                         </ul>
                     </li>
@@ -168,8 +168,8 @@
                             <li><a class="dropdown-item" href="{{ route('penataanSistem.index') }}">Penataan Sistem
                                     Manajemen SDM dan Aparatur</a></li>
                             <li><a class="dropdown-item" href="#">Penguatan Akuntabilitas</a></li>
-                            <li><a class="dropdown-item" href="#">Penguatan Pengawasan</a></li>
-                            <li><a class="dropdown-item" href="#">Peningkatan Kualitas Pelayanan Publik</a></li>
+                            <li><a class="dropdown-item" href="{{ route('penguatanPengawasan.index') }}">Penguatan Pengawasan</a></li>
+                            <li><a class="dropdown-item" href="{{ route('peningkatanKualitas.index') }}">Peningkatan Kualitas Pelayanan Publik</a></li>
                             <li><a class="dropdown-item" href="{{ route('survey.kepuasan') }}">Survey Kepuasan</a></li>
 
                         </ul>
