@@ -32,6 +32,8 @@ use App\Http\Controllers\Piagam\PiagamSPIController;
 use App\Http\Controllers\Penataan\PenataanTataKelolaController;
 use App\Http\Controllers\Penataan\PenataanSistemController;
 use App\Http\Controllers\IdentifikasiRisikoController;
+use App\Http\Controllers\Akuntabilitas\PenguatanAkuntabilitasController;
+use App\Http\Controllers\MR\PedomanMRController;
 
 // Halaman landing
 Route::get('/', [LandingPageController::class, 'index'])->name('landingpage');
@@ -440,3 +442,22 @@ Route::get('/identifikasi-risiko', [IdentifikasiRisikoController::class, 'index'
 // Halaman form tambah/edit risiko
 Route::get('/identifikasi-risiko/create', [IdentifikasiRisikoController::class, 'create'])
     ->name('identifikasi.risiko.create');
+
+
+// Resource route
+Route::resource('penguatanAkuntabilitas', PenguatanAkuntabilitasController::class);
+
+// Route tambahan untuk halaman daftar/lihat Penguatan Akuntabilitas
+Route::get('/PenguatanAkuntabilitas/lihat', [PenguatanAkuntabilitasController::class, 'lihat'])
+    ->name('penguatanAkuntabilitas.lihat');
+
+
+// Resource utama Pedoman MR
+Route::resource('pedomanmr', PedomanMRController::class);
+
+// Route tambahan untuk halaman daftar/lihat Pedoman MR
+Route::get('/PedomanMR/lihat', [PedomanMRController::class, 'lihat'])
+    ->name('pedomanmr.lihat');
+
+Route::get('/pedomanmr/detail/{id}', [PedomanMRController::class, 'detail'])->name('pedomanmr.detail');
+
