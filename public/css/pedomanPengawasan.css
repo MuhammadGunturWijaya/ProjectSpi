@@ -23,7 +23,8 @@
  header {
      position: relative;
      height: 360px;
-     background: url('https://cdn1-production-images-kly.akamaized.net/MSQHuQN_kaYnR40kMSjN9VFhn44=/1200x675/smart/filters:quality(75):strip_icc():format(jpeg)/kly-media-production/medias/1097050/original/024845800_1451399636-20151229-BPK-RI-YR-1.jpg') center/cover no-repeat;
+     background: url('/images/A3.jpg') center/cover no-repeat;
+
      display: flex;
      align-items: center;
      justify-content: center;

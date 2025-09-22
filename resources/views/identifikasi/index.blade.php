@@ -88,7 +88,6 @@
                             <tr>
                                 <th>#</th>
                                 <th>Abjad</th>
-                                <th>No</th>
                                 <th>Tujuan</th>
                                 <th>Proses Bisnis</th>
                                 <th>Kategori Risiko</th>
@@ -97,6 +96,7 @@
                                 <th>Sumber Risiko</th>
                                 <th>Akibat / Potensi Kerugian</th>
                                 <th>Pemilik Risiko</th>
+                                <th>Edit & Hapus</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -104,7 +104,6 @@
                                 <tr>
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $risiko->abjad }}</td>
-                                    <td>{{ $risiko->no }}</td>
                                     <td>{{ $risiko->tujuan }}</td>
                                     <td>{{ $risiko->proses_bisnis }}</td>
                                     <td>{{ $risiko->kategori_risiko }}</td>
@@ -113,6 +112,23 @@
                                     <td>{{ $risiko->sumber_risiko }}</td>
                                     <td>{{ $risiko->akibat }}</td>
                                     <td>{{ $risiko->pemilik_risiko }}</td>
+                                    <td>
+                                        @if(Auth::check() && Auth::user()->role === 'admin')
+                                            <a href="{{ route('identifikasi.risiko.edit', $risiko->id) }}"
+                                                class="btn btn-sm btn-warning">
+                                                <i class="fa fa-edit"></i> Edit
+                                            </a>
+
+                                            <form action="{{ route('identifikasi.risiko.destroy', $risiko->id) }}" method="POST"
+                                                class="d-inline" onsubmit="return confirm('Yakin ingin menghapus data ini?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    <i class="fa fa-trash"></i> Hapus
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </td>
                                 </tr>
                             @empty
                                 <tr>

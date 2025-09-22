@@ -32,6 +32,8 @@ use App\Http\Controllers\Piagam\PiagamSPIController;
 use App\Http\Controllers\Penataan\PenataanTataKelolaController;
 use App\Http\Controllers\Penataan\PenataanSistemController;
 use App\Http\Controllers\IdentifikasiRisikoController;
+use App\Http\Controllers\Pengawasan\PenguatanPengawasanController;
+use App\Http\Controllers\Peningkatan\PeningkatanKualitasController;
 use App\Http\Controllers\Akuntabilitas\PenguatanAkuntabilitasController;
 use App\Http\Controllers\MR\PedomanMRController;
 
@@ -442,6 +444,94 @@ Route::get('/identifikasi-risiko', [IdentifikasiRisikoController::class, 'index'
 // Halaman form tambah/edit risiko
 Route::get('/identifikasi-risiko/create', [IdentifikasiRisikoController::class, 'create'])
     ->name('identifikasi.risiko.create');
+
+// Route edit & update
+Route::get('/identifikasi-risiko/{id}/edit', [IdentifikasiRisikoController::class, 'edit'])->name('identifikasi.risiko.edit');
+Route::put('/identifikasi-risiko/{id}', [IdentifikasiRisikoController::class, 'update'])->name('identifikasi.risiko.update');
+
+Route::delete('/identifikasi-risiko/{id}', [IdentifikasiRisikoController::class, 'destroy'])->name('identifikasi.risiko.destroy');
+
+Route::get('/identifikasi/evaluasi-mr', [IdentifikasiRisikoController::class, 'evaluasiMr'])
+    ->name('identifikasi.risiko.evaluasiMr');
+
+Route::prefix('evaluasiMr')->name('evaluasiMr.')->group(function () {
+    Route::get('/', [IdentifikasiRisikoController::class, 'evaluasiMr'])->name('index');
+    Route::get('/create', [IdentifikasiRisikoController::class, 'createEvaluasiMr'])->name('create');
+    Route::post('/store', [IdentifikasiRisikoController::class, 'storeEvaluasiMr'])->name('store');
+    Route::get('/edit/{id}', [IdentifikasiRisikoController::class, 'editEvaluasiMr'])->name('edit');
+    Route::put('/update/{id}', [IdentifikasiRisikoController::class, 'updateEvaluasiMr'])->name('update');
+    Route::delete('/delete/{id}', [IdentifikasiRisikoController::class, 'destroyEvaluasiMr'])->name('destroy');
+
+});
+
+
+// Halaman utama daftar dokumen
+Route::get('/penguatan-pengawasan', [PenguatanPengawasanController::class, 'index'])
+    ->name('penguatanPengawasan.index');
+
+// Halaman tambah dokumen
+Route::get('/penguatan-pengawasan/create', [PenguatanPengawasanController::class, 'create'])
+    ->name('penguatanPengawasan.create');
+
+// Simpan dokumen baru
+Route::post('/penguatan-pengawasan', [PenguatanPengawasanController::class, 'store'])
+    ->name('penguatanPengawasan.store');
+
+// Halaman detail dokumen
+Route::get('/penguatan-pengawasan/{id}', [PenguatanPengawasanController::class, 'show'])
+    ->name('penguatanPengawasan.show');
+
+// Halaman edit dokumen
+Route::get('/penguatan-pengawasan/{id}/edit', [PenguatanPengawasanController::class, 'edit'])
+    ->name('penguatanPengawasan.edit');
+
+// Update dokumen
+Route::put('/penguatan-pengawasan/{id}', [PenguatanPengawasanController::class, 'update'])
+    ->name('penguatanPengawasan.update');
+
+// Hapus dokumen
+Route::delete('/penguatan-pengawasan/{id}', [PenguatanPengawasanController::class, 'destroy'])
+    ->name('penguatanPengawasan.destroy');
+
+// Optional: Lihat lebih (misal untuk AJAX / popup daftar ringkas)
+Route::get('/PenguatanPengawasan/lihat', [PenguatanPengawasanController::class, 'lihat'])
+    ->name('penguatanPengawasan.lihat');
+
+
+
+    
+
+// Halaman index utama
+Route::get('/PeningkatanKualitas', [PeningkatanKualitasController::class, 'index'])
+    ->name('peningkatanKualitas.index');
+
+// Halaman lihat lebih / daftar lengkap
+Route::get('/PeningkatanKualitas/lihat', [PeningkatanKualitasController::class, 'lihat'])
+    ->name('peningkatanKualitas.lihat');
+
+// Halaman detail dokumen
+Route::get('/PeningkatanKualitas/show/{id}', [PeningkatanKualitasController::class, 'show'])
+    ->name('peningkatanKualitas.show');
+
+// Simpan dokumen baru
+Route::post('/PeningkatanKualitas/store', [PeningkatanKualitasController::class, 'store'])
+    ->name('peningkatanKualitas.store');
+
+// Halaman edit dokumen
+Route::get('/PeningkatanKualitas/edit/{id}', [PeningkatanKualitasController::class, 'edit'])
+    ->name('peningkatanKualitas.edit');
+
+// Update dokumen
+Route::put('/PeningkatanKualitas/update/{id}', [PeningkatanKualitasController::class, 'update'])
+    ->name('peningkatanKualitas.update');
+
+// Hapus dokumen
+Route::delete('/PeningkatanKualitas/destroy/{id}', [PeningkatanKualitasController::class, 'destroy'])
+    ->name('peningkatanKualitas.destroy');
+
+// Optional: show JSON (misal AJAX)
+Route::get('/PeningkatanKualitas/json/{id}', [PeningkatanKualitasController::class, 'showJson'])
+    ->name('peningkatanKualitas.showJson');
 
 
 // Resource route
