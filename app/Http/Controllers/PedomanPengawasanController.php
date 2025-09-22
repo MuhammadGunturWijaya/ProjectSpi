@@ -23,7 +23,7 @@ class PedomanPengawasanController extends Controller
     public function show($id)
     {
         $pedoman = Pedoman::findOrFail($id);
-        return view('pedomanPengawasan.detail-pedoman', compact('pedoman'));
+        return view('pedomanpengawasan.detail-pedoman', compact('pedoman'));
     }
 
     // Ambil detail pedoman untuk modal / AJAX

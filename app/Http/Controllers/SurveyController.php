@@ -8,6 +8,14 @@ use App\Models\Survey;
 
 class SurveyController extends Controller
 {
+
+    public function index()
+    {
+        $jumlahPertanyaan = 9; // ubah sesuai jumlah soal yang sebenarnya
+        return view('SurveyKepuasan.Survey-Kepuasan', compact('jumlahPertanyaan'));
+    }
+
+
     public function store(Request $request)
     {
         // Validasi semua jawaban pertanyaan

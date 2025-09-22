@@ -15,10 +15,10 @@
     @include('layouts.navbar')
 
     <header>
-    <div class="header-text-container">
-        <h1>{{ $title }}</h1>
-    </div>
-</header>
+        <div class="header-text-container">
+            <h1>{{ $title }}</h1>
+        </div>
+    </header>
 
 
     <div class="search-wrapper">
@@ -363,7 +363,11 @@
                     <h3>Peraturan Kementerian/Lembaga</h3>
                     <p>Permendagri, Permenkeu, dan lainnya.</p>
                 </div>
-                <a href="{{ route('pedoman.show', $pedoman->id) }}" class="card-link">Lihat Peraturan →</a>
+                @if($pedomanAudit->isNotEmpty())
+                    <a href="{{ route('pedoman.show', $pedomanAudit->first()->id) }}" class="card-link">Lihat Peraturan
+                        →</a>
+                @endif
+
 
             </div>
             <div class="card">

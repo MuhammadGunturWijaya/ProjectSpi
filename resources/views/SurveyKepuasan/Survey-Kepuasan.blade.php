@@ -84,7 +84,7 @@
                             @endguest
 
                             @auth
-                                <form action="{{ route('survey.store') }}" method="POST" class="animate-fade">
+                                <form method="POST" action="{{ route('survey.store') }}" method="POST" class="animate-fade">
                                     @csrf
                                     <div id="survey-form-content">
                                         @php
@@ -192,7 +192,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             let currentStep = 1;
-            const totalSteps = {{ count($pertanyaan) + 1 }};
+            const totalSteps = @json(($jumlahPertanyaan ?? 9) + 1);
             const prevBtn = document.getElementById('prev-btn');
             const nextBtn = document.getElementById('next-btn');
             const submitBtn = document.getElementById('submit-btn');
