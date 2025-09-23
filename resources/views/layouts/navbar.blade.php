@@ -112,10 +112,10 @@
                         <ul class="dropdown-menu" aria-labelledby="profilDropdown">
                             <li><a class="dropdown-item" href="#">Sejarah</a></li>
                             <li><a class="dropdown-item" href="#">Visi & Misi</a></li>
-                            <li><a class="dropdown-item" href="#">Struktur Organisasi</a></li>
-                            <li><a class="dropdown-item" href="#">Sumber Daya Manusia</a></li>
-                            <li><a class="dropdown-item" href="#">Proses Bisnis SPI</a></li>
-                            <li><a class="dropdown-item" href="#">Kode Etik SPI</a></li>
+                            <li><a class="dropdown-item" href="{{ route('struktur.index') }}">Struktur Organisasi</a></li>
+                            <li><a class="dropdown-item" href="{{ route('sdm.index') }}">Sumber Daya Manusia</a></li>
+                            <li><a class="dropdown-item" href="{{ route('proses-bisnis-spi') }}">Proses Bisnis SPI</a></li>
+                            <li><a class="dropdown-item" href="{{ route('search.searchPedomanPengawasan') }}">Kode Etik SPI</a></li>
                         </ul>
                     </li>
 
@@ -125,7 +125,7 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="dokumenDropdown">
                             <li><a class="dropdown-item" href="{{ route('piagam.index') }}">Piagam SPI</a></li>
-                            <li><a class="dropdown-item" href="#">Pedoman Pengawasan</a></li>
+                            <li><a class="dropdown-item" href="{{ route('pedoman.pengawasan') }}">Pedoman Pengawasan</a></li>
                             <li>
                                 <a class="dropdown-item" href="{{ route('posAp.index') }}">
                                     POS AP Pengawasan
@@ -176,7 +176,7 @@
                     </li>
                 </ul>
 
-                <a href="#" class="btn btn-login ms-lg-3 mt-2 mt-lg-0">
+                <a href="{{ route('login') }}"  class="btn btn-login ms-lg-3 mt-2 mt-lg-0">
                     <i class="bi bi-box-arrow-in-right me-1"></i> Login
                 </a>
             </div>

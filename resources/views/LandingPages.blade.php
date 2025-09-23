@@ -380,7 +380,7 @@
         <div class="container d-flex justify-content-between align-items-center">
             <!-- Logo kiri -->
             <a class="navbar-brand d-flex align-items-center ms-2" href="#">
-                 <img src="{{ asset('images/logoPolije.png') }}" alt="Logo" height="40">
+                <img src="{{ asset('images/logoPolije.png') }}" alt="Logo" height="40">
                 <span class="logo-text ms-2">
                     SATUAN PENGAWAS INTERNAL<br>
                     POLITEKNIK NEGERI JEMBER
@@ -406,11 +406,12 @@
                             </li>
                             <li><a class="dropdown-item" href="{{ route('struktur.index') }}">Struktur Organisasi</a>
                             </li>
-                            <li><a class="dropdown-item" href="{{ route('profile.spi') }}">Tentang Kami</a></li>
+                            <!-- <li><a class="dropdown-item" href="{{ route('profile.spi') }}">Tentang Kami</a></li> -->
                             <li><a class="dropdown-item" href="{{ route('sdm.index') }}">Sumber Daya Manusia</a></li>
                             <li><a class="dropdown-item" href="{{ route('proses-bisnis-spi') }}">Proses Bisnis SPI</a>
                             </li>
-                            <li><a class="dropdown-item" href="{{ route('search.searchPedomanPengawasan') }}">Kode Etik SPI</a></li>
+                            <li><a class="dropdown-item" href="{{ route('search.searchPedomanPengawasan') }}">Kode Etik
+                                    SPI</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -419,14 +420,17 @@
                             Dokumen Kerja
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="{{ route('piagam-spi') }}">Piagam SPI</a></li>
+                            <li><a class="dropdown-item" href="{{ route('piagam.index') }}">Piagam SPI</a></li>
                             <!-- Submenu Pedoman Pengawasan -->
-                            <li class="dropdown-submenu"><a class="dropdown-item" href="{{ route('pedoman.pengawasan') }}">Pedoman Pengawasan</a></li>
-                            <li class="dropdown-submenu"><a class="dropdown-item" href="{{ route('profile.spi') }}">POS AP Pengaawasan</a></li>
-                            <li><a class="dropdown-item" href="{{ route('instrumen.pengawasan') }}">Instrumen
+                            <li class="dropdown-submenu"><a class="dropdown-item"
+                                    href="{{ route('pedoman.pengawasan') }}">Pedoman Pengawasan</a></li>
+                            <li class="dropdown-submenu"><a class="dropdown-item" href="{{ route('posAp.index') }}">POS
+                                    AP Pengaawasan</a></li>
+                            <li><a class="dropdown-item" href="{{ route('instrumen.index') }}">Instrumen
                                     Pengawasan</a></li>
-                            <li><a class="dropdown-item" href="{{ route('program.kerja') }}">Program Kerja SPI</a></li>
-                            <li><a class="dropdown-item" href="{{ route('konsideran-spi') }}">Konsideran SPI</a></li>
+                            <li><a class="dropdown-item" href="{{ route('programKerja.index') }}">Program Kerja SPI</a>
+                            </li>
+                            <li><a class="dropdown-item" href="{{ route('konsideran.index') }}">Konsideran SPI</a></li>
 
                         </ul>
                     </li>
@@ -436,11 +440,13 @@
                             Manajemen Risiko
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#">Pedoman MR </a>
+                            <li><a class="dropdown-item" href="{{ route('pedomanmr.index') }}">Pedoman MR </a>
                             </li>
-                            <li><a class="dropdown-item" href="#">Identifikasi Risiko </a>
+                            <li><a class="dropdown-item" href="{{ route('identifikasi.risiko.index') }}">Identifikasi
+                                    Risiko </a>
                             </li>
-                            <li><a class="dropdown-item" href="#">Penilaian , Evaluasi MR dan
+                            <li><a class="dropdown-item" href="{{ route('evaluasiMr.index') }}">Penilaian , Evaluasi MR
+                                    dan
                                     Mitigasi</a></li>
                             <li><a class="dropdown-item" href="#">Pelaporan</a></li>
                         </ul>
@@ -451,20 +457,24 @@
                             Zona integritas
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#">Manajemen Perubahan </a>
+                            <li><a class="dropdown-item" href="{{ route('perubahan.index') }}">Manajemen Perubahan </a>
                             </li>
-                            <li><a class="dropdown-item" href="#">Penataan Tata Kelola </a>
+                            <li><a class="dropdown-item" href="{{ route('penataan.index') }}">Penataan Tata Kelola </a>
                             </li>
-                            <li><a class="dropdown-item" href="#">Penataan Sistem
+                            <li><a class="dropdown-item" href="{{ route('penataanSistem.index') }}">Penataan Sistem
                                     Manajemen SDM
                                     dan Aparatur</a></li>
-                            <li><a class="dropdown-item" href="#">Penguatan
+                            <li><a class="dropdown-item" href="{{ route('penguatanAkuntabilitas.index') }}">Penguatan
                                     Akuntabilitas</a></li>
-                            <li><a class="dropdown-item" href="#">Penguatan Pengawasaan
+                            <li><a class="dropdown-item" href="{{ route('penguatanPengawasan.index') }}">Penguatan
+                                    Pengawasaan
                                 </a></li>
-                            <li><a class="dropdown-item" href="#">Peningkatan Kualitas
+                            <li><a class="dropdown-item" href="{{ route('peningkatanKualitas.index') }}">Peningkatan
+                                    Kualitas
                                     Pelayanan Publik</a></li>
+                            <li><a class="dropdown-item" href="{{ route('survey.kepuasan') }}">Survey Kepuasan</a></li>
                         </ul>
+
                     </li>
                 </ul>
 
@@ -933,7 +943,7 @@
         }
     </style>
 
-    
+
 
 
 
