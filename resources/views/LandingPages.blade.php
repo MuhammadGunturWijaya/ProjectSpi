@@ -514,9 +514,13 @@
         <div class="hero-text text-white">
             <h1 class="fw-bold display-4">SATUAN PENGAWAS INTERNAL</h1>
             <p class="lead">Politeknik Negeri Jember</p>
-            <a href="#tentang-kami" class="scroll-down-btn">
-                ⌄
-            </a>
+            <a href="#tentang-kami" class="scroll-down-btn">⌄</a>
+            <!-- Container Logo -->
+            <div class="logo-container">
+                <img src="../images/ige.png" alt="Logo 1" class="logo-outline">
+                <img src="../images/ige.png" alt="Logo 2" class="logo-outline">
+                <img src="../images/ige.png" alt="Logo 3" class="logo-outline">
+            </div>
         </div>
     </section>
 
@@ -524,11 +528,9 @@
         .hero-banner {
             width: 100%;
             height: 100vh;
-            /* full layar */
             background: url('https://tender-indonesia.com/newsrectory/events/15(6).png') no-repeat center center;
             background-size: cover;
             background-attachment: fixed;
-            /* ini bikin parallax */
             position: relative;
         }
 
@@ -539,17 +541,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            /* overlay gelap biar teks kontras */
-        }
-
-
-        .hero-banner .hero-img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            filter: brightness(70%);
-            /* agak gelap biar teks kontras */
+            background: rgba(0, 0, 0, 0.55);
         }
 
         .hero-banner .hero-text {
@@ -564,28 +556,55 @@
         }
 
         .hero-text p {
-            font-size: 1.3rem;
+            font-size: 1.6rem;
             margin-top: 10px;
             animation: fadeInUp 1.5s ease-in-out;
         }
 
-        .hero-btn {
+        /* === LOGO STYLING === */
+        .logo-container {
             margin-top: 30px;
-            padding: 12px 35px;
-            font-size: 1.1rem;
-            border-radius: 50px;
-            background: linear-gradient(135deg, #0066ff, #00c3ff);
-            border: none;
+            display: flex;
+            justify-content: center;
+            gap: 100px;
+            flex-wrap: wrap;
+        }
+
+        .logo-outline {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+            padding: 10px;
+            border: 2px solid rgba(255, 255, 255, 0.7);
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            filter: brightness(0) invert(1);
+            /* bikin putih (outline effect) */
+            transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+        }
+
+        .logo-outline:hover {
+            transform: scale(1.15);
+            border-color: #00c3ff;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Tombol Scroll */
+        .scroll-down-btn {
+            display: inline-block;
+            margin-top: 40px;
+            font-size: 40px;
             color: #fff;
-            font-weight: 600;
-            transition: all 0.3s;
+            text-decoration: none;
+            animation: bounce 1.5s infinite;
+            transition: color 0.3s ease;
         }
 
-        .hero-btn:hover {
-            transform: translateY(-3px) scale(1.05);
-            background: linear-gradient(135deg, #0052cc, #0099ff);
+        .scroll-down-btn:hover {
+            color: #00c3ff;
         }
 
+        /* Animasi */
         @keyframes fadeInDown {
             from {
                 opacity: 0;
@@ -608,20 +627,6 @@
                 opacity: 1;
                 transform: translateY(0);
             }
-        }
-
-        .scroll-down-btn {
-            display: inline-block;
-            margin-top: 40px;
-            font-size: 40px;
-            color: #fff;
-            text-decoration: none;
-            animation: bounce 1.5s infinite;
-            transition: color 0.3s ease;
-        }
-
-        .scroll-down-btn:hover {
-            color: #0084ff;
         }
 
         @keyframes bounce {
@@ -647,6 +652,7 @@
             scroll-behavior: smooth;
         }
     </style>
+
 
 
     </div>
