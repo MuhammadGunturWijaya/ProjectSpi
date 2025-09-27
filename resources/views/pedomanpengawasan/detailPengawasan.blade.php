@@ -228,33 +228,33 @@
                         <div class="d-flex gap-2 mt-2">
                             <!-- Tombol Edit -->
                             <button type="button" class="btn btn-warning" onclick="openEditModal(
-                                    {{ $pedoman->id }},
-                                    '{{ $pedoman->judul }}',
-                                    '{{ $pedoman->tahun }}',
-                                    '{{ $pedoman->jenis }}',
-                                    '{{ $pedoman->kata_kunci }}',
-                                    `{{ $pedoman->abstrak }}`,
-                                    `{{ $pedoman->catatan }}`,
-                                    '{{ $pedoman->tipe_dokumen }}',
-                                    '{{ $pedoman->judul_meta }}',
-                                    '{{ $pedoman->teu }}',
-                                    '{{ $pedoman->nomor }}',
-                                    '{{ $pedoman->bentuk }}',
-                                    '{{ $pedoman->bentuk_singkat }}',
-                                    '{{ $pedoman->tahun_meta }}',
-                                    '{{ $pedoman->tempat_penetapan }}',
-                                    '{{ optional($pedoman->tanggal_penetapan)->format("Y-m-d") }}',
-                                    '{{ optional($pedoman->tanggal_pengundangan)->format("Y-m-d") }}',
-                                    '{{ optional($pedoman->tanggal_berlaku)->format("Y-m-d") }}',
-                                    '{{ $pedoman->sumber }}',
-                                    '{{ $pedoman->subjek }}',
-                                    '{{ $pedoman->status }}',
-                                    '{{ $pedoman->bahasa }}',
-                                    '{{ $pedoman->lokasi }}',
-                                    '{{ $pedoman->bidang }}',
-                                    '{{ $pedoman->mencabut }}',
-                                    '{{ $pedoman->file_name }}'
-                                )">
+                                                            {{ $pedoman->id }},
+                                                            '{{ $pedoman->judul }}',
+                                                            '{{ $pedoman->tahun }}',
+                                                            '{{ $pedoman->jenis }}',
+                                                            '{{ $pedoman->kata_kunci }}',
+                                                            `{{ $pedoman->abstrak }}`,
+                                                            `{{ $pedoman->catatan }}`,
+                                                            '{{ $pedoman->tipe_dokumen }}',
+                                                            '{{ $pedoman->judul_meta }}',
+                                                            '{{ $pedoman->teu }}',
+                                                            '{{ $pedoman->nomor }}',
+                                                            '{{ $pedoman->bentuk }}',
+                                                            '{{ $pedoman->bentuk_singkat }}',
+                                                            '{{ $pedoman->tahun_meta }}',
+                                                            '{{ $pedoman->tempat_penetapan }}',
+                                                            '{{ optional($pedoman->tanggal_penetapan)->format("Y-m-d") }}',
+                                                            '{{ optional($pedoman->tanggal_pengundangan)->format("Y-m-d") }}',
+                                                            '{{ optional($pedoman->tanggal_berlaku)->format("Y-m-d") }}',
+                                                            '{{ $pedoman->sumber }}',
+                                                            '{{ $pedoman->subjek }}',
+                                                            '{{ $pedoman->status }}',
+                                                            '{{ $pedoman->bahasa }}',
+                                                            '{{ $pedoman->lokasi }}',
+                                                            '{{ $pedoman->bidang }}',
+                                                            '{{ $pedoman->mencabut }}',
+                                                            '{{ $pedoman->file_name }}'
+                                                        )">
                                 <i class="fa fa-edit"></i> Edit
                             </button>
 
@@ -276,6 +276,178 @@
         </div>
     </section>
 
+    <!-- pedoman reviu -->
+    <section class="classification" id="pedomanreviu">
+        <div class="classification-header">
+            <h2>Pedoman <span class="reviu-text">Reviu</span></h2>
+            <div class="header-actions">
+                @if(Auth::check() && Auth::user()->role === 'admin')
+                    <form action="{{ route('pedoman.destroyAll', 'reviu') }}" method="POST"
+                        onsubmit="return confirm('Yakin ingin menghapus semua pedoman reviu?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fa fa-trash"></i> Hapus Semua
+                        </button>
+                        <a href="#" id="btnTambahReviu">
+                            <i class="fa fa-plus"></i> Tambah Pedoman
+                        </a>
+                    </form>
+                @endif
+            </div>
+        </div>
+
+        <div class="grid">
+            @forelse($pedomanReviu as $pedoman)
+                <div class="card">
+                    <div class="card-icon-wrapper">
+                        <i class="fa fa-file-alt"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>{{ $pedoman->judul }}</h3>
+                        <p>Tahun: {{ $pedoman->tahun ?? '-' }}</p>
+                    </div>
+                    <a href="{{ route('pedoman.show', $pedoman->id) }}" class="card-link">
+                        Lihat Peraturan →
+                    </a>
+
+                    @if(Auth::check() && Auth::user()->role === 'admin')
+                        <div class="d-flex gap-2 mt-2">
+                            <!-- Tombol Edit -->
+                            <button type="button" class="btn btn-warning" onclick="openEditModal(
+                                                        {{ $pedoman->id }},
+                                                        '{{ $pedoman->judul }}',
+                                                        '{{ $pedoman->tahun }}',
+                                                        '{{ $pedoman->jenis }}',
+                                                        '{{ $pedoman->kata_kunci }}',
+                                                        `{{ $pedoman->abstrak }}`,
+                                                        `{{ $pedoman->catatan }}`,
+                                                        '{{ $pedoman->tipe_dokumen }}',
+                                                        '{{ $pedoman->judul_meta }}',
+                                                        '{{ $pedoman->teu }}',
+                                                        '{{ $pedoman->nomor }}',
+                                                        '{{ $pedoman->bentuk }}',
+                                                        '{{ $pedoman->bentuk_singkat }}',
+                                                        '{{ $pedoman->tahun_meta }}',
+                                                        '{{ $pedoman->tempat_penetapan }}',
+                                                        '{{ optional($pedoman->tanggal_penetapan)->format("Y-m-d") }}',
+                                                        '{{ optional($pedoman->tanggal_pengundangan)->format("Y-m-d") }}',
+                                                        '{{ optional($pedoman->tanggal_berlaku)->format("Y-m-d") }}',
+                                                        '{{ $pedoman->sumber }}',
+                                                        '{{ $pedoman->subjek }}',
+                                                        '{{ $pedoman->status }}',
+                                                        '{{ $pedoman->bahasa }}',
+                                                        '{{ $pedoman->lokasi }}',
+                                                        '{{ $pedoman->bidang }}',
+                                                        '{{ $pedoman->mencabut }}',
+                                                        '{{ $pedoman->file_name }}'
+                                                    )">
+                                <i class="fa fa-edit"></i> Edit
+                            </button>
+
+                            <form action="{{ route('pedoman.destroy', $pedoman->id) }}" method="POST"
+                                onsubmit="return confirm('Yakin ingin menghapus pedoman ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fa fa-trash"></i> Hapus
+                                </button>
+                            </form>
+                        </div>
+                    @endif
+                </div>
+            @empty
+                <p>Tidak ada pedoman reviu.</p>
+            @endforelse
+        </div>
+    </section>
+
+    <!-- pedoman monev -->
+    <section class="classification" id="pedomanreviu">
+        <div class="classification-header">
+            <h2>Pedoman <span class="monev-text">Monev</span></h2>
+            <div class="header-actions">
+                @if(Auth::check() && Auth::user()->role === 'admin')
+                    <form action="{{ route('pedoman.destroyAll', 'monev') }}" method="POST"
+                        onsubmit="return confirm('Yakin ingin menghapus semua pedoman monev?')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn btn-danger">
+                            <i class="fa fa-trash"></i> Hapus Semua
+                        </button>
+                        <a href="#" id="btnTambahMonev">
+                            <i class="fa fa-plus"></i> Tambah Pedoman
+                        </a>
+                    </form>
+                @endif
+            </div>
+        </div>
+
+        <div class="grid">
+            @forelse($pedomanMonev as $pedoman)
+                <div class="card">
+                    <div class="card-icon-wrapper">
+                        <i class="fa fa-file-alt"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>{{ $pedoman->judul }}</h3>
+                        <p>Tahun: {{ $pedoman->tahun ?? '-' }}</p>
+                    </div>
+                    <a href="{{ route('pedoman.show', $pedoman->id) }}" class="card-link">
+                        Lihat Peraturan →
+                    </a>
+
+                    @if(Auth::check() && Auth::user()->role === 'admin')
+                        <div class="d-flex gap-2 mt-2">
+                            <!-- Tombol Edit -->
+                            <button type="button" class="btn btn-warning" onclick="openEditModal(
+                                            {{ $pedoman->id }},
+                                            '{{ $pedoman->judul }}',
+                                            '{{ $pedoman->tahun }}',
+                                            '{{ $pedoman->jenis }}',
+                                            '{{ $pedoman->kata_kunci }}',
+                                            `{{ $pedoman->abstrak }}`,
+                                            `{{ $pedoman->catatan }}`,
+                                            '{{ $pedoman->tipe_dokumen }}',
+                                            '{{ $pedoman->judul_meta }}',
+                                            '{{ $pedoman->teu }}',
+                                            '{{ $pedoman->nomor }}',
+                                            '{{ $pedoman->bentuk }}',
+                                            '{{ $pedoman->bentuk_singkat }}',
+                                            '{{ $pedoman->tahun_meta }}',
+                                            '{{ $pedoman->tempat_penetapan }}',
+                                            '{{ optional($pedoman->tanggal_penetapan)->format("Y-m-d") }}',
+                                            '{{ optional($pedoman->tanggal_pengundangan)->format("Y-m-d") }}',
+                                            '{{ optional($pedoman->tanggal_berlaku)->format("Y-m-d") }}',
+                                            '{{ $pedoman->sumber }}',
+                                            '{{ $pedoman->subjek }}',
+                                            '{{ $pedoman->status }}',
+                                            '{{ $pedoman->bahasa }}',
+                                            '{{ $pedoman->lokasi }}',
+                                            '{{ $pedoman->bidang }}',
+                                            '{{ $pedoman->mencabut }}',
+                                            '{{ $pedoman->file_name }}'
+                                        )">
+                                <i class="fa fa-edit"></i> Edit
+                            </button>
+
+                            <form action="{{ route('pedoman.destroy', $pedoman->id) }}" method="POST"
+                                onsubmit="return confirm('Yakin ingin menghapus pedoman ini?')">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger">
+                                    <i class="fa fa-trash"></i> Hapus
+                                </button>
+                            </form>
+                        </div>
+                    @endif
+                </div>
+            @empty
+                <p>Tidak ada pedoman monev.</p>
+            @endforelse
+        </div>
+    </section>
+    
 
     <!-- Modal Tambah Pedoman -->
     <div id="modalTambahPedoman" class="modal">
