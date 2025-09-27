@@ -109,76 +109,219 @@
 
     <section class="popular">
         <h2>Peraturan Terpopuler 2 Minggu Terakhir</h2>
-        <div class="carousel-wrapper">
-            <button id="carousel-prev" class="carousel-btn prev-btn"><i class="fas fa-chevron-left"></i></button>
+        <div class="carousel-wrapper"> <button id="carousel-prev" class="carousel-btn prev-btn"><i
+                    class="fas fa-chevron-left"></i></button>
             <div class="carousel-track-container">
-                <div class="carousel-track">
+                <div class="carousel-track"> @foreach($popular as $item) <a
+                    href="{{ route('pedoman.show', $item->id) }}" class="card-link">
                     <div class="card-item-new">
-                        <div class="card-icon-new">
-                            <i class="fas fa-gavel"></i>
-                        </div>
-                        <div class="card-content-new">
-                            <span class="card-title-new">UU No. 1 Tahun 2023</span>
-                            <small class="card-subtitle-new">Kitab Undang-Undang Hukum Pidana</small>
-                            <span class="card-type-new">📜 Undang-Undang</span>
-                        </div>
+                        <div class="card-icon-new"> <i class="fas fa-gavel"></i> </div>
+                        <div class="card-content-new"> <span class="card-title-new">{{ $item->judul }}</span> <span
+                                class="cardItems">{{ $item->tahun }}</span> <span class="card-type-new">📜
+                                {{ strtoupper($item->jenis) }}</span> </div>
                     </div>
-                    <div class="card-item-new">
-                        <div class="card-icon-new">
-                            <i class="fas fa-file-invoice"></i>
-                        </div>
-                        <div class="card-content-new">
-                            <span class="card-title-new">UU No. 11 Tahun 2020</span>
-                            <small class="card-subtitle-new">Cipta Kerja</small>
-                            <span class="card-type-new">📜 Undang-Undang</span>
-                        </div>
-                    </div>
-                    <div class="card-item-new">
-                        <div class="card-icon-new">
-                            <i class="fas fa-gavel"></i>
-                        </div>
-                        <div class="card-content-new">
-                            <span class="card-title-new">UU No. 1 Tahun 2023</span>
-                            <small class="card-subtitle-new">Kitab Undang-Undang Hukum Pidana</small>
-                            <span class="card-type-new">📜 Undang-Undang</span>
-                        </div>
-                    </div>
-                    <div class="card-item-new">
-                        <div class="card-icon-new">
-                            <i class="fas fa-file-invoice"></i>
-                        </div>
-                        <div class="card-content-new">
-                            <span class="card-title-new">UU No. 11 Tahun 2020</span>
-                            <small class="card-subtitle-new">Cipta Kerja</small>
-                            <span class="card-type-new">📜 Undang-Undang</span>
-                        </div>
-                    </div>
-                    <div class="card-item-new">
-                        <div class="card-icon-new">
-                            <i class="fas fa-gavel"></i>
-                        </div>
-                        <div class="card-content-new">
-                            <span class="card-title-new">UU No. 1 Tahun 2023</span>
-                            <small class="card-subtitle-new">Kitab Undang-Undang Hukum Pidana</small>
-                            <span class="card-type-new">📜 Undang-Undang</span>
-                        </div>
-                    </div>
-                    <div class="card-item-new">
-                        <div class="card-icon-new">
-                            <i class="fas fa-file-invoice"></i>
-                        </div>
-                        <div class="card-content-new">
-                            <span class="card-title-new">UUU No. 11 Tahun 2020</span>
-                            <small class="card-subtitle-new">Cipta Kerja</small>
-                            <span class="card-type-new">📜 Undang-Undang</span>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-            <button id="carousel-next" class="carousel-btn next-btn"><i class="fas fa-chevron-right"></i></button>
+                </a> @endforeach </div>
+            </div> <button id="carousel-next" class="carousel-btn next-btn"><i
+                    class="fas fa-chevron-right"></i></button>
         </div>
     </section>
+
+    <style>
+        ```css
+
+        /* Section Wrapper */
+        .popular {
+            padding: 2rem 1rem;
+            background: linear-gradient(135deg, #f0f4ff, #ffffff);
+            border-radius: 16px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .popular h2 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            color: #1e293b;
+            letter-spacing: 0.5px;
+            position: relative;
+        }
+
+        .popular h2::after {
+            content: "";
+            display: block;
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(to right, #2563eb, #06b6d4);
+            margin: 0.5rem auto 0;
+            border-radius: 2px;
+        }
+
+        /* Carousel Container */
+        .carousel-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .carousel-track-container {
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .carousel-track {
+            display: flex;
+            gap: 1.2rem;
+            transition: transform 0.4s ease;
+            padding: 0.5rem;
+        }
+
+        /* Card Style */
+        .card-link {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .card-item-new {
+            width: 260px;
+            height: 280px;
+            background: linear-gradient(180deg, #ffffff, #f8faff);
+            /* gradient tipis */
+            border-radius: 14px;
+            padding: 1.2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 0.6rem;
+            align-items: flex-start;
+            box-shadow: 0 6px 15px rgba(37, 99, 235, 0.1);
+            border: 1px solid rgba(37, 99, 235, 0.15);
+            transition: transform 0.3s, box-shadow 0.3s, border 0.3s;
+            position: relative;
+            overflow: hidden;
+            animation: fadeUp 0.6s ease both;
+        }
+
+        .card-item-new::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.08), transparent 60%);
+            transform: rotate(25deg);
+            transition: opacity 0.3s;
+            opacity: 0;
+        }
+
+        .card-item-new:hover::before {
+            opacity: 1;
+        }
+
+        /* Animasi saat card masuk */
+        @keyframes fadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card-item-new::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 14px;
+            background: radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 60%);
+            opacity: 0;
+            transition: opacity 0.4s;
+        }
+
+        .card-item-new:hover::after {
+            opacity: 1;
+        }
+
+        .card-item-new:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.25);
+            border: 1px solid transparent;
+            background: linear-gradient(#fff, #fff) padding-box, linear-gradient(135deg, #2563eb, #06b6d4) border-box;
+        }
+
+        .card-icon-new {
+            font-size: 2rem;
+            color: #2563eb;
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            padding: 0.6rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-title-new {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: #1e293b;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            /* Maksimal 2 baris */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-height: 2.8rem;
+            /* Supaya tinggi judul konsisten */
+        }
+
+
+        /* Tahun */
+        .cardItems {
+            font-size: 0.95rem;
+            color: #475569;
+            font-style: italic;
+        }
+
+        /* Jenis */
+        .card-type-new {
+            font-size: 0.85rem;
+            background: linear-gradient(to right, #2563eb, #06b6d4);
+            color: #fff;
+            padding: 0.35rem 0.7rem;
+            border-radius: 10px;
+            font-weight: 500;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            align-self: flex-start;
+        }
+
+        /* Carousel Buttons */
+        .carousel-btn {
+            background: linear-gradient(135deg, #2563eb, #06b6d4);
+            border: none;
+            color: #fff;
+            font-size: 1.3rem;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            margin: 0 0.5rem;
+        }
+
+        .carousel-btn:hover {
+            background: linear-gradient(135deg, #1d4ed8, #0891b2);
+            transform: scale(1.1);
+        }
+
+        ```
+    </style>
 
     <script>
         const carouselTrack = document.querySelector('.carousel-track');
@@ -273,20 +416,20 @@
     <div class="pedoman-buttons-wrapper">
         <h2>Pilih Pedoman</h2>
         <div class="pedoman-buttons">
-            <a href="#pedomanaudit" class="pedoman-btn">
+            <a href="#pedomanaudiT" class="pedoman-btn">
                 <i class="fa fa-file-invoice-dollar"></i> Lihat Pedoman Audit
             </a>
-            <a href="#pedomanreviu" class="pedoman-btn">
+            <a href="#pedomanreviU" class="pedoman-btn">
                 <i class="fa fa-search-plus"></i> Lihat Pedoman Reviu
             </a>
-            <a href="#" class="pedoman-btn">
+            <a href="#pedomanmoneV" class="pedoman-btn">
                 <i class="fa fa-tasks"></i> Lihat Pedoman Monev
             </a>
         </div>
     </div>
 
     <!-- pedoman audit -->
-    <section class="classification" id="pedomanaudit">
+    <section class="classification" id="pedomanaudiT">
         <div class="classification-header">
             <h2>Pedoman <span class="audit-text">Audit</span></h2>
             <div class="header-actions">
@@ -320,12 +463,12 @@
         </div>
     </section>
 
-    <!-- pedoman reviu -->
-    <section class="classification" id="pedomanreviu">
+    <!-- pedoman Reviu -->
+    <section class="classification" id="pedomanreviU">
         <div class="classification-header">
             <h2>Pedoman <span class="audit-text">Reviu</span></h2>
             <div class="header-actions">
-                <a href="#"><i class="fa fa-chart-bar"></i> Lihat Lebih</a>
+                <a href="{{ route('detail.pengawasan') }}"><i class="fa fa-chart-bar"></i> Lihat Lebih</a>
 
                 @if(Auth::check() && Auth::user()->role === 'admin')
                     <a href="#" id="btnTambahAudit">
@@ -334,52 +477,59 @@
                 @endif
             </div>
         </div>
+
         <div class="grid">
-            <div class="card">
-                <div class="card-icon-wrapper">
-                    <i class="fa fa-file-alt"></i>
+            @forelse($pedomanReviu as $pedoman)
+                <div class="card">
+                    <div class="card-icon-wrapper">
+                        <i class="fa fa-file-alt"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>{{ $pedoman->judul }}</h3>
+                        <p>Tahun: {{ $pedoman->tahun ?? '-' }}</p>
+                    </div>
+                    <a href="{{ route('pedoman.show', $pedoman->id) }}" class="card-link">
+                        Lihat Peraturan →
+                    </a>
                 </div>
-                <div class="card-content">
-                    <h3>Peraturan BPK</h3>
-                    <p>Kumpulan Peraturan Badan Pemeriksa Keuangan.</p>
-                </div>
-                <a href="#" class="card-link">Lihat Peraturan →</a>
-            </div>
-            <div class="card">
-                <div class="card-icon-wrapper">
-                    <i class="fa fa-landmark"></i>
-                </div>
-                <div class="card-content">
-                    <h3>Peraturan Perundang-undangan Pusat</h3>
-                    <p>UU, PP, Perpres, dan lainnya.</p>
-                </div>
-                <a href="#" class="card-link">Lihat Peraturan →</a>
-            </div>
-            <div class="card">
-                <div class="card-icon-wrapper">
-                    <i class="fa fa-building"></i>
-                </div>
-                <div class="card-content">
-                    <h3>Peraturan Kementerian/Lembaga</h3>
-                    <p>Permendagri, Permenkeu, dan lainnya.</p>
-                </div>
-                @if($pedomanAudit->isNotEmpty())
-                    <a href="{{ route('pedoman.show', $pedomanAudit->first()->id) }}" class="card-link">Lihat Peraturan
-                        →</a>
+            @empty
+                <p>Tidak ada pedoman audit.</p>
+            @endforelse
+        </div>
+    </section>
+
+    <!-- pedoman Monev -->
+    <section class="classification" id="pedomanmoneV">
+        <div class="classification-header">
+            <h2>Pedoman <span class="audit-text">Monev</span></h2>
+            <div class="header-actions">
+                <a href="{{ route('detail.pengawasan') }}"><i class="fa fa-chart-bar"></i> Lihat Lebih</a>
+
+                @if(Auth::check() && Auth::user()->role === 'admin')
+                    <a href="#" id="btnTambahAudit">
+                        <i class="fa fa-plus"></i> Tambah Pedoman
+                    </a>
                 @endif
-
-
             </div>
-            <div class="card">
-                <div class="card-icon-wrapper">
-                    <i class="fa fa-map-marked-alt"></i>
+        </div>
+
+        <div class="grid">
+            @forelse($pedomanMonev as $pedoman)
+                <div class="card">
+                    <div class="card-icon-wrapper">
+                        <i class="fa fa-file-alt"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>{{ $pedoman->judul }}</h3>
+                        <p>Tahun: {{ $pedoman->tahun ?? '-' }}</p>
+                    </div>
+                    <a href="{{ route('pedoman.show', $pedoman->id) }}" class="card-link">
+                        Lihat Peraturan →
+                    </a>
                 </div>
-                <div class="card-content">
-                    <h3>Peraturan Daerah</h3>
-                    <p>Perda, Pergub, Perwali, dan lainnya.</p>
-                </div>
-                <a href="#" class="card-link">Lihat Peraturan →</a>
-            </div>
+            @empty
+                <p>Tidak ada pedoman audit.</p>
+            @endforelse
         </div>
     </section>
 

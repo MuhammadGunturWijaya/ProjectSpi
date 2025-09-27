@@ -461,7 +461,6 @@ Route::prefix('evaluasiMr')->name('evaluasiMr.')->group(function () {
     Route::get('/edit/{id}', [IdentifikasiRisikoController::class, 'editEvaluasiMr'])->name('edit');
     Route::put('/update/{id}', [IdentifikasiRisikoController::class, 'updateEvaluasiMr'])->name('update');
     Route::delete('/delete/{id}', [IdentifikasiRisikoController::class, 'destroyEvaluasiMr'])->name('destroy');
-
 });
 
 

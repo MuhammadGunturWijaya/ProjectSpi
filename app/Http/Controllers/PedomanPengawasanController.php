@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Pedoman;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class PedomanPengawasanController extends Controller
 {
@@ -16,15 +17,22 @@ class PedomanPengawasanController extends Controller
         $pedomanReviu = Pedoman::where('jenis', 'reviu')->take(4)->get();
         $pedomanMonev = Pedoman::where('jenis', 'monev')->take(4)->get();
 
-        return view('pedomanpengawasan.index', compact('title', 'pedomanAudit', 'pedomanReviu', 'pedomanMonev'));
+        //Ambil top 6 pedoman paling populer (views terbanyak) dalam 14 hari terakhir 
+        $popular = Pedoman::where('created_at', '>=', Carbon::now()->subDays(14))->orderByDesc('views')->limit(8)->get();
+        return view('pedomanpengawasan.index', compact('title', 'pedomanAudit', 'pedomanReviu', 'pedomanMonev', 'popular'));
     }
 
     // Halaman detail pedoman berdasarkan ID
     public function show($id)
     {
         $pedoman = Pedoman::findOrFail($id);
+
+        // Tambah jumlah view setiap kali dibuka
+        $pedoman->increment('views');
+
         return view('pedomanpengawasan.detail-pedoman', compact('pedoman'));
     }
+
 
     // Ambil detail pedoman untuk modal / AJAX
     public function getDetail($id)
