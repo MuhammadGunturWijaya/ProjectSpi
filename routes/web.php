@@ -423,6 +423,15 @@ Route::get('/survey-kepuasan', function () {
     return view('SurveyKepuasan.Survey-Kepuasan');
 })->name('survey.kepuasan');
 
+Route::post('/survey-kepuasan', [SurveyController::class, 'store'])
+    ->name('survey.kepuasan.store');
+
+Route::get('/survey-kepuasan/data', [SurveyController::class, 'showAll'])
+    ->name('survey.kepuasan.data');
+
+Route::get('/surveys/download', [SurveyController::class, 'download'])->name('surveys.download');
+
+
 // Identifikasi Risiko (form edit)
 Route::get('/identifikasi-risiko', function () {
     return view('identifikasi.editRisiko'); // sesuaikan dengan nama file baru
@@ -498,7 +507,7 @@ Route::get('/PenguatanPengawasan/lihat', [PenguatanPengawasanController::class, 
 
 
 
-    
+
 
 // Halaman index utama
 Route::get('/PeningkatanKualitas', [PeningkatanKualitasController::class, 'index'])

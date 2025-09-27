@@ -31,6 +31,19 @@
                     <button id="waShareBtn" class="btn btn-success rounded-pill px-4 py-2 shadow-sm ms-2">
                         <i class="fab fa-whatsapp me-2"></i> Bagikan ke WhatsApp
                     </button>
+
+                    @auth
+                        @if(Auth::user()->role === 'admin')
+                            <div class="text-center mb-4 mt-3">
+                                <a href="{{ route('survey.kepuasan.data') }}"
+                                    class="btn btn-primary rounded-pill px-4 py-2 shadow-sm">
+                                    <i class="fas fa-eye me-2"></i> Lihat Semua Survey
+                                </a>
+                            </div>
+                        @endif
+                    @endauth
+
+
                     <!-- Toast Notifikasi -->
                     <div id="toast"
                         class="toast-notification position-fixed bottom-3 end-3 p-3 rounded-4 shadow-lg bg-success text-white"
@@ -155,7 +168,7 @@
                                                 <label for="kendala">Kendala/Masalah yang Anda alami (boleh kosong)</label>
                                             </div>
                                             <div class="form-floating mb-4">
-                                                <textarea name="Saran" id="saran" rows="4" class="form-control rounded-4"
+                                                <textarea name="saran" id="saran" rows="4" class="form-control rounded-4"
                                                     style="height: 120px;"
                                                     placeholder="Saran Perbaikan Layanan (boleh kosong)"></textarea>
                                                 <label for="saran">Saran Perbaikan Layanan (boleh kosong)</label>

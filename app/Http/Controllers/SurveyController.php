@@ -23,27 +23,81 @@ class SurveyController extends Controller
         for ($i = 0; $i < 9; $i++) {
             $rules["jawaban.$i"] = 'required|string';
         }
+
         $rules['kendala'] = 'nullable|string';
         $rules['saran'] = 'nullable|string';
 
-        $request->validate($rules);
+        $validated = $request->validate($rules);
 
         // Simpan survey ke database
         Survey::create([
-            'email' => Auth::user()->email,  // wajib ada
-            'jawaban_1' => $request->jawaban[0],
-            'jawaban_2' => $request->jawaban[1],
-            'jawaban_3' => $request->jawaban[2],
-            'jawaban_4' => $request->jawaban[3],
-            'jawaban_5' => $request->jawaban[4],
-            'jawaban_6' => $request->jawaban[5],
-            'jawaban_7' => $request->jawaban[6],
-            'jawaban_8' => $request->jawaban[7],
-            'jawaban_9' => $request->jawaban[8],
-            'kendala' => $request->kendala,
-            'saran' => $request->saran,
+            'email' => Auth::user()->email,
+            'jawaban_1' => $validated['jawaban'][0],
+            'jawaban_2' => $validated['jawaban'][1],
+            'jawaban_3' => $validated['jawaban'][2],
+            'jawaban_4' => $validated['jawaban'][3],
+            'jawaban_5' => $validated['jawaban'][4],
+            'jawaban_6' => $validated['jawaban'][5],
+            'jawaban_7' => $validated['jawaban'][6],
+            'jawaban_8' => $validated['jawaban'][7],
+            'jawaban_9' => $validated['jawaban'][8],
+            'kendala' => $validated['kendala'] ?? null,
+            'saran' => $validated['saran'] ?? null,
         ]);
 
         return back()->with('survey_success', 'Terima kasih telah mengisi survey!');
     }
+
+    public function showAll()
+    {
+        $surveys = Survey::latest()->get();
+        return view('SurveyKepuasan.lihat-survey', compact('surveys'));
+    }
+
+    public function download()
+    {
+        $surveys = Survey::all(); // ambil semua data survei
+
+        $filename = 'laporan_survey_' . date('Ymd_His') . '.csv';
+
+        $headers = [
+            "Content-type" => "text/csv",
+            "Content-Disposition" => "attachment; filename={$filename}",
+            "Pragma" => "no-cache",
+            "Cache-Control" => "must-revalidate, post-check=0, pre-check=0",
+            "Expires" => "0"
+        ];
+
+        $columns = ['Email', 'Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'Q8', 'Q9', 'Kendala', 'Saran', 'Waktu'];
+
+        $callback = function () use ($surveys, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+
+            foreach ($surveys as $survey) {
+                $row = [
+                    $survey->email,
+                    $survey->jawaban_1,
+                    $survey->jawaban_2,
+                    $survey->jawaban_3,
+                    $survey->jawaban_4,
+                    $survey->jawaban_5,
+                    $survey->jawaban_6,
+                    $survey->jawaban_7,
+                    $survey->jawaban_8,
+                    $survey->jawaban_9,
+                    $survey->kendala ?? '-',
+                    $survey->saran ?? '-',
+                    $survey->created_at->format('d/M H:i')
+                ];
+                fputcsv($file, $row);
+            }
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
+
 }

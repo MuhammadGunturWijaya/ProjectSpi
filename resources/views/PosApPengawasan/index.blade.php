@@ -273,14 +273,14 @@
     <div class="pedoman-buttons-wrapper">
         <h2>Pilih Pedoman</h2>
         <div class="pedoman-buttons">
-            <a href="#pedomanaudit" class="pedoman-btn">
-                <i class="fa fa-file-invoice-dollar"></i> Lihat Pedoman Audit
+            <a href="#posap-audit" class="pedoman-btn">
+                <i class="fa fa-file-invoice-dollar"></i> Lihat POS AP Audit
             </a>
-            <a href="#pedomanreviu" class="pedoman-btn">
-                <i class="fa fa-search-plus"></i> Lihat Pedoman Reviu
+            <a href="#posap-reviu" class="pedoman-btn">
+                <i class="fa fa-search-plus"></i> Lihat POS AP Reviu
             </a>
-            <a href="#" class="pedoman-btn">
-                <i class="fa fa-tasks"></i> Lihat Pedoman Monev
+            <a href="#posap-monev" class="pedoman-btn">
+                <i class="fa fa-tasks"></i> Lihat POS AP Monev
             </a>
         </div>
     </div>
@@ -322,7 +322,7 @@
     </section>
 
     <!-- Pos Ap Reviu -->
-    <section class="classification" id="posap-audit">
+    <section class="classification" id="posap-reviu">
         <div class="classification-header">
             <h2>POS AP <span class="audit-text">Reviu</span></h2>
             <div class="header-actions">
@@ -358,7 +358,7 @@
     </section>
 
     <!-- Pos Ap monev -->
-    <section class="classification" id="posap-audit">
+    <section class="classification" id="posap-monev">
         <div class="classification-header">
             <h2>POS AP <span class="audit-text">Monev</span></h2>
             <div class="header-actions">
