@@ -684,64 +684,60 @@
 
     </div>
 
-    <!-- Sekilas Tentang Kami -->
-    <section class="py-5 bg-light" id="tentang-kami">
-        <div class="container text-center">
-            <!-- Judul -->
-            <h2 class="fw-bold mb-3">Sekilas Tentang Kami</h2>
-            <p class="text-muted mb-5">
-                Piagam Audit SPI menetapkan fungsi dan tanggung jawab sebagai berikut
-            </p>
+    <!-- Sekilas Tentang Kami (Carousel Banner Full Width Auto Slide) -->
+    <section id="tentang-kami" class="bg-light">
+        <div id="tentangKamiCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="3000">
+            <div class="carousel-inner">
 
-            <!-- Isi Card -->
-            <div class="row g-4">
-                <!-- Card 1 -->
-                <div class="col-md-4">
-                    <div class="card h-100 shadow-sm border-0 rounded-4 p-4">
-                        <div class="mb-3">
-                            <img src="https://cdn-icons-png.flaticon.com/512/1041/1041916.png" alt="Ikon 1"
-                                class="img-fluid" style="max-height: 80px;">
-                        </div>
-                        <h4 class="fw-bold">01.</h4>
-                        <p class="text-muted">
-                            Memberikan penilaian mengenai kecukupan dan efektivitas proses
-                            manajemen dalam mengendalikan kegiatannya dan pengelolaan risiko.
-                        </p>
-                    </div>
+                <!-- Slide 1 -->
+                <div class="carousel-item active">
+                    <img src="https://tse3.mm.bing.net/th/id/OIP.IHBoHa-ktdGJkEIvMgv0YwHaE7?o=7rm=3&rs=1&pid=ImgDetMain&o=7&rm=3"
+                        class="d-block w-100 banner-img" alt="Banner 1">
                 </div>
 
-                <!-- Card 2 -->
-                <div class="col-md-4">
-                    <div class="card h-100 shadow-sm border-0 rounded-4 p-4">
-                        <div class="mb-3">
-                            <img src="https://cdn-icons-png.flaticon.com/512/3135/3135715.png" alt="Ikon 2"
-                                class="img-fluid" style="max-height: 80px;">
-                        </div>
-                        <h4 class="fw-bold">02.</h4>
-                        <p class="text-muted">
-                            Melaporkan hal-hal penting terkait proses pengendalian manajemen,
-                            termasuk kemungkinan peningkatan pada proses tersebut.
-                        </p>
-                    </div>
+                <!-- Slide 2 -->
+                <div class="carousel-item">
+                    <img src="https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AA1I4jGQ.img?w=768&h=512&m=6&x=120&y=120&s=280&d=280"
+                        class="d-block w-100 banner-img" alt="Banner 2">
                 </div>
 
-                <!-- Card 3 -->
-                <div class="col-md-4">
-                    <div class="card h-100 shadow-sm border-0 rounded-4 p-4">
-                        <div class="mb-3">
-                            <img src="https://cdn-icons-png.flaticon.com/512/1828/1828911.png" alt="Ikon 3"
-                                class="img-fluid" style="max-height: 80px;">
-                        </div>
-                        <h4 class="fw-bold">03.</h4>
-                        <p class="text-muted">
-                            Memberikan informasi mengenai perkembangan (progress) dan hasil audit,
-                            serta kecukupan sumber daya audit tahunan.
-                        </p>
-                    </div>
+                <!-- Slide 3 -->
+                <div class="carousel-item">
+                    <img src="https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AA1NpXMJ.img?w=768&h=514&m=6&x=65&y=241&s=317&d=161"
+                        class="d-block w-100 banner-img" alt="Banner 3">
                 </div>
+            </div>
+
+            <!-- Kontrol -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#tentangKamiCarousel"
+                data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#tentangKamiCarousel"
+                data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+
+            <!-- Indicator -->
+            <div class="carousel-indicators">
+                <button type="button" data-bs-target="#tentangKamiCarousel" data-bs-slide-to="0"
+                    class="active"></button>
+                <button type="button" data-bs-target="#tentangKamiCarousel" data-bs-slide-to="1"></button>
+                <button type="button" data-bs-target="#tentangKamiCarousel" data-bs-slide-to="2"></button>
             </div>
         </div>
     </section>
+
+    <!-- CSS -->
+    <style>
+        .banner-img {
+            max-height: 450px;
+            /* tinggi maksimal */
+            object-fit: cover;
+            /* jaga proporsi gambar */
+        }
+    </style>
+
 
 
 
