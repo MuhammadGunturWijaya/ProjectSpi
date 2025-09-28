@@ -185,8 +185,8 @@
         .card-item-new {
             width: 260px;
             height: 280px;
-            background: linear-gradient(180deg, #ffffff, #f8faff);
-            /* gradient tipis */
+            background: linear-gradient(180deg, #dbe9ff, #618cdd);
+            /* gradient lembut biru muda */
             border-radius: 14px;
             padding: 1.2rem;
             display: flex;
@@ -201,6 +201,7 @@
             overflow: hidden;
             animation: fadeUp 0.6s ease both;
         }
+
 
         .card-item-new::before {
             content: "";
@@ -250,7 +251,7 @@
             transform: translateY(-8px) scale(1.02);
             box-shadow: 0 12px 24px rgba(37, 99, 235, 0.25);
             border: 1px solid transparent;
-            background: linear-gradient(#fff, #fff) padding-box, linear-gradient(135deg, #2563eb, #06b6d4) border-box;
+            background: linear-gradient(#fff, #6d8ae9ff) padding-box, linear-gradient(135deg, #2563eb, #06b6d4) border-box;
         }
 
         .card-icon-new {

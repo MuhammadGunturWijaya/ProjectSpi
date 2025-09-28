@@ -493,7 +493,6 @@
                             👤 {{ Auth::user()->name }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                            <li><a class="dropdown-item" href="#">Profile</a></li>
                             <li>
                                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                                     @csrf
@@ -510,28 +509,40 @@
 
 
     <!-- Hero Banner -->
-    <section class="hero-banner d-flex align-items-center justify-content-center text-center">
+    <!-- Hero Banner -->
+    <section class="hero-banner">
         <div class="hero-text text-white">
             <h1 class="fw-bold display-4">SATUAN PENGAWAS INTERNAL</h1>
             <p class="lead">Politeknik Negeri Jember</p>
             <a href="#tentang-kami" class="scroll-down-btn">⌄</a>
-            <!-- Container Logo -->
-            <div class="logo-container">
-                <img src="../images/ige.png" alt="Logo 1" class="logo-outline">
-                <img src="../images/ige.png" alt="Logo 2" class="logo-outline">
-                <img src="../images/ige.png" alt="Logo 3" class="logo-outline">
+        </div>
+
+        <!-- Logo container dipisah -->
+        <div class="logo-container">
+            <div class="logo-item">
+                <img src="../images/logo/berita.png" alt="Logo 1" class="logo-outline">
+                <p class="logo-caption">Berita</p>
+            </div>
+            <div class="logo-item">
+                <img src="../images/logo/pengaduan.png" alt="Logo 2" class="logo-outline">
+                <p class="logo-caption">Laporan</p>
+            </div>
+            <div class="logo-item">
+                <img src="../images/logo/survey.png" alt="Logo 3" class="logo-outline">
+                <p class="logo-caption">Survey</p>
             </div>
         </div>
     </section>
 
+
     <style>
         .hero-banner {
+            position: relative;
             width: 100%;
             height: 100vh;
             background: url('https://tender-indonesia.com/newsrectory/events/15(6).png') no-repeat center center;
             background-size: cover;
             background-attachment: fixed;
-            position: relative;
         }
 
         .hero-banner::after {
@@ -544,8 +555,13 @@
             background: rgba(0, 0, 0, 0.55);
         }
 
-        .hero-banner .hero-text {
-            position: relative;
+        /* Teks tetap di tengah */
+        .hero-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
             z-index: 2;
         }
 
@@ -561,32 +577,43 @@
             animation: fadeInUp 1.5s ease-in-out;
         }
 
-        /* === LOGO STYLING === */
+        /* Logo container turun ke bawah */
         .logo-container {
-            margin-top: 30px;
+            position: absolute;
+            bottom: 30px;
+            /* ubah ini untuk menurunkan atau menaikkan logo */
+            left: 50%;
+            transform: translateX(-50%);
             display: flex;
-            justify-content: center;
             gap: 100px;
-            flex-wrap: wrap;
+            z-index: 2;
+        }
+
+        .logo-item {
+            text-align: center;
         }
 
         .logo-outline {
-            width: 90px;
-            height: 90px;
+            width: 120px;
+            height: 120px;
             object-fit: contain;
-            padding: 10px;
-            border: 2px solid rgba(255, 255, 255, 0.7);
-            border-radius: 50%;
+            border: none;
+            border-radius: 0;
             background: rgba(255, 255, 255, 0.05);
             filter: brightness(0) invert(1);
-            /* bikin putih (outline effect) */
-            transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+            transition: transform 0.3s ease, background 0.3s ease;
         }
 
         .logo-outline:hover {
             transform: scale(1.15);
-            border-color: #00c3ff;
             background: rgba(255, 255, 255, 0.1);
+        }
+
+        .logo-caption {
+            margin-top: 8px;
+            font-size: 0.95rem;
+            color: #fff;
+            font-weight: 500;
         }
 
         /* Tombol Scroll */

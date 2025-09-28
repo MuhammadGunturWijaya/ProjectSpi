@@ -42,11 +42,25 @@
                                     placeholder="Tulis isi berita di sini..." required></textarea>
                             </div>
 
-                            <!-- Gambar -->
+                            <!-- Upload File -->
                             <div class="mb-3">
-                                <label class="form-label fw-semibold">Upload Gambar</label>
-                                <input type="file" name="gambar" class="form-control rounded-3 shadow-sm" required>
+                                <label class="form-label fw-semibold">Upload Gambar dari Folder</label>
+                                <input type="file" id="gambar-file" name="gambar" class="form-control rounded-3 shadow-sm">
                                 <small class="text-muted">Format: JPG, PNG | Max 2MB</small>
+                            </div>
+
+                            <!-- Atau URL -->
+                            <div class="mb-3">
+                                <label class="form-label fw-semibold">Atau Masukkan Link Gambar</label>
+                                <input type="url" id="gambar-url" name="gambar_url" class="form-control rounded-3 shadow-sm"
+                                    placeholder="Masukkan URL gambar...">
+                                <small class="text-muted">Jika diisi, upload file akan diabaikan.</small>
+                            </div>
+
+                            <!-- Preview Gambar -->
+                            <div class="mb-3 text-center">
+                                <img id="preview-gambar" src="#" alt="Preview Gambar"
+                                    style="max-width: 100%; display: none; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.2);">
                             </div>
 
                             <!-- Tanggal -->

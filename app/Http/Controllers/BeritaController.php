@@ -7,44 +7,48 @@ use App\Models\Berita;
 
 class BeritaController extends Controller
 {
-    // Halaman semua berita
     public function index()
     {
         $beritas = Berita::latest()->get();
-        return view('berita.index', compact('beritas')); // ✅ diarahkan ke folder berita/index.blade.php
+        return view('berita.index', compact('beritas'));
     }
 
-    // Halaman detail berita
     public function show($id)
     {
         $berita = Berita::findOrFail($id);
-        return view('berita.show', compact('berita')); // ✅ diarahkan ke folder berita/show.blade.php
+        return view('berita.show', compact('berita'));
     }
 
-    // Form tambah berita
     public function create()
     {
-        return view('berita.create'); // ✅ sebaiknya di berita/create.blade.php
+        return view('berita.create');
     }
 
-    // Simpan berita
     public function store(Request $request)
     {
         $request->validate([
             'judul' => 'required|string|max:255',
             'isi' => 'required|string',
-            'gambar' => 'required|image|max:2048',
+            'gambar' => 'nullable|image|max:2048|required_without:gambar_url',
+            'gambar_url' => 'nullable|url|required_without:gambar',
             'tanggal' => 'required|date',
         ]);
 
-        // Simpan gambar
-        $path = $request->file('gambar')->store('berita', 'public');
+        $gambarPath = null;
 
-        // Simpan ke DB
+        if ($request->hasFile('gambar')) {
+            // Simpan file upload
+            $path = $request->file('gambar')->store('berita', 'public');
+            $gambarPath = 'storage/' . $path;
+        } elseif ($request->gambar_url) {
+            // Ambil gambar dari URL
+            $gambarPath = $request->gambar_url;
+        }
+
         Berita::create([
             'judul' => $request->judul,
             'isi' => $request->isi,
-            'gambar' => 'storage/' . $path,
+            'gambar' => $gambarPath,
             'tanggal' => $request->tanggal,
         ]);
 
@@ -63,7 +67,8 @@ class BeritaController extends Controller
             'judul' => 'required|string|max:255',
             'isi' => 'required|string',
             'tanggal' => 'required|date',
-            'gambar' => 'required|image|max:2048',
+            'gambar' => 'nullable|image|max:2048|required_without:gambar_url',
+            'gambar_url' => 'nullable|url|required_without:gambar',
         ]);
 
         $berita = Berita::findOrFail($id);
@@ -71,17 +76,17 @@ class BeritaController extends Controller
         $berita->isi = $request->isi;
         $berita->tanggal = $request->tanggal;
 
-        // jika upload gambar baru
         if ($request->hasFile('gambar')) {
             $file = $request->file('gambar');
             $filename = time() . '_' . $file->getClientOriginalName();
             $file->move(public_path('uploads/berita'), $filename);
             $berita->gambar = 'uploads/berita/' . $filename;
+        } elseif ($request->gambar_url) {
+            $berita->gambar = $request->gambar_url;
         }
 
         $berita->save();
 
         return redirect()->route('berita.index')->with('success', 'Berita berhasil diperbarui!');
     }
-
 }
