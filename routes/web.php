@@ -559,3 +559,7 @@ Route::get('/PedomanMR/lihat', [PedomanMRController::class, 'lihat'])
 
 Route::get('/pedomanmr/detail/{id}', [PedomanMRController::class, 'detail'])->name('pedomanmr.detail');
 
+
+Route::get('/sejarah', function () {
+    return view('sejarah');
+})->name('sejarah');
