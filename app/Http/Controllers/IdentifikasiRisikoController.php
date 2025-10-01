@@ -35,7 +35,7 @@ class IdentifikasiRisikoController extends Controller
 
             'pengendalian_intern_ada' => 'required|string|max:50',
             'pengendalian_intern_memadai' => 'required|string|max:50',
-            'pengendalian_intern_dijalankan' => 'required|string|max:50',
+            'pengendalian_intern_dijalankan' => 'nullable|integer|min:0|max:100',
 
             'residu_likelihood' => 'required|integer|min:1|max:5',
             'residu_impact' => 'required|integer|min:1|max:5',
@@ -157,7 +157,12 @@ class IdentifikasiRisikoController extends Controller
             // pengendalian intern
             'pengendalian_intern_ada' => 'nullable|in:ya,tidak',
             'pengendalian_intern_memadai' => 'nullable|in:ya,tidak',
-            'pengendalian_intern_dijalankan' => 'nullable|in:ya,tidak',
+            'pengendalian_intern_dijalankan' => 'nullable|integer|min:0|max:100',
+
+            // keterangan baru
+            'pengendalian_intern_ada_keterangan' => 'nullable|string|max:255',
+            'pengendalian_intern_memadai_keterangan' => 'nullable|string|max:255',
+            'pengendalian_intern_dijalankan_keterangan' => 'nullable|string|max:255',
 
             // residu
             'residu_likelihood' => 'nullable|integer|min:1|max:5',
@@ -165,6 +170,7 @@ class IdentifikasiRisikoController extends Controller
 
             // mitigasi
             'mitigasi_opsi' => 'nullable|string|max:255',
+            'mitigasi_opsi_keterangan' => 'nullable|string|max:255',
             'mitigasi_deskripsi' => 'nullable|string',
 
             // akhir
@@ -172,18 +178,18 @@ class IdentifikasiRisikoController extends Controller
             'akhir_impact' => 'nullable|integer|min:1|max:5',
         ]);
 
-        // Hitung level-level secara server-side (lebih aman)
+        // hitung level-level
         $validated['skor_level'] = $validated['skor_likelihood'] * $validated['skor_impact'];
-
-        if (isset($validated['residu_likelihood']) && isset($validated['residu_impact'])) {
+        if (isset($validated['residu_likelihood'], $validated['residu_impact'])) {
             $validated['residu_level'] = $validated['residu_likelihood'] * $validated['residu_impact'];
         }
-
-        if (isset($validated['akhir_likelihood']) && isset($validated['akhir_impact'])) {
+        if (isset($validated['akhir_likelihood'], $validated['akhir_impact'])) {
             $validated['akhir_level'] = $validated['akhir_likelihood'] * $validated['akhir_impact'];
         }
 
+        // simpan
         IdentifikasiRisiko::create($validated);
+
 
         return redirect()->route('evaluasiMr.index')->with('success', 'Data risiko berhasil ditambahkan!');
     }
@@ -191,19 +197,55 @@ class IdentifikasiRisikoController extends Controller
     public function updateEvaluasiMr(Request $request, $id)
     {
         $validated = $request->validate([
-            // same rules as store...
+            'abjad' => 'required|string|max:5',
+            'tujuan' => 'required|string',
+            'departemen' => 'nullable|string|max:255',
+            'proses_bisnis' => 'required|string',
+            'kategori_risiko' => 'required|string',
+            'uraian_risiko' => 'required|string',
+            'penyebab_risiko' => 'required|string',
+            'sumber_risiko' => 'required|string',
+            'akibat' => 'required|string',
+            'pemilik_risiko' => 'required|string',
             'skor_likelihood' => 'required|integer|min:1|max:5',
             'skor_impact' => 'required|integer|min:1|max:5',
-            // ... other rules
+
+            // pengendalian intern
+            'pengendalian_intern_ada' => 'nullable|in:ya,tidak',
+            'pengendalian_intern_memadai' => 'nullable|in:ya,tidak',
+            'pengendalian_intern_dijalankan' => 'nullable|integer|min:0|max:100',
+
+            // keterangan baru
+            'pengendalian_intern_ada_keterangan' => 'nullable|string|max:255',
+            'pengendalian_intern_memadai_keterangan' => 'nullable|string|max:255',
+            'pengendalian_intern_dijalankan_keterangan' => 'nullable|string|max:255',
+
+            // residu
+            'residu_likelihood' => 'nullable|integer|min:1|max:5',
+            'residu_impact' => 'nullable|integer|min:1|max:5',
+
+            // mitigasi
+            'mitigasi_opsi' => 'nullable|string|max:255',
+            'mitigasi_opsi_keterangan' => 'nullable|string|max:255',
+            'mitigasi_deskripsi' => 'nullable|string',
+
+            // akhir
+            'akhir_likelihood' => 'nullable|integer|min:1|max:5',
+            'akhir_impact' => 'nullable|integer|min:1|max:5',
         ]);
 
+        // hitung level-level
         $validated['skor_level'] = $validated['skor_likelihood'] * $validated['skor_impact'];
-        if (isset($validated['residu_likelihood']) && isset($validated['residu_impact'])) {
+        if (isset($validated['residu_likelihood'], $validated['residu_impact'])) {
             $validated['residu_level'] = $validated['residu_likelihood'] * $validated['residu_impact'];
         }
-        if (isset($validated['akhir_likelihood']) && isset($validated['akhir_impact'])) {
+        if (isset($validated['akhir_likelihood'], $validated['akhir_impact'])) {
             $validated['akhir_level'] = $validated['akhir_likelihood'] * $validated['akhir_impact'];
         }
+
+        // simpan
+        IdentifikasiRisiko::create($validated);
+
 
         $risiko = IdentifikasiRisiko::findOrFail($id);
         $risiko->update($validated);

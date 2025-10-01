@@ -134,8 +134,7 @@
                         </div>
                     </div>
 
-                    {{-- Pengendalian Intern --}}
-                    <h5 class="mt-4">Pengendalian Intern (tambah keterangan di setiap field)</h5>
+                    <h5 class="mt-4">Pengendalian Intern</h5>
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label class="form-label">Ada</label>
@@ -143,7 +142,11 @@
                                 <option value="ya" {{ old('pengendalian_intern_ada', $risiko->pengendalian_intern_ada ?? '') == 'ya' ? 'selected' : '' }}>Ya</option>
                                 <option value="tidak" {{ old('pengendalian_intern_ada', $risiko->pengendalian_intern_ada ?? '') == 'tidak' ? 'selected' : '' }}>Tidak</option>
                             </select>
+                            <input type="text" class="form-control mt-1" name="pengendalian_intern_ada_keterangan"
+                                value="{{ old('pengendalian_intern_ada_keterangan', $risiko->pengendalian_intern_ada_keterangan ?? '') }}"
+                                placeholder="Tulis keterangan tentang keberadaan pengendalian intern">
                         </div>
+
                         <div class="col-md-4">
                             <label class="form-label">Memadai</label>
                             <select class="form-select" name="pengendalian_intern_memadai" required>
@@ -151,17 +154,24 @@
                                 <option value="tidak" {{ old('pengendalian_intern_memadai', $risiko->pengendalian_intern_memadai ?? '') == 'tidak' ? 'selected' : '' }}>Tidak
                                 </option>
                             </select>
+                            <input type="text" class="form-control mt-1" name="pengendalian_intern_memadai_keterangan"
+                                value="{{ old('pengendalian_intern_memadai_keterangan', $risiko->pengendalian_intern_memadai_keterangan ?? '') }}"
+                                placeholder="Tulis keterangan tentang kelayakan pengendalian intern">
                         </div>
+
                         <div class="col-md-4">
-                            <label class="form-label">Dijalankan</label>
-                            <select class="form-select" name="pengendalian_intern_dijalankan" required>
-                                <option value="ya" {{ old('pengendalian_intern_dijalankan', $risiko->pengendalian_intern_dijalankan ?? '') == 'ya' ? 'selected' : '' }}>Ya
-                                </option>
-                                <option value="tidak" {{ old('pengendalian_intern_dijalankan', $risiko->pengendalian_intern_dijalankan ?? '') == 'tidak' ? 'selected' : '' }}>Tidak
-                                </option>
-                            </select>
+                            <label class="form-label">Dijalankan (%)</label>
+                            <input type="number" min="0" max="100" class="form-control"
+                                name="pengendalian_intern_dijalankan"
+                                value="{{ old('pengendalian_intern_dijalankan', $risiko->pengendalian_intern_dijalankan ?? '') }}"
+                                placeholder="Isi dalam %" required>
+                            <input type="text" class="form-control mt-1"
+                                name="pengendalian_intern_dijalankan_keterangan"
+                                value="{{ old('pengendalian_intern_dijalankan_keterangan', $risiko->pengendalian_intern_dijalankan_keterangan ?? '') }}"
+                                placeholder="Tulis keterangan tentang pelaksanaan pengendalian intern (%)">
                         </div>
                     </div>
+
 
                     {{-- Nilai Residu --}}
                     <h5 class="mt-4">Nilai Residu</h5>
@@ -185,7 +195,8 @@
                     </div>
 
                     {{-- Mitigasi Risiko --}}
-                    <h5 class="mt-4">Mitigasi Risiko (tambah keterangan di bawah field (tindakan mitigasi), )</h5>
+                    {{-- Mitigasi Risiko --}}
+                    <h5 class="mt-4">Mitigasi Risiko</h5>
                     <div class="mb-3">
                         <label for="mitigasi_opsi" class="form-label">Opsi Mitigasi</label>
                         <select class="form-select" id="mitigasi_opsi" name="mitigasi_opsi">
@@ -195,12 +206,17 @@
                             <option value="alih" {{ old('mitigasi_opsi', $risiko->mitigasi_opsi ?? '') == 'alih' ? 'selected' : '' }}>Alihkan</option>
                             <option value="terima" {{ old('mitigasi_opsi', $risiko->mitigasi_opsi ?? '') == 'terima' ? 'selected' : '' }}>Terima</option>
                         </select>
+                        <input type="text" class="form-control mt-1" name="mitigasi_opsi_keterangan"
+                            value="{{ old('mitigasi_opsi_keterangan', $risiko->mitigasi_opsi_keterangan ?? '') }}"
+                            placeholder="Tulis keterangan tambahan untuk opsi mitigasi">
                     </div>
+
                     <div class="mb-3">
                         <label for="mitigasi_deskripsi" class="form-label">Deskripsi Mitigasi</label>
                         <textarea class="form-control" id="mitigasi_deskripsi" name="mitigasi_deskripsi"
                             rows="2">{{ old('mitigasi_deskripsi', $risiko->mitigasi_deskripsi ?? '') }}</textarea>
                     </div>
+
 
                     {{-- Skor Akhir --}}
                     <h5 class="mt-4">Skor Akhir</h5>
@@ -222,6 +238,57 @@
                                 value="{{ old('akhir_level', $risiko->akhir_level ?? '') }}" readonly>
                         </div>
                     </div>
+
+                    <script>
+                        // Skor Awal
+                        const skorLikelihood = document.getElementById('skor_likelihood');
+                        const skorImpact = document.getElementById('skor_impact');
+                        const skorLevel = document.getElementById('skor_level');
+
+                        function hitungSkorLevel() {
+                            const likelihood = parseInt(skorLikelihood.value) || 0;
+                            const impact = parseInt(skorImpact.value) || 0;
+                            skorLevel.value = likelihood * impact;
+                        }
+
+                        skorLikelihood.addEventListener('input', hitungSkorLevel);
+                        skorImpact.addEventListener('input', hitungSkorLevel);
+
+                        // Nilai Residu
+                        const residuLikelihood = document.getElementById('residu_likelihood');
+                        const residuImpact = document.getElementById('residu_impact');
+                        const residuLevel = document.getElementById('residu_level');
+
+                        function hitungResiduLevel() {
+                            const likelihood = parseInt(residuLikelihood.value) || 0;
+                            const impact = parseInt(residuImpact.value) || 0;
+                            residuLevel.value = likelihood * impact;
+                        }
+
+                        residuLikelihood.addEventListener('input', hitungResiduLevel);
+                        residuImpact.addEventListener('input', hitungResiduLevel);
+
+                        // Skor Akhir
+                        const akhirLikelihood = document.getElementById('akhir_likelihood');
+                        const akhirImpact = document.getElementById('akhir_impact');
+                        const akhirLevel = document.getElementById('akhir_level');
+
+                        function hitungAkhirLevel() {
+                            const likelihood = parseInt(akhirLikelihood.value) || 0;
+                            const impact = parseInt(akhirImpact.value) || 0;
+                            akhirLevel.value = likelihood * impact;
+                        }
+
+                        akhirLikelihood.addEventListener('input', hitungAkhirLevel);
+                        akhirImpact.addEventListener('input', hitungAkhirLevel);
+
+                        // Optional: hitung saat halaman load
+                        window.addEventListener('DOMContentLoaded', () => {
+                            hitungSkorLevel();
+                            hitungResiduLevel();
+                            hitungAkhirLevel();
+                        });
+                    </script>
 
                     <button type="submit" class="btn btn-primary">
                         {{ isset($risiko) ? 'Update Risiko' : 'Simpan Risiko' }}

@@ -240,147 +240,141 @@
     </div>
 
     <!-- Button Lihat Laporan Saya -->
-    <div class="text-center mt-4">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#laporanModal">
-            <i class="bi bi-journal-text me-1"></i> Lihat Laporan Saya
-        </button>
+    @auth
+        {{-- Tombol Lihat Laporan Saya --}}
+        <div class="text-center mt-4">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#laporanModal">
+                <i class="bi bi-journal-text me-1"></i> Lihat Laporan Saya
+            </button>
+        </div>
 
-    </div>
-
-    <div class="modal fade" id="laporanModal" tabindex="-1" aria-labelledby="laporanModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-xl modal-dialog-scrollable">
-            <div class="modal-content">
-                <div class="modal-header bg-primary text-white p-4">
-                    <h5 class="modal-title fw-bold" id="laporanModalLabel"><i
-                            class="bi bi-journal-text me-3 fs-4"></i>Daftar Laporan Saya</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                        aria-label="Close"></button>
-                </div>
-                <div class="modal-body p-4">
-
-                    @forelse($userLaporans as $laporan)
-                        <div class="card mb-4 shadow-sm border-2 border-light rounded-4">
-                            <div class="card-body p-4">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div>
-                                        <h5 class="mb-1 fw-bolder text-dark">{{ $laporan->judul }}</h5>
-                                        <span
-                                            class="badge {{ $laporan->status === 'selesai' ? 'bg-success' : ($laporan->status === 'tindak_lanjut' ? 'bg-warning text-dark' : 'bg-secondary') }} text-uppercase">{{ str_replace('_', ' ', $laporan->status) }}</span>
-                                        <div class="mt-2 text-muted">
-                                            <i class="bi bi-calendar me-1"></i>
-                                            <small>{{ $laporan->created_at->format('d M Y, H:i') }}</small>
+        {{-- Modal Daftar Laporan --}}
+        <div class="modal fade" id="laporanModal" tabindex="-1" aria-labelledby="laporanModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white p-4">
+                        <h5 class="modal-title fw-bold" id="laporanModalLabel">
+                            <i class="bi bi-journal-text me-3 fs-4"></i>Daftar Laporan Saya
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        @forelse($userLaporans as $laporan)
+                            <div class="card mb-4 shadow-sm border-2 border-light rounded-4">
+                                <div class="card-body p-4">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h5 class="mb-1 fw-bolder text-dark">{{ $laporan->judul }}</h5>
+                                            <span
+                                                class="badge {{ $laporan->status === 'selesai' ? 'bg-success' : ($laporan->status === 'tindak_lanjut' ? 'bg-warning text-dark' : 'bg-secondary') }} text-uppercase">
+                                                {{ str_replace('_', ' ', $laporan->status) }}
+                                            </span>
+                                            <div class="mt-2 text-muted">
+                                                <i class="bi bi-calendar me-1"></i>
+                                                <small>{{ $laporan->created_at->format('d M Y, H:i') }}</small>
+                                            </div>
                                         </div>
+
+                                        {{-- Form & Tombol Aksi --}}
+                                        <form method="POST" action="{{ route('pengaduan.destroy', $laporan->id) }}">
+                                            @csrf
+                                            @method('DELETE')
+
+                                            <button class="btn btn-sm btn-outline-primary toggle-detail" type="button"
+                                                data-bs-toggle="collapse" data-bs-target="#detail-{{ $laporan->id }}"
+                                                aria-expanded="false" aria-controls="detail-{{ $laporan->id }}">
+                                                <i class="bi bi-chevron-down me-1"></i>
+                                                <span class="btn-text">Lihat Detail</span>
+                                            </button>
+
+                                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                onclick="return confirm('Apakah Anda yakin ingin menghapus laporan ini?');">
+                                                <i class="bi bi-trash me-1"></i> Hapus
+                                            </button>
+                                        </form>
                                     </div>
 
-                                    <!-- Alert Flash Message -->
-                                    @if(session('success'))
-                                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                                            {{ session('success') }}
-                                            <button type="button" class="btn-close" data-bs-dismiss="alert"
-                                                aria-label="Close"></button>
-                                        </div>
-                                    @endif
-
-                                    <!-- Form Laporan -->
-                                    <form method="POST" action="{{ route('pengaduan.destroy', $laporan->id) }}">
-                                        @csrf
-                                        <button class="btn btn-sm btn-outline-primary toggle-detail" type="button"
-                                            data-bs-toggle="collapse" data-bs-target="#detail-{{ $laporan->id }}"
-                                            aria-expanded="false" aria-controls="detail-{{ $laporan->id }}">
-                                            <i class="bi bi-chevron-down me-1"></i>
-                                            <span class="btn-text">Lihat Detail</span>
-                                        </button>
-
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger"
-                                            onclick="return confirm('Apakah Anda yakin ingin menghapus laporan ini?');">
-                                            <i class="bi bi-trash me-1"></i> Hapus
-                                        </button>
-                                    </form>
-
-                                </div>
-
-                                <div class="collapse mt-4 pt-3 border-top" id="detail-{{ $laporan->id }}">
-                                    <div class="card card-body bg-light border-0 shadow-sm rounded-3 p-4">
-                                        <h6 class="fw-bold text-primary mb-3">Detail Laporan</h6>
-                                        <div class="row">
-                                            <div class="col-md-6 mb-3">
-                                                <p class="mb-1 text-secondary">Kategori:</p>
-                                                <p class="fw-semibold">{{ $laporan->kategori }}</p>
-                                            </div>
-                                            <div class="col-md-6 mb-3">
-                                                <p class="mb-1 text-secondary">Uraian:</p>
-                                                <p>{{ $laporan->kritik_saran }}</p>
-                                            </div>
-                                        </div>
-
-                                        @if($laporan->bukti_foto)
-                                            <p class="mb-1 text-secondary">Bukti Foto:</p>
-                                            <a href="{{ asset('storage/' . $laporan->bukti_foto) }}" target="_blank">
-                                                <img src="{{ asset('storage/' . $laporan->bukti_foto) }}"
-                                                    class="img-thumbnail rounded"
-                                                    style="max-height: 200px; max-width: 300px; object-fit: cover;" alt="Bukti">
-                                            </a>
-                                        @endif
-
-                                        @php
-                                            $steps = [
-                                                'laporan_dikirim' => ['title' => 'Tulis Laporan', 'detail' => 'Laporkan keluhan', 'icon' => 'bi-pencil-square', 'class' => 'step-1'],
-                                                'diverifikasi' => ['title' => 'Verifikasi', 'detail' => 'Diverifikasi & diteruskan', 'icon' => 'bi-arrow-right-circle', 'class' => 'step-2'],
-                                                'tindak_lanjut' => ['title' => 'Tindak Lanjut', 'detail' => 'Ditindaklanjuti', 'icon' => 'bi-chat-dots', 'class' => 'step-3'],
-                                                'tanggapan_pelapor' => ['title' => 'Tanggapan Pelapor', 'detail' => 'Beri tanggapan', 'icon' => 'bi-chat-text', 'class' => 'step-4'],
-                                                'selesai' => ['title' => 'Selesai', 'detail' => 'Selesai ditindaklanjuti', 'icon' => 'bi-check-circle-fill', 'class' => 'step-5'],
-                                            ];
-                                            $currentStep = array_search($laporan->status, array_keys($steps)); // Mengambil index 0-based
-                                            $currentStepDisplay = $currentStep + 1; // Untuk tampilan 1-based
-                                            $totalSteps = count($steps);
-                                            // Hitung progress width (totalSteps - 1 untuk jarak antar langkah)
-                                            $progressWidth = ($totalSteps > 1) ? ($currentStep / ($totalSteps - 1) * 100) : 0;
-                                        @endphp
-
-                                        <h6 class="fw-bold text-primary mb-4 mt-4 pt-3 border-top">Status Proses</h6>
-
-                                        <div class="position-relative process-row">
-                                            <div
-                                                style="position:absolute; top:32px; left:5%; right:5%; height:4px; background:#dee2e6; border-radius:2px; z-index:0;">
-                                            </div>
-                                            <div
-                                                style="position:absolute; top:32px; left:5%; height:4px; background:#0d6efd; width:{{ $progressWidth }}%; border-radius:2px; z-index:1; transition:width 0.5s;">
+                                    {{-- Detail Laporan --}}
+                                    <div class="collapse mt-4 pt-3 border-top" id="detail-{{ $laporan->id }}">
+                                        <div class="card card-body bg-light border-0 shadow-sm rounded-3 p-4">
+                                            <h6 class="fw-bold text-primary mb-3">Detail Laporan</h6>
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <p class="mb-1 text-secondary">Kategori:</p>
+                                                    <p class="fw-semibold">{{ $laporan->kategori }}</p>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <p class="mb-1 text-secondary">Uraian:</p>
+                                                    <p>{{ $laporan->kritik_saran }}</p>
+                                                </div>
                                             </div>
 
-                                            @foreach($steps as $key => $step)
+                                            @if($laporan->bukti_foto)
+                                                <p class="mb-1 text-secondary">Bukti Foto:</p>
+                                                <a href="{{ asset('storage/' . $laporan->bukti_foto) }}" target="_blank">
+                                                    <img src="{{ asset('storage/' . $laporan->bukti_foto) }}"
+                                                        class="img-thumbnail rounded"
+                                                        style="max-height: 200px; max-width: 300px; object-fit: cover;" alt="Bukti">
+                                                </a>
+                                            @endif
+
+                                            {{-- Status Proses --}}
+                                            @php
+                                                $steps = [
+                                                    'laporan_dikirim' => ['title' => 'Tulis Laporan', 'detail' => 'Laporkan keluhan', 'icon' => 'bi-pencil-square', 'class' => 'step-1'],
+                                                    'diverifikasi' => ['title' => 'Verifikasi', 'detail' => 'Diverifikasi & diteruskan', 'icon' => 'bi-arrow-right-circle', 'class' => 'step-2'],
+                                                    'tindak_lanjut' => ['title' => 'Tindak Lanjut', 'detail' => 'Ditindaklanjuti', 'icon' => 'bi-chat-dots', 'class' => 'step-3'],
+                                                    'tanggapan_pelapor' => ['title' => 'Tanggapan Pelapor', 'detail' => 'Beri tanggapan', 'icon' => 'bi-chat-text', 'class' => 'step-4'],
+                                                    'selesai' => ['title' => 'Selesai', 'detail' => 'Selesai ditindaklanjuti', 'icon' => 'bi-check-circle-fill', 'class' => 'step-5'],
+                                                ];
+                                                $currentStep = array_search($laporan->status, array_keys($steps));
+                                                $totalSteps = count($steps);
+                                                $progressWidth = ($totalSteps > 1) ? ($currentStep / ($totalSteps - 1) * 100) : 0;
+                                            @endphp
+
+                                            <h6 class="fw-bold text-primary mb-4 mt-4 pt-3 border-top">Status Proses</h6>
+                                            <div class="position-relative process-row">
                                                 <div
-                                                    class="process-step {{ $step['class'] }} active text-center flex-fill position-relative">
-                                                    <div class="process-icon-container bg-white shadow-sm mb-2">
-                                                        <i class="bi {{ $step['icon'] }}" style="color: #0d6efd;"></i>
-                                                    </div>
-                                                    <p class="process-title fw-bolder mb-1">{{ $step['title'] }}</p>
-                                                    <small class="text-muted">{{ $step['detail'] }}</small>
+                                                    style="position:absolute; top:32px; left:5%; right:5%; height:4px; background:#dee2e6; border-radius:2px; z-index:0;">
+                                                </div>
+                                                <div
+                                                    style="position:absolute; top:32px; left:5%; height:4px; background:#0d6efd; width:{{ $progressWidth }}%; border-radius:2px; z-index:1; transition:width 0.5s;">
                                                 </div>
 
-                                            @endforeach
-                                        </div>
+                                                @foreach($steps as $key => $step)
+                                                    <div
+                                                        class="process-step {{ $step['class'] }} active text-center flex-fill position-relative">
+                                                        <div class="process-icon-container bg-white shadow-sm mb-2">
+                                                            <i class="bi {{ $step['icon'] }}" style="color: #0d6efd;"></i>
+                                                        </div>
+                                                        <p class="process-title fw-bolder mb-1">{{ $step['title'] }}</p>
+                                                        <small class="text-muted">{{ $step['detail'] }}</small>
+                                                    </div>
+                                                @endforeach
+                                            </div>
 
-                                        <div class="mt-4 pt-3 border-top">
-                                            <span class="badge bg-primary fs-6 fw-bold">Status Saat Ini:
-                                                {{ $steps[array_keys($steps)[$currentStep]]['title'] }}</span>
+                                            <div class="mt-4 pt-3 border-top">
+                                                <span class="badge bg-primary fs-6 fw-bold">Status Saat Ini:
+                                                    {{ $steps[array_keys($steps)[$currentStep]]['title'] }}</span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    @empty
-                        <div class="alert alert-info text-center py-4 rounded-3 shadow-sm">
-                            <i class="bi bi-box-seam fs-3 d-block mb-2"></i>
-                            <p class="mb-0 fw-semibold">Belum ada laporan yang Anda kirimkan.</p>
-                            <small>Mulai laporkan keluhan atau saran Anda sekarang!</small>
-                        </div>
-                    @endforelse
-
+                        @empty
+                            <div class="alert alert-info text-center py-4 rounded-3 shadow-sm">
+                                <i class="bi bi-box-seam fs-3 d-block mb-2"></i>
+                                <p class="mb-0 fw-semibold">Belum ada laporan yang Anda kirimkan.</p>
+                                <small>Mulai laporkan keluhan atau saran Anda sekarang!</small>
+                            </div>
+                        @endforelse
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
+    @endauth
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {

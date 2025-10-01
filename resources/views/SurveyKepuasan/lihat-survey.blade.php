@@ -277,7 +277,7 @@
 
 
         @php
-            // Mapping teks ke skor
+            // Mapping teks ke skor 1–5
             $scoreMap = [
                 'Sangat Puas' => 5,
                 'Puas' => 4,
@@ -288,22 +288,23 @@
             // Total responden
             $totalRespondents = count($surveys);
 
-            // Rata-rata skor keseluruhan
+            // Fungsi kategori berdasarkan skor 0–100
+            function getCategoryByScore($score)
+            {
+                if ($score >= 88.31)
+                    return 'Sangat Puas';
+                if ($score >= 76.61)
+                    return 'Puas';
+                if ($score >= 65.00)
+                    return 'Cukup Puas';
+                if ($score >= 25.00)
+                    return 'Kurang Puas';
+                return 'Kurang Puas';
+            }
+
+            // Hitung rata-rata skor per kriteria & total
             $totalScore = 0;
             $totalCount = 0;
-
-            // Survei perlu perhatian
-            $attentionCount = 0;
-
-            // Distribusi kepuasan
-            $scoreCategories = [
-                'Sangat Puas' => 0,
-                'Puas' => 0,
-                'Cukup Puas' => 0,
-                'Kurang Puas' => 0,
-            ];
-
-            // Performa per kriteria
             $criteriaScores = [];
 
             for ($i = 1; $i <= 9; $i++) {
@@ -313,38 +314,65 @@
                 foreach ($surveys as $survey) {
                     $jawaban = $survey->{'jawaban_' . $i} ?? null;
 
-                    // Distribusi kepuasan
-                    if ($jawaban && isset($scoreCategories[$jawaban])) {
-                        $scoreCategories[$jawaban]++;
-                    }
-
-                    // Performa per kriteria
                     if ($jawaban && isset($scoreMap[$jawaban])) {
                         $criteriaTotal += $scoreMap[$jawaban];
                         $criteriaCount++;
-                    }
-
-                    // Rata-rata skor keseluruhan
-                    if ($jawaban && isset($scoreMap[$jawaban])) {
                         $totalScore += $scoreMap[$jawaban];
                         $totalCount++;
-                    }
-
-                    // Survei perlu perhatian (jawaban ≤ 3)
-                    if ($jawaban && isset($scoreMap[$jawaban]) && $scoreMap[$jawaban] <= 3) {
-                        $attentionCount++;
-                        break; // satu responden cukup satu jawaban rendah
                     }
                 }
 
                 $criteriaScores[] = $criteriaCount > 0 ? round($criteriaTotal / $criteriaCount, 2) : 0;
             }
 
+            // Rata-rata keseluruhan
             $averageScore = $totalCount > 0 ? round($totalScore / $totalCount, 2) : 0;
 
+            // Konversi rata-rata skor ke IKM
+            $ikm = $averageScore * 20;
+            $ikm = round($ikm, 2);
+            $ikmCategory = getCategoryByScore($ikm);
+
+            // Inisialisasi distribusi & survei perlu perhatian
+            $scoreCategories = [
+                'Sangat Puas' => 0,
+                'Puas' => 0,
+                'Cukup Puas' => 0,
+                'Kurang Puas' => 0,
+            ];
+            $attentionCount = 0;
+
+            // Hitung distribusi & survei perlu perhatian berdasarkan IKM individu
+            foreach ($surveys as $survey) {
+                $totalScoreRespondent = 0;
+                $totalCountRespondent = 0;
+
+                for ($i = 1; $i <= 9; $i++) {
+                    $jawaban = $survey->{'jawaban_' . $i} ?? null;
+                    if ($jawaban && isset($scoreMap[$jawaban])) {
+                        $totalScoreRespondent += $scoreMap[$jawaban] * 20; // skala 1–5 ke 100
+                        $totalCountRespondent++;
+                    }
+                }
+
+                $avgScoreRespondent = $totalCountRespondent > 0 ? $totalScoreRespondent / $totalCountRespondent : 0;
+                $category = getCategoryByScore($avgScoreRespondent);
+
+                // Distribusi kepuasan
+                $scoreCategories[$category]++;
+
+                // Survei perlu perhatian (kategori Kurang Puas)
+                if ($category === 'Kurang Puas') {
+                    $attentionCount++;
+                }
+            }
+
+            // Buat variabel untuk chart
             $distributionLabels = array_keys($scoreCategories);
             $distributionData = array_values($scoreCategories);
         @endphp
+
+
 
         <div class="row justify-content-center">
             <!-- Total Responden -->
@@ -356,23 +384,25 @@
                 </div>
             </div>
 
-            <!-- Rata-rata Skor Keseluruhan -->
-            <div class="col-lg-4 col-md-6 mb-3 fade-in" style="animation-delay: 0.6s;">
+            <!-- Nilai IKM -->
+            <div class="col-lg-4 col-md-6 mb-3 fade-in" style="animation-delay: 0.7s;">
                 <div class="stat-card-enhanced">
-                    <i class="fas fa-star fa-2x mb-2 text-success"></i>
-                    <span class="stat-number-enhanced text-success">{{ $averageScore }}</span>
-                    <div class="stat-label-enhanced">Rata-rata Skor Keseluruhan</div>
+                    <i class="fas fa-chart-pie fa-2x mb-2 text-warning"></i>
+                    <span class="stat-number-enhanced text-warning">{{ $ikm }}</span>
+                    <div class="stat-label-enhanced">Nilai IKM ({{ $ikmCategory }})</div>
                 </div>
             </div>
 
+
             <!-- Survei Perlu Perhatian -->
-            <div class="col-lg-4 col-md-12 mb-3 fade-in" style="animation-delay: 0.8s;">
+            <div class="col-lg-4 col-md-12 mb-3 fade-in" style="animation-delay: 0.9s;">
                 <div class="stat-card-enhanced">
                     <i class="fas fa-bell fa-2x mb-2" style="color: var(--accent-color);"></i>
                     <span class="stat-number-enhanced text-accent">{{ $attentionCount }}</span>
                     <div class="stat-label-enhanced">Survei Perlu Perhatian</div>
                 </div>
             </div>
+
         </div>
 
         <div class="row mt-4">
@@ -415,6 +445,7 @@
                     }
                 });
 
+
                 // Bar Chart - Performa Per Kriteria
                 const ctxCriteria = document.getElementById('criteriaPerformanceChart');
                 new Chart(ctxCriteria, {
@@ -456,6 +487,11 @@
                     <thead class="table-primary-header">
                         <tr>
                             <th scope="col" style="width: 15%;"><i class="fas fa-at me-2"></i>Email Responden</th>
+                            <th scope="col" style="width: 10%;"><i class="fas fa-venus-mars me-2"></i>Jenis Kelamin</th>
+                            <th scope="col" style="width: 15%;"><i class="fas fa-graduation-cap me-2"></i>Pendidikan
+                            </th>
+                            <th scope="col" style="width: 15%;"><i class="fas fa-briefcase me-2"></i>Pekerjaan</th>
+
                             @for($i = 1; $i <= 9; $i++)
                                 <th scope="col" class="answer-column">Q{{ $i }}</th>
                             @endfor
@@ -464,10 +500,8 @@
                             <th scope="col" class="long-text-cell" style="width: 15%;"><i
                                     class="fas fa-comment-dots me-2"></i>Saran</th>
                             <th scope="col" style="width: 10%;"><i class="fas fa-calendar-alt me-2"></i>Tanggal</th>
-                            <!-- ✅ Kolom baru -->
                             <th scope="col" style="width: 10%;"><i class="fas fa-clock me-2"></i>Waktu Submit</th>
                             <th scope="col" style="width: 10%;"><i class="fas fa-trash me-2"></i>Aksi</th>
-
                         </tr>
                     </thead>
 
@@ -478,33 +512,33 @@
                                 <td class="email-cell">
                                     <a href="mailto:{{ $survey->email }}" class="email-cell">{{ $survey->email }}</a>
                                 </td>
+                                <!-- Data Diri -->
+                                <td>{{ $survey->jenis_kelamin ?? '-' }}</td>
+                                <td>{{ $survey->pendidikan ?? '-' }}</td>
+                                <td>{{ $survey->pekerjaan ?? '-' }}</td>
 
                                 <!-- Jawaban Q1–Q9 -->
                                 @for($i = 1; $i <= 9; $i++)
                                     @php
                                         $jawaban = $survey->{'jawaban_' . $i} ?? '-';
+                                        $scoreValue = isset($scoreMap[$jawaban]) ? $scoreMap[$jawaban] * 20 : 0;
+                                        $category = getCategoryByScore($scoreValue);
 
-                                        // Mapping teks jawaban ke badge
-                                        $badgeClass = match ($jawaban) {
-                                            'Sangat Puas' => 'text-bg-success',   // Hijau
-                                            'Puas' => 'text-bg-primary',          // Biru
-                                            'Cukup Puas' => 'text-bg-warning',    // Kuning
-                                            'Kurang Puas' => 'text-bg-danger',    // Merah
-                                            default => 'text-bg-secondary',       // jika kosong atau nilai tak terduga
+                                        $badgeClass = match ($category) {
+                                            'Sangat Puas' => 'text-bg-success',
+                                            'Puas' => 'text-bg-primary',
+                                            'Cukup Puas' => 'text-bg-warning',
+                                            'Kurang Puas' => 'text-bg-danger',
+                                            default => 'text-bg-secondary',
                                         };
-
-                                        $badgeTitle = $jawaban;
                                     @endphp
-
                                     <td class="answer-column">
                                         <span class="badge badge-score {{ $badgeClass }}" data-bs-toggle="tooltip"
-                                            data-bs-placement="top" title="{{ $badgeTitle }}">
+                                            data-bs-placement="top" title="{{ $jawaban }}">
                                             {{ $jawaban }}
                                         </span>
                                     </td>
                                 @endfor
-
-
 
                                 <!-- Kendala & Saran -->
                                 <td class="long-text-cell">{{ $survey->kendala ?? '-' }}</td>
@@ -516,6 +550,7 @@
 
                                 <!-- Waktu Submit -->
                                 <td class="timestamp">{{ $survey->created_at->format('d/M H:i') }}</td>
+
                                 <!-- Aksi Hapus -->
                                 <td>
                                     <form action="{{ route('surveys.destroy', $survey->id) }}" method="POST"
@@ -530,6 +565,7 @@
                             </tr>
                         @endforeach
                     </tbody>
+
 
                 </table>
             </div>

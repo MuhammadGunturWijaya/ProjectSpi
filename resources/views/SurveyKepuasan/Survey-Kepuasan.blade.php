@@ -99,6 +99,39 @@
                             @auth
                                 <form method="POST" action="{{ route('survey.store') }}" method="POST" class="animate-fade">
                                     @csrf
+
+                                    {{-- Pertanyaan Demografis --}}
+                                    <div class="mb-5 question-block" data-step="0">
+                                        <h4 class="fw-bold mb-3">Data Diri</h4>
+
+                                        {{-- Jenis Kelamin --}}
+                                        <label class="form-label fw-semibold fs-5 mb-2">Jenis Kelamin</label>
+                                        <select name="jenis_kelamin" class="form-select mb-3" required>
+                                            <option value="" disabled selected>Pilih Jenis Kelamin</option>
+                                            <option value="Laki-laki">Laki-laki</option>
+                                            <option value="Perempuan">Perempuan</option>
+                                            <option value="Lainnya">Lainnya</option>
+                                        </select>
+
+                                        {{-- Pendidikan --}}
+                                        <label class="form-label fw-semibold fs-5 mb-2">Pendidikan Terakhir</label>
+                                        <select name="pendidikan" class="form-select mb-3" required>
+                                            <option value="" disabled selected>Pilih Pendidikan Terakhir</option>
+                                            <option value="SD">SD</option>
+                                            <option value="SMP">SMP</option>
+                                            <option value="SMA/SMK">SMA/SMK</option>
+                                            <option value="Diploma">Diploma</option>
+                                            <option value="Sarjana">Sarjana</option>
+                                            <option value="Magister">Magister</option>
+                                            <option value="Doktor">Doktor</option>
+                                        </select>
+
+                                        {{-- Pekerjaan --}}
+                                        <label class="form-label fw-semibold fs-5 mb-2">Pekerjaan</label>
+                                        <input type="text" name="pekerjaan" class="form-control mb-3"
+                                            placeholder="Isi Pekerjaan Anda" required>
+                                    </div>
+
                                     {{-- Field tanggal yang bisa diisi user --}}
                                     <div class="mb-4">
                                         <label for="tanggal" class="form-label fw-bold fs-5 mb-2">
@@ -243,8 +276,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            let currentStep = 1;
-            const totalSteps = @json(($jumlahPertanyaan ?? 9) + 1);
+            let currentStep = 0; // mulai dari Data Diri
+            const totalSteps = @json(($jumlahPertanyaan ?? 9) + 2); // +1 step data diri + 1 step masukan
             const prevBtn = document.getElementById('prev-btn');
             const nextBtn = document.getElementById('next-btn');
             const submitBtn = document.getElementById('submit-btn');
@@ -252,33 +285,28 @@
             function showStep(step) {
                 document.querySelectorAll('.question-block').forEach(block => block.style.display = 'none');
                 const currentBlock = document.querySelector(`[data-step="${step}"]`);
-                currentBlock.style.display = 'block';
-                currentBlock.classList.add('animate__animated', 'animate__fadeIn');
+                if (currentBlock) currentBlock.style.display = 'block';
 
-                prevBtn.style.display = step > 1 ? 'block' : 'none';
-                nextBtn.style.display = step < totalSteps ? 'block' : 'none';
-                submitBtn.style.display = step === totalSteps ? 'block' : 'none';
+                prevBtn.style.display = step > 0 ? 'block' : 'none';
+                nextBtn.style.display = step < totalSteps - 1 ? 'block' : 'none';
+                submitBtn.style.display = step === totalSteps - 1 ? 'block' : 'none';
             }
 
             nextBtn.addEventListener('click', function () {
                 const currentQuestion = document.querySelector(`[data-step="${currentStep}"]`);
-                const inputs = currentQuestion.querySelectorAll('input:required');
-                let isValid = Array.from(inputs).some(input => input.checked);
+                const inputs = currentQuestion.querySelectorAll('input, select, textarea');
+                let isValid = Array.from(inputs).every(input => input.value);
 
                 if (isValid) {
                     currentStep++;
                     showStep(currentStep);
                 } else {
-                    // Modal Warning selalu mengacu pada pertanyaan saat ini
                     const warningModalEl = document.getElementById('warningModal');
                     const warningModal = new bootstrap.Modal(warningModalEl);
-
-                    // Tambahkan efek shake
                     warningModalEl.querySelector('.modal-content').classList.add('shake');
                     warningModalEl.addEventListener('animationend', function () {
                         warningModalEl.querySelector('.modal-content').classList.remove('shake');
                     }, { once: true });
-
                     warningModal.show();
                 }
             });
@@ -288,8 +316,9 @@
                 showStep(currentStep);
             });
 
-            showStep(currentStep);
+            showStep(currentStep); // tampilkan step awal
         });
+
 
     </script>
 

@@ -159,9 +159,33 @@
                                     <td><span class="badge bg-primary">{{ $risiko->skor_level }}</span></td>
 
                                     {{-- Pengendalian Intern --}}
-                                    <td>{{ $risiko->pengendalian_intern_ada }}</td>
-                                    <td>{{ $risiko->pengendalian_intern_memadai }}</td>
-                                    <td>{{ $risiko->pengendalian_intern_dijalankan }}</td>
+                                    <td class="text-center">
+                                        <div>{{ $risiko->pengendalian_intern_ada }}</div>
+                                        @if($risiko->pengendalian_intern_ada_keterangan)
+                                            <div
+                                                style="border-top:1px solid #ccc; margin-top:2px; font-size:0.8rem; color:#6c757d;">
+                                                {{ $risiko->pengendalian_intern_ada_keterangan }}
+                                            </div>
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
+                                        <div>{{ $risiko->pengendalian_intern_memadai }}</div>
+                                        @if($risiko->pengendalian_intern_memadai_keterangan)
+                                            <div
+                                                style="border-top:1px solid #ccc; margin-top:2px; font-size:0.8rem; color:#6c757d;">
+                                                {{ $risiko->pengendalian_intern_memadai_keterangan }}
+                                            </div>
+                                        @endif
+                                    </td>
+                                    <td class="text-center">
+                                        <div>{{ $risiko->pengendalian_intern_dijalankan }}%</div>
+                                        @if($risiko->pengendalian_intern_dijalankan_keterangan)
+                                            <div
+                                                style="border-top:1px solid #ccc; margin-top:2px; font-size:0.8rem; color:#6c757d;">
+                                                {{ $risiko->pengendalian_intern_dijalankan_keterangan }}
+                                            </div>
+                                        @endif
+                                    </td>
 
                                     {{-- Nilai Residu --}}
                                     <td>{{ $risiko->residu_likelihood }}</td>

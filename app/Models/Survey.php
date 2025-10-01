@@ -11,18 +11,22 @@ class Survey extends Model
 
     // Izinkan mass assignment untuk field ini
     protected $fillable = [
-        'email',      // email user pengisi survey
-        'jawaban_1',  // jawaban pertanyaan 1
-        'jawaban_2',  // jawaban pertanyaan 2
-        'jawaban_3',  // jawaban pertanyaan 3
-        'jawaban_4',  // jawaban pertanyaan 4
-        'jawaban_5',  // jawaban pertanyaan 5
-        'jawaban_6',  // jawaban pertanyaan 6
-        'jawaban_7',  // jawaban pertanyaan 7
-        'jawaban_8',  // jawaban pertanyaan 8
-        'jawaban_9',  // jawaban pertanyaan 9
-        'kendala',    // field kendala (boleh kosong)
-        'saran',      // field saran (boleh kosong)
-        'tanggal',    // ✅ tambahkan ini supaya bisa diisi
+        'email',
+        'jenis_kelamin', // ✅ tambah ini
+        'pendidikan',    // ✅ tambah ini
+        'pekerjaan',     // ✅ tambah ini
+        'tanggal',
+        'jawaban_1',
+        'jawaban_2',
+        'jawaban_3',
+        'jawaban_4',
+        'jawaban_5',
+        'jawaban_6',
+        'jawaban_7',
+        'jawaban_8',
+        'jawaban_9',
+        'kendala',
+        'saran',
     ];
+
 }

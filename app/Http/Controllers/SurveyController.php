@@ -27,13 +27,20 @@ class SurveyController extends Controller
         $rules['kendala'] = 'nullable|string';
         $rules['saran'] = 'nullable|string';
         $rules['tanggal'] = 'required|date'; // ✅ Validasi tanggal
+        $rules['jenis_kelamin'] = 'required|string';
+        $rules['pendidikan'] = 'required|string';
+        $rules['pekerjaan'] = 'required|string';
+
 
         $validated = $request->validate($rules);
 
         // Simpan survey ke database
         Survey::create([
             'email' => Auth::user()->email,
-            'tanggal' => $validated['tanggal'], // ✅ Simpan tanggal
+            'tanggal' => $validated['tanggal'],
+            'jenis_kelamin' => $validated['jenis_kelamin'],
+            'pendidikan' => $validated['pendidikan'],
+            'pekerjaan' => $validated['pekerjaan'],
             'jawaban_1' => $validated['jawaban'][0],
             'jawaban_2' => $validated['jawaban'][1],
             'jawaban_3' => $validated['jawaban'][2],
@@ -46,6 +53,7 @@ class SurveyController extends Controller
             'kendala' => $validated['kendala'] ?? null,
             'saran' => $validated['saran'] ?? null,
         ]);
+
 
         return back()->with('survey_success', 'Terima kasih telah mengisi survey!');
     }

@@ -448,7 +448,7 @@
                             <li><a class="dropdown-item" href="{{ route('evaluasiMr.index') }}">Penilaian , Evaluasi MR
                                     dan
                                     Mitigasi</a></li>
-                            <li><a class="dropdown-item" href="#">Pelaporan</a></li>
+                            <li><a class="dropdown-item" href="{{ route('pengaduan.create') }}">Pelaporan</a></li>
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
