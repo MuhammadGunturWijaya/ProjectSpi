@@ -99,21 +99,24 @@
             </div>
         @endif
 
+
+
+
         <div class="row g-4">
             @foreach($pengaduans as $i => $p)
                 <div class="col-md-6 col-lg-4">
-                    <div class="card glass-card shadow-hover h-100 rounded-4 p-3" style="cursor: pointer;">
+                    <div class="card glass-card shadow-hover h-100 rounded-4 p-3">
                         <div class="card-body d-flex flex-column">
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <h5 class="card-title mb-0 text-truncate" title="{{ $p->judul }}">
                                     {{ $p->judul }}
                                 </h5>
                                 <span class="badge 
-                                        @if($p->kategori == 'Urgent') bg-danger
-                                        @elseif($p->kategori == 'Penting') bg-warning text-dark
-                                        @else bg-info text-dark
-                                        @endif
-                                        px-3 py-2 rounded-pill fw-semibold shadow-sm">
+                            @if($p->kategori == 'Urgent') bg-danger
+                            @elseif($p->kategori == 'Penting') bg-warning text-dark
+                            @else bg-info text-dark
+                            @endif
+                            px-3 py-2 rounded-pill fw-semibold shadow-sm">
                                     {{ $p->kategori }}
                                 </span>
                             </div>
@@ -125,6 +128,27 @@
                                         class="bi bi-calendar-fill me-2 text-primary"></i>{{ $p->created_at->format('d M Y') }}
                                 </li>
                             </ul>
+
+                            {{-- Form update status untuk admin --}}
+                          
+ @auth
+    @if(auth()->user()->role === 'admin')
+        <form action="{{ route('pengaduan.updateStatus', $p->id) }}" method="POST">
+            @csrf
+            @method('PATCH')
+            <select name="status">
+                <option value="laporan_dikirim" {{ $p->status == 'laporan_dikirim' ? 'selected' : '' }}>Tulis Laporan</option>
+                <option value="diverifikasi" {{ $p->status == 'diverifikasi' ? 'selected' : '' }}>Verifikasi</option>
+                <option value="tindak_lanjut" {{ $p->status == 'tindak_lanjut' ? 'selected' : '' }}>Tindak Lanjut</option>
+                <option value="tanggapan_pelapor" {{ $p->status == 'tanggapan_pelapor' ? 'selected' : '' }}>Tanggapan Pelapor</option>
+                <option value="selesai" {{ $p->status == 'selesai' ? 'selected' : '' }}>Selesai</option>
+            </select>
+            <button type="submit">Update</button>
+        </form>
+    @endif
+@endauth
+
+                    
 
                             <div class="mt-auto d-flex gap-2">
                                 <a href="{{ route('pengaduan.show', $p->id) }}"
@@ -140,40 +164,10 @@
                             </div>
                         </div>
                     </div>
-
-                    <!-- Modal Hapus -->
-                    <div class="modal fade" id="deleteModal{{ $p->id }}" tabindex="-1"
-                        aria-labelledby="deleteModalLabel{{ $p->id }}" aria-hidden="true">
-                        <div class="modal-dialog modal-dialog-centered">
-                            <div class="modal-content rounded-4 shadow-lg border-0">
-                                <div class="modal-header bg-gradient-danger text-white rounded-top">
-                                    <h5 class="modal-title" id="deleteModalLabel{{ $p->id }}">Konfirmasi Hapus</h5>
-                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                                        aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body text-center py-4">
-                                    <i class="bi bi-exclamation-triangle-fill mb-3 fs-1" style="color: #dc3545;"></i>
-                                    <h6 class="fw-bold mb-2">Apakah Anda yakin?</h6>
-                                    <p class="text-muted">Pengaduan dari <strong>{{ $p->nama }}</strong> akan dihapus secara
-                                        permanen.</p>
-                                </div>
-                                <div class="modal-footer justify-content-center">
-                                    <button type="button"
-                                        class="btn btn-outline-secondary rounded-pill px-4 py-2 fw-semibold"
-                                        data-bs-dismiss="modal">Batal</button>
-                                    <form action="{{ route('pengaduan.destroy', $p->id) }}" method="POST">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-danger rounded-pill px-4 py-2 fw-semibold">
-                                            Hapus Sekarang
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             @endforeach
+
+
 
             <!-- Tombol Kembali -->
             <div class="col-12 d-flex justify-content-center mt-4">

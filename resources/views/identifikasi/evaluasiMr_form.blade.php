@@ -49,7 +49,7 @@
                     {{-- Identifikasi Awal --}}
                     <div class="row mb-3">
                         <div class="col-md-2">
-                            <label for="abjad" class="form-label">Abjad</label>
+                            <label for="abjad" class="form-label">Kode Unit</label>
                             <input type="text" class="form-control" id="abjad" name="abjad"
                                 value="{{ old('abjad', $risiko->abjad ?? '') }}" required>
                         </div>
@@ -59,7 +59,7 @@
                                 value="{{ old('tujuan', $risiko->tujuan ?? '') }}" required>
                         </div>
                         <div class="col-md-5">
-                            <label for="departemen" class="form-label">Departemen</label>
+                            <label for="departemen" class="form-label">Unit</label>
                             <input type="text" class="form-control" id="departemen" name="departemen"
                                 value="{{ old('departemen', $risiko->departemen ?? '') }}" required>
                         </div>
@@ -135,7 +135,7 @@
                     </div>
 
                     {{-- Pengendalian Intern --}}
-                    <h5 class="mt-4">Pengendalian Intern</h5>
+                    <h5 class="mt-4">Pengendalian Intern (tambah keterangan di setiap field)</h5>
                     <div class="row mb-3">
                         <div class="col-md-4">
                             <label class="form-label">Ada</label>
@@ -185,7 +185,7 @@
                     </div>
 
                     {{-- Mitigasi Risiko --}}
-                    <h5 class="mt-4">Mitigasi Risiko</h5>
+                    <h5 class="mt-4">Mitigasi Risiko (tambah keterangan di bawah field (tindakan mitigasi), )</h5>
                     <div class="mb-3">
                         <label for="mitigasi_opsi" class="form-label">Opsi Mitigasi</label>
                         <select class="form-select" id="mitigasi_opsi" name="mitigasi_opsi">

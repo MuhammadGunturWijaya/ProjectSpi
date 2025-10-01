@@ -16,5 +16,6 @@ class Pengaduan extends Model
         'judul',
         'kritik_saran',
         'bukti_foto',
+        'user_id',
     ];
 }

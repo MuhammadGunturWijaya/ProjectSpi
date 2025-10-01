@@ -270,21 +270,6 @@
     </script>
 
 
-    <div class="pedoman-buttons-wrapper">
-        <h2>Pilih Pedoman</h2>
-        <div class="pedoman-buttons">
-            <a href="#pedomanaudit" class="pedoman-btn">
-                <i class="fa fa-file-invoice-dollar"></i> Lihat Pedoman Audit
-            </a>
-            <a href="#pedomanreviu" class="pedoman-btn">
-                <i class="fa fa-search-plus"></i> Lihat Pedoman Reviu
-            </a>
-            <a href="#" class="pedoman-btn">
-                <i class="fa fa-tasks"></i> Lihat Pedoman Monev
-            </a>
-        </div>
-    </div>
-
     <section class="classification" id="program-kerja-spi">
         <div class="classification-header">
             <h2>Program Kerja <span class="spi-text">SPI</span></h2>

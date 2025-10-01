@@ -36,6 +36,8 @@ use App\Http\Controllers\Pengawasan\PenguatanPengawasanController;
 use App\Http\Controllers\Peningkatan\PeningkatanKualitasController;
 use App\Http\Controllers\Akuntabilitas\PenguatanAkuntabilitasController;
 use App\Http\Controllers\MR\PedomanMRController;
+use App\Http\Middleware\IsAdmin;
+
 
 // Halaman landing
 Route::get('/', [LandingPageController::class, 'index'])->name('landingpage');
@@ -72,12 +74,20 @@ Route::get('/search-pedoman', [SearchPedomanController::class, 'index'])->name('
 
 Route::get('/search-pedoman', [SearchPedomanController::class, 'index'])->name('search.searchPedomanPengawasan');
 
+// Route umum (user biasa)
+Route::post('/pengaduan', [PengaduanController::class, 'store'])->name('pengaduan.store'); // semua user
+Route::get('/pengaduan/{id}', [PengaduanController::class, 'show'])->name('pengaduan.show'); // semua user
+
 // Route admin (harus login & role admin)
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', IsAdmin::class])->group(function () {
     Route::get('/admin/pengaduan', [PengaduanController::class, 'index'])->name('pengaduan.index');
-    Route::get('/admin/pengaduan/{id}', [PengaduanController::class, 'show'])->name('pengaduan.show');
     Route::delete('/admin/pengaduan/{id}', [PengaduanController::class, 'destroy'])->name('pengaduan.destroy');
+    Route::patch('/admin/pengaduan/{id}/update-status', [PengaduanController::class, 'updateStatus'])->name('pengaduan.updateStatus');
 });
+
+Route::delete('/pengaduan/{id}', [PengaduanController::class, 'destroy'])
+    ->name('pengaduan.destroy')
+    ->middleware('auth'); // pastikan user login
 
 
 

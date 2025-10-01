@@ -4,13 +4,19 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Pengaduan;
+use Illuminate\Support\Facades\Auth;
 
 class PengaduanController extends Controller
 {
     // Form pengaduan masyarakat
     public function create()
     {
-        return view('pengaduan.create');
+        // Ambil laporan user yang sedang login
+        $userLaporans = Pengaduan::where('user_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return view('pengaduan.create', compact('userLaporans'));
     }
 
     // Menyimpan pengaduan
@@ -29,10 +35,29 @@ class PengaduanController extends Controller
             $validated['bukti_foto'] = $request->file('bukti_foto')->store('bukti', 'public');
         }
 
+        // set status default
+        $validated['status'] = 'laporan_dikirim';
+
+        // tambahkan user_id SEBELUM create
+        $validated['user_id'] = Auth::id();
+
+        // simpan ke database
         Pengaduan::create($validated);
 
-        return redirect()->back()->with('success', 'Pengaduan berhasil dikirim. Terima kasih!');
+        return back()->with('success', 'Pengaduan berhasil dikirim. Terima kasih!');
     }
+
+
+    public function updateStatus(Request $request, $id)
+    {
+        $pengaduan = Pengaduan::findOrFail($id);
+        $pengaduan->status = $request->status;
+        $pengaduan->save();
+
+        return redirect()->back()->with('success', 'Status pengaduan berhasil diperbarui!');
+    }
+
+
 
     // Menampilkan daftar pengaduan (untuk admin)
     public function index()
@@ -41,8 +66,13 @@ class PengaduanController extends Controller
             abort(403, 'Akses ditolak.');
         }
 
+        // Ambil semua laporan milik user yang sedang login
+        $userLaporans = Pengaduan::where('user_id', Auth::id())
+            ->orderBy('created_at', 'desc')
+            ->get();
+
         $pengaduans = Pengaduan::latest()->get();
-        return view('admin.pengaduanIndex', compact('pengaduans'));
+        return view('admin.pengaduanIndex', compact('pengaduans', 'userLaporans'));
     }
 
     // Menampilkan detail pengaduan (untuk admin)
@@ -58,11 +88,12 @@ class PengaduanController extends Controller
 
     public function destroy($id)
     {
-        if (auth()->user()->role !== 'admin') {
+        $pengaduan = \App\Models\Pengaduan::findOrFail($id);
+
+        // Hanya admin atau pemilik laporan yang boleh hapus
+        if (auth()->user()->role !== 'admin' && $pengaduan->user_id !== auth()->id()) {
             abort(403, 'Akses ditolak.');
         }
-
-        $pengaduan = \App\Models\Pengaduan::findOrFail($id);
 
         // Hapus file bukti jika ada
         if ($pengaduan->bukti_foto) {
@@ -73,5 +104,13 @@ class PengaduanController extends Controller
 
         return redirect()->route('pengaduan.index')->with('success', 'Pengaduan berhasil dihapus.');
     }
+
+
+    public function delete(User $user, Pengaduan $pengaduan)
+    {
+        return $user->role === 'admin' || $user->id === $pengaduan->user_id;
+    }
+
+
 
 }

@@ -270,25 +270,11 @@
     </script>
 
 
-    <div class="pedoman-buttons-wrapper">
-        <h2>Pilih Pedoman</h2>
-        <div class="pedoman-buttons">
-            <a href="#pedomanaudit" class="pedoman-btn">
-                <i class="fa fa-file-invoice-dollar"></i> Lihat Pedoman Audit
-            </a>
-            <a href="#pedomanreviu" class="pedoman-btn">
-                <i class="fa fa-search-plus"></i> Lihat Pedoman Reviu
-            </a>
-            <a href="#" class="pedoman-btn">
-                <i class="fa fa-tasks"></i> Lihat Pedoman Monev
-            </a>
-        </div>
-    </div>
 
     <!-- Instrumen Audit -->
     <section class="classification" id="instrumen-audit">
         <div class="classification-header">
-            <h2>Instrumen <span class="audit-text">Audit</span></h2>
+            <h2>Instrumen Pengawasan</h2>
             <div class="header-actions">
                 <a href="{{ route('instrumen.lihat', 'audit') }}">
                     <i class="fa fa-chart-bar"></i> Lihat Lebih
@@ -316,7 +302,7 @@
                     </a>
                 </div>
             @empty
-                <p>Tidak ada Instrumen Audit.</p>
+                <p>Tidak ada Instrumen.</p>
             @endforelse
         </div>
     </section>
@@ -368,7 +354,7 @@
                     <div class="form-section-header">
                         <h4>Materi Pokok Dokumen</h4>
                     </div>
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label>Pilih Jenis Instrumen <span class="required">*</span></label>
                         <div class="button-group">
                             <button type="button" class="btn btn-outline" data-jenis="audit">Instrumen Audit</button>
@@ -376,7 +362,7 @@
                             <button type="button" class="btn btn-outline" data-jenis="monev">Instrumen Monev</button>
                         </div>
                         <input type="hidden" name="jenis" id="jenisInstrumen" required>
-                    </div>
+                    </div> -->
 
                     <div class="form-group">
                         <label for="judul">Judul <span class="required">*</span></label>

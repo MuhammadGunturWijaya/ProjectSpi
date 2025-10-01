@@ -19,6 +19,7 @@ class PedomanPengawasanController extends Controller
 
         //Ambil top 6 pedoman paling populer (views terbanyak) dalam 14 hari terakhir 
         $popular = Pedoman::where('created_at', '>=', Carbon::now()->subDays(14))->orderByDesc('views')->limit(8)->get();
+        
         return view('pedomanpengawasan.index', compact('title', 'pedomanAudit', 'pedomanReviu', 'pedomanMonev', 'popular'));
     }
 
