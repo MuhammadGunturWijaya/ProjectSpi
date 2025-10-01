@@ -451,7 +451,7 @@
         <hr class="mb-4">
 
         <div class="survey-card fade-in" style="animation-delay: 1.4s;">
-           <div class="table-responsive" style="max-height: 800px; overflow-y: auto;">
+            <div class="table-responsive" style="max-height: 800px; overflow-y: auto;">
                 <table class="table table-hover table-striped">
                     <thead class="table-primary-header">
                         <tr>
@@ -463,9 +463,14 @@
                                     class="fas fa-exclamation-circle me-2"></i>Kendala</th>
                             <th scope="col" class="long-text-cell" style="width: 15%;"><i
                                     class="fas fa-comment-dots me-2"></i>Saran</th>
-                            <th scope="col" style="width: 10%;"><i class="fas fa-clock me-2"></i>Waktu</th>
+                            <th scope="col" style="width: 10%;"><i class="fas fa-calendar-alt me-2"></i>Tanggal</th>
+                            <!-- ✅ Kolom baru -->
+                            <th scope="col" style="width: 10%;"><i class="fas fa-clock me-2"></i>Waktu Submit</th>
+                            <th scope="col" style="width: 10%;"><i class="fas fa-trash me-2"></i>Aksi</th>
+
                         </tr>
                     </thead>
+
                     <tbody>
                         @foreach($surveys as $survey)
                             <tr class="fade-in" style="animation-delay: {{ 1.5 + $loop->index * 0.05 }}s;">
@@ -505,8 +510,23 @@
                                 <td class="long-text-cell">{{ $survey->kendala ?? '-' }}</td>
                                 <td class="long-text-cell">{{ $survey->saran ?? '-' }}</td>
 
-                                <!-- Waktu -->
+                                <!-- Tanggal Mengisi -->
+                                <td>{{ $survey->tanggal ? \Carbon\Carbon::parse($survey->tanggal)->format('d M Y') : '-' }}
+                                </td>
+
+                                <!-- Waktu Submit -->
                                 <td class="timestamp">{{ $survey->created_at->format('d/M H:i') }}</td>
+                                <!-- Aksi Hapus -->
+                                <td>
+                                    <form action="{{ route('surveys.destroy', $survey->id) }}" method="POST"
+                                        onsubmit="return confirm('Yakin ingin menghapus data ini?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            <i class="fas fa-trash"></i> Hapus
+                                        </button>
+                                    </form>
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>

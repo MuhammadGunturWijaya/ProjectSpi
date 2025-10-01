@@ -26,12 +26,14 @@ class SurveyController extends Controller
 
         $rules['kendala'] = 'nullable|string';
         $rules['saran'] = 'nullable|string';
+        $rules['tanggal'] = 'required|date'; // ✅ Validasi tanggal
 
         $validated = $request->validate($rules);
 
         // Simpan survey ke database
         Survey::create([
             'email' => Auth::user()->email,
+            'tanggal' => $validated['tanggal'], // ✅ Simpan tanggal
             'jawaban_1' => $validated['jawaban'][0],
             'jawaban_2' => $validated['jawaban'][1],
             'jawaban_3' => $validated['jawaban'][2],
@@ -47,6 +49,7 @@ class SurveyController extends Controller
 
         return back()->with('survey_success', 'Terima kasih telah mengisi survey!');
     }
+
 
     public function showAll()
     {
@@ -98,6 +101,13 @@ class SurveyController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
+
+    public function destroy(Survey $survey)
+    {
+        $survey->delete();
+        return back()->with('success', 'Data survey berhasil dihapus.');
+    }
+
 
 
 }

@@ -23,5 +23,6 @@ class Survey extends Model
         'jawaban_9',  // jawaban pertanyaan 9
         'kendala',    // field kendala (boleh kosong)
         'saran',      // field saran (boleh kosong)
+        'tanggal',    // ✅ tambahkan ini supaya bisa diisi
     ];
 }

@@ -99,6 +99,45 @@
                             @auth
                                 <form method="POST" action="{{ route('survey.store') }}" method="POST" class="animate-fade">
                                     @csrf
+                                    {{-- Field tanggal yang bisa diisi user --}}
+                                    <div class="mb-4">
+                                        <label for="tanggal" class="form-label fw-bold fs-5 mb-2">
+                                            <i class="fas fa-calendar-alt text-primary me-2"></i> Tanggal Mengisi
+                                        </label>
+                                        <div class="input-group shadow-sm">
+                                            <span class="input-group-text bg-gradient text-white rounded-start-4 border-0">
+                                                <i class="fas fa-calendar-day"></i>
+                                            </span>
+                                            <input type="date" id="tanggal" name="tanggal"
+                                                class="form-control border-0 rounded-end-4 py-3 px-4" required>
+                                        </div>
+                                        <small class="text-muted fst-italic ms-1">
+                                            Silakan pilih tanggal saat Anda mengisi survey
+                                        </small>
+                                    </div>
+
+                                    <style>
+                                        .input-group-text {
+                                            background: linear-gradient(90deg, #007bff, #28a745);
+                                            font-size: 1.2rem;
+                                            padding: 0.75rem 1rem;
+                                        }
+
+                                        input[type="date"] {
+                                            font-size: 1rem;
+                                            background-color: #f9fafb;
+                                            transition: all 0.2s ease;
+                                        }
+
+                                        input[type="date"]:hover {
+                                            background-color: #eef5ff;
+                                        }
+
+                                        input[type="date"]:focus {
+                                            background-color: #fff;
+                                            box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+                                        }
+                                    </style>
                                     <div id="survey-form-content">
                                         @php
                                             $pertanyaan = [

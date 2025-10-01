@@ -198,6 +198,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/survey', [SurveyController::class, 'store'])->name('survey.store');
 });
 
+Route::delete('/surveys/{survey}', [SurveyController::class, 'destroy'])->name('surveys.destroy');
+
 // route ke halaman instrumen pengawasan
 Route::get('/instrumen-pengawasan', [InstrumenPengawasanController::class, 'index'])->name('instrumen.pengawasan');
 // route ke halaman program kerja SPI
