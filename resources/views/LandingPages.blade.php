@@ -966,7 +966,6 @@
                     </a>
                 @endauth
 
-
                 <!-- MODAL LAPORAN -->
                 <div class="modal fade" id="laporModal" tabindex="-1" aria-labelledby="laporModalLabel"
                     aria-hidden="true">

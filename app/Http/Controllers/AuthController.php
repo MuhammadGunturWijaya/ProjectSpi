@@ -53,24 +53,32 @@ class AuthController extends Controller
     // Proses daftar akun
     public function register(Request $request)
     {
-        // Validasi input
+        // Validasi hanya email, password, konfirmasi password
         $request->validate([
-            'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6|confirmed', // pastikan ada input password_confirmation
+            'password' => 'required|min:6|confirmed',
         ]);
 
-        // Simpan user baru
+        // Simpan user baru, field lain boleh null
         $user = User::create([
-            'name' => $request->name,
+            'name' => $request->name ?? null,
             'email' => $request->email,
+            'alt_email' => $request->alt_email ?? null,
             'password' => Hash::make($request->password),
+            'phone' => $request->phone ?? null,
+            'address' => $request->address ?? null,
+            'user_type' => $request->user_type ?? null,
+            'pegawai_role' => $request->pegawai_role ?? null,
+            'gender' => $request->gender ?? null,
+            'disability' => $request->disability ?? null,
+            'disability_type' => $request->disability_type ?? null,
+            'email_verified_at' => null,
         ]);
 
-        // Auto login setelah daftar
+        // Auto login setelah daftar (opsional)
         Auth::login($user);
 
-        return redirect('/login')->with('success', 'Registrasi berhasil, Silahkan Login!');
+        return redirect('/login')->with('success', 'Registrasi berhasil, silakan login!');
     }
 
     // Logout
