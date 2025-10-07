@@ -55,6 +55,11 @@
             background-color: #e9f7ff;
         }
 
+        .badge.bg-purple {
+            background-color: #6f42c1;
+            color: #fff;
+        }
+
         @media (max-width: 992px) {
             table {
                 font-size: 0.875rem;
@@ -71,16 +76,123 @@
         <div class="card">
             <div class="card-header">
                 <h4 class="mb-0"><i class="fa fa-shield-alt"></i> Evaluasi MR</h4>
-                @if(Auth::check() && Auth::user()->role === 'admin')
-                    <a href="{{ route('evaluasiMr.create') }}" class="btn btn-success">
-                        <i class="fa fa-plus"></i> Tambah Risiko
-                    </a>
-                @endif
+                <div class="d-flex gap-2">
+                    @if(Auth::check() && Auth::user()->role === 'admin')
+                        <a href="{{ route('evaluasiMr.create') }}" class="btn btn-success">
+                            <i class="fa fa-plus"></i> Tambah Risiko
+                        </a>
+                    @endif
+                    <button onclick="printLaporan()" class="btn btn-primary">
+                        <i class="fa fa-print"></i> Cetak Laporan
+                    </button>
+                </div>
             </div>
+            <script>
+                function printLaporan() {
+                    const table = document.querySelector('.table-responsive table');
+
+                    const printWindow = window.open('', '', 'height=800,width=1200');
+
+                    const style = `
+        <style>
+            @page {
+                size: landscape;
+                margin: 10mm;
+            }
+            body {
+                font-family: 'Poppins', sans-serif;
+                padding: 10px;
+            }
+            h2 {
+                text-align: center;
+                margin-bottom: 20px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 10px; /* kecilkan font agar muat semua kolom */
+                table-layout: fixed;
+                word-wrap: break-word;
+            }
+            table, th, td {
+                border: 1px solid #000;
+            }
+            th, td {
+                padding: 4px;
+                text-align: center;
+                vertical-align: middle;
+            }
+            th {
+                background-color: #343a40;
+                color: white;
+            }
+            .badge {
+                display: inline-block;
+                padding: 2px 4px;
+                border-radius: 5px;
+                color: white;
+                font-size: 10px;
+            }
+            /* biar tabel bisa di-scroll horizontal di cetak jika masih kebesaran */
+            .table-container {
+                width: 100%;
+                overflow-x: auto;
+            }
+        </style>
+    `;
+
+                    printWindow.document.write(`
+        <html>
+        <head>
+            <title>Laporan Evaluasi MR</title>
+            ${style}
+        </head>
+        <body>
+            <h2>Laporan Evaluasi MR - SPI Polije</h2>
+            <div class="table-container">
+                ${table.outerHTML}
+            </div>
+        </body>
+        </html>
+    `);
+
+                    printWindow.document.close();
+                    printWindow.focus();
+                    printWindow.print();
+                    printWindow.close();
+                }
+            </script>
+
             <div class="card-body">
                 @if(session('success'))
                     <div class="alert alert-success rounded-pill">{{ session('success') }}</div>
                 @endif
+
+                @php
+                    function getRiskColor($likelihood, $impact)
+                    {
+                        $matrix = [
+                            1 => [1 => 'blue', 2 => 'lightgreen', 3 => 'lightgreen', 4 => 'darkgreen', 5 => 'yellow'],
+                            2 => [1 => 'lightgreen', 2 => 'lightgreen', 3 => 'darkgreen', 4 => 'yellow', 5 => 'purple'],
+                            3 => [1 => 'lightgreen', 2 => 'darkgreen', 3 => 'yellow', 4 => 'purple', 5 => 'red'],
+                            4 => [1 => 'darkgreen', 2 => 'yellow', 3 => 'purple', 4 => 'red', 5 => 'red'],
+                            5 => [1 => 'yellow', 2 => 'purple', 3 => 'red', 4 => 'red', 5 => 'red'],
+                        ];
+
+                        $colorMap = [
+                            'blue' => 'background-color:#007bff; color:white;',
+                            'lightgreen' => 'background-color:#90ee90; color:black;',
+                            'darkgreen' => 'background-color:#006400; color:white;',
+                            'yellow' => 'background-color:#ffc107; color:black;',
+                            'purple' => 'background-color:#6f42c1; color:white;',
+                            'red' => 'background-color:#dc3545; color:white;',
+                        ];
+
+                        return $colorMap[$matrix[$likelihood][$impact] ?? 'red'];
+                    }
+                @endphp
+
+
 
                 <div class="table-responsive">
                     <table class="table table-bordered table-striped align-middle">
@@ -156,7 +268,10 @@
                                     {{-- Skor Awal --}}
                                     <td>{{ $risiko->skor_likelihood }}</td>
                                     <td>{{ $risiko->skor_impact }}</td>
-                                    <td><span class="badge bg-primary">{{ $risiko->skor_level }}</span></td>
+                                    @php $styleAwal = getRiskColor($risiko->skor_likelihood, $risiko->skor_impact); @endphp
+                                    <td class="text-center"><span class="badge"
+                                            style="{{ $styleAwal }}">{{ $risiko->skor_likelihood * $risiko->skor_impact }}</span>
+                                    </td>
 
                                     {{-- Pengendalian Intern --}}
                                     <td class="text-center">
@@ -190,7 +305,10 @@
                                     {{-- Nilai Residu --}}
                                     <td>{{ $risiko->residu_likelihood }}</td>
                                     <td>{{ $risiko->residu_impact }}</td>
-                                    <td><span class="badge bg-info">{{ $risiko->residu_level }}</span></td>
+                                    @php $styleResidu = getRiskColor($risiko->residu_likelihood, $risiko->residu_impact); @endphp
+                                    <td class="text-center"><span class="badge"
+                                            style="{{ $styleResidu }}">{{ $risiko->residu_likelihood * $risiko->residu_impact }}</span>
+                                    </td>
 
                                     {{-- Mitigasi --}}
                                     <td>{{ $risiko->mitigasi_opsi }}</td>
@@ -199,7 +317,10 @@
                                     {{-- Skor Akhir --}}
                                     <td>{{ $risiko->akhir_likelihood }}</td>
                                     <td>{{ $risiko->akhir_impact }}</td>
-                                    <td><span class="badge bg-danger">{{ $risiko->akhir_level }}</span></td>
+                                    @php $styleAkhir = getRiskColor($risiko->akhir_likelihood, $risiko->akhir_impact); @endphp
+                                    <td class="text-center"><span class="badge"
+                                            style="{{ $styleAkhir }}">{{ $risiko->akhir_likelihood * $risiko->akhir_impact }}</span>
+                                    </td>
 
                                     <td class="text-center">
                                         @if(Auth::check() && Auth::user()->role === 'admin')
@@ -214,7 +335,6 @@
                                                 <button type="submit" class="btn btn-danger btn-sm"
                                                     onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
                                             </form>
-
                                         @endif
                                     </td>
                                 </tr>

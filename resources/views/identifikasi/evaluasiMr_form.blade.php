@@ -240,6 +240,72 @@
                     </div>
 
                     <script>
+                        (function () {
+                            // Warna sesuai matriks (index: likelihood 1..5, impact 1..5)
+                            const riskColors = {
+                                1: { 1: '#099DDE', 2: '#9ED26A', 3: '#9ED26A', 4: '#2F8B3A', 5: '#E6DE2F' }, // bottom row (Rare)
+                                2: { 1: '#9ED26A', 2: '#9ED26A', 3: '#2F8B3A', 4: '#E6DE2F', 5: '#9B4FF0' },
+                                3: { 1: '#9ED26A', 2: '#2F8B3A', 3: '#E6DE2F', 4: '#9B4FF0', 5: '#9B4FF0' },
+                                4: { 1: '#2F8B3A', 2: '#E6DE2F', 3: '#9B4FF0', 4: '#C83218', 5: '#C83218' },
+                                5: { 1: '#E6DE2F', 2: '#9B4FF0', 3: '#9B4FF0', 4: '#C83218', 5: '#C83218' }  // top row (Almost Certain)
+                            };
+
+                            // Warna teks untuk kontras
+                            const textColorMap = {
+                                '#099DDE': 'white',   // blue
+                                '#9ED26A': 'black',   // light green
+                                '#2F8B3A': 'white',   // dark green
+                                '#E6DE2F': 'black',   // yellow
+                                '#9B4FF0': 'white',   // purple
+                                '#C83218': 'white'    // red
+                            };
+
+                            function applyColor(levelInput, likelihood, impact) {
+                                if (likelihood >= 1 && likelihood <= 5 && impact >= 1 && impact <= 5) {
+                                    const color = riskColors[likelihood][impact];
+                                    levelInput.value = likelihood * impact;
+                                    levelInput.style.backgroundColor = color;
+                                    levelInput.style.color = textColorMap[color] || 'white';
+                                    levelInput.style.fontWeight = '700';
+                                    levelInput.style.textAlign = 'center';
+                                } else {
+                                    // jika kosong / out of range --> reset
+                                    levelInput.value = '';
+                                    levelInput.style.backgroundColor = '';
+                                    levelInput.style.color = '';
+                                    levelInput.style.fontWeight = '';
+                                    levelInput.style.textAlign = '';
+                                }
+                            }
+
+                            function setupCalculator(lhId, imId, lvId) {
+                                const lh = document.getElementById(lhId);
+                                const im = document.getElementById(imId);
+                                const lv = document.getElementById(lvId);
+
+                                const handler = () => {
+                                    const l = parseInt(lh.value) || 0;
+                                    const i = parseInt(im.value) || 0;
+                                    applyColor(lv, l, i);
+                                };
+
+                                lh.addEventListener('input', handler);
+                                im.addEventListener('input', handler);
+
+                                // inisialisasi saat load
+                                handler();
+                            }
+
+                            window.addEventListener('DOMContentLoaded', () => {
+                                setupCalculator('skor_likelihood', 'skor_impact', 'skor_level');
+                                setupCalculator('residu_likelihood', 'residu_impact', 'residu_level');
+                                setupCalculator('akhir_likelihood', 'akhir_impact', 'akhir_level');
+                            });
+                        })();
+                    </script>
+
+
+                    <script>
                         // Skor Awal
                         const skorLikelihood = document.getElementById('skor_likelihood');
                         const skorImpact = document.getElementById('skor_impact');

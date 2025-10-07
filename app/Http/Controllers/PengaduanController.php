@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Pengaduan;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Hash;
+
 
 class PengaduanController extends Controller
 {
@@ -111,6 +115,28 @@ class PengaduanController extends Controller
         return $user->role === 'admin' || $user->id === $pengaduan->user_id;
     }
 
+    public function createGuest()
+    {
+        // Buat akun dummy
+        $dummyEmail = 'guest_' . Str::random(6) . '@example.com';
+        $dummyPassword = Str::random(8);
+
+        $user = User::create([
+            'name' => 'Guest User',
+            'email' => $dummyEmail,
+            'password' => Hash::make($dummyPassword),
+            'role' => 'guest', // bisa buat role khusus guest
+        ]);
+
+        // Login otomatis user dummy
+        Auth::login($user);
+
+        // Simpan password dummy di session agar bisa ditampilkan sekali
+        session()->flash('guest_password', $dummyPassword);
+
+        // Redirect ke halaman buat pengaduan
+        return redirect()->route('pengaduan.create');
+    }
 
 
 }

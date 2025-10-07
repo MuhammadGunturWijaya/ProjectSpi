@@ -493,10 +493,24 @@
                             👤 {{ Auth::user()->name }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                            <!-- Link ke halaman profil -->
+                            <li>
+                                <a href="{{ route('profile.show') }}" class="dropdown-item">
+                                    <i class="bi bi-person-fill me-2"></i> Profil Saya
+                                </a>
+                            </li>
+
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+
+                            <!-- Logout -->
                             <li>
                                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                                     @csrf
-                                    <button type="submit" class="dropdown-item">Logout</button>
+                                    <button type="submit" class="dropdown-item">
+                                        <i class="bi bi-box-arrow-right me-2"></i> Logout
+                                    </button>
                                 </form>
                             </li>
                         </ul>
@@ -931,49 +945,152 @@
                 </p>
 
                 <!-- Tombol untuk masyarakat -->
-                <a href="{{ route('pengaduan.create') }}" class="btn btn-lg btn-danger fw-bold px-5 py-3 mb-2"
+                <!-- <a href="{{ route('pengaduan.create') }}" class="btn btn-lg btn-danger fw-bold px-5 py-3 mb-2"
                     style="border-radius:50px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: all 0.3s;">
                     Laporkan Sekarang!
-                </a>
+                </a> -->
 
-                <!-- Tombol tambahan untuk admin -->
+                <!-- Tombol "Laporkan Sekarang!" -->
                 @auth
-                    @if(Auth::user()->role === 'admin')
-                        <a href="{{ route('pengaduan.index') }}" class="btn btn-lg btn-primary fw-bold px-5 py-3 mt-2"
-                            style="border-radius:50px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: all 0.3s;">
-                            Lihat Pengaduan
-                        </a>
-                    @endif
+                    <!-- Jika sudah login, langsung ke route pengaduan.create -->
+                    <a href="{{ route('pengaduan.create') }}" class="btn btn-lg btn-danger fw-bold px-5 py-3 mb-2"
+                        style="border-radius:50px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: all 0.3s;">
+                        Laporkan Sekarang!
+                    </a>
+                @else
+                    <!-- Jika belum login, tampilkan modal -->
+                    <a href="#" class="btn btn-lg btn-danger fw-bold px-5 py-3 mb-2"
+                        style="border-radius:50px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: all 0.3s;"
+                        data-bs-toggle="modal" data-bs-target="#laporModal">
+                        Laporkan Sekarang!
+                    </a>
                 @endauth
 
+
+                <!-- MODAL LAPORAN -->
+                <div class="modal fade" id="laporModal" tabindex="-1" aria-labelledby="laporModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-lg">
+                        <div class="modal-content rounded-4 shadow-lg border-0 overflow-hidden">
+
+                            <!-- HEADER -->
+                            <div class="modal-header p-4 text-white"
+                                style="background: linear-gradient(135deg, #ff4d4f, #ff7a45);">
+                                <div class="d-flex align-items-center">
+                                    <i
+                                        class="bi bi-exclamation-triangle-fill fs-2 me-3 animate__animated animate__pulse animate__infinite"></i>
+                                    <h5 class="modal-title fw-bold" id="laporModalLabel">
+                                        Pilih Opsi Pelaporan 🚨
+                                    </h5>
+                                </div>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+
+                            <!-- BODY -->
+                            <div class="modal-body text-center p-5 bg-light">
+                                <h4 class="mb-3 text-dark fw-semibold">Bagaimana Anda ingin melaporkan?</h4>
+                                <p class="text-muted small mb-5">Identitas Anda sebagai pelapor atau terlapor dijamin
+                                    kerahasiaannya ✅</p>
+
+                                <div class="d-grid gap-4">
+
+                                    <!-- LAPOR ANONIM -->
+                                    <div
+                                        class="p-4 border rounded-4 bg-white shadow-sm text-start hover-shadow transition-hover-shadow">
+                                        <div class="text-danger mb-3">
+                                            <i class="bi bi-eye-slash-fill fs-1"></i>
+                                        </div>
+                                        <a href="{{ route('pengaduan.createGuest') }}"
+                                            class="btn btn-danger btn-lg w-100 fw-bold py-3 mb-2 rounded-pill">
+                                            <i class="bi bi-mask-fill me-2"></i> Lapor Sebagai Tamu (Anonim)
+                                        </a>
+
+                                        <p class="text-muted small m-0 px-3">
+                                            ✅ Cepat dan Rahasia, Tidak memerlukan akun.<br>
+                                            🔒 Identitas Anda aman sepenuhnya.
+                                        </p>
+                                    </div>
+
+                                    <!-- LAPOR DENGAN AKUN -->
+                                    <div
+                                        class="p-4 border rounded-4 bg-white shadow-sm text-start hover-shadow transition-hover-shadow">
+                                        <div class="text-success mb-3">
+                                            <i class="bi bi-shield-lock-fill fs-1"></i>
+                                        </div>
+                                        <a href="{{ route('login') }}"
+                                            class="btn btn-success btn-lg w-100 fw-bold py-3 mb-2 rounded-pill">
+                                            <i class="bi bi-person-check-fill me-2"></i> Lapor Dengan Akun
+                                        </a>
+                                        <p class="text-muted small m-0 px-3">
+                                            ✅ Dapat melacak status laporan dengan akun.<br>
+                                            🔒 Privasi Anda tetap dijaga, laporan diprioritaskan.
+                                        </p>
+                                    </div>
+
+                                    <!-- REGISTER -->
+                                    <a href="{{ route('register') }}"
+                                        class="btn btn-link fw-bold text-primary mt-4 py-3 border-top">
+                                        <i class="bi bi-person-plus-fill me-2"></i> Belum punya akun? <strong>Daftar
+                                            sekarang!</strong>
+                                    </a>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- STYLE -->
+                <style>
+                    @import url('https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css');
+
+                    .hover-shadow:hover {
+                        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
+                        transform: translateY(-3px);
+                        transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+                    }
+
+                    .btn-lg.rounded-pill {
+                        border-radius: 50px !important;
+                    }
+
+                    .btn-danger {
+                        background-color: #ff4d4f;
+                        border-color: #ff4d4f;
+                        color: white;
+                    }
+
+                    .btn-danger:hover {
+                        background-color: #d9363e;
+                        border-color: #d9363e;
+                        color: white;
+                    }
+
+                    .btn-success {
+                        background-color: #28a745;
+                        border-color: #28a745;
+                        color: white;
+                    }
+
+                    .btn-success:hover {
+                        background-color: #218838;
+                        border-color: #1e7e34;
+                        color: white;
+                    }
+                </style>
+
+                <!-- Tombol tambahan untuk admin -->
+                @if(Auth::user()?->role === 'admin')
+                    <a href="{{ route('pengaduan.index') }}" class="btn btn-lg btn-primary fw-bold px-5 py-3 mt-2"
+                        style="border-radius:50px; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transition: all 0.3s;">
+                        Lihat Pengaduan
+                    </a>
+                @endif
 
             </div>
         </div>
     </section>
-
-
-    <style>
-        /* Animasi hover pada box */
-        .report-box:hover {
-            transform: translateY(-10px);
-            background: rgba(0, 0, 0, 0.6);
-        }
-
-        /* Animasi hover pada tombol */
-        .report-box .btn-danger:hover {
-            background-color: #ff4b4b;
-            transform: scale(1.05);
-        }
-
-        /* Animasi hover pada tombol Lihat Pengaduan */
-        .report-box .btn-primary:hover {
-            background-color: #0056b3;
-            transform: scale(1.05);
-        }
-    </style>
-
-
-
 
 
 

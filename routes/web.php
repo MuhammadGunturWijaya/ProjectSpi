@@ -23,6 +23,8 @@ use App\Http\Controllers\detailPedomanController;
 use App\Http\Controllers\DetailPengawasanController;
 use App\Http\Controllers\SearchPedomanController;
 use App\Http\Controllers\TambahPedomanController;
+use App\Http\Controllers\GuestReportController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Perubahan\ManajemenPerubahanController;
 use App\Http\Controllers\posAp\PosApPengawasanController;
 use App\Http\Controllers\Instrumen\InstrumenController;
@@ -196,6 +198,8 @@ Route::post('/survey', [SurveyController::class, 'store'])->name('survey.store')
 
 Route::middleware('auth')->group(function () {
     Route::post('/survey', [SurveyController::class, 'store'])->name('survey.store');
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
 Route::delete('/surveys/{survey}', [SurveyController::class, 'destroy'])->name('surveys.destroy');
@@ -575,3 +579,7 @@ Route::get('/pedomanmr/detail/{id}', [PedomanMRController::class, 'detail'])->na
 Route::get('/sejarah', function () {
     return view('sejarah');
 })->name('sejarah');
+
+
+// web.php
+Route::get('/lapor-guest', [GuestReportController::class, 'createGuest'])->name('pengaduan.createGuest');
