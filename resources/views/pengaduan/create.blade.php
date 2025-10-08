@@ -416,83 +416,305 @@
                 <h3 class="mb-0">Form Pengaduan Masyarakat 📝</h3>
             </div>
 
-            <form method="POST" action="{{ route('pengaduan.store') }}" enctype="multipart/form-data">
+            <form id="formPengaduan" method="POST" action="{{ route('pengaduan.store') }}"
+                enctype="multipart/form-data">
                 @csrf
-                <div class="row g-4">
-                    <div class="col-md-6">
-                        <label for="nama" class="form-label">Nama Pelapor <span class="text-danger">*</span></label>
-                        <input type="text" id="nama" name="nama" class="form-control" placeholder="Nama lengkap"
-                            required>
-                    </div>
-                    <div class="col-md-6">
-                        <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
-                        <input type="email" id="email" name="email" class="form-control" placeholder="email@contoh.com"
-                            required>
-                    </div>
-                </div>
 
-                <div class="mt-4">
-                    <label for="kategori" class="form-label">Kategori <span class="text-danger">*</span></label>
-                    <select class="form-select" id="kategori" name="kategori" required>
-                        <option value="" disabled selected>Pilih kategori...</option>
-                        <option>Pelanggaran Etika</option>
-                        <option>Gratifikasi</option>
-                        <option>Penyalahgunaan Wewenang</option>
-                        <option>Kualitas Layanan</option>
-                        <option>Lainnya</option>
-                    </select>
-                </div>
-
-                <div class="mt-4">
-                    <label for="judul" class="form-label">Judul Pengaduan <span class="text-danger">*</span></label>
-                    <input type="text" id="judul" name="judul" class="form-control" placeholder="Ringkasan judul"
-                        required>
-                </div>
-
-                <div class="mt-4">
-                    <label for="kritik_saran" class="form-label">Uraian <span class="text-danger">*</span></label>
-                    <textarea id="kritik_saran" name="kritik_saran" class="form-control" rows="6"
-                        placeholder="Tulis detail pengaduan..." required></textarea>
-                </div>
-
-                <div class="mt-4">
-                    <label for="bukti_foto" class="form-label">Bukti Foto (opsional)</label>
-                    <input type="file" id="bukti_foto" name="bukti_foto" class="form-control" accept="image/*">
-                </div>
-
-                <p class="text-muted small mt-3"><span class="text-danger">*</span> Wajib diisi</p>
-
-                <!-- Pilihan Anonim / Rahasia -->
-                <div class="mt-3">
-                    <label class="form-label fw-semibold">Opsi Privasi Pengaduan</label>
-                    <div class="d-flex gap-3">
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="privasi" id="anonim" value="anonim"
-                                checked>
-                            <label class="form-check-label" for="anonim">
-                                Anonim
-                            </label>
-                            <small class="d-block text-muted">Nama Anda tidak akan terpublish di laporan</small>
+                <!-- STEP 1 -->
+                <div id="step1">
+                    <!-- Bagian 1: Uraian Pengaduan -->
+                    <h5 class="mb-3">Uraian Pengaduan</h5>
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <label for="tanggal_pengaduan" class="form-label">Tanggal Pengaduan <span
+                                    class="text-danger">*</span></label>
+                            <input type="date" id="tanggal_pengaduan" name="tanggal_pengaduan" class="form-control"
+                                required>
                         </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="radio" name="privasi" id="rahasia" value="rahasia">
-                            <label class="form-check-label" for="rahasia">
-                                Rahasia
-                            </label>
-                            <small class="d-block text-muted">Laporan Anda tidak dapat dilihat oleh publik</small>
+                        <div class="col-md-8">
+                            <label for="perihal" class="form-label">Perihal <span class="text-danger">*</span></label>
+                            <input type="text" id="perihal" name="perihal" class="form-control"
+                                placeholder="Tuliskan perihal pengaduan..." required>
                         </div>
                     </div>
+
+                    <div class="mt-4">
+                        <label for="uraian" class="form-label">Uraian Singkat <span class="text-danger">*</span></label>
+                        <textarea id="uraian" name="uraian" class="form-control" rows="5"
+                            placeholder="Tuliskan uraian singkat pengaduan..." required></textarea>
+                    </div>
+
+                    <div class="mt-4">
+                        <label for="bukti_file" class="form-label">Upload File / Foto / Video (opsional)</label>
+                        <input type="file" id="bukti_file" name="bukti_file[]" class="form-control"
+                            accept="image/*,video/*,.pdf,.doc,.docx" multiple>
+                        <small class="text-muted">Anda dapat mengupload lebih dari satu file</small>
+                    </div>
+
+                    <hr class="my-5">
+
+                    <!-- Bagian 2: Informasi Pendukung -->
+                    <h5 class="mb-3">Informasi Pendukung</h5>
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <label for="usia" class="form-label">Usia Anda <span class="text-danger">*</span></label>
+                            <input type="number" id="usia" name="usia" class="form-control" min="10" max="100"
+                                placeholder="Contoh: 25" required>
+                        </div>
+                        <div class="col-md-8">
+                            <label for="pendidikan" class="form-label">Pendidikan Terakhir <span
+                                    class="text-danger">*</span></label>
+                            <select id="pendidikan" name="pendidikan" class="form-select" required>
+                                <option value="" disabled selected>Pilih pendidikan terakhir...</option>
+                                <option>SD</option>
+                                <option>SMP</option>
+                                <option>SMA/SMK</option>
+                                <option>D3</option>
+                                <option>S1/D4</option>
+                                <option>S2</option>
+                                <option>S3</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="form-label">Pekerjaan Anda <span class="text-danger">*</span></label>
+                        <select id="pekerjaan" name="pekerjaan" class="form-select" required
+                            onchange="togglePekerjaanLain()">
+                            <option value="" disabled selected>Pilih pekerjaan...</option>
+                            <option>Advokat</option>
+                            <option>Pegawai Swasta</option>
+                            <option>Wirausaha</option>
+                            <option>Aparatur Sipil Negara</option>
+                            <option value="lainnya">Lainnya</option>
+                        </select>
+                        <input type="text" id="pekerjaan_lain" name="pekerjaan_lain" class="form-control mt-2 d-none"
+                            placeholder="Jelaskan pekerjaan Anda...">
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="form-label">Waktu terbaik untuk kami menghubungi Anda <span
+                                class="text-danger">*</span></label>
+                        <select id="waktu_hubung" name="waktu_hubung" class="form-select" required
+                            onchange="toggleWaktuLain()">
+                            <option value="" disabled selected>Pilih opsi...</option>
+                            <option>Bisa Kapan Saja</option>
+                            <option value="lainnya">Sebaiknya di waktu berikut</option>
+                        </select>
+                        <input type="text" id="waktu_lain" name="waktu_lain" class="form-control mt-2 d-none"
+                            placeholder="Contoh: Senin-Jumat pukul 18.00-20.00">
+                    </div>
+
+                    <hr class="my-5">
+
+                    <!-- Bagian 3: Bentuk Pelanggaran & Kontak -->
+                    <h5 class="mb-3">Bentuk Pelanggaran & Cara Menghubungi</h5>
+                    <div class="mt-3">
+                        <label class="form-label">Bentuk pelanggaran yang akan Anda laporkan? <span
+                                class="text-danger">*</span></label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="pelanggaran[]"
+                                        value="Pemerasan/Pungutan" id="pel1">
+                                    <label class="form-check-label" for="pel1">Pemerasan / Pungutan</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="pelanggaran[]"
+                                        value="Penyuapan" id="pel2">
+                                    <label class="form-check-label" for="pel2">Penyuapan</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="pelanggaran[]"
+                                        value="Gratifikasi" id="pel3">
+                                    <label class="form-check-label" for="pel3">Gratifikasi</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="pelanggaran[]"
+                                        value="Pelanggaran hukum acara" id="pel4">
+                                    <label class="form-check-label" for="pel4">Pelanggaran hukum acara</label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="pelanggaran[]" value="lainnya"
+                                        id="pel5" onchange="togglePelanggaranLain()">
+                                    <label class="form-check-label" for="pel5">Lainnya</label>
+                                </div>
+                                <input type="text" id="pelanggaran_lain" name="pelanggaran_lain"
+                                    class="form-control mt-2 d-none"
+                                    placeholder="Jelaskan jenis pelanggaran lainnya...">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="form-label">Bagaimana kami menghubungi Anda? <span
+                                class="text-danger">*</span></label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="kontak[]" value="Email" id="kontak1">
+                            <label class="form-check-label" for="kontak1">Email</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="kontak[]" value="Telepon/Handphone"
+                                id="kontak2">
+                            <label class="form-check-label" for="kontak2">Telepon / Handphone</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="kontak[]" value="WhatsApp"
+                                id="kontak3">
+                            <label class="form-check-label" for="kontak3">WhatsApp</label>
+                        </div>
+                    </div>
+
+                    <hr class="my-5">
+
+                    <!-- Bagian 4: Tempat & Perkiraan Waktu Kejadian -->
+                    <h5 class="mb-3">Tempat & Perkiraan Waktu Kejadian</h5>
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <label for="tanggal_kejadian" class="form-label">Tanggal Kejadian <span
+                                    class="text-danger">*</span></label>
+                            <input type="date" id="tanggal_kejadian" name="tanggal_kejadian" class="form-control"
+                                required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="jam_kejadian" class="form-label">Waktu / Jam Kejadian <span
+                                    class="text-danger">*</span></label>
+                            <input type="time" id="jam_kejadian" name="jam_kejadian" class="form-control" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label for="tempat_kejadian" class="form-label">Tempat Kejadian <span
+                                    class="text-danger">*</span></label>
+                            <select id="tempat_kejadian" name="tempat_kejadian" class="form-select" required>
+                                <option value="" disabled selected>Pilih tempat kejadian...</option>
+                                <option>Gedung A3</option>
+                                <option>GOR</option>
+                                <option>Gedung TI</option>
+                                <option value="lainnya">Lainnya</option>
+                            </select>
+                            <input type="text" id="tempat_lain" name="tempat_lain" class="form-control mt-2 d-none"
+                                placeholder="Sebutkan tempat lain...">
+                        </div>
+                    </div>
+
+                    <p class="text-muted small mt-3"><span class="text-danger">*</span> Wajib diisi</p>
+
+                    <div class="d-flex justify-content-end mt-4 gap-2">
+                        <button type="reset" class="btn btn-outline-secondary"><i class="bi bi-x-circle me-1"></i>
+                            Reset</button>
+                        <button type="button" class="btn btn-primary" onclick="goToStep2()">Lanjut ➡️</button>
+                    </div>
                 </div>
 
-                <div class="d-flex justify-content-end mt-4 gap-2">
-                    <button type="reset" class="btn btn-outline-secondary"><i class="bi bi-x-circle me-1"></i>
-                        Reset</button>
-                    <button type="submit" class="btn btn-primary"><i class="bi bi-send-fill me-1"></i>
-                        Kirim</button>
+                <!-- STEP 2 -->
+                <div id="step2" class="d-none">
+                    <h5 class="mb-3">Data Terlapor</h5>
+                    <table class="table table-bordered" id="tableTerlapor">
+                        <thead class="table-light">
+                            <tr>
+                                <th style="width: 50px;">No</th>
+                                <th>Nama</th>
+                                <th>Satuan Kerja</th>
+                                <th>Jabatan</th>
+                                <th style="width: 100px;">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                    <button type="button" class="btn btn-outline-success mb-3" onclick="addRow()">
+                        <i class="bi bi-person-plus"></i> Tambah Pihak yang Dilaporkan
+                    </button>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <button type="button" class="btn btn-outline-secondary" onclick="backToStep1()">⬅️
+                            Kembali</button>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-send-fill me-1"></i>
+                            Kirim</button>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
+
+    <script>
+        function goToStep2() {
+            const step1 = document.querySelector('#step1');
+            const requiredFields = step1.querySelectorAll('[required]');
+            let valid = true;
+
+            requiredFields.forEach(field => {
+                if (!field.value) {
+                    field.classList.add('is-invalid');
+                    valid = false;
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
+
+            if (!valid) {
+                alert("Harap lengkapi semua field yang wajib diisi sebelum lanjut.");
+                return;
+            }
+
+            document.getElementById('step1').classList.add('d-none');
+            document.getElementById('step2').classList.remove('d-none');
+        }
+
+        function backToStep1() {
+            document.getElementById('step2').classList.add('d-none');
+            document.getElementById('step1').classList.remove('d-none');
+        }
+
+        function addRow() {
+            const table = document.querySelector("#tableTerlapor tbody");
+            const rowCount = table.rows.length + 1;
+
+            const row = table.insertRow();
+            row.innerHTML = `
+            <td>${rowCount}</td>
+            <td><input type="text" name="terlapor[${rowCount}][nama]" class="form-control" required></td>
+            <td><input type="text" name="terlapor[${rowCount}][satuan_kerja]" class="form-control" required></td>
+            <td><input type="text" name="terlapor[${rowCount}][jabatan]" class="form-control" required></td>
+            <td>
+                <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">
+                    <i class="bi bi-trash"></i>
+                </button>
+            </td>
+        `;
+        }
+
+        function removeRow(button) {
+            const row = button.closest("tr");
+            row.remove();
+            const rows = document.querySelectorAll("#tableTerlapor tbody tr");
+            rows.forEach((r, i) => {
+                r.cells[0].innerText = i + 1;
+            });
+        }
+
+        // toggle tambahan
+        function togglePekerjaanLain() {
+            const pekerjaan = document.getElementById('pekerjaan').value;
+            document.getElementById('pekerjaan_lain').classList.toggle('d-none', pekerjaan !== 'lainnya');
+        }
+
+        function toggleWaktuLain() {
+            const waktu = document.getElementById('waktu_hubung').value;
+            document.getElementById('waktu_lain').classList.toggle('d-none', waktu !== 'lainnya');
+        }
+
+        function togglePelanggaranLain() {
+            const pelanggaran = document.getElementById('pel5').checked;
+            document.getElementById('pelanggaran_lain').classList.toggle('d-none', !pelanggaran);
+        }
+
+        document.getElementById('tempat_kejadian').addEventListener('change', function () {
+            document.getElementById('tempat_lain').classList.toggle('d-none', this.value !== 'lainnya');
+        });
+    </script>
+
+
     @if(session('success'))
         <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
             {{-- Toast menggunakan text-bg-success (hijau terang) --}}
