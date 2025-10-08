@@ -53,33 +53,37 @@ class AuthController extends Controller
     // Proses daftar akun
     public function register(Request $request)
     {
-        // Validasi hanya email, password, konfirmasi password
         $request->validate([
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6|confirmed',
         ]);
 
-        // Simpan user baru, field lain boleh null
+        // Generate kode hanya untuk pegawai
+        $pegawaiCode = null;
+        if ($request->user_type === 'pegawai') {
+            $pegawaiCode = rand(100000, 999999); // kode 6 digit
+        }
+
         $user = User::create([
-            'name' => $request->name ?? null,
+            'name' => $request->name,
             'email' => $request->email,
-            'alt_email' => $request->alt_email ?? null,
+            'alt_email' => $request->alt_email,
             'password' => Hash::make($request->password),
-            'phone' => $request->phone ?? null,
-            'address' => $request->address ?? null,
-            'user_type' => $request->user_type ?? null,
-            'pegawai_role' => $request->pegawai_role ?? null,
-            'gender' => $request->gender ?? null,
-            'disability' => $request->disability ?? null,
-            'disability_type' => $request->disability_type ?? null,
-            'email_verified_at' => null,
+            'phone' => $request->phone,
+            'address' => $request->address,
+            'user_type' => $request->user_type,
+            'pegawai_role' => $request->pegawai_role,
+            'gender' => $request->gender,
+            'disability' => $request->disability,
+            'disability_type' => $request->disability_type,
+            'pegawai_code' => $pegawaiCode,
         ]);
 
-        // Auto login setelah daftar (opsional)
-        Auth::login($user);
-
-        return redirect('/login')->with('success', 'Registrasi berhasil, silakan login!');
+        // redirect ke login + kirim kode ke session
+        return redirect('/login')->with('success', 'Registrasi berhasil, silakan login!')
+            ->with('pegawai_code', $pegawaiCode);
     }
+
 
     // Logout
     public function logout(Request $request)

@@ -78,24 +78,50 @@
                         <form action="{{ route('profile.update') }}" method="POST">
                             @csrf
 
+                            {{-- Nama --}}
                             <div class="mb-3">
                                 <label class="form-label">Nama</label>
                                 <input type="text" name="name" class="form-control"
                                     value="{{ old('name', $user->name) }}" required>
                             </div>
 
+                            {{-- Email --}}
                             <div class="mb-3">
                                 <label class="form-label">Email</label>
                                 <input type="email" name="email" class="form-control"
                                     value="{{ old('email', $user->email) }}" required>
                             </div>
 
+                            {{-- Email Alternatif --}}
                             <div class="mb-3">
-                                <label class="form-label">Password Baru <small class="text-muted">(Kosongkan jika tidak
-                                        ingin diubah)</small></label>
+                                <label class="form-label">Email Alternatif</label>
+                                <input type="email" name="alt_email" class="form-control"
+                                    value="{{ old('alt_email', $user->alt_email) }}">
+                            </div>
+
+                            {{-- No HP / WhatsApp --}}
+                            <div class="mb-3">
+                                <label class="form-label">No. Telp / HP / WhatsApp</label>
+                                <input type="text" name="phone" class="form-control"
+                                    value="{{ old('phone', $user->phone) }}">
+                            </div>
+
+                            {{-- Alamat Lengkap --}}
+                            <div class="mb-3">
+                                <label class="form-label">Alamat Lengkap</label>
+                                <input type="text" name="address" class="form-control"
+                                    value="{{ old('address', $user->address) }}">
+                            </div>
+
+                            {{-- Password Baru --}}
+                            <div class="mb-3">
+                                <label class="form-label">Password Baru
+                                    <small class="text-muted">(Kosongkan jika tidak ingin diubah)</small>
+                                </label>
                                 <input type="password" name="password" class="form-control">
                             </div>
 
+                            {{-- Konfirmasi Password --}}
                             <div class="mb-3">
                                 <label class="form-label">Konfirmasi Password</label>
                                 <input type="password" name="password_confirmation" class="form-control">
@@ -103,11 +129,37 @@
 
                             <button type="submit" class="btn btn-success w-100">Simpan Perubahan</button>
                         </form>
+
+                        {{-- Tombol lihat kode verifikasi hanya untuk pegawai --}}
+                        @if($user->user_type === 'pegawai' && $user->pegawai_code)
+                            <hr>
+                            <button class="btn btn-info w-100 mt-2" onclick="showKode()">Lihat Kode Verifikasi</button>
+                        @endif
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @if($user->user_type === 'pegawai' && $user->pegawai_code)
+        <script>
+            function showKode() {
+                Swal.fire({
+                    title: 'Kode Verifikasi Pegawai',
+                    html: `<p>Kode verifikasi Anda:</p>
+                       <h2 style="color:#0d6efd; font-weight:bold;">{{ $user->pegawai_code }}</h2>`,
+                    icon: 'info',
+                    confirmButtonText: 'Salin Kode'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        navigator.clipboard.writeText("{{ $user->pegawai_code }}");
+                    }
+                });
+            }
+        </script>
+    @endif
+
 
     @include('layouts.NavbarBawah')
 

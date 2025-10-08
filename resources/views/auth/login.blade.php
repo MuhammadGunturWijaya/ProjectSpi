@@ -587,6 +587,23 @@
             }
         });
     </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    @if(session('pegawai_code'))
+        <script>
+            Swal.fire({
+                title: 'Kode Verifikasi Pegawai',
+                html: `<p>Silakan kirim kode berikut ke Admin untuk verifikasi dan Anda Bisa Melihat Di Dalam Profile:</p>
+               <h2 style="color:#0d6efd; font-weight:bold;">{{ session('pegawai_code') }}</h2>`,
+                icon: 'info',
+                confirmButtonText: 'Salin Kode',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    navigator.clipboard.writeText("{{ session('pegawai_code') }}");
+                }
+            });
+        </script>
+    @endif
 </body>
 
 </html>
