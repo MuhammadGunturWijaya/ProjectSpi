@@ -18,30 +18,30 @@ class ProfileController extends Controller
     {
         $user = Auth::user();
 
-        // Validasi input
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255|unique:users,email,' . $user->id,
             'alt_email' => 'nullable|email|max:255',
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:255',
-            'password' => 'nullable|min:6|confirmed', // jika ingin ubah password
+            'password' => 'nullable|min:6|confirmed',
         ]);
 
-        // Update field dasar
         $user->name = $request->name;
         $user->email = $request->email;
         $user->alt_email = $request->alt_email;
         $user->phone = $request->phone;
         $user->address = $request->address;
 
-        // Update password jika diisi
         if ($request->filled('password')) {
             $user->password = Hash::make($request->password);
         }
 
         $user->save();
 
-        return redirect()->route('profile.show')->with('success', 'Profil berhasil diperbarui!');
+        return response()->json([
+            'success' => 'Profil berhasil diperbarui!'
+        ]);
     }
+
 }
