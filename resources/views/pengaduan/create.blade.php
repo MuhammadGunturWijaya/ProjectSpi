@@ -265,18 +265,19 @@
                                 <div class="card-body p-4">
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div>
-                                            <h5 class="mb-1 fw-bolder text-dark">{{ $laporan->judul }}</h5>
+                                            <h5 class="mb-1 fw-bolder text-dark">{{ $laporan->perihal }}</h5>
                                             <span
                                                 class="badge {{ $laporan->status === 'selesai' ? 'bg-success' : ($laporan->status === 'tindak_lanjut' ? 'bg-warning text-dark' : 'bg-secondary') }} text-uppercase">
                                                 {{ str_replace('_', ' ', $laporan->status) }}
                                             </span>
                                             <div class="mt-2 text-muted">
                                                 <i class="bi bi-calendar me-1"></i>
-                                                <small>{{ $laporan->created_at->format('d M Y, H:i') }}</small>
+                                                <small>{{ $laporan->tanggal_pengaduan }} |
+                                                    {{ $laporan->created_at->format('d M Y, H:i') }}</small>
                                             </div>
                                         </div>
 
-                                        {{-- Form & Tombol Aksi --}}
+                                        {{-- Tombol Aksi --}}
                                         <form method="POST" action="{{ route('pengaduan.destroy', $laporan->id) }}">
                                             @csrf
                                             @method('DELETE')
@@ -299,24 +300,119 @@
                                     <div class="collapse mt-4 pt-3 border-top" id="detail-{{ $laporan->id }}">
                                         <div class="card card-body bg-light border-0 shadow-sm rounded-3 p-4">
                                             <h6 class="fw-bold text-primary mb-3">Detail Laporan</h6>
+
                                             <div class="row">
                                                 <div class="col-md-6 mb-3">
-                                                    <p class="mb-1 text-secondary">Kategori:</p>
-                                                    <p class="fw-semibold">{{ $laporan->kategori }}</p>
+                                                    <p class="mb-1 text-secondary">Perihal:</p>
+                                                    <p class="fw-semibold">{{ $laporan->perihal }}</p>
                                                 </div>
                                                 <div class="col-md-6 mb-3">
                                                     <p class="mb-1 text-secondary">Uraian:</p>
-                                                    <p>{{ $laporan->kritik_saran }}</p>
+                                                    <p>{{ $laporan->uraian }}</p>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <p class="mb-1 text-secondary">Usia:</p>
+                                                    <p>{{ $laporan->usia }}</p>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <p class="mb-1 text-secondary">Pendidikan:</p>
+                                                    <p>{{ $laporan->pendidikan }}</p>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <p class="mb-1 text-secondary">Pekerjaan:</p>
+                                                    <p>{{ $laporan->pekerjaan }}
+                                                        {{ $laporan->pekerjaan_lain ? '(' . $laporan->pekerjaan_lain . ')' : '' }}
+                                                    </p>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <p class="mb-1 text-secondary">Waktu Hubung:</p>
+                                                    <p>{{ $laporan->waktu_hubung }}
+                                                        {{ $laporan->waktu_lain ? '(' . $laporan->waktu_lain . ')' : '' }}</p>
                                                 </div>
                                             </div>
 
-                                            @if($laporan->bukti_foto)
-                                                <p class="mb-1 text-secondary">Bukti Foto:</p>
-                                                <a href="{{ asset('storage/' . $laporan->bukti_foto) }}" target="_blank">
-                                                    <img src="{{ asset('storage/' . $laporan->bukti_foto) }}"
-                                                        class="img-thumbnail rounded"
-                                                        style="max-height: 200px; max-width: 300px; object-fit: cover;" alt="Bukti">
-                                                </a>
+                                            <div class="mt-3">
+                                                <p class="mb-1 text-secondary">Pelanggaran:</p>
+                                                <ul>
+                                                    @foreach($laporan->pelanggaran ?? [] as $p)
+                                                        <li>{{ $p }}</li>
+                                                    @endforeach
+                                                    @if($laporan->pelanggaran_lain)
+                                                        <li>{{ $laporan->pelanggaran_lain }}</li>
+                                                    @endif
+                                                </ul>
+                                            </div>
+
+                                            <div class="mt-3">
+                                                <p class="mb-1 text-secondary">Kontak yang bisa dihubungi:</p>
+                                                <ul>
+                                                    @foreach($laporan->kontak ?? [] as $k)
+                                                        <li>{{ $k }}</li>
+                                                    @endforeach
+                                                </ul>
+                                            </div>
+
+                                            <div class="mt-3">
+                                                <p class="mb-1 text-secondary">Kejadian:</p>
+                                                <p>{{ $laporan->tanggal_kejadian }} | {{ $laporan->jam_kejadian }}</p>
+                                                <p>Tempat: {{ $laporan->tempat_kejadian }}
+                                                    {{ $laporan->tempat_lain ? '(' . $laporan->tempat_lain . ')' : '' }}</p>
+                                            </div>
+
+                                            {{-- Data Terlapor --}}
+                                            <div class="mt-3">
+                                                <p class="mb-1 text-secondary">Terlapor:</p>
+                                                @if($laporan->terlapor)
+                                                    @php $terlapors = json_decode($laporan->terlapor, true); @endphp
+                                                    <table class="table table-bordered">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Nama</th>
+                                                                <th>NIP</th>
+                                                                <th>Satuan Kerja</th>
+                                                                <th>Jabatan</th>
+                                                                <th>Jenis Kelamin</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach($terlapors as $t)
+                                                                <tr>
+                                                                    <td>{{ $t['nama'] ?? '-' }}</td>
+                                                                    <td>{{ $t['nip'] ?? '-' }}</td>
+                                                                    <td>{{ $t['satuan_kerja'] ?? '-' }}</td>
+                                                                    <td>{{ $t['jabatan'] ?? '-' }}</td>
+                                                                    <td>{{ $t['jenis_kelamin'] ?? '-' }}</td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                @else
+                                                    <p class="text-muted">Tidak ada data terlapor</p>
+                                                @endif
+                                            </div>
+
+                                            {{-- Identitas & Pihak Terkait --}}
+                                            <div class="mt-3">
+                                                <p class="mb-1 text-secondary">Identitas Anda ingin diketahui terlapor?</p>
+                                                <p>{{ $laporan->identitas_diketahui }}</p>
+                                            </div>
+
+                                            <div class="mt-3">
+                                                <p class="mb-1 text-secondary">Pihak Terkait:</p>
+                                                <p>{{ $laporan->pihak_terkait ?? '-' }}</p>
+                                            </div>
+
+                                            {{-- Bukti File --}}
+                                            @if($laporan->bukti_file)
+                                                @php $files = json_decode($laporan->bukti_file, true); @endphp
+                                                <div class="mt-3">
+                                                    <p class="mb-1 text-secondary">Bukti:</p>
+                                                    @foreach($files as $file)
+                                                        <a href="{{ asset('storage/' . $file) }}" target="_blank" class="d-block mb-2">
+                                                            <i class="bi bi-paperclip"></i> {{ basename($file) }}
+                                                        </a>
+                                                    @endforeach
+                                                </div>
                                             @endif
 
                                             {{-- Status Proses --}}
@@ -370,6 +466,7 @@
                             </div>
                         @endforelse
                     </div>
+
                 </div>
             </div>
         </div>
@@ -615,8 +712,10 @@
                             <tr>
                                 <th style="width: 50px;">No</th>
                                 <th>Nama</th>
+                                <th>NIP</th>
                                 <th>Satuan Kerja</th>
                                 <th>Jabatan</th>
+                                <th>Jenis Kelamin</th>
                                 <th style="width: 100px;">Aksi</th>
                             </tr>
                         </thead>
@@ -626,6 +725,36 @@
                         <i class="bi bi-person-plus"></i> Tambah Pihak yang Dilaporkan
                     </button>
 
+                    <!-- Tambahan: Pernyataan & Informasi Pihak Terkait -->
+                    <div class="mt-4">
+                        <h5 class="mb-3">Pernyataan dan Informasi Pihak Terkait</h5>
+
+                        <!-- Identitas Diketahui -->
+                        <label class="form-label d-block">Apakah untuk pengaduan ini, identitas Anda ingin diketahui
+                            terlapor?
+                            <span class="text-danger">*</span>
+                        </label>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="identitas_diketahui" id="identitas_ya"
+                                value="Ya" required>
+                            <label class="form-check-label" for="identitas_ya">Ya</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="radio" name="identitas_diketahui" id="identitas_tidak"
+                                value="Tidak" required>
+                            <label class="form-check-label" for="identitas_tidak">Tidak</label>
+                        </div>
+
+                        <!-- Pihak Terkait -->
+                        <div class="mt-3">
+                            <label for="pihak_terkait" class="form-label">Sebutkan jika ada pihak terkait yang memiliki
+                                informasi pendukung laporan pengaduan Anda, beserta informasi kontak yang
+                                bersangkutan</label>
+                            <textarea id="pihak_terkait" name="pihak_terkait" class="form-control" rows="3"
+                                placeholder="Contoh: Nama pihak, jabatan, nomor kontak..."></textarea>
+                        </div>
+                    </div>
+
                     <div class="d-flex justify-content-between mt-4">
                         <button type="button" class="btn btn-outline-secondary" onclick="backToStep1()">⬅️
                             Kembali</button>
@@ -633,6 +762,8 @@
                             Kirim</button>
                     </div>
                 </div>
+
+
             </form>
         </div>
     </div>
@@ -672,17 +803,42 @@
 
             const row = table.insertRow();
             row.innerHTML = `
-            <td>${rowCount}</td>
-            <td><input type="text" name="terlapor[${rowCount}][nama]" class="form-control" required></td>
-            <td><input type="text" name="terlapor[${rowCount}][satuan_kerja]" class="form-control" required></td>
-            <td><input type="text" name="terlapor[${rowCount}][jabatan]" class="form-control" required></td>
-            <td>
-                <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">
-                    <i class="bi bi-trash"></i>
-                </button>
-            </td>
-        `;
+        <td>${rowCount}</td>
+        <td><input type="text" name="terlapor[${rowCount}][nama]" class="form-control" required></td>
+        <td><input type="text" name="terlapor[${rowCount}][nip]" class="form-control" required></td>
+        <td>
+            <select name="terlapor[${rowCount}][satuan_kerja]" class="form-select" required>
+                <option value="" disabled selected>Pilih...</option>
+                <option>Balikpapan</option>
+                <option>Jember</option>
+                <option>Surabaya</option>
+                <option>Samarinda</option>
+            </select>
+        </td>
+        <td>
+            <select name="terlapor[${rowCount}][jabatan]" class="form-select" required>
+                <option value="" disabled selected>Pilih...</option>
+                <option>Hakim</option>
+                <option>Hakim Agung</option>
+                <option>Sekretaris</option>
+            </select>
+        </td>
+        <td>
+            <select name="terlapor[${rowCount}][jenis_kelamin]" class="form-select" required>
+                <option value="" disabled selected>Pilih...</option>
+                <option>Laki-laki</option>
+                <option>Perempuan</option>
+                <option>Tidak diketahui</option>
+            </select>
+        </td>
+        <td>
+            <button type="button" class="btn btn-sm btn-danger" onclick="removeRow(this)">
+                <i class="bi bi-trash"></i>
+            </button>
+        </td>
+    `;
         }
+
 
         function removeRow(button) {
             const row = button.closest("tr");

@@ -27,29 +27,54 @@ class PengaduanController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'nama' => 'required|string|max:255',
-            'email' => 'required|email',
-            'kategori' => 'required',
-            'judul' => 'required|string|max:255',
-            'kritik_saran' => 'required|string',
-            'bukti_foto' => 'nullable|image|max:2048',
+            'tanggal_pengaduan' => 'required|date',
+            'perihal' => 'required|string|max:255',
+            'uraian' => 'required|string',
+
+            'usia' => 'required|integer|min:10|max:100',
+            'pendidikan' => 'required|string',
+            'pekerjaan' => 'required|string',
+            'waktu_hubung' => 'required|string',
+
+            'pelanggaran' => 'required|array',
+            'kontak' => 'required|array',
+
+            'tanggal_kejadian' => 'required|date',
+            'jam_kejadian' => 'required',
+            'tempat_kejadian' => 'required|string',
+
+            'identitas_diketahui' => 'required|string',
         ]);
 
-        if ($request->hasFile('bukti_foto')) {
-            $validated['bukti_foto'] = $request->file('bukti_foto')->store('bukti', 'public');
+        // upload multiple file
+        $files = [];
+        if ($request->hasFile('bukti_file')) {
+            foreach ($request->file('bukti_file') as $file) {
+                $files[] = $file->store('bukti', 'public');
+            }
         }
 
-        // set status default
+        // masukkan tambahan data ke $validated
+        $validated['bukti_file'] = json_encode($files);
+        $validated['pekerjaan_lain'] = $request->pekerjaan_lain;
+        $validated['waktu_lain'] = $request->waktu_lain;
+        $validated['pelanggaran_lain'] = $request->pelanggaran_lain;
+        $validated['tempat_lain'] = $request->tempat_lain;
+        $validated['terlapor'] = json_encode($request->terlapor);
+        $validated['pihak_terkait'] = $request->pihak_terkait;
+
+        // set status default (tidak dihapus)
         $validated['status'] = 'laporan_dikirim';
 
-        // tambahkan user_id SEBELUM create
+        // tambahkan user_id
         $validated['user_id'] = Auth::id();
 
         // simpan ke database
         Pengaduan::create($validated);
 
-        return back()->with('success', 'Pengaduan berhasil dikirim. Terima kasih!');
+        return redirect()->route('pengaduan.create')->with('success', 'Pengaduan berhasil dikirim. Terima kasih!');
     }
+
 
 
     public function updateStatus(Request $request, $id)
