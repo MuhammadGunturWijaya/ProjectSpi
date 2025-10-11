@@ -291,23 +291,33 @@
                 </div>
             </div>
 
-            <div class="profile-stats">
-                <div class="stat-card">
-                    <i class="bi bi-envelope-fill"></i>
-                    <div class="label">Email Terdaftar</div>
-                    <div class="value">Terverifikasi</div>
+            {{-- Hanya tampil untuk user biasa --}}
+          
+                <div class="profile-stats">
+                    <div class="stat-card">
+                        <i class="bi bi-envelope-fill"></i>
+                        <div class="label">Email Terdaftar</div>
+                        <div class="value" id="emailStatus">
+                            {{ auth()->user()->email_verified_at ? 'Terverifikasi' : 'Belum Terverifikasi' }}
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="bi bi-calendar-check"></i>
+                        <div class="label">Bergabung Sejak</div>
+                        <div class="value" id="joinedDate">
+                          {{ auth()->user()->created_at->format('d-m-Y') }}
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <i class="bi bi-pencil-square"></i>
+                        <div class="label">Update Terakhir</div>
+                        <div class="value" id="lastUpdate">
+                            {{ auth()->user()->updated_at->diffForHumans() }}
+                        </div>
+                    </div>
                 </div>
-                <div class="stat-card">
-                    <i class="bi bi-calendar-check"></i>
-                    <div class="label">Bergabung Sejak</div>
-                    <div class="value">Jan 2024</div>
-                </div>
-                <div class="stat-card">
-                    <i class="bi bi-pencil-square"></i>
-                    <div class="label">Update Terakhir</div>
-                    <div class="value">Hari ini</div>
-                </div>
-            </div>
+           
+
         </div>
 
         <!-- Form Card -->
@@ -381,6 +391,84 @@
                                 rows="3">{{ $user->address }}</textarea>
                         </div>
                     </div>
+
+                    <!-- Tombol terima kode verifikasi pendaftar -->
+                    @if(auth()->user()->role === 'admin')
+                        <button type="button" id="btnVerifyPendaftar" class="btn btn-primary w-100">
+                            Verifikasi Kode Pendaftar
+                        </button>
+                    @endif
+
+
+
+                    <script>
+                        document.getElementById('btnVerifyPendaftar').addEventListener('click', function (event) {
+                            event.preventDefault();
+                            event.stopPropagation();
+
+                            Swal.fire({
+                                title: 'Masukkan Kode Verifikasi Pendaftar',
+                                input: 'text',
+                                inputPlaceholder: 'Contoh: REG-123456',
+                                inputAttributes: { autocapitalize: 'off' },
+                                showCancelButton: true,
+                                confirmButtonText: 'Verifikasi',
+                                cancelButtonText: 'Batal',
+                                confirmButtonColor: '#4facfe',
+                                showLoaderOnConfirm: true,
+                                preConfirm: (code) => {
+                                    return fetch("{{ route('pendaftar.verify') }}", {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                        },
+                                        body: JSON.stringify({ code: code })
+                                    })
+                                        .then(response => {
+                                            if (!response.ok) throw new Error(response.statusText);
+                                            return response.json();
+                                        })
+                                        .catch(async (error) => {
+                                            Swal.close();
+                                            console.error('Error detail:', error);
+                                            Swal.fire({
+                                                icon: 'error',
+                                                title: 'Gagal!',
+                                                text: 'Terjadi kesalahan: ' + error,
+                                                confirmButtonColor: '#dc3545'
+                                            });
+                                        });
+                                },
+                                allowOutsideClick: () => !Swal.isLoading()
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    const data = result.value;
+                                    if (data.success) {
+                                        // Update status email di halaman user (jika ada)
+                                        const emailStatus = document.getElementById('emailStatus');
+                                        if (emailStatus) {
+                                            emailStatus.textContent = data.email_verified ? 'Terverifikasi' : 'Belum Terverifikasi';
+                                        }
+
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Verifikasi Berhasil!',
+                                            text: 'Kode verifikasi valid. Akses pendaftar telah diaktifkan.',
+                                            confirmButtonColor: '#4facfe'
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Kode Tidak Valid',
+                                            text: data.message || 'Kode verifikasi salah atau sudah digunakan.',
+                                            confirmButtonColor: '#dc3545'
+                                        });
+                                    }
+                                }
+                            });
+                        });
+                    </script>
 
                     <div class="col-12">
                         <div class="section-divider"></div>

@@ -583,3 +583,10 @@ Route::get('/sejarah', function () {
 
 // web.php
 Route::get('/lapor-guest', [GuestReportController::class, 'createGuest'])->name('pengaduan.createGuest');
+
+
+
+Route::post('/verify-pendaftar', [ProfileController::class, 'verifyPendaftar'])->name('pendaftar.verify');
+
+
+Route::post('/pendaftar/verify', [App\Http\Controllers\PendaftarController::class, 'verify'])->name('pendaftar.verify');
