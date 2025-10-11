@@ -292,31 +292,31 @@
             </div>
 
             {{-- Hanya tampil untuk user biasa --}}
-          
-                <div class="profile-stats">
-                    <div class="stat-card">
-                        <i class="bi bi-envelope-fill"></i>
-                        <div class="label">Email Terdaftar</div>
-                        <div class="value" id="emailStatus">
-                            {{ auth()->user()->email_verified_at ? 'Terverifikasi' : 'Belum Terverifikasi' }}
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <i class="bi bi-calendar-check"></i>
-                        <div class="label">Bergabung Sejak</div>
-                        <div class="value" id="joinedDate">
-                          {{ auth()->user()->created_at->format('d-m-Y') }}
-                        </div>
-                    </div>
-                    <div class="stat-card">
-                        <i class="bi bi-pencil-square"></i>
-                        <div class="label">Update Terakhir</div>
-                        <div class="value" id="lastUpdate">
-                            {{ auth()->user()->updated_at->diffForHumans() }}
-                        </div>
+
+            <div class="profile-stats">
+                <div class="stat-card">
+                    <i class="bi bi-envelope-fill"></i>
+                    <div class="label">Email Terdaftar</div>
+                    <div class="value" id="emailStatus">
+                        {{ auth()->user()->email_verified_at ? 'Terverifikasi' : 'Belum Terverifikasi' }}
                     </div>
                 </div>
-           
+                <div class="stat-card">
+                    <i class="bi bi-calendar-check"></i>
+                    <div class="label">Bergabung Sejak</div>
+                    <div class="value" id="joinedDate">
+                        {{ auth()->user()->created_at->format('d-m-Y') }}
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <i class="bi bi-pencil-square"></i>
+                    <div class="label">Update Terakhir</div>
+                    <div class="value" id="lastUpdate">
+                        {{ auth()->user()->updated_at->diffForHumans() }}
+                    </div>
+                </div>
+            </div>
+
 
         </div>
 
@@ -523,10 +523,12 @@
                     </div>
 
                     <!-- Tombol lihat kode verifikasi -->
-                    <button type="button" class="btn btn-code w-100" id="btnShowCode"
-                        data-code="{{ auth()->user()->pegawai_code }}">
-                        <i class="bi bi-qr-code me-2"></i>Lihat Kode Verifikasi Pegawai
-                    </button>
+                    @if(auth()->user()->role === 'user')
+                        <button type="button" class="btn btn-code w-100" id="btnShowCode"
+                            data-code="{{ auth()->user()->pegawai_code }}">
+                            <i class="bi bi-qr-code me-2"></i>Lihat Kode Verifikasi Pegawai
+                        </button>
+                    @endif
 
 
                     <div class="col-12 mt-2">
