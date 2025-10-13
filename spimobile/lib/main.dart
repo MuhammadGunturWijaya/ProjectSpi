@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dashboard.dart';
-
+import 'RegisterPage.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         // Menggunakan warna primer Polije
         primaryColor: const Color(0xFFC62828), // Red 800
         colorScheme: ColorScheme.fromSeed(
-          seedColor: const Color(0xFFC62828), 
+          seedColor: const Color(0xFFC62828),
           primary: const Color(0xFFC62828),
           secondary: const Color(0xFFFF9800), // Orange
         ),
@@ -39,7 +39,8 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMixin {
+class _SplashScreenState extends State<SplashScreen>
+    with TickerProviderStateMixin {
   // Controller untuk Animasi Utama (Fade In, Scale Up, Slide Up)
   late AnimationController _mainController;
   // Controller untuk Animasi Pulse/Glow
@@ -100,7 +101,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     _pulseAnimation = Tween<double>(begin: 1.0, end: 1.05).animate(
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
-    
+
     _rotateAnimation = Tween<double>(begin: 0.0, end: 0.05).animate(
       CurvedAnimation(parent: _rotateController, curve: Curves.easeOutQuad),
     );
@@ -109,24 +110,31 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
     _mainController.forward();
     _rotateController.forward();
 
-
     // Navigasi ke LoginPage setelah 4 detik
     Timer(const Duration(seconds: 4), () {
       if (mounted) {
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
-            pageBuilder: (context, animation, secondaryAnimation) => const LoginPage(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              // Transisi slide dari bawah ke atas
-              const begin = Offset(0.0, 1.0);
-              const end = Offset.zero;
-              const curve = Curves.easeOutCubic;
+            pageBuilder: (context, animation, secondaryAnimation) =>
+                const LoginPage(),
+            transitionsBuilder:
+                (context, animation, secondaryAnimation, child) {
+                  // Transisi slide dari bawah ke atas
+                  const begin = Offset(0.0, 1.0);
+                  const end = Offset.zero;
+                  const curve = Curves.easeOutCubic;
 
-              final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-              final offsetAnimation = animation.drive(tween);
+                  final tween = Tween(
+                    begin: begin,
+                    end: end,
+                  ).chain(CurveTween(curve: curve));
+                  final offsetAnimation = animation.drive(tween);
 
-              return SlideTransition(position: offsetAnimation, child: child);
-            },
+                  return SlideTransition(
+                    position: offsetAnimation,
+                    child: child,
+                  );
+                },
             transitionDuration: const Duration(milliseconds: 800),
           ),
         );
@@ -197,7 +205,7 @@ class _SplashScreenState extends State<SplashScreen> with TickerProviderStateMix
                           size: 160,
                           color: Color(0xFFC62828),
                         ),
-                        // Ganti dengan: 
+                        // Ganti dengan:
                         // child: Image.asset(
                         //   'images/logoPolije2.png',
                         //   width: 160,
@@ -296,12 +304,13 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMixin {
+class _LoginPageState extends State<LoginPage>
+    with SingleTickerProviderStateMixin {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscurePassword = true;
   bool _isLoading = false;
-  
+
   late AnimationController _animController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -315,14 +324,15 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       vsync: this,
     );
 
-    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
-      CurvedAnimation(parent: _animController, curve: Curves.easeIn),
-    );
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _animController, curve: Curves.easeIn));
 
-    _slideAnimation = Tween<Offset>(
-      begin: const Offset(0, 0.4),
-      end: Offset.zero,
-    ).animate(CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic));
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.4), end: Offset.zero).animate(
+          CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
+        );
 
     _animController.forward();
   }
@@ -345,7 +355,9 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
           content: const Text('Email dan password wajib diisi!'),
           backgroundColor: Colors.red.shade700,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
           margin: const EdgeInsets.all(20),
         ),
       );
@@ -364,15 +376,17 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
           content: const Text('Login berhasil! Selamat datang.'),
           backgroundColor: Colors.green.shade600,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
           margin: const EdgeInsets.all(20),
         ),
       );
 
       // Navigasi ke HomePage
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const HomePage()),
-      );
+      Navigator.of(
+        context,
+      ).pushReplacement(MaterialPageRoute(builder: (_) => const HomePage()));
     }
   }
 
@@ -410,9 +424,16 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.1),
                           shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white.withOpacity(0.3), width: 2),
+                          border: Border.all(
+                            color: Colors.white.withOpacity(0.3),
+                            width: 2,
+                          ),
                         ),
-                        child: const Icon(Icons.school_outlined, size: 70, color: Colors.white),
+                        child: const Icon(
+                          Icons.school_outlined,
+                          size: 70,
+                          color: Colors.white,
+                        ),
                         // Ganti dengan Image.asset jika perlu
                       ),
                       const SizedBox(height: 15),
@@ -452,7 +473,12 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                           ),
                           TextButton(
                             onPressed: () {
-                              // Navigasi ke halaman daftar
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const RegisterPage(),
+                                ),
+                              );
                             },
                             child: const Text(
                               'Daftar Sekarang',
@@ -477,7 +503,7 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
       ),
     );
   }
-  
+
   // Widget terpisah untuk Kartu Login
   Widget _buildLoginCard() {
     return Container(
@@ -600,15 +626,20 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
     return TextField(
       controller: controller,
       obscureText: isPassword ? _obscurePassword : false,
-      keyboardType: label.contains('Email') ? TextInputType.emailAddress : TextInputType.text,
+      keyboardType: label.contains('Email')
+          ? TextInputType.emailAddress
+          : TextInputType.text,
       style: const TextStyle(color: Colors.black87),
       decoration: InputDecoration(
         labelText: label,
         hintText: hint,
         hintStyle: TextStyle(color: Colors.grey.shade400),
-        labelStyle: TextStyle(color: Colors.grey.shade600, fontWeight: FontWeight.w600),
+        labelStyle: TextStyle(
+          color: Colors.grey.shade600,
+          fontWeight: FontWeight.w600,
+        ),
         prefixIcon: Icon(icon, color: Theme.of(context).primaryColor, size: 24),
-        
+
         // Desain Border Elegan
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
@@ -620,17 +651,21 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(color: Theme.of(context).primaryColor, width: 2), // Border saat fokus
+          borderSide: BorderSide(
+            color: Theme.of(context).primaryColor,
+            width: 2,
+          ), // Border saat fokus
         ),
-        
+
         filled: true,
         fillColor: Colors.grey.shade100, // Warna isian yang lembut
-        
         // Ikon visibility untuk password
         suffixIcon: isPassword
             ? IconButton(
                 icon: Icon(
-                  _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
+                  _obscurePassword
+                      ? Icons.visibility_off_outlined
+                      : Icons.visibility_outlined,
                   color: Colors.grey.shade600,
                 ),
                 onPressed: () {
@@ -638,9 +673,11 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                 },
               )
             : null,
-        contentPadding: const EdgeInsets.symmetric(vertical: 18, horizontal: 20),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 18,
+          horizontal: 20,
+        ),
       ),
     );
   }
 }
-

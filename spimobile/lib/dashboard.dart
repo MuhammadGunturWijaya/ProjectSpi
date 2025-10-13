@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:math';
 import 'BuatLaporanPage.dart';
+import 'DaftarLaporanPage.dart';
+import 'ProfilePage.dart';
 
 // ---------------- Home Page (Dashboard SPI) - Fixed Version ----------------
 class HomePage extends StatefulWidget {
@@ -226,8 +228,25 @@ class _HomePageState extends State<HomePage>
                 ),
                 child: IconButton(
                   icon: const Icon(Icons.person_outline, size: 26),
-                  onPressed: () {},
                   color: Colors.white,
+                  onPressed: () async {
+                    // Tampilkan loading animasi
+                    _showFancyLoading(context);
+
+                    // Tunggu sebentar (bisa ganti dengan proses async misalnya ambil data user)
+                    await Future.delayed(const Duration(seconds: 1));
+
+                    // Tutup loading
+                    Navigator.of(context).pop();
+
+                    // Navigasi ke halaman lain (ganti BuatLaporanPage sesuai tujuan)
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const ProfilePage(),
+                      ),
+                    );
+                  },
                 ),
               ),
             ],
@@ -606,12 +625,16 @@ class _HomePageState extends State<HomePage>
                 'Daftar\nLaporan',
                 Icons.list_alt_rounded,
                 [Colors.orange.shade600, Colors.orange.shade400],
-                () {
-                  // Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute(
-                  //       builder: (context) => const DaftarLaporanPage()),
-                  // );
+                () async {
+                  _showFancyLoading(context); // kirim context
+                  await Future.delayed(const Duration(seconds: 1));
+                  Navigator.of(context).pop(); // tutup loading
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const DaftarLaporanPage(),
+                    ),
+                  );
                 },
               ),
               // Tambahkan item lainnya jika perlu
@@ -1169,63 +1192,72 @@ class _HomePageState extends State<HomePage>
   }
 
   // Bottom Navigation Bar
-  Widget _buildBottomNavBar() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 20,
-            offset: const Offset(0, -5),
+ Widget _buildBottomNavBar() {
+  return Container(
+    decoration: BoxDecoration(
+      color: Colors.white,
+      boxShadow: [
+        BoxShadow(
+          color: Colors.black.withOpacity(0.1),
+          blurRadius: 20,
+          offset: const Offset(0, -5),
+        ),
+      ],
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(25),
+        topRight: Radius.circular(25),
+      ),
+    ),
+    child: ClipRRect(
+      borderRadius: const BorderRadius.only(
+        topLeft: Radius.circular(25),
+        topRight: Radius.circular(25),
+      ),
+      child: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: (index) {
+          // Handle navigation untuk middle button (index 2)
+          if (index == 2) {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const BuatLaporanPage()),
+            );
+            return;
+          }
+          
+          setState(() => _selectedIndex = index);
+        },
+        type: BottomNavigationBarType.fixed,
+        backgroundColor: Colors.white,
+        selectedItemColor: const Color(0xFFC62828),
+        unselectedItemColor: Colors.grey.shade400,
+        selectedFontSize: 12,
+        unselectedFontSize: 11,
+        elevation: 0,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home_rounded),
+            label: 'Beranda',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.description_rounded),
+            label: 'Laporan',
+          ),
+          BottomNavigationBarItem(
+            icon: SizedBox(width: 40), // Space for FAB
+            label: '',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.event_note_rounded),
+            label: 'Jadwal',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.person_rounded),
+            label: 'Profil',
           ),
         ],
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(25),
-          topRight: Radius.circular(25),
-        ),
       ),
-      child: ClipRRect(
-        borderRadius: const BorderRadius.only(
-          topLeft: Radius.circular(25),
-          topRight: Radius.circular(25),
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _selectedIndex,
-          onTap: (index) {
-            setState(() => _selectedIndex = index);
-          },
-          type: BottomNavigationBarType.fixed,
-          backgroundColor: Colors.white,
-          selectedItemColor: const Color(0xFFC62828),
-          unselectedItemColor: Colors.grey.shade400,
-          selectedFontSize: 12,
-          unselectedFontSize: 11,
-          elevation: 0,
-          items: const [
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home_rounded),
-              label: 'Beranda',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.description_rounded),
-              label: 'Laporan',
-            ),
-            BottomNavigationBarItem(
-              icon: SizedBox(width: 40), // Space for FAB
-              label: '',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.event_note_rounded),
-              label: 'Jadwal',
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.person_rounded),
-              label: 'Profil',
-            ),
-          ],
-        ),
-      ),
-    );
-  }
+    ),
+  );
+}
 }
