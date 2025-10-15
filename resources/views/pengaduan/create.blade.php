@@ -24,6 +24,7 @@
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #e9f2fb, #f8f9fa);
             color: var(--secondary);
+            overflow-x: hidden;
         }
 
         /* Glass Card */
@@ -327,14 +328,22 @@
                                                 <div class="col-md-6 mb-3">
                                                     <p class="mb-1 text-secondary">Waktu Hubung:</p>
                                                     <p>{{ $laporan->waktu_hubung }}
-                                                        {{ $laporan->waktu_lain ? '(' . $laporan->waktu_lain . ')' : '' }}</p>
+                                                        {{ $laporan->waktu_lain ? '(' . $laporan->waktu_lain . ')' : '' }}
+                                                    </p>
                                                 </div>
                                             </div>
 
                                             <div class="mt-3">
                                                 <p class="mb-1 text-secondary">Pelanggaran:</p>
                                                 <ul>
-                                                    @foreach($laporan->pelanggaran ?? [] as $p)
+                                                    @php
+                                                        $pelanggaranList = $laporan->pelanggaran;
+                                                        if (is_string($pelanggaranList)) {
+                                                            $pelanggaranList = json_decode($pelanggaranList, true) ?? [];
+                                                        }
+                                                        $pelanggaranList = $pelanggaranList ?? [];
+                                                    @endphp
+                                                    @foreach($pelanggaranList as $p)
                                                         <li>{{ $p }}</li>
                                                     @endforeach
                                                     @if($laporan->pelanggaran_lain)
@@ -346,7 +355,14 @@
                                             <div class="mt-3">
                                                 <p class="mb-1 text-secondary">Kontak yang bisa dihubungi:</p>
                                                 <ul>
-                                                    @foreach($laporan->kontak ?? [] as $k)
+                                                    @php
+                                                        $kontakList = $laporan->kontak;
+                                                        if (is_string($kontakList)) {
+                                                            $kontakList = json_decode($kontakList, true) ?? [];
+                                                        }
+                                                        $kontakList = $kontakList ?? [];
+                                                    @endphp
+                                                    @foreach($kontakList as $k)
                                                         <li>{{ $k }}</li>
                                                     @endforeach
                                                 </ul>
@@ -356,39 +372,50 @@
                                                 <p class="mb-1 text-secondary">Kejadian:</p>
                                                 <p>{{ $laporan->tanggal_kejadian }} | {{ $laporan->jam_kejadian }}</p>
                                                 <p>Tempat: {{ $laporan->tempat_kejadian }}
-                                                    {{ $laporan->tempat_lain ? '(' . $laporan->tempat_lain . ')' : '' }}</p>
+                                                    {{ $laporan->tempat_lain ? '(' . $laporan->tempat_lain . ')' : '' }}
+                                                </p>
                                             </div>
 
                                             {{-- Data Terlapor --}}
                                             <div class="mt-3">
                                                 <p class="mb-1 text-secondary">Terlapor:</p>
-                                                @if($laporan->terlapor)
-                                                    @php $terlapors = json_decode($laporan->terlapor, true); @endphp
-                                                    <table class="table table-bordered">
-                                                        <thead>
-                                                            <tr>
-                                                                <th>Nama</th>
-                                                                <th>NIP</th>
-                                                                <th>Satuan Kerja</th>
-                                                                <th>Jabatan</th>
-                                                                <th>Jenis Kelamin</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody>
-                                                            @foreach($terlapors as $t)
-                                                                <tr>
-                                                                    <td>{{ $t['nama'] ?? '-' }}</td>
-                                                                    <td>{{ $t['nip'] ?? '-' }}</td>
-                                                                    <td>{{ $t['satuan_kerja'] ?? '-' }}</td>
-                                                                    <td>{{ $t['jabatan'] ?? '-' }}</td>
-                                                                    <td>{{ $t['jenis_kelamin'] ?? '-' }}</td>
-                                                                </tr>
-                                                            @endforeach
-                                                        </tbody>
-                                                    </table>
-                                                @else
-                                                    <p class="text-muted">Tidak ada data terlapor</p>
-                                                @endif
+                                                @php
+    $terlapors = [];
+
+    if (!empty($laporan->terlapor)) {
+        $decoded = json_decode($laporan->terlapor, true);
+        if (is_array($decoded)) {
+            $terlapors = $decoded;
+        }
+    }
+@endphp
+
+@if(count($terlapors) > 0)
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Nama</th>
+                <th>NIP</th>
+                <th>Satuan Kerja</th>
+                <th>Jabatan</th>
+                <th>Jenis Kelamin</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($terlapors as $t)
+                <tr>
+                    <td>{{ $t['nama'] ?? '-' }}</td>
+                    <td>{{ $t['nip'] ?? '-' }}</td>
+                    <td>{{ $t['satuan_kerja'] ?? '-' }}</td>
+                    <td>{{ $t['jabatan'] ?? '-' }}</td>
+                    <td>{{ $t['jenis_kelamin'] ?? '-' }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+@else
+    <p class="text-muted">Tidak ada data terlapor</p>
+@endif
                                             </div>
 
                                             {{-- Identitas & Pihak Terkait --}}

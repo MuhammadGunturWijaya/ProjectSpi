@@ -17,6 +17,8 @@
             background-color: #f4f7f9;
             color: #1a202c;
             line-height: 1.6;
+            overflow-x: hidden;
+            
         }
 
         h2,

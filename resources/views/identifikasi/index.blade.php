@@ -12,6 +12,7 @@
         body {
             font-family: 'Poppins', sans-serif;
             background-color: #f8f9fa;
+            overflow-x: hidden;
         }
 
         .card {

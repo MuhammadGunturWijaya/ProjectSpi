@@ -10,6 +10,7 @@
         body {
             background: #f8f9fa;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+             overflow-x: hidden;
         }
 
         .content-wrapper {
