@@ -140,8 +140,7 @@ class _HomePageState extends State<HomePage>
     }
 
     final url = Uri.parse(
-      "http://10.133.104.213/backend/api/get_laporan_user.php?user_id=$userId",
-    
+      "http://192.168.0.104/backend/api/get_laporan_user.php?user_id=$userId",
     );
 
     try {
@@ -157,7 +156,7 @@ class _HomePageState extends State<HomePage>
           List<Map<String, dynamic>> laporanList = dataList.map((item) {
             // Map status ke format yang sesuai
             String statusDisplay = _mapStatus(item['status']);
-            
+
             // Hitung waktu relatif
             String timeAgo = _getTimeAgo(item['tanggal']);
 
@@ -408,7 +407,7 @@ class _HomePageState extends State<HomePage>
     if (userId.isEmpty) return;
 
     final url = Uri.parse(
-      "http://10.133.104.213/backend/api/user_stats.php?user_id=$userId",
+      "http://192.168.0.104/backend/api/user_stats.php?user_id=$userId",
     );
     final response = await http.get(url);
 
@@ -1053,65 +1052,154 @@ class _HomePageState extends State<HomePage>
                   ),
                 )
               : laporanList.isEmpty
-                  ? Center(
-                      child: Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Text(
-                          'Tidak ada laporan terbaru',
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey.shade600,
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Text(
+                      'Tidak ada laporan terbaru',
+                      style: TextStyle(
+                        fontSize: 14,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                  ),
+                )
+              : Column(
+                  children: laporanList.take(3).map((laporan) {
+                    Color statusColor;
+                    IconData iconData;
+                    switch (laporan['status'] ?? '') {
+                      case 'Menunggu Verifikasi':
+                        statusColor = Colors.orange.shade600;
+                        iconData = Icons.pending_actions_rounded;
+                        break;
+                      case 'Dalam Proses':
+                        statusColor = Colors.blue.shade600;
+                        iconData = Icons.work_rounded;
+                        break;
+                      case 'Perlu Tindak Lanjut':
+                        statusColor = Colors.red.shade600;
+                        iconData = Icons.error_rounded;
+                        break;
+                      case 'Selesai':
+                        statusColor = Colors.green.shade600;
+                        iconData = Icons.check_circle_rounded;
+                        break;
+                      case 'Ditolak':
+                        statusColor = Colors.grey.shade600;
+                        iconData = Icons.cancel_rounded;
+                        break;
+                      default:
+                        statusColor = Colors.grey.shade600;
+                        iconData = Icons.info_rounded;
+                    }
+
+                    return Column(
+                      children: [
+                        GestureDetector(
+                          onTap: () =>
+                              _openLaporanDetail(laporan), // <-- Tambahkan ini
+                          child: _buildReportCard(
+                            laporan['perihal'] ?? '-',
+                            laporan['status'] ?? '-',
+                            laporan['tanggal'] ?? '-',
+                            statusColor,
+                            iconData,
                           ),
                         ),
-                      ),
-                    )
-                  : Column(
-                      children: laporanList.take(3).map((laporan) {
-                        // Tentukan warna dan ikon berdasarkan status
-                        Color statusColor;
-                        IconData iconData;
-                        switch (laporan['status'] ?? '') {
-                          case 'Menunggu Verifikasi':
-                            statusColor = Colors.orange.shade600;
-                            iconData = Icons.pending_actions_rounded;
-                            break;
-                          case 'Dalam Proses':
-                            statusColor = Colors.blue.shade600;
-                            iconData = Icons.work_rounded;
-                            break;
-                          case 'Perlu Tindak Lanjut':
-                            statusColor = Colors.red.shade600;
-                            iconData = Icons.error_rounded;
-                            break;
-                          case 'Selesai':
-                            statusColor = Colors.green.shade600;
-                            iconData = Icons.check_circle_rounded;
-                            break;
-                          case 'Ditolak':
-                            statusColor = Colors.grey.shade600;
-                            iconData = Icons.cancel_rounded;
-                            break;
-                          default:
-                            statusColor = Colors.grey.shade600;
-                            iconData = Icons.info_rounded;
-                        }
-
-                        return Column(
-                          children: [
-                            _buildReportCard(
-                              laporan['perihal'] ?? '-',
-                              laporan['status'] ?? '-',
-                              laporan['tanggal'] ?? '-',
-                              statusColor,
-                              iconData,
-                            ),
-                            const SizedBox(height: 12),
-                          ],
-                        );
-                      }).toList(),
-                    ),
+                        const SizedBox(height: 12),
+                      ],
+                    );
+                  }).toList(),
+                ),
         ],
       ),
+    );
+  }
+
+  // Fungsi untuk membuka detail laporan
+  void _openLaporanDetail(Map<String, dynamic> laporan) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: SingleChildScrollView(
+            child: Container(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Header
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        laporan['perihal'] ?? '-',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      IconButton(
+                        icon: const Icon(Icons.close),
+                        onPressed: () => Navigator.pop(context),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+
+                  // Status
+                  Text(
+                    laporan['status'] ?? '-',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                      color: Colors.grey.shade700,
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+
+                  // Detail lain
+                  Text('Tanggal: ${laporan['tanggal'] ?? '-'}'),
+                  const SizedBox(height: 5),
+                  Text('Bentuk: ${laporan['bentuk'] ?? '-'}'),
+                  const SizedBox(height: 5),
+                  Text('Uraian: ${laporan['uraian'] ?? '-'}'),
+                  const SizedBox(height: 5),
+                  Text('Terlapor: ${laporan['nama_terlapor'] ?? '-'}'),
+                  const SizedBox(height: 5),
+                  Text('Pihak Terkait: ${laporan['pihak_terkait'] ?? '-'}'),
+
+                  // Bukti file
+                  if (laporan['bukti_file'] != null)
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 10),
+                        Text(
+                          'Bukti File:',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        ...List<String>.from(
+                          laporan['bukti_file'],
+                        ).map((file) => Text(file)),
+                      ],
+                    ),
+
+                  const SizedBox(height: 20),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -1472,10 +1560,7 @@ class _HomePageState extends State<HomePage>
               icon: Icon(Icons.description_rounded),
               label: 'Laporan',
             ),
-            BottomNavigationBarItem(
-              icon: SizedBox(width: 40),
-              label: '',
-            ),
+            BottomNavigationBarItem(icon: SizedBox(width: 40), label: ''),
             BottomNavigationBarItem(
               icon: Icon(Icons.event_note_rounded),
               label: 'Jadwal',

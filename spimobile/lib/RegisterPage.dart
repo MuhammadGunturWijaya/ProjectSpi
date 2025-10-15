@@ -198,24 +198,6 @@ class _RegisterPageState extends State<RegisterPage>
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            // NIM Field
-                            _buildInputField(
-                              controller: _nimController,
-                              label: 'NIM',
-                              hint: 'Masukkan NIM Anda',
-                              icon: Icons.badge_rounded,
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'NIM tidak boleh kosong';
-                                }
-                                if (value.length < 8) {
-                                  return 'NIM minimal 8 karakter';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 18),
-
                             // Nama Field
                             _buildInputField(
                               controller: _namaController,

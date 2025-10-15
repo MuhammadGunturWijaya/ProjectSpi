@@ -16,6 +16,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      routes: {
+        '/LoginPage': (context) => LoginPage(),
+        '/home': (context) => HomePage(),
+      },
       title: 'Polije App',
       theme: ThemeData(
         // Menggunakan warna primer Polije
@@ -372,7 +376,7 @@ class _LoginPageState extends State<LoginPage>
 
     try {
       // 🔹 Ganti ke IP laptop kamu kalau pakai HP fisik
-      var url = Uri.parse("http://10.133.104.213/backend/api/login.php");
+      var url = Uri.parse("http://192.168.0.104/backend/api/login.php");
 
       var response = await http.post(
         url,
@@ -387,7 +391,7 @@ class _LoginPageState extends State<LoginPage>
         final userData = data['data'];
         final id = userData['id_user'].toString();
         final name = userData['nama'] ?? userData['name'] ?? 'No Name';
-        final role = userData['role'] ?? 'user'; 
+        final role = userData['role'] ?? 'user';
 
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('user_id', id);

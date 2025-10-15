@@ -16,7 +16,7 @@ class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
   final TextEditingController _searchController = TextEditingController();
 
   String _filterStatus = 'Semua';
-  String _filterBentuk = 'Semua';
+  
 
   List<Map<String, dynamic>> _allLaporanList = [];
   List<Map<String, dynamic>> _filteredLaporanList = [];
@@ -47,10 +47,9 @@ class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
 
         final matchStatus =
             _filterStatus == 'Semua' || laporan['status'] == _filterStatus;
-        final matchBentuk =
-            _filterBentuk == 'Semua' || laporan['bentuk'] == _filterBentuk;
+       
 
-        return matchQuery && matchStatus && matchBentuk;
+        return matchQuery && matchStatus ;
       }).toList();
     });
   }
@@ -94,6 +93,27 @@ class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
         minChildSize: 0.5,
         maxChildSize: 0.95,
         builder: (context, scrollController) {
+          // ==============================
+          // STEP 1: Decode nama_terlapor menjadi Map
+          // ==============================
+          Map<String, dynamic> terlaporData = {};
+          if (laporan['nama_terlapor'] != null &&
+              laporan['nama_terlapor'].isNotEmpty) {
+            try {
+              // Decode JSON string
+              var decoded = jsonDecode(laporan['nama_terlapor']);
+              if (decoded is Map) {
+                // Ambil index pertama (biasanya '1')
+                terlaporData = decoded.values.first;
+              }
+            } catch (e) {
+              terlaporData = {};
+            }
+          }
+
+          // ==============================
+          // STEP 2: Build modal content
+          // ==============================
           return SingleChildScrollView(
             controller: scrollController,
             child: Padding(
@@ -101,6 +121,7 @@ class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Header & Status
                   Row(
                     children: [
                       Container(
@@ -142,7 +163,10 @@ class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
                       ),
                     ],
                   ),
+
                   const SizedBox(height: 25),
+
+                  // Progress
                   Text(
                     'Progress Penanganan',
                     style: TextStyle(
@@ -163,21 +187,42 @@ class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
                       ),
                     ),
                   ),
+
                   const SizedBox(height: 25),
+
+                  // Detail Pengaduan
                   _buildDetailSection('DETAIL PENGADUAN', [
                     _buildDetailRow('No. Laporan', laporan['id']),
                     _buildDetailRow('Tanggal Pengaduan', laporan['tanggal']),
                     _buildDetailRow('Perihal', laporan['perihal']),
                     _buildDetailRow('Bentuk Pelanggaran', laporan['bentuk']),
                   ]),
+
                   const SizedBox(height: 15),
+
+                  // Detail Terlapor (pakai terlaporData hasil decode)
                   _buildDetailSection('DATA TERLAPOR', [
-                    _buildDetailRow('Nama', laporan['terlapor']),
-                    _buildDetailRow('NIP', laporan['nip']),
-                    _buildDetailRow('Satuan Kerja', laporan['satKerja']),
-                    _buildDetailRow('Jabatan', laporan['jabatan']),
+                    _buildDetailRow(
+                      'Nama',
+                      laporan['terlapor']?['nama']?.toString() ?? '-',
+                    ),
+                    _buildDetailRow(
+                      'NIP',
+                      laporan['terlapor']?['nip']?.toString() ?? '-',
+                    ),
+                    _buildDetailRow(
+                      'Satuan Kerja',
+                      laporan['terlapor']?['satuan_kerja']?.toString() ?? '-',
+                    ),
+                    _buildDetailRow(
+                      'Jabatan',
+                      laporan['terlapor']?['jabatan']?.toString() ?? '-',
+                    ),
                   ]),
+
                   const SizedBox(height: 15),
+
+                  // Informasi Kejadian
                   _buildDetailSection('INFORMASI KEJADIAN', [
                     _buildDetailRow('Tanggal Kejadian', laporan['tglKejadian']),
                     _buildDetailRow(
@@ -185,7 +230,10 @@ class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
                       laporan['tempatKejadian'],
                     ),
                   ]),
+
                   const SizedBox(height: 15),
+
+                  // Pengadu
                   _buildDetailSection('PENGADU', [
                     _buildDetailRow('Nama Pengadu', laporan['pengguna']),
                   ]),
@@ -254,55 +302,66 @@ class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
   }
 
   Future<void> _fetchLaporan() async {
+    // Fungsi parsing terlapor
+    Map<String, dynamic> parseTerlapor(dynamic raw) {
+      if (raw == null || raw.toString().isEmpty) return {};
+
+      try {
+        var decoded = raw;
+
+        // decode pertama
+        if (decoded is String) decoded = jsonDecode(decoded);
+        // decode kedua kalau masih String
+        if (decoded is String) decoded = jsonDecode(decoded);
+        // ambil first value jika Map
+        if (decoded is Map) return decoded.values.first as Map<String, dynamic>;
+      } catch (_) {
+        return {};
+      }
+
+      return {};
+    }
+
     try {
       final prefs = await SharedPreferences.getInstance();
       final userId = prefs.getString('user_id') ?? '7';
 
       final response = await http.get(
         Uri.parse(
-          'http://10.133.104.213/backend/api/get_laporan_user.php?user_id=$userId',
+          'http://192.168.0.104/backend/api/get_laporan_user.php?user_id=$userId',
         ),
       );
 
       print("=== DEBUG RESPONSE ===");
       print("Status Code: ${response.statusCode}");
-      print("Response Body: ${response.body}"); // ✅ Lihat ini!
+      print("Response Body: ${response.body}");
       print("====================");
 
       if (response.statusCode == 200) {
-        // Cek apakah response adalah JSON
-        if (!response.body.trim().startsWith('{') &&
-            !response.body.trim().startsWith('[')) {
-          print("ERROR: Response bukan JSON!");
-          print("Response: ${response.body}");
-          return;
-        }
-
         final data = jsonDecode(response.body);
 
         if (data["status"] == "success") {
           final List laporanData = data["data"];
           setState(() {
-            _allLaporanList = laporanData
-                .map<Map<String, dynamic>>(
-                  (item) => {
-                    'id': item['id_laporan'].toString(),
-                    'tanggal': item['tanggal'] ?? '-',
-                    'perihal': item['perihal'] ?? '-',
-                    'status': item['status'] ?? 'Diproses',
-                    'bentuk': item['bentuk'] ?? 'Lainnya',
-                    'pengguna': item['nama_pengguna'] ?? '-',
-                    'terlapor': item['nama_terlapor'] ?? '-',
-                    'nip': item['nip'] ?? '-',
-                    'satKerja': item['satker'] ?? '-',
-                    'jabatan': item['jabatan'] ?? '-',
-                    'tglKejadian': item['tgl_kejadian'] ?? '-',
-                    'tempatKejadian': item['tempat'] ?? '-',
-                    'progress':
-                        int.tryParse(item['progress']?.toString() ?? '0') ?? 0,
-                  },
-                )
-                .toList();
+            _allLaporanList = laporanData.map<Map<String, dynamic>>((item) {
+              return {
+                'id': item['id_laporan'].toString(),
+                'tanggal': item['tanggal'] ?? '-',
+                'perihal': item['perihal'] ?? '-',
+                'status': item['status'] ?? 'Diproses',
+                'bentuk': item['bentuk'] ?? 'Lainnya',
+                'pengguna': item['nama_pengguna'] ?? '-',
+                'terlapor': parseTerlapor(item['nama_terlapor']),
+                'nip': item['nip'] ?? '-',
+                'satKerja': item['satker'] ?? '-',
+                'jabatan': item['jabatan'] ?? '-',
+                'tglKejadian': item['tgl_kejadian'] ?? '-',
+                'tempatKejadian': item['tempat'] ?? '-',
+                'progress':
+                    int.tryParse(item['progress']?.toString() ?? '0') ?? 0,
+              };
+            }).toList();
+
             _filteredLaporanList = _allLaporanList;
           });
         }
@@ -421,50 +480,6 @@ class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
                       backgroundColor: _filterStatus == 'Semua'
                           ? Colors.grey.shade100
                           : Colors.blue.shade100,
-                      labelStyle: TextStyle(
-                        color: Colors.grey.shade800,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    FilterChip(
-                      label: Text(_filterBentuk),
-                      onSelected: (selected) {
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                            title: const Text('Filter Bentuk Pelanggaran'),
-                            content: SingleChildScrollView(
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                children:
-                                    [
-                                      'Semua',
-                                      'Pemerasan / Pungutan',
-                                      'Penyuapan',
-                                      'Gratifikasi',
-                                      'Lainnya',
-                                    ].map((bentuk) {
-                                      return RadioListTile<String>(
-                                        title: Text(bentuk),
-                                        value: bentuk,
-                                        groupValue: _filterBentuk,
-                                        onChanged: (value) {
-                                          setState(
-                                            () => _filterBentuk = value!,
-                                          );
-                                          _filterLaporan();
-                                          Navigator.pop(context);
-                                        },
-                                      );
-                                    }).toList(),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                      backgroundColor: _filterBentuk == 'Semua'
-                          ? Colors.grey.shade100
-                          : Colors.orange.shade100,
                       labelStyle: TextStyle(
                         color: Colors.grey.shade800,
                         fontWeight: FontWeight.w600,
@@ -618,7 +633,7 @@ class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
                                     child: _buildInfoChip(
                                       Icons.person_rounded,
                                       'Terlapor',
-                                      laporan['terlapor'],
+                                       laporan['terlapor']?['nama']?.toString() ?? '-',
                                     ),
                                   ),
                                   const SizedBox(width: 10),
