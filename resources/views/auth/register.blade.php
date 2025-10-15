@@ -619,7 +619,7 @@
                     <div class="input-wrapper">
                         <input type="text" name="address" class="form-control" placeholder="Alamat Lengkap">
                     </div>
-                    
+
 
                     <!-- Tombol Lanjut -->
                     <button type="button" class="btn-register" id="nextStepBtn">Lanjut</button>
@@ -789,89 +789,86 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
-            const radioCards = document.querySelectorAll('.radio-card');
+            // Radio utama
             const pegawaiRadio = document.getElementById("pegawaiPolije");
             const whistleRadio = document.getElementById("whistleblower");
             const masyarakatRadio = document.getElementById("masyarakat");
             const roleBoxPegawai = document.getElementById("pegawaiRoleBox");
 
-            const disabYesRadio = document.getElementById("disab_yes");
-            const disabNoRadio = document.getElementById("disab_no");
+            const pegawaiCard = pegawaiRadio.closest('.radio-card');
+            const whistleCard = whistleRadio.closest('.radio-card');
+            const masyarakatCard = masyarakatRadio.closest('.radio-card');
+
+            let selectedKey = null; // Track toggle kategori utama
+
+            const mainRadios = [
+                { key: 'pegawai', radio: pegawaiRadio, card: pegawaiCard },
+                { key: 'whistle', radio: whistleRadio, card: whistleCard },
+                { key: 'masyarakat', radio: masyarakatRadio, card: masyarakatCard }
+            ];
+
+            mainRadios.forEach(item => {
+                item.card.addEventListener('click', function (e) {
+                    e.preventDefault(); // hentikan behavior default
+
+                    if (selectedKey === item.key) {
+                        // Lepas pilihan
+                        item.radio.checked = false;
+                        item.card.classList.remove('active');
+                        roleBoxPegawai.classList.add("d-none");
+                        document.getElementById("pegawaiRole").selectedIndex = 0;
+                        selectedKey = null;
+                        // Tampilkan semua opsi utama lagi
+                        mainRadios.forEach(r => r.card.classList.remove('d-none'));
+                    } else if (!selectedKey) {
+                        // Pilih opsi utama pertama kali
+                        selectedKey = item.key;
+                        item.radio.checked = true;
+                        item.card.classList.add('active');
+                        mainRadios.forEach(r => {
+                            if (r.key !== item.key) r.card.classList.add('d-none');
+                        });
+                        // Tampilkan dropdown Pegawai jika dipilih
+                        if (selectedKey === 'pegawai') roleBoxPegawai.classList.remove("d-none");
+                    }
+                });
+            });
+
+            // Radio jenis kelamin dan disabilitas
+            const genderRadios = document.querySelectorAll('input[name="gender"]');
+            const disabilityRadios = document.querySelectorAll('input[name="disability"]');
             const disabilityBox = document.getElementById("disabilityTypeBox");
 
-            // Handle radio card visual state
-            radioCards.forEach(card => {
+            // Klik radio jenis kelamin
+            genderRadios.forEach(r => {
+                const card = r.closest('.radio-card');
                 card.addEventListener('click', function () {
-                    radioCards.forEach(c => c.classList.remove('active'));
-                    const radio = this.querySelector('input[type="radio"]');
-                    if (radio) {
-                        radio.checked = true;
-                        this.classList.add('active');
-                        toggleDropdowns();
-                    }
+                    genderRadios.forEach(r2 => r2.closest('.radio-card').classList.remove('active'));
+                    r.checked = true;
+                    card.classList.add('active');
                 });
             });
 
-            function toggleDropdowns() {
-                // Pegawai role dropdown
-                if (pegawaiRadio.checked) {
-                    roleBoxPegawai.classList.remove("d-none");
-                } else {
-                    roleBoxPegawai.classList.add("d-none");
-                    document.getElementById("pegawaiRole").selectedIndex = 0;
-                }
-
-                // Disabilitas dropdown
-                if (disabYesRadio.checked) {
-                    disabilityBox.classList.remove("d-none");
-                } else {
-                    disabilityBox.classList.add("d-none");
-                    document.getElementById("disabilityType").selectedIndex = 0;
-                }
-            }
-        });
-
-    </script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const radioCards = document.querySelectorAll('.radio-card');
-            const pegawaiRadio = document.getElementById("pegawaiPolije");
-            const whistleRadio = document.getElementById("whistleblower");
-            const masyarakatRadio = document.getElementById("masyarakat");
-            const roleBoxPegawai = document.getElementById("pegawaiRoleBox");
-
-            // Handle radio card visual state
-            radioCards.forEach(card => {
+            // Klik radio disabilitas
+            disabilityRadios.forEach(r => {
+                const card = r.closest('.radio-card');
                 card.addEventListener('click', function () {
-                    radioCards.forEach(c => c.classList.remove('active'));
-                    const radio = this.querySelector('input[type="radio"]');
-                    if (radio) {
-                        radio.checked = true;
-                        this.classList.add('active');
-                        toggleRoleBox();
+                    disabilityRadios.forEach(r2 => r2.closest('.radio-card').classList.remove('active'));
+                    r.checked = true;
+                    card.classList.add('active');
+
+                    if (r.id === 'disab_yes') {
+                        disabilityBox.classList.remove("d-none");
+                    } else {
+                        disabilityBox.classList.add("d-none");
+                        document.getElementById("disabilityType").selectedIndex = 0;
                     }
                 });
             });
-
-            function toggleRoleBox() {
-                if (pegawaiRadio.checked) {
-                    roleBoxPegawai.classList.remove("d-none");
-                } else {
-                    roleBoxPegawai.classList.add("d-none");
-                    document.getElementById("pegawaiRole").selectedIndex = 0;
-                }
-            }
-
-            pegawaiRadio.addEventListener("change", toggleRoleBox);
-            whistleRadio.addEventListener("change", toggleRoleBox);
-            masyarakatRadio.addEventListener("change", toggleRoleBox);
-
-
-            document.getElementById('registerForm').addEventListener('submit', function () {
-                // jangan preventDefault, biarkan submit
-            });
         });
     </script>
+
+
 </body>
 
 </html>

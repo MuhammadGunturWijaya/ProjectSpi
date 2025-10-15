@@ -608,23 +608,38 @@
                                     </div>
                                 </div>
 
-                                @auth
-                                    @if(auth()->user()->role === 'admin')
-                                        <form action="{{ route('pengaduan.updateStatus', $p->id) }}" method="POST" class="admin-form">
-                                            @csrf
-                                            @method('PATCH')
-                                            <select name="status" class="form-select-sm">
-                                                <option value="laporan_dikirim" selected>Laporan Dikirim</option>
-                                                <option value="diverifikasi">Diverifikasi</option>
-                                                <option value="tindak_lanjut">Tindak Lanjut</option>
-                                                <option value="tanggapan_pelapor">Tanggapan Pelapor</option>
-                                                <option value="selesai">Selesai</option>
-                                            </select>
-                                            <button type="submit">Update</button>
-                                        </form>
-                                    @endif
-                                @endauth
+                               @auth
+    @if(auth()->user()->role === 'admin')
+        {{-- Kontainer dengan gaya background kuning dan sudut bulat --}}
+        <div style="background-color: #ffeebf; padding: 30px 20px 20px; border-radius: 15px; position: relative; display: flex; align-items: center; gap: 15px;">
 
+            <form action="{{ route('pengaduan.updateStatus', $p->id) }}" method="POST" style="display: flex; align-items: center; width: 100%; gap: 15px;">
+                @csrf
+                @method('PATCH')
+
+                {{-- Label Melayang --}}
+                <label for="status-select" style="background-color: #ff9933; color: white; padding: 5px 10px; border-radius: 8px; font-weight: bold; position: absolute; top: -15px; left: 10px; z-index: 10;">
+                    status laporan saat ini :
+                </label>
+
+                {{-- Select Box --}}
+                @php $currentStatus = $p->status ?? 'laporan_dikirim'; @endphp
+                <select name="status" id="status-select" style="flex-grow: 1; padding: 10px 15px; border-radius: 8px; font-size: 16px; min-width: 200px; cursor: pointer;">
+                    <option value="laporan_dikirim" @selected($currentStatus == 'laporan_dikirim')>Laporan Dikirim</option>
+                    <option value="diverifikasi" @selected($currentStatus == 'diverifikasi')>Diverifikasi</option>
+                    <option value="tindak_lanjut" @selected($currentStatus == 'tindak_lanjut')>Tindak Lanjut</option>
+                    <option value="tanggapan_pelapor" @selected($currentStatus == 'tanggapan_pelapor')>Tanggapan Pelapor</option>
+                    <option value="selesai" @selected($currentStatus == 'selesai')>Selesai</option>
+                </select>
+
+                {{-- Tombol Update --}}
+                <button type="submit" style="background-color: #ff9933; color: white; border: none; padding: 10px 25px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;">
+                    Update
+                </button>
+            </form>
+        </div>
+    @endif
+@endauth
                                 <div class="action-buttons">
                                     <button class="btn-action btn-view" onclick="window.location.href='{{ route('pengaduan.show', $p->id) }}'">
                                         <i class="bi bi-eye-fill"></i> Lihat
@@ -695,21 +710,37 @@
                                 </div>
 
                                 @auth
-                                    @if(auth()->user()->role === 'admin')
-                                        <form action="{{ route('pengaduan.updateStatus', $p->id) }}" method="POST" class="admin-form">
-                                            @csrf
-                                            @method('PATCH')
-                                            <select name="status">
-                                                <option value="laporan_dikirim">Laporan Dikirim</option>
-                                                <option value="diverifikasi" selected>Diverifikasi</option>
-                                                <option value="tindak_lanjut">Tindak Lanjut</option>
-                                                <option value="tanggapan_pelapor">Tanggapan Pelapor</option>
-                                                <option value="selesai">Selesai</option>
-                                            </select>
-                                            <button type="submit">Update</button>
-                                        </form>
-                                    @endif
-                                @endauth
+    @if(auth()->user()->role === 'admin')
+        {{-- Kontainer dengan gaya background kuning dan sudut bulat --}}
+        <div style="background-color: #ffeebf; padding: 30px 20px 20px; border-radius: 15px; position: relative; display: flex; align-items: center; gap: 15px;">
+
+            <form action="{{ route('pengaduan.updateStatus', $p->id) }}" method="POST" style="display: flex; align-items: center; width: 100%; gap: 15px;">
+                @csrf
+                @method('PATCH')
+
+                {{-- Label Melayang --}}
+                <label for="status-select" style="background-color: #ff9933; color: white; padding: 5px 10px; border-radius: 8px; font-weight: bold; position: absolute; top: -15px; left: 10px; z-index: 10;">
+                    status laporan saat ini :
+                </label>
+
+                {{-- Select Box --}}
+                @php $currentStatus = $p->status ?? 'laporan_dikirim'; @endphp
+                <select name="status" id="status-select" style="flex-grow: 1; padding: 10px 15px; border-radius: 8px; font-size: 16px; min-width: 200px;">
+                    <option value="laporan_dikirim" @selected($currentStatus == 'laporan_dikirim')>Laporan Dikirim</option>
+                    <option value="diverifikasi" @selected($currentStatus == 'diverifikasi')>Diverifikasi</option>
+                    <option value="tindak_lanjut" @selected($currentStatus == 'tindak_lanjut')>Tindak Lanjut</option>
+                    <option value="tanggapan_pelapor" @selected($currentStatus == 'tanggapan_pelapor')>Tanggapan Pelapor</option>
+                    <option value="selesai" @selected($currentStatus == 'selesai')>Selesai</option>
+                </select>
+
+                {{-- Tombol Update --}}
+                <button type="submit" style="background-color: #ff9933; color: white; border: none; padding: 10px 25px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;">
+                    Update
+                </button>
+            </form>
+        </div>
+    @endif
+@endauth
 
                                 <div class="action-buttons">
                                     <button class="btn-action btn-view" onclick="window.location.href='{{ route('pengaduan.show', $p->id) }}'">
@@ -781,21 +812,37 @@
                                 </div>
 
                                 @auth
-                                    @if(auth()->user()->role === 'admin')
-                                        <form action="{{ route('pengaduan.updateStatus', $p->id) }}" method="POST" class="admin-form">
-                                            @csrf
-                                            @method('PATCH')
-                                            <select name="status">
-                                                <option value="laporan_dikirim">Laporan Dikirim</option>
-                                                <option value="diverifikasi">Diverifikasi</option>
-                                                <option value="tindak_lanjut" selected>Tindak Lanjut</option>
-                                                <option value="tanggapan_pelapor">Tanggapan Pelapor</option>
-                                                <option value="selesai">Selesai</option>
-                                            </select>
-                                            <button type="submit">Update</button>
-                                        </form>
-                                    @endif
-                                @endauth
+    @if(auth()->user()->role === 'admin')
+        {{-- Kontainer dengan gaya background kuning dan sudut bulat --}}
+        <div style="background-color: #ffeebf; padding: 30px 20px 20px; border-radius: 15px; position: relative; display: flex; align-items: center; gap: 15px;">
+
+            <form action="{{ route('pengaduan.updateStatus', $p->id) }}" method="POST" style="display: flex; align-items: center; width: 100%; gap: 15px;">
+                @csrf
+                @method('PATCH')
+
+                {{-- Label Melayang --}}
+                <label for="status-select" style="background-color: #ff9933; color: white; padding: 5px 10px; border-radius: 8px; font-weight: bold; position: absolute; top: -15px; left: 10px; z-index: 10;">
+                    status laporan saat ini :
+                </label>
+
+                {{-- Select Box --}}
+                @php $currentStatus = $p->status ?? 'laporan_dikirim'; @endphp
+                <select name="status" id="status-select" style="flex-grow: 1; padding: 10px 15px; border-radius: 8px; font-size: 16px; min-width: 200px;">
+                    <option value="laporan_dikirim" @selected($currentStatus == 'laporan_dikirim')>Laporan Dikirim</option>
+                    <option value="diverifikasi" @selected($currentStatus == 'diverifikasi')>Diverifikasi</option>
+                    <option value="tindak_lanjut" @selected($currentStatus == 'tindak_lanjut')>Tindak Lanjut</option>
+                    <option value="tanggapan_pelapor" @selected($currentStatus == 'tanggapan_pelapor')>Tanggapan Pelapor</option>
+                    <option value="selesai" @selected($currentStatus == 'selesai')>Selesai</option>
+                </select>
+
+                {{-- Tombol Update --}}
+                <button type="submit" style="background-color: #ff9933; color: white; border: none; padding: 10px 25px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;">
+                    Update
+                </button>
+            </form>
+        </div>
+    @endif
+@endauth
 
                                 <div class="action-buttons">
                                     <button class="btn-action btn-view" onclick="window.location.href='{{ route('pengaduan.show', $p->id) }}'">
@@ -867,21 +914,37 @@
                                 </div>
 
                                 @auth
-                                    @if(auth()->user()->role === 'admin')
-                                        <form action="{{ route('pengaduan.updateStatus', $p->id) }}" method="POST" class="admin-form">
-                                            @csrf
-                                            @method('PATCH')
-                                            <select name="status">
-                                                <option value="laporan_dikirim">Laporan Dikirim</option>
-                                                <option value="diverifikasi">Diverifikasi</option>
-                                                <option value="tindak_lanjut">Tindak Lanjut</option>
-                                                <option value="tanggapan_pelapor" selected>Tanggapan Pelapor</option>
-                                                <option value="selesai">Selesai</option>
-                                            </select>
-                                            <button type="submit">Update</button>
-                                        </form>
-                                    @endif
-                                @endauth
+    @if(auth()->user()->role === 'admin')
+        {{-- Kontainer dengan gaya background kuning dan sudut bulat --}}
+        <div style="background-color: #ffeebf; padding: 30px 20px 20px; border-radius: 15px; position: relative; display: flex; align-items: center; gap: 15px;">
+
+            <form action="{{ route('pengaduan.updateStatus', $p->id) }}" method="POST" style="display: flex; align-items: center; width: 100%; gap: 15px;">
+                @csrf
+                @method('PATCH')
+
+                {{-- Label Melayang --}}
+                <label for="status-select" style="background-color: #ff9933; color: white; padding: 5px 10px; border-radius: 8px; font-weight: bold; position: absolute; top: -15px; left: 10px; z-index: 10;">
+                    status laporan saat ini :
+                </label>
+
+                {{-- Select Box --}}
+                @php $currentStatus = $p->status ?? 'laporan_dikirim'; @endphp
+                <select name="status" id="status-select" style="flex-grow: 1; padding: 10px 15px; border-radius: 8px; font-size: 16px; min-width: 200px;">
+                    <option value="laporan_dikirim" @selected($currentStatus == 'laporan_dikirim')>Laporan Dikirim</option>
+                    <option value="diverifikasi" @selected($currentStatus == 'diverifikasi')>Diverifikasi</option>
+                    <option value="tindak_lanjut" @selected($currentStatus == 'tindak_lanjut')>Tindak Lanjut</option>
+                    <option value="tanggapan_pelapor" @selected($currentStatus == 'tanggapan_pelapor')>Tanggapan Pelapor</option>
+                    <option value="selesai" @selected($currentStatus == 'selesai')>Selesai</option>
+                </select>
+
+                {{-- Tombol Update --}}
+                <button type="submit" style="background-color: #ff9933; color: white; border: none; padding: 10px 25px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;">
+                    Update
+                </button>
+            </form>
+        </div>
+    @endif
+@endauth
 
                                 <div class="action-buttons">
                                     <button class="btn-action btn-view" onclick="window.location.href='{{ route('pengaduan.show', $p->id) }}'">
@@ -952,22 +1015,38 @@
                                     </div>
                                 </div>
 
-                                @auth
-                                    @if(auth()->user()->role === 'admin')
-                                        <form action="{{ route('pengaduan.updateStatus', $p->id) }}" method="POST" class="admin-form">
-                                            @csrf
-                                            @method('PATCH')
-                                            <select name="status">
-                                                <option value="laporan_dikirim">Laporan Dikirim</option>
-                                                <option value="diverifikasi">Diverifikasi</option>
-                                                <option value="tindak_lanjut">Tindak Lanjut</option>
-                                                <option value="tanggapan_pelapor">Tanggapan Pelapor</option>
-                                                <option value="selesai" selected>Selesai</option>
-                                            </select>
-                                            <button type="submit">Update</button>
-                                        </form>
-                                    @endif
-                                @endauth
+                               @auth
+    @if(auth()->user()->role === 'admin')
+        {{-- Kontainer dengan gaya background kuning dan sudut bulat --}}
+        <div style="background-color: #ffeebf; padding: 30px 20px 20px; border-radius: 15px; position: relative; display: flex; align-items: center; gap: 15px;">
+
+            <form action="{{ route('pengaduan.updateStatus', $p->id) }}" method="POST" style="display: flex; align-items: center; width: 100%; gap: 15px;">
+                @csrf
+                @method('PATCH')
+
+                {{-- Label Melayang --}}
+                <label for="status-select" style="background-color: #ff9933; color: white; padding: 5px 10px; border-radius: 8px; font-weight: bold; position: absolute; top: -15px; left: 10px; z-index: 10;">
+                    status laporan saat ini :
+                </label>
+
+                {{-- Select Box --}}
+                @php $currentStatus = $p->status ?? 'laporan_dikirim'; @endphp
+                <select name="status" id="status-select" style="flex-grow: 1; padding: 10px 15px; border-radius: 8px; font-size: 16px; min-width: 200px;">
+                    <option value="laporan_dikirim" @selected($currentStatus == 'laporan_dikirim')>Laporan Dikirim</option>
+                    <option value="diverifikasi" @selected($currentStatus == 'diverifikasi')>Diverifikasi</option>
+                    <option value="tindak_lanjut" @selected($currentStatus == 'tindak_lanjut')>Tindak Lanjut</option>
+                    <option value="tanggapan_pelapor" @selected($currentStatus == 'tanggapan_pelapor')>Tanggapan Pelapor</option>
+                    <option value="selesai" @selected($currentStatus == 'selesai')>Selesai</option>
+                </select>
+
+                {{-- Tombol Update --}}
+                <button type="submit" style="background-color: #ff9933; color: white; border: none; padding: 10px 25px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;">
+                    Update
+                </button>
+            </form>
+        </div>
+    @endif
+@endauth
 
                                 <div class="action-buttons">
                                     <button class="btn-action btn-view" onclick="window.location.href='{{ route('pengaduan.show', $p->id) }}'">

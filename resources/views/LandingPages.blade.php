@@ -804,16 +804,16 @@
             </a>
             <a href="{{ route('pengaduan.create') }}" class="quick-card">
                 <i class="bi bi-megaphone"></i>
-                <h4>Laporan</h4>
+                <h4>Laporan Pengaduan</h4>
             </a>
             <a href="{{ route('survey.kepuasan') }}" class="quick-card">
                 <i class="bi bi-clipboard-data"></i>
-                <h4>Survey</h4>
+                <h4>Survey Kepuasan Masyarakat</h4>
             </a>
-            <a href="{{ route('piagam.index') }}" class="quick-card">
+            <!-- <a href="{{ route('piagam.index') }}" class="quick-card">
                 <i class="bi bi-file-earmark-text"></i>
                 <h4>Dokumen</h4>
-            </a>
+            </a> -->
         </div>
     </section>
 
@@ -999,7 +999,6 @@
                             </a>
                             <p class="text-muted small m-0 px-3">
                                 ✅ Cepat dan Rahasia, Tidak memerlukan akun.<br>
-                                🔒 Identitas Anda aman sepenuhnya.
                             </p>
                         </div>
 
@@ -1011,7 +1010,7 @@
                                 <i class="bi bi-person-check-fill me-2"></i> Lapor Dengan Akun
                             </a>
                             <p class="text-muted small m-0 px-3">
-                                ✅ Dapat melacak status laporan dengan akun.<br>
+                                ✅ Dapat menelusuri status laporan dengan akun.<br>
                                 🔒 Privasi Anda tetap dijaga, laporan diprioritaskan.
                             </p>
                         </div>
