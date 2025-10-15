@@ -1,20 +1,34 @@
 <?php
-header("Access-Control-Allow-Origin: *"); // Supaya Flutter Web bisa request
+header("Access-Control-Allow-Origin: *"); 
 header("Content-Type: application/json; charset=UTF-8");
 
-include __DIR__ . '/../config.php'; // koneksi ke database
+include __DIR__ . '/../config.php'; // koneksi database
 
-// Query data dari tabel pengaduans
-$sql = "SELECT * FROM pengaduans";
-$result = $conn->query($sql);
+$user_id = $_GET['user_id'] ?? '';
 
-$data = array();
-if ($result->num_rows > 0) {
-    while($row = $result->fetch_assoc()) {
-        $data[] = $row;
-    }
+if (empty($user_id)) {
+    echo json_encode([
+        "status" => "error",
+        "message" => "user_id tidak ditemukan"
+    ]);
+    exit;
 }
 
-// Kirim data sebagai JSON
-echo json_encode($data);
+$sql = "SELECT 
+          COUNT(*) AS total_laporan,
+          SUM(CASE WHEN status != 'selesai' THEN 1 ELSE 0 END) AS total_proses,
+          SUM(CASE WHEN status = 'selesai' THEN 1 ELSE 0 END) AS total_selesai
+        FROM pengaduans
+        WHERE user_id = ?";
+
+$stmt = $conn->prepare($sql);
+$stmt->bind_param("s", $user_id); // gunakan "s" untuk BIGINT
+$stmt->execute();
+$result = $stmt->get_result();
+$data = $result->fetch_assoc();
+
+echo json_encode([
+    "status" => "success",
+    "data" => $data
+]);
 ?>

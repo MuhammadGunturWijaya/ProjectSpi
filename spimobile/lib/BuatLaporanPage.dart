@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:io';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BuatLaporanPage extends StatefulWidget {
   const BuatLaporanPage({super.key});
@@ -10,7 +13,7 @@ class BuatLaporanPage extends StatefulWidget {
 
 class _BuatLaporanPageState extends State<BuatLaporanPage> {
   final _formKey = GlobalKey<FormState>();
-  
+
   // Controllers untuk text fields
   final _tanggalPengaduanController = TextEditingController();
   final _perihalController = TextEditingController();
@@ -23,38 +26,42 @@ class _BuatLaporanPageState extends State<BuatLaporanPage> {
   final _whatsappController = TextEditingController();
   final _tanggalKejadianController = TextEditingController();
   final _waktuKejadianController = TextEditingController();
-  
+  final TextEditingController _pekerjaanLainController =
+      TextEditingController();
+  final TextEditingController _tempatLainController = TextEditingController();
+
   // Controllers untuk Data Terlapor
   final _namaTelaportController = TextEditingController();
   final _nipTelaportController = TextEditingController();
   final _pihakTerkaitInfoController = TextEditingController();
-  
+
   // Variables untuk dropdown & checkbox
   String? _pendidikanTerakhir;
   String? _pekerjaanAnda;
   String _waktuMenghubungi = 'baik_kapan_saja';
   String? _tempatKejadian;
-  
+
   // Data Terlapor
   String? _satKerjaTelapor;
   String? _jabatanTelapor;
   String? _jenisKelaminTelapor;
   List<Map<String, String>> _dataTelaportList = [];
-  
+
   // Checkbox bentuk pelanggaran
   bool _isPemerasan = false;
   bool _isPenyuapan = false;
   bool _isGratifikasi = false;
   bool _isPelanggaranLain = false;
-  
+
   // Checkbox cara menghubungi
   bool _hubungiEmail = false;
   bool _hubungiTelepon = false;
   bool _hubungiWhatsApp = false;
-  
+
+  TextEditingController _waktuLainController = TextEditingController();
   // Pernyataan dan Informasi Pihak Terkait
   String? _identitasDiketahui;
-  
+
   // Upload files
   List<File> _uploadedFiles = [];
 
@@ -74,6 +81,8 @@ class _BuatLaporanPageState extends State<BuatLaporanPage> {
     _namaTelaportController.dispose();
     _nipTelaportController.dispose();
     _pihakTerkaitInfoController.dispose();
+    _pekerjaanLainController.dispose();
+    _tempatLainController.dispose();
     super.dispose();
   }
 
@@ -232,7 +241,7 @@ class _BuatLaporanPageState extends State<BuatLaporanPage> {
       }
 
       _formKey.currentState!.save();
-      
+
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -282,6 +291,87 @@ class _BuatLaporanPageState extends State<BuatLaporanPage> {
     }
   }
 
+  //--------------------------------------------------------
+
+  String _getSelectedPelanggaran() {
+    List<String> pelanggaran = [];
+    if (_isPemerasan) pelanggaran.add('Pemerasan / Pungutan');
+    if (_isPenyuapan) pelanggaran.add('Penyuapan');
+    if (_isGratifikasi) pelanggaran.add('Gratifikasi');
+    if (_isPelanggaranLain)
+      pelanggaran.add(_bentukPelanggaranLainController.text);
+    return pelanggaran.join(', ');
+  }
+
+  String _getTerlaporList() {
+    return jsonEncode(_dataTelaportList);
+  }
+
+  String _getKontak() {
+    List<String> kontak = [];
+    if (_hubungiEmail) kontak.add('Email');
+    if (_hubungiTelepon) kontak.add('Telepon');
+    if (_hubungiWhatsApp) kontak.add('WhatsApp');
+    return kontak.join(', ');
+  }
+
+  Future<void> _submitFormAPI() async {
+  final prefs = await SharedPreferences.getInstance();
+  final userId = prefs.getString('user_id') ?? '';
+
+  if (userId.isEmpty) return;
+
+  // Prepare data, kosongkan field yang belum diisi
+  final Map<String, dynamic> bodyData = {
+    "user_id": userId,
+    "tanggal_pengaduan": _tanggalPengaduanController.text,
+    "perihal": _perihalController.text,
+    "uraian": _uraianSingkatController.text,
+    "usia": _usiaController.text,
+    "pendidikan": _pendidikanTerakhir ?? "",
+    "pekerjaan": _pekerjaanAnda ?? "",
+    "pekerjaan_lain": _pekerjaanLainController.text,
+    "waktu_hubung": _waktuTerbaikController.text,
+    "waktu_lain": _waktuLainController.text,
+    "pelanggaran": _getSelectedPelanggaran() ?? [],
+    "pelanggaran_lain": _bentukPelanggaranLainController.text,
+    "kontak": _getKontak() ?? [],
+    "tanggal_kejadian": _tanggalKejadianController.text,
+    "jam_kejadian": _waktuKejadianController.text,
+    "tempat_kejadian": _tempatKejadian ?? "",
+    "tempat_lain": _tempatLainController.text,
+    "terlapor": jsonEncode(_getTerlaporList() ?? []),
+    "identitas_diketahui": _identitasDiketahui ?? "",
+    "pihak_terkait": _pihakTerkaitInfoController.text,
+  };
+
+  try {
+    final response = await http.post(
+      Uri.parse('http://10.125.173.33/backend/api/submit_pengaduan.php'),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(bodyData),
+    );
+
+    final data = jsonDecode(response.body);
+
+    if (data['status'] == 'success') {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Laporan berhasil dikirim!')),
+      );
+      Navigator.pop(context); // Kembali ke halaman sebelumnya
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Gagal: ${data['message']}')),
+      );
+    }
+  } catch (e) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error: $e')),
+    );
+  }
+}
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -295,10 +385,7 @@ class _BuatLaporanPageState extends State<BuatLaporanPage> {
         ),
         title: const Text(
           'Buat Laporan Baru',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
@@ -315,10 +402,7 @@ class _BuatLaporanPageState extends State<BuatLaporanPage> {
                   gradient: LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [
-                      const Color(0xFFC62828),
-                      Colors.red.shade400,
-                    ],
+                    colors: [const Color(0xFFC62828), Colors.red.shade400],
                   ),
                 ),
                 child: Column(
@@ -351,35 +435,31 @@ class _BuatLaporanPageState extends State<BuatLaporanPage> {
 
               const SizedBox(height: 20),
 
-              _buildSectionCard(
-                'URAIAN PENGADUAN',
-                Icons.description_rounded,
-                [
-                  _buildDateField(
-                    'Tanggal Pengaduan',
-                    _tanggalPengaduanController,
-                    Icons.calendar_today_rounded,
-                  ),
-                  const SizedBox(height: 15),
-                  _buildTextField(
-                    'Perihal',
-                    _perihalController,
-                    Icons.title_rounded,
-                    'Masukkan perihal pengaduan',
-                    maxLines: 1,
-                  ),
-                  const SizedBox(height: 15),
-                  _buildTextField(
-                    'Uraian Singkat',
-                    _uraianSingkatController,
-                    Icons.notes_rounded,
-                    'Jelaskan kronologi kejadian secara singkat',
-                    maxLines: 5,
-                  ),
-                  const SizedBox(height: 15),
-                  _buildUploadSection(),
-                ],
-              ),
+              _buildSectionCard('URAIAN PENGADUAN', Icons.description_rounded, [
+                _buildDateField(
+                  'Tanggal Pengaduan',
+                  _tanggalPengaduanController,
+                  Icons.calendar_today_rounded,
+                ),
+                const SizedBox(height: 15),
+                _buildTextField(
+                  'Perihal',
+                  _perihalController,
+                  Icons.title_rounded,
+                  'Masukkan perihal pengaduan',
+                  maxLines: 1,
+                ),
+                const SizedBox(height: 15),
+                _buildTextField(
+                  'Uraian Singkat',
+                  _uraianSingkatController,
+                  Icons.notes_rounded,
+                  'Jelaskan kronologi kejadian secara singkat',
+                  maxLines: 5,
+                ),
+                const SizedBox(height: 15),
+                _buildUploadSection(),
+              ]),
 
               const SizedBox(height: 20),
 
@@ -411,7 +491,7 @@ class _BuatLaporanPageState extends State<BuatLaporanPage> {
                       'Advokat',
                       'Pegawai Swasta',
                       'Wirausaha',
-                      'Pegawai Negeri Sipil'
+                      'Pegawai Negeri Sipil',
                     ],
                     Icons.work_outline_rounded,
                     (value) => setState(() => _pekerjaanAnda = value),
@@ -555,109 +635,142 @@ class _BuatLaporanPageState extends State<BuatLaporanPage> {
               const SizedBox(height: 20),
 
               // DATA TERLAPOR SECTION
-              _buildSectionCard(
-                'DATA TERLAPOR',
-                Icons.people_rounded,
-                [
-                  _buildTextField(
-                    'Nama Terlapor',
-                    _namaTelaportController,
-                    Icons.person_rounded,
-                    'Masukkan nama lengkap',
-                    maxLines: 1,
-                  ),
-                  const SizedBox(height: 15),
-                  _buildTextField(
-                    'NIP',
-                    _nipTelaportController,
-                    Icons.badge_rounded,
-                    'Masukkan NIP',
-                    maxLines: 1,
-                  ),
-                  const SizedBox(height: 15),
-                  _buildDropdown(
-                    'Satuan Kerja',
-                    _satKerjaTelapor,
-                    ['Balikpapan', 'Jember', 'Aceh'],
-                    Icons.apartment_rounded,
-                    (value) => setState(() => _satKerjaTelapor = value),
-                  ),
-                  const SizedBox(height: 15),
-                  _buildDropdown(
-                    'Jabatan',
-                    _jabatanTelapor,
-                    ['Hakim', 'Jaksa', 'Sekretaris'],
-                    Icons.work_outline_rounded,
-                    (value) => setState(() => _jabatanTelapor = value),
-                  ),
-                  const SizedBox(height: 15),
-                  _buildDropdown(
-                    'Jenis Kelamin',
-                    _jenisKelaminTelapor,
-                    ['Laki-laki', 'Perempuan', 'Tidak Diketahui'],
-                    Icons.wc_rounded,
-                    (value) => setState(() => _jenisKelaminTelapor = value),
-                  ),
-                  const SizedBox(height: 15),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton.icon(
-                      onPressed: _addTelaport,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue.shade600,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
+              _buildSectionCard('DATA TERLAPOR', Icons.people_rounded, [
+                _buildTextField(
+                  'Nama Terlapor',
+                  _namaTelaportController,
+                  Icons.person_rounded,
+                  'Masukkan nama lengkap',
+                  maxLines: 1,
+                ),
+                const SizedBox(height: 15),
+                _buildTextField(
+                  'NIP',
+                  _nipTelaportController,
+                  Icons.badge_rounded,
+                  'Masukkan NIP',
+                  maxLines: 1,
+                ),
+                const SizedBox(height: 15),
+                _buildDropdown(
+                  'Satuan Kerja',
+                  _satKerjaTelapor,
+                  ['Balikpapan', 'Jember', 'Aceh'],
+                  Icons.apartment_rounded,
+                  (value) => setState(() => _satKerjaTelapor = value),
+                ),
+                const SizedBox(height: 15),
+                _buildDropdown(
+                  'Jabatan',
+                  _jabatanTelapor,
+                  ['Hakim', 'Jaksa', 'Sekretaris'],
+                  Icons.work_outline_rounded,
+                  (value) => setState(() => _jabatanTelapor = value),
+                ),
+                const SizedBox(height: 15),
+                _buildDropdown(
+                  'Jenis Kelamin',
+                  _jenisKelaminTelapor,
+                  ['Laki-laki', 'Perempuan', 'Tidak Diketahui'],
+                  Icons.wc_rounded,
+                  (value) => setState(() => _jenisKelaminTelapor = value),
+                ),
+                const SizedBox(height: 15),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: _addTelaport,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue.shade600,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
-                      icon: const Icon(Icons.add_rounded),
-                      label: const Text(
-                        'Tambah Terlapor',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                    ),
+                    icon: const Icon(Icons.add_rounded),
+                    label: const Text(
+                      'Tambah Terlapor',
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                   ),
-                  if (_dataTelaportList.isNotEmpty) ...[
-                    const SizedBox(height: 20),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: DataTable(
-                        columns: const [
-                          DataColumn(label: Text('No', style: TextStyle(fontWeight: FontWeight.bold))),
-                          DataColumn(label: Text('Nama', style: TextStyle(fontWeight: FontWeight.bold))),
-                          DataColumn(label: Text('NIP', style: TextStyle(fontWeight: FontWeight.bold))),
-                          DataColumn(label: Text('Satuan Kerja', style: TextStyle(fontWeight: FontWeight.bold))),
-                          DataColumn(label: Text('Jabatan', style: TextStyle(fontWeight: FontWeight.bold))),
-                          DataColumn(label: Text('Jenis Kelamin', style: TextStyle(fontWeight: FontWeight.bold))),
-                          DataColumn(label: Text('Aksi', style: TextStyle(fontWeight: FontWeight.bold))),
-                        ],
-                        rows: List<DataRow>.generate(
-                          _dataTelaportList.length,
-                          (index) {
-                            final data = _dataTelaportList[index];
-                            return DataRow(
-                              cells: [
-                                DataCell(Text('${index + 1}')),
-                                DataCell(Text(data['nama'] ?? '')),
-                                DataCell(Text(data['nip'] ?? '')),
-                                DataCell(Text(data['satKerja'] ?? '')),
-                                DataCell(Text(data['jabatan'] ?? '')),
-                                DataCell(Text(data['jenisKelamin'] ?? '')),
-                                DataCell(
-                                  IconButton(
-                                    icon: Icon(Icons.delete_rounded, color: Colors.red.shade600),
-                                    onPressed: () => _deleteTelaport(index),
-                                  ),
+                ),
+                if (_dataTelaportList.isNotEmpty) ...[
+                  const SizedBox(height: 20),
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: DataTable(
+                      columns: const [
+                        DataColumn(
+                          label: Text(
+                            'No',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        DataColumn(
+                          label: Text(
+                            'Nama',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        DataColumn(
+                          label: Text(
+                            'NIP',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        DataColumn(
+                          label: Text(
+                            'Satuan Kerja',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        DataColumn(
+                          label: Text(
+                            'Jabatan',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        DataColumn(
+                          label: Text(
+                            'Jenis Kelamin',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                        DataColumn(
+                          label: Text(
+                            'Aksi',
+                            style: TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                      rows: List<DataRow>.generate(_dataTelaportList.length, (
+                        index,
+                      ) {
+                        final data = _dataTelaportList[index];
+                        return DataRow(
+                          cells: [
+                            DataCell(Text('${index + 1}')),
+                            DataCell(Text(data['nama'] ?? '')),
+                            DataCell(Text(data['nip'] ?? '')),
+                            DataCell(Text(data['satKerja'] ?? '')),
+                            DataCell(Text(data['jabatan'] ?? '')),
+                            DataCell(Text(data['jenisKelamin'] ?? '')),
+                            DataCell(
+                              IconButton(
+                                icon: Icon(
+                                  Icons.delete_rounded,
+                                  color: Colors.red.shade600,
                                 ),
-                              ],
-                            );
-                          },
-                        ),
-                      ),
+                                onPressed: () => _deleteTelaport(index),
+                              ),
+                            ),
+                          ],
+                        );
+                      }),
                     ),
-                  ],
+                  ),
                 ],
-              ),
+              ]),
 
               const SizedBox(height: 20),
 
@@ -706,7 +819,7 @@ class _BuatLaporanPageState extends State<BuatLaporanPage> {
                   width: double.infinity,
                   height: 55,
                   child: ElevatedButton(
-                    onPressed: _submitForm,
+                    onPressed: _submitFormAPI, // panggil fungsi submit di sini
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFFC62828),
                       shape: RoundedRectangleBorder(
@@ -733,7 +846,6 @@ class _BuatLaporanPageState extends State<BuatLaporanPage> {
                   ),
                 ),
               ),
-
               const SizedBox(height: 40),
             ],
           ),
@@ -743,11 +855,7 @@ class _BuatLaporanPageState extends State<BuatLaporanPage> {
   }
 
   // Widget Builders
-  Widget _buildSectionCard(
-    String title,
-    IconData icon,
-    List<Widget> children,
-  ) {
+  Widget _buildSectionCard(String title, IconData icon, List<Widget> children) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
       padding: const EdgeInsets.all(20),
@@ -773,11 +881,7 @@ class _BuatLaporanPageState extends State<BuatLaporanPage> {
                   color: const Color(0xFFC62828).withOpacity(0.1),
                   borderRadius: BorderRadius.circular(10),
                 ),
-                child: Icon(
-                  icon,
-                  color: const Color(0xFFC62828),
-                  size: 24,
-                ),
+                child: Icon(icon, color: const Color(0xFFC62828), size: 24),
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -839,10 +943,7 @@ class _BuatLaporanPageState extends State<BuatLaporanPage> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(
-                color: Color(0xFFC62828),
-                width: 2,
-              ),
+              borderSide: const BorderSide(color: Color(0xFFC62828), width: 2),
             ),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 15,
@@ -898,10 +999,7 @@ class _BuatLaporanPageState extends State<BuatLaporanPage> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(
-                color: Color(0xFFC62828),
-                width: 2,
-              ),
+              borderSide: const BorderSide(color: Color(0xFFC62828), width: 2),
             ),
           ),
           validator: (value) {
@@ -953,10 +1051,7 @@ class _BuatLaporanPageState extends State<BuatLaporanPage> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(
-                color: Color(0xFFC62828),
-                width: 2,
-              ),
+              borderSide: const BorderSide(color: Color(0xFFC62828), width: 2),
             ),
           ),
           validator: (value) {
@@ -1005,10 +1100,7 @@ class _BuatLaporanPageState extends State<BuatLaporanPage> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(
-                color: Color(0xFFC62828),
-                width: 2,
-              ),
+              borderSide: const BorderSide(color: Color(0xFFC62828), width: 2),
             ),
           ),
           hint: Text(
@@ -1016,10 +1108,7 @@ class _BuatLaporanPageState extends State<BuatLaporanPage> {
             style: TextStyle(color: Colors.grey.shade400, fontSize: 14),
           ),
           items: items.map((String item) {
-            return DropdownMenuItem<String>(
-              value: item,
-              child: Text(item),
-            );
+            return DropdownMenuItem<String>(value: item, child: Text(item));
           }).toList(),
           onChanged: onChanged,
           validator: (value) {
@@ -1084,10 +1173,7 @@ class _BuatLaporanPageState extends State<BuatLaporanPage> {
     return CheckboxListTile(
       title: Text(
         title,
-        style: TextStyle(
-          fontSize: 14,
-          color: Colors.grey.shade800,
-        ),
+        style: TextStyle(fontSize: 14, color: Colors.grey.shade800),
       ),
       value: value,
       activeColor: const Color(0xFFC62828),
@@ -1106,10 +1192,7 @@ class _BuatLaporanPageState extends State<BuatLaporanPage> {
     return RadioListTile<String>(
       title: Text(
         title,
-        style: TextStyle(
-          fontSize: 14,
-          color: Colors.grey.shade800,
-        ),
+        style: TextStyle(fontSize: 14, color: Colors.grey.shade800),
       ),
       value: value,
       groupValue: groupValue,
@@ -1165,17 +1248,11 @@ class _BuatLaporanPageState extends State<BuatLaporanPage> {
                 const SizedBox(height: 5),
                 Text(
                   'Format: JPG, PNG, PDF, MP4, DOC',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade500,
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
                 ),
                 Text(
                   'Maksimal 10 MB per file',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.grey.shade500,
-                  ),
+                  style: TextStyle(fontSize: 12, color: Colors.grey.shade500),
                 ),
               ],
             ),

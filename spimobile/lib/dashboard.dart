@@ -3,6 +3,9 @@ import 'dart:math';
 import 'BuatLaporanPage.dart';
 import 'DaftarLaporanPage.dart';
 import 'ProfilePage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 // ---------------- Home Page (Dashboard SPI) - Fixed Version ----------------
 class HomePage extends StatefulWidget {
@@ -14,6 +17,17 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
+  String _userName = '';
+  String _userRole = '';
+  String _totalLaporan = '0';
+  String _totalProses = '0';
+  String _totalSelesai = '0';
+  int _laporanDikirim = 0;
+  int _diverifikasi = 0;
+  int _tindakLanjut = 0;
+  int _tanggapanPelapor = 0;
+  int _selesai = 0;
+
   late AnimationController _animController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
@@ -23,6 +37,10 @@ class _HomePageState extends State<HomePage>
   @override
   void initState() {
     super.initState();
+    _loadUserName();
+    _loadUserData();
+    _loadUserStats(); // ambil jumlah laporan
+
     _animController = AnimationController(
       duration: const Duration(milliseconds: 800),
       vsync: this,
@@ -242,9 +260,7 @@ class _HomePageState extends State<HomePage>
                     // Navigasi ke halaman lain (ganti BuatLaporanPage sesuai tujuan)
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (_) => const ProfilePage(),
-                      ),
+                      MaterialPageRoute(builder: (_) => const ProfilePage()),
                     );
                   },
                 ),
@@ -254,6 +270,103 @@ class _HomePageState extends State<HomePage>
         ],
       ),
     );
+  }
+
+  Future<void> _loadUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+
+    // Ambil data dari SharedPreferences
+    final userName = prefs.getString('user_name') ?? 'No Name';
+    final userRole = prefs.getString('user_role') ?? 'User';
+
+    // Update state
+    setState(() {
+      _userName = userName;
+      _userRole = userRole;
+    });
+  }
+
+  Future<void> _loadUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _userName = prefs.getString('user_name') ?? 'No Name';
+    });
+  }
+
+  Future<void> fetchUserStats() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('user_id') ?? '';
+
+    final url = Uri.parse(
+      'http://10.125.173.33/backend/api/user_stats.php?user_id=$userId',
+    );
+
+    try {
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+
+        if (jsonData['status'] == 'success') {
+          setState(() {
+            _totalLaporan = jsonData['data']['total_laporan'].toString();
+            _totalProses =
+                (int.parse(jsonData['data']['laporan_dikirim']) +
+                        int.parse(jsonData['data']['diverifikasi']) +
+                        int.parse(jsonData['data']['tindak_lanjut']) +
+                        int.parse(jsonData['data']['tanggapan_pelapor']))
+                    .toString();
+            _totalSelesai = jsonData['data']['selesai'].toString();
+          });
+        }
+      }
+    } catch (e) {
+      print('Error fetching stats: $e');
+    }
+  }
+
+  Future<void> _loadUserStats() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('user_id') ?? '';
+
+    if (userId.isEmpty) return;
+
+    final url = Uri.parse(
+      "http://10.125.173.33/backend/api/user_stats.php?user_id=$userId",
+    );
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final json = jsonDecode(response.body);
+
+      if (json['status'] == 'success') {
+        final data = json['data'];
+        setState(() {
+          _laporanDikirim =
+              int.tryParse(data['laporan_dikirim'].toString()) ?? 0;
+          _diverifikasi = int.tryParse(data['diverifikasi'].toString()) ?? 0;
+          _tindakLanjut = int.tryParse(data['tindak_lanjut'].toString()) ?? 0;
+          _tanggapanPelapor =
+              int.tryParse(data['tanggapan_pelapor'].toString()) ?? 0;
+          _selesai = int.tryParse(data['selesai'].toString()) ?? 0;
+
+          // Hitung total
+          _totalLaporan =
+              (_laporanDikirim +
+                      _diverifikasi +
+                      _tindakLanjut +
+                      _tanggapanPelapor +
+                      _selesai)
+                  .toString();
+          _totalProses =
+              (_laporanDikirim +
+                      _diverifikasi +
+                      _tindakLanjut +
+                      _tanggapanPelapor)
+                  .toString();
+          _totalSelesai = _selesai.toString();
+        });
+      }
+    }
   }
 
   // Welcome Card untuk Auditor
@@ -299,9 +412,9 @@ class _HomePageState extends State<HomePage>
                       ),
                     ),
                     const SizedBox(height: 5),
-                    const Text(
-                      'Dr. Bambang Suryono, M.Si',
-                      style: TextStyle(
+                    Text(
+                      _userName,
+                      style: const TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
@@ -319,8 +432,8 @@ class _HomePageState extends State<HomePage>
                         color: Colors.white.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(20),
                       ),
-                      child: const Text(
-                        'Kepala SPI • Auditor Senior',
+                      child: Text(
+                        _userRole, // tampilkan role dari login
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.white,
@@ -353,7 +466,7 @@ class _HomePageState extends State<HomePage>
               Expanded(
                 child: _buildInfoChip(
                   'Laporan',
-                  '24',
+                  _totalLaporan,
                   Icons.description_rounded,
                 ),
               ),
@@ -361,7 +474,7 @@ class _HomePageState extends State<HomePage>
               Expanded(
                 child: _buildInfoChip(
                   'Proses',
-                  '8',
+                  _totalProses,
                   Icons.pending_actions_rounded,
                 ),
               ),
@@ -369,7 +482,7 @@ class _HomePageState extends State<HomePage>
               Expanded(
                 child: _buildInfoChip(
                   'Selesai',
-                  '16',
+                  _totalSelesai,
                   Icons.check_circle_rounded,
                 ),
               ),
@@ -721,8 +834,8 @@ class _HomePageState extends State<HomePage>
             children: [
               Expanded(
                 child: _buildStatCard(
-                  'Tulis\nLaporan',
-                  '5',
+                  'laporan\ndikirim',
+                  '$_laporanDikirim',
                   Icons.hourglass_empty_rounded,
                   Colors.orange.shade600,
                 ),
@@ -731,7 +844,7 @@ class _HomePageState extends State<HomePage>
               Expanded(
                 child: _buildStatCard(
                   'Proses\nVerifikasi',
-                  '8',
+                  '$_diverifikasi',
                   Icons.pending_rounded,
                   Colors.blue.shade600,
                 ),
@@ -744,7 +857,7 @@ class _HomePageState extends State<HomePage>
               Expanded(
                 child: _buildStatCard(
                   'Tindak\nLanjut',
-                  '3',
+                  '$_tindakLanjut',
                   Icons.priority_high_rounded,
                   Colors.red.shade600,
                 ),
@@ -753,7 +866,7 @@ class _HomePageState extends State<HomePage>
               Expanded(
                 child: _buildStatCard(
                   'Tanggapan\nPelapor',
-                  '16',
+                  '$_tanggapanPelapor',
                   Icons.check_circle_outline_rounded,
                   Colors.green.shade600,
                 ),
@@ -1192,72 +1305,74 @@ class _HomePageState extends State<HomePage>
   }
 
   // Bottom Navigation Bar
- Widget _buildBottomNavBar() {
-  return Container(
-    decoration: BoxDecoration(
-      color: Colors.white,
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black.withOpacity(0.1),
-          blurRadius: 20,
-          offset: const Offset(0, -5),
-        ),
-      ],
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(25),
-        topRight: Radius.circular(25),
-      ),
-    ),
-    child: ClipRRect(
-      borderRadius: const BorderRadius.only(
-        topLeft: Radius.circular(25),
-        topRight: Radius.circular(25),
-      ),
-      child: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (index) {
-          // Handle navigation untuk middle button (index 2)
-          if (index == 2) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const BuatLaporanPage()),
-            );
-            return;
-          }
-          
-          setState(() => _selectedIndex = index);
-        },
-        type: BottomNavigationBarType.fixed,
-        backgroundColor: Colors.white,
-        selectedItemColor: const Color(0xFFC62828),
-        unselectedItemColor: Colors.grey.shade400,
-        selectedFontSize: 12,
-        unselectedFontSize: 11,
-        elevation: 0,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_rounded),
-            label: 'Beranda',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.description_rounded),
-            label: 'Laporan',
-          ),
-          BottomNavigationBarItem(
-            icon: SizedBox(width: 40), // Space for FAB
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.event_note_rounded),
-            label: 'Jadwal',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_rounded),
-            label: 'Profil',
+  Widget _buildBottomNavBar() {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 20,
+            offset: const Offset(0, -5),
           ),
         ],
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(25),
+          topRight: Radius.circular(25),
+        ),
       ),
-    ),
-  );
-}
+      child: ClipRRect(
+        borderRadius: const BorderRadius.only(
+          topLeft: Radius.circular(25),
+          topRight: Radius.circular(25),
+        ),
+        child: BottomNavigationBar(
+          currentIndex: _selectedIndex,
+          onTap: (index) {
+            // Handle navigation untuk middle button (index 2)
+            if (index == 2) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const BuatLaporanPage(),
+                ),
+              );
+              return;
+            }
+
+            setState(() => _selectedIndex = index);
+          },
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.white,
+          selectedItemColor: const Color(0xFFC62828),
+          unselectedItemColor: Colors.grey.shade400,
+          selectedFontSize: 12,
+          unselectedFontSize: 11,
+          elevation: 0,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home_rounded),
+              label: 'Beranda',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.description_rounded),
+              label: 'Laporan',
+            ),
+            BottomNavigationBarItem(
+              icon: SizedBox(width: 40), // Space for FAB
+              label: '',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.event_note_rounded),
+              label: 'Jadwal',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_rounded),
+              label: 'Profil',
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

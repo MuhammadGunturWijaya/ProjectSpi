@@ -1,5 +1,9 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'dart:io';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class DaftarLaporanPage extends StatefulWidget {
   const DaftarLaporanPage({super.key});
@@ -10,81 +14,17 @@ class DaftarLaporanPage extends StatefulWidget {
 
 class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
   final TextEditingController _searchController = TextEditingController();
-  
-  // Filter
+
   String _filterStatus = 'Semua';
   String _filterBentuk = 'Semua';
-  
-  // Mock data - ganti dengan data dari backend/database
-  List<Map<String, dynamic>> _allLaporanList = [
-    {
-      'id': '2025001',
-      'tanggal': '15/01/2025',
-      'perihal': 'Pengaduan Penyuapan di Kantor Pusat',
-      'status': 'Diproses',
-      'bentuk': 'Penyuapan',
-      'pengguna': 'Budi Santoso',
-      'terlapor': 'Ahmad Wijaya',
-      'nip': '12345678',
-      'satKerja': 'Jember',
-      'jabatan': 'Hakim',
-      'tglKejadian': '10/01/2025',
-      'tempatKejadian': 'Gedung A3',
-      'progress': 45,
-    },
-    {
-      'id': '2025002',
-      'tanggal': '16/01/2025',
-      'perihal': 'Laporan Pemerasan oleh Pegawai',
-      'status': 'Selesai',
-      'bentuk': 'Pemerasan / Pungutan',
-      'pengguna': 'Siti Nurhaliza',
-      'terlapor': 'Rudi Hartono',
-      'nip': '87654321',
-      'satKerja': 'Balikpapan',
-      'jabatan': 'Jaksa',
-      'tglKejadian': '05/01/2025',
-      'tempatKejadian': 'GOR',
-      'progress': 100,
-    },
-    {
-      'id': '2025003',
-      'tanggal': '17/01/2025',
-      'perihal': 'Pengaduan Gratifikasi',
-      'status': 'Ditolak',
-      'bentuk': 'Gratifikasi',
-      'pengguna': 'Hendra Kusuma',
-      'terlapor': 'Bambang Setiawan',
-      'nip': '11223344',
-      'satKerja': 'Aceh',
-      'jabatan': 'Sekretaris',
-      'tglKejadian': '12/01/2025',
-      'tempatKejadian': 'Gedung TI',
-      'progress': 0,
-    },
-    {
-      'id': '2025004',
-      'tanggal': '18/01/2025',
-      'perihal': 'Laporan Perilaku Tidak Profesional',
-      'status': 'Diproses',
-      'bentuk': 'Lainnya',
-      'pengguna': 'Dewi Lestari',
-      'terlapor': 'Eka Putri',
-      'nip': '55667788',
-      'satKerja': 'Jember',
-      'jabatan': 'Hakim',
-      'tglKejadian': '14/01/2025',
-      'tempatKejadian': 'Gedung A3',
-      'progress': 60,
-    },
-  ];
 
-  late List<Map<String, dynamic>> _filteredLaporanList;
+  List<Map<String, dynamic>> _allLaporanList = [];
+  List<Map<String, dynamic>> _filteredLaporanList = [];
 
   @override
   void initState() {
     super.initState();
-    _filteredLaporanList = _allLaporanList;
+    _fetchLaporan();
     _searchController.addListener(_filterLaporan);
   }
 
@@ -96,17 +36,20 @@ class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
 
   void _filterLaporan() {
     final query = _searchController.text.toLowerCase();
-    
+
     setState(() {
       _filteredLaporanList = _allLaporanList.where((laporan) {
-        final matchQuery = laporan['id'].toLowerCase().contains(query) ||
+        final matchQuery =
+            laporan['id'].toLowerCase().contains(query) ||
             laporan['perihal'].toLowerCase().contains(query) ||
             laporan['pengguna'].toLowerCase().contains(query) ||
             laporan['terlapor'].toLowerCase().contains(query);
-        
-        final matchStatus = _filterStatus == 'Semua' || laporan['status'] == _filterStatus;
-        final matchBentuk = _filterBentuk == 'Semua' || laporan['bentuk'] == _filterBentuk;
-        
+
+        final matchStatus =
+            _filterStatus == 'Semua' || laporan['status'] == _filterStatus;
+        final matchBentuk =
+            _filterBentuk == 'Semua' || laporan['bentuk'] == _filterBentuk;
+
         return matchQuery && matchStatus && matchBentuk;
       }).toList();
     });
@@ -158,13 +101,14 @@ class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Header
                   Row(
                     children: [
                       Container(
                         padding: const EdgeInsets.all(10),
                         decoration: BoxDecoration(
-                          color: _getStatusColor(laporan['status']).withOpacity(0.2),
+                          color: _getStatusColor(
+                            laporan['status'],
+                          ).withOpacity(0.2),
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
@@ -199,8 +143,6 @@ class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
                     ],
                   ),
                   const SizedBox(height: 25),
-
-                  // Progress Bar
                   Text(
                     'Progress Penanganan',
                     style: TextStyle(
@@ -221,17 +163,7 @@ class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 5),
-                  Text(
-                    '${laporan['progress']}% Selesai',
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: Colors.grey.shade600,
-                    ),
-                  ),
                   const SizedBox(height: 25),
-
-                  // Detail Laporan
                   _buildDetailSection('DETAIL PENGADUAN', [
                     _buildDetailRow('No. Laporan', laporan['id']),
                     _buildDetailRow('Tanggal Pengaduan', laporan['tanggal']),
@@ -239,7 +171,6 @@ class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
                     _buildDetailRow('Bentuk Pelanggaran', laporan['bentuk']),
                   ]),
                   const SizedBox(height: 15),
-
                   _buildDetailSection('DATA TERLAPOR', [
                     _buildDetailRow('Nama', laporan['terlapor']),
                     _buildDetailRow('NIP', laporan['nip']),
@@ -247,54 +178,17 @@ class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
                     _buildDetailRow('Jabatan', laporan['jabatan']),
                   ]),
                   const SizedBox(height: 15),
-
                   _buildDetailSection('INFORMASI KEJADIAN', [
                     _buildDetailRow('Tanggal Kejadian', laporan['tglKejadian']),
-                    _buildDetailRow('Tempat Kejadian', laporan['tempatKejadian']),
+                    _buildDetailRow(
+                      'Tempat Kejadian',
+                      laporan['tempatKejadian'],
+                    ),
                   ]),
                   const SizedBox(height: 15),
-
                   _buildDetailSection('PENGADU', [
                     _buildDetailRow('Nama Pengadu', laporan['pengguna']),
                   ]),
-                  const SizedBox(height: 25),
-
-                  // Action Buttons
-                  Row(
-                    children: [
-                      Expanded(
-                        child: OutlinedButton.icon(
-                          onPressed: () => Navigator.pop(context),
-                          icon: const Icon(Icons.close_rounded),
-                          label: const Text('Tutup'),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: Colors.grey.shade700,
-                            side: BorderSide(color: Colors.grey.shade300),
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: ElevatedButton.icon(
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text('Laporan diunduh'),
-                                backgroundColor: Colors.green,
-                              ),
-                            );
-                          },
-                          icon: const Icon(Icons.download_rounded),
-                          label: const Text('Unduh'),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFC62828),
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ),
@@ -340,10 +234,7 @@ class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
             flex: 2,
             child: Text(
               label,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey.shade600,
-              ),
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
             ),
           ),
           Expanded(
@@ -362,6 +253,53 @@ class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
     );
   }
 
+  Future<void> _fetchLaporan() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userId = prefs.getString('user_id') ?? '7'; // default untuk tes
+
+      final response = await http.get(
+        Uri.parse(
+          'http://10.125.173.33/backend/api/get_laporan_user.php?user_id=$userId',
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data["status"] == "success") {
+          final List laporanData = data["data"];
+          setState(() {
+            _allLaporanList = laporanData
+                .map<Map<String, dynamic>>(
+                  (item) => {
+                    'id': item['id_laporan'].toString(),
+                    'tanggal': item['tanggal'] ?? '-',
+                    'perihal': item['perihal'] ?? '-',
+                    'status': item['status'] ?? 'Diproses',
+                    'bentuk': item['bentuk'] ?? 'Lainnya',
+                    'pengguna': item['nama_pengguna'] ?? '-',
+                    'terlapor': item['nama_terlapor'] ?? '-',
+                    'nip': item['nip'] ?? '-',
+                    'satKerja': item['satker'] ?? '-',
+                    'jabatan': item['jabatan'] ?? '-',
+                    'tglKejadian': item['tgl_kejadian'] ?? '-',
+                    'tempatKejadian': item['tempat'] ?? '-',
+                    'progress':
+                        int.tryParse(item['progress']?.toString() ?? '0') ?? 0,
+                  },
+                )
+                .toList();
+            _filteredLaporanList = _allLaporanList;
+          });
+        }
+      } else {
+        print("Gagal ambil data: ${response.statusCode}");
+      }
+    } catch (e) {
+      print("Error fetching laporan: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -375,10 +313,7 @@ class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
         ),
         title: const Text(
           'Daftar Laporan',
-          style: TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
       ),
@@ -395,9 +330,16 @@ class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
                 TextField(
                   controller: _searchController,
                   decoration: InputDecoration(
-                    hintText: 'Cari berdasarkan No. Laporan, Perihal, Pengadu...',
-                    hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 14),
-                    prefixIcon: Icon(Icons.search_rounded, color: Colors.grey.shade500),
+                    hintText:
+                        'Cari berdasarkan No. Laporan, Perihal, Pengadu...',
+                    hintStyle: TextStyle(
+                      color: Colors.grey.shade400,
+                      fontSize: 14,
+                    ),
+                    prefixIcon: Icon(
+                      Icons.search_rounded,
+                      color: Colors.grey.shade500,
+                    ),
                     filled: true,
                     fillColor: Colors.grey.shade50,
                     border: OutlineInputBorder(
@@ -415,7 +357,10 @@ class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
                         width: 2,
                       ),
                     ),
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+                    contentPadding: const EdgeInsets.symmetric(
+                      horizontal: 15,
+                      vertical: 12,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 15),
@@ -434,19 +379,26 @@ class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
                             content: SingleChildScrollView(
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
-                                children: ['Semua', 'Diproses', 'Selesai', 'Ditolak']
-                                    .map((status) {
-                                  return RadioListTile<String>(
-                                    title: Text(status),
-                                    value: status,
-                                    groupValue: _filterStatus,
-                                    onChanged: (value) {
-                                      setState(() => _filterStatus = value!);
-                                      _filterLaporan();
-                                      Navigator.pop(context);
-                                    },
-                                  );
-                                }).toList(),
+                                children:
+                                    [
+                                      'Semua',
+                                      'Diproses',
+                                      'Selesai',
+                                      'Ditolak',
+                                    ].map((status) {
+                                      return RadioListTile<String>(
+                                        title: Text(status),
+                                        value: status,
+                                        groupValue: _filterStatus,
+                                        onChanged: (value) {
+                                          setState(
+                                            () => _filterStatus = value!,
+                                          );
+                                          _filterLaporan();
+                                          Navigator.pop(context);
+                                        },
+                                      );
+                                    }).toList(),
                               ),
                             ),
                           ),
@@ -470,25 +422,27 @@ class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
                             content: SingleChildScrollView(
                               child: Column(
                                 mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  'Semua',
-                                  'Pemerasan / Pungutan',
-                                  'Penyuapan',
-                                  'Gratifikasi',
-                                  'Lainnya'
-                                ]
-                                    .map((bentuk) {
-                                  return RadioListTile<String>(
-                                    title: Text(bentuk),
-                                    value: bentuk,
-                                    groupValue: _filterBentuk,
-                                    onChanged: (value) {
-                                      setState(() => _filterBentuk = value!);
-                                      _filterLaporan();
-                                      Navigator.pop(context);
-                                    },
-                                  );
-                                }).toList(),
+                                children:
+                                    [
+                                      'Semua',
+                                      'Pemerasan / Pungutan',
+                                      'Penyuapan',
+                                      'Gratifikasi',
+                                      'Lainnya',
+                                    ].map((bentuk) {
+                                      return RadioListTile<String>(
+                                        title: Text(bentuk),
+                                        value: bentuk,
+                                        groupValue: _filterBentuk,
+                                        onChanged: (value) {
+                                          setState(
+                                            () => _filterBentuk = value!,
+                                          );
+                                          _filterLaporan();
+                                          Navigator.pop(context);
+                                        },
+                                      );
+                                    }).toList(),
                               ),
                             ),
                           ),
@@ -570,8 +524,9 @@ class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
                                   Container(
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      color: _getStatusColor(laporan['status'])
-                                          .withOpacity(0.2),
+                                      color: _getStatusColor(
+                                        laporan['status'],
+                                      ).withOpacity(0.2),
                                       shape: BoxShape.circle,
                                     ),
                                     child: Icon(
@@ -583,7 +538,8 @@ class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           'Laporan #${laporan['id']}',
@@ -608,8 +564,9 @@ class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
                                       vertical: 5,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: _getStatusColor(laporan['status'])
-                                          .withOpacity(0.1),
+                                      color: _getStatusColor(
+                                        laporan['status'],
+                                      ).withOpacity(0.1),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: Text(
@@ -617,7 +574,9 @@ class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
                                       style: TextStyle(
                                         fontSize: 11,
                                         fontWeight: FontWeight.w600,
-                                        color: _getStatusColor(laporan['status']),
+                                        color: _getStatusColor(
+                                          laporan['status'],
+                                        ),
                                       ),
                                     ),
                                   ),
@@ -710,10 +669,7 @@ class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
               children: [
                 Text(
                   label,
-                  style: TextStyle(
-                    fontSize: 10,
-                    color: Colors.grey.shade600,
-                  ),
+                  style: TextStyle(fontSize: 10, color: Colors.grey.shade600),
                 ),
                 Text(
                   value,

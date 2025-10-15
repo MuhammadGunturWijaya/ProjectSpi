@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'dart:async';
 import 'dashboard.dart';
 import 'RegisterPage.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
@@ -345,6 +348,7 @@ class _LoginPageState extends State<LoginPage>
     super.dispose();
   }
 
+  // ---------------- Login Function ----------------
   void _login() async {
     String email = _emailController.text.trim();
     String password = _passwordController.text;
@@ -365,28 +369,69 @@ class _LoginPageState extends State<LoginPage>
     }
 
     setState(() => _isLoading = true);
-    // Simulasi proses login
-    await Future.delayed(const Duration(seconds: 2));
-    setState(() => _isLoading = false);
 
-    if (mounted) {
-      // Mock Login berhasil
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Login berhasil! Selamat datang.'),
-          backgroundColor: Colors.green.shade600,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          margin: const EdgeInsets.all(20),
-        ),
+    try {
+      // 🔹 Ganti ke IP laptop kamu kalau pakai HP fisik
+      var url = Uri.parse("http://10.125.173.33/backend/api/login.php");
+
+      var response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"email": email, "password": password}),
       );
 
-      // Navigasi ke HomePage
-      Navigator.of(
-        context,
-      ).pushReplacement(MaterialPageRoute(builder: (_) => const HomePage()));
+      var data = jsonDecode(response.body);
+      setState(() => _isLoading = false);
+
+      if (data["status"] == "success") {
+        final userData = data['data'];
+        final id = userData['id_user'].toString();
+        final name = userData['nama'] ?? userData['name'] ?? 'No Name';
+        final role = userData['role'] ?? 'user'; 
+
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('user_id', id);
+        await prefs.setString('user_name', name);
+        await prefs.setString('user_role', role);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              "Login berhasil! Selamat datang, ${data['data']['nama']}.",
+            ),
+            backgroundColor: Colors.green.shade600,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            margin: const EdgeInsets.all(20),
+          ),
+        );
+
+        // Navigasi ke halaman utama
+        Navigator.of(
+          context,
+        ).pushReplacement(MaterialPageRoute(builder: (_) => const HomePage()));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(data["message"] ?? "Login gagal."),
+            backgroundColor: Colors.red.shade700,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15),
+            ),
+            margin: const EdgeInsets.all(20),
+          ),
+        );
+      }
+    } catch (e) {
+      setState(() => _isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Terjadi kesalahan koneksi: $e"),
+          backgroundColor: Colors.red.shade700,
+        ),
+      );
     }
   }
 
