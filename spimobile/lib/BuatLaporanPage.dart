@@ -347,7 +347,7 @@ class _BuatLaporanPageState extends State<BuatLaporanPage> {
 
   try {
     final response = await http.post(
-      Uri.parse('http://10.125.173.33/backend/api/submit_pengaduan.php'),
+      Uri.parse('http://10.133.104.213/backend/api/submit_pengaduan.php'),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(bodyData),
     );

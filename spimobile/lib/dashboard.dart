@@ -32,6 +32,10 @@ class _HomePageState extends State<HomePage>
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
 
+  // Data laporan terbaru dari API
+  List<Map<String, dynamic>> _filteredLaporanList = [];
+  bool _isLoadingReports = true;
+
   int _selectedIndex = 0;
 
   @override
@@ -39,7 +43,8 @@ class _HomePageState extends State<HomePage>
     super.initState();
     _loadUserName();
     _loadUserData();
-    _loadUserStats(); // ambil jumlah laporan
+    _loadUserStats();
+    _loadRecentReports(); // Load laporan terbaru dari API
 
     _animController = AnimationController(
       duration: const Duration(milliseconds: 800),
@@ -85,7 +90,6 @@ class _HomePageState extends State<HomePage>
             opacity: _fadeAnimation,
             child: SlideTransition(
               position: _slideAnimation,
-              // SOLUSI 1: Tambahkan SingleChildScrollView dengan proper constraints
               child: LayoutBuilder(
                 builder: (context, constraints) {
                   return SingleChildScrollView(
@@ -96,27 +100,13 @@ class _HomePageState extends State<HomePage>
                       ),
                       child: Column(
                         children: [
-                          // Custom App Bar
                           _buildCustomHeader(),
-
-                          // Info Card Auditor
                           _buildWelcomeCard(),
-
-                          // Quick Actions untuk SPI
                           _buildQuickActions(),
-
-                          // Statistik Laporan
                           _buildStatistics(),
-
-                          // Laporan Terbaru
-                          _buildRecentReports(),
-
-                          // Jadwal Audit
+                          _buildRecentReports(_filteredLaporanList),
                           _buildAuditSchedule(),
-
-                          const SizedBox(
-                            height: 100,
-                          ), // Extra space for bottom nav
+                          const SizedBox(height: 100),
                         ],
                       ),
                     ),
@@ -133,6 +123,136 @@ class _HomePageState extends State<HomePage>
     );
   }
 
+  // FUNGSI BARU: Load laporan terbaru dari API
+  Future<void> _loadRecentReports() async {
+    setState(() {
+      _isLoadingReports = true;
+    });
+
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('user_id') ?? '';
+
+    if (userId.isEmpty) {
+      setState(() {
+        _isLoadingReports = false;
+      });
+      return;
+    }
+
+    final url = Uri.parse(
+      "http://10.133.104.213/backend/api/get_laporan_user.php?user_id=$userId",
+    
+    );
+
+    try {
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final jsonData = json.decode(response.body);
+
+        if (jsonData['status'] == 'success') {
+          List<dynamic> dataList = jsonData['data'];
+
+          // Konversi ke format yang sesuai untuk UI
+          List<Map<String, dynamic>> laporanList = dataList.map((item) {
+            // Map status ke format yang sesuai
+            String statusDisplay = _mapStatus(item['status']);
+            
+            // Hitung waktu relatif
+            String timeAgo = _getTimeAgo(item['tanggal']);
+
+            return {
+              'id_laporan': item['id_laporan'],
+              'perihal': item['perihal'],
+              'status': statusDisplay,
+              'tanggal': timeAgo,
+              'bentuk': item['bentuk'],
+              'progress': item['progress'],
+            };
+          }).toList();
+
+          setState(() {
+            _filteredLaporanList = laporanList;
+            _isLoadingReports = false;
+          });
+        } else {
+          setState(() {
+            _filteredLaporanList = [];
+            _isLoadingReports = false;
+          });
+        }
+      } else {
+        print('Failed to load reports: ${response.statusCode}');
+        setState(() {
+          _isLoadingReports = false;
+        });
+      }
+    } catch (e) {
+      print('Error loading recent reports: $e');
+      setState(() {
+        _isLoadingReports = false;
+      });
+    }
+  }
+
+  // Helper: Map status dari API ke status display
+  String _mapStatus(String status) {
+    switch (status.toLowerCase()) {
+      case 'diproses':
+        return 'Dalam Proses';
+      case 'selesai':
+        return 'Selesai';
+      case 'ditolak':
+        return 'Ditolak';
+      default:
+        return 'Menunggu Verifikasi';
+    }
+  }
+
+  // Helper: Hitung waktu relatif
+  String _getTimeAgo(String dateTimeStr) {
+    try {
+      // Parse format "dd-mm-yyyy HH:mm"
+      List<String> parts = dateTimeStr.split(' ');
+      if (parts.length != 2) return dateTimeStr;
+
+      List<String> dateParts = parts[0].split('-');
+      if (dateParts.length != 3) return dateTimeStr;
+
+      List<String> timeParts = parts[1].split(':');
+      if (timeParts.length != 2) return dateTimeStr;
+
+      DateTime dateTime = DateTime(
+        int.parse(dateParts[2]), // year
+        int.parse(dateParts[1]), // month
+        int.parse(dateParts[0]), // day
+        int.parse(timeParts[0]), // hour
+        int.parse(timeParts[1]), // minute
+      );
+
+      Duration difference = DateTime.now().difference(dateTime);
+
+      if (difference.inMinutes < 60) {
+        return '${difference.inMinutes} menit yang lalu';
+      } else if (difference.inHours < 24) {
+        return '${difference.inHours} jam yang lalu';
+      } else if (difference.inDays < 7) {
+        return '${difference.inDays} hari yang lalu';
+      } else if (difference.inDays < 30) {
+        int weeks = (difference.inDays / 7).floor();
+        return '$weeks minggu yang lalu';
+      } else if (difference.inDays < 365) {
+        int months = (difference.inDays / 30).floor();
+        return '$months bulan yang lalu';
+      } else {
+        int years = (difference.inDays / 365).floor();
+        return '$years tahun yang lalu';
+      }
+    } catch (e) {
+      return dateTimeStr;
+    }
+  }
+
   // Header dengan logo dan profil
   Widget _buildCustomHeader() {
     return Container(
@@ -143,7 +263,6 @@ class _HomePageState extends State<HomePage>
           Flexible(
             child: Row(
               children: [
-                // Logo Polije
                 Container(
                   padding: const EdgeInsets.all(8),
                   decoration: BoxDecoration(
@@ -190,7 +309,6 @@ class _HomePageState extends State<HomePage>
               ],
             ),
           ),
-          // Notification & Profile
           Row(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -248,16 +366,9 @@ class _HomePageState extends State<HomePage>
                   icon: const Icon(Icons.person_outline, size: 26),
                   color: Colors.white,
                   onPressed: () async {
-                    // Tampilkan loading animasi
                     _showFancyLoading(context);
-
-                    // Tunggu sebentar (bisa ganti dengan proses async misalnya ambil data user)
                     await Future.delayed(const Duration(seconds: 1));
-
-                    // Tutup loading
                     Navigator.of(context).pop();
-
-                    // Navigasi ke halaman lain (ganti BuatLaporanPage sesuai tujuan)
                     Navigator.push(
                       context,
                       MaterialPageRoute(builder: (_) => const ProfilePage()),
@@ -274,12 +385,9 @@ class _HomePageState extends State<HomePage>
 
   Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
-
-    // Ambil data dari SharedPreferences
     final userName = prefs.getString('user_name') ?? 'No Name';
     final userRole = prefs.getString('user_role') ?? 'User';
 
-    // Update state
     setState(() {
       _userName = userName;
       _userRole = userRole;
@@ -293,37 +401,6 @@ class _HomePageState extends State<HomePage>
     });
   }
 
-  Future<void> fetchUserStats() async {
-    final prefs = await SharedPreferences.getInstance();
-    final userId = prefs.getString('user_id') ?? '';
-
-    final url = Uri.parse(
-      'http://10.125.173.33/backend/api/user_stats.php?user_id=$userId',
-    );
-
-    try {
-      final response = await http.get(url);
-      if (response.statusCode == 200) {
-        final jsonData = json.decode(response.body);
-
-        if (jsonData['status'] == 'success') {
-          setState(() {
-            _totalLaporan = jsonData['data']['total_laporan'].toString();
-            _totalProses =
-                (int.parse(jsonData['data']['laporan_dikirim']) +
-                        int.parse(jsonData['data']['diverifikasi']) +
-                        int.parse(jsonData['data']['tindak_lanjut']) +
-                        int.parse(jsonData['data']['tanggapan_pelapor']))
-                    .toString();
-            _totalSelesai = jsonData['data']['selesai'].toString();
-          });
-        }
-      }
-    } catch (e) {
-      print('Error fetching stats: $e');
-    }
-  }
-
   Future<void> _loadUserStats() async {
     final prefs = await SharedPreferences.getInstance();
     final userId = prefs.getString('user_id') ?? '';
@@ -331,7 +408,7 @@ class _HomePageState extends State<HomePage>
     if (userId.isEmpty) return;
 
     final url = Uri.parse(
-      "http://10.125.173.33/backend/api/user_stats.php?user_id=$userId",
+      "http://10.133.104.213/backend/api/user_stats.php?user_id=$userId",
     );
     final response = await http.get(url);
 
@@ -349,7 +426,6 @@ class _HomePageState extends State<HomePage>
               int.tryParse(data['tanggapan_pelapor'].toString()) ?? 0;
           _selesai = int.tryParse(data['selesai'].toString()) ?? 0;
 
-          // Hitung total
           _totalLaporan =
               (_laporanDikirim +
                       _diverifikasi +
@@ -369,7 +445,6 @@ class _HomePageState extends State<HomePage>
     }
   }
 
-  // Welcome Card untuk Auditor
   Widget _buildWelcomeCard() {
     return Container(
       margin: const EdgeInsets.fromLTRB(20, 10, 20, 25),
@@ -433,7 +508,7 @@ class _HomePageState extends State<HomePage>
                         borderRadius: BorderRadius.circular(20),
                       ),
                       child: Text(
-                        _userRole, // tampilkan role dari login
+                        _userRole,
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.white,
@@ -460,7 +535,6 @@ class _HomePageState extends State<HomePage>
             ],
           ),
           const SizedBox(height: 20),
-          // Statistik Ringkas
           Row(
             children: [
               Expanded(
@@ -527,7 +601,6 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  //loadingnya disini
   void _showFancyLoading(BuildContext context) {
     showDialog(
       context: context,
@@ -557,7 +630,6 @@ class _HomePageState extends State<HomePage>
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
-                    // Outer gradient ring
                     TweenAnimationBuilder<double>(
                       tween: Tween(begin: 0, end: 360),
                       duration: const Duration(seconds: 2),
@@ -592,7 +664,6 @@ class _HomePageState extends State<HomePage>
                         );
                       },
                     ),
-                    // Middle thin ring (slower)
                     TweenAnimationBuilder<double>(
                       tween: Tween(begin: 0, end: -360),
                       duration: const Duration(seconds: 3),
@@ -614,7 +685,6 @@ class _HomePageState extends State<HomePage>
                         );
                       },
                     ),
-                    // Pulsing center dot
                     TweenAnimationBuilder<double>(
                       tween: Tween(begin: 0.6, end: 1.0),
                       duration: const Duration(seconds: 1),
@@ -656,7 +726,6 @@ class _HomePageState extends State<HomePage>
                 ),
               ),
               const SizedBox(height: 12),
-              // Mini loading bar di bawah
               SizedBox(
                 width: 60,
                 height: 4,
@@ -695,7 +764,6 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  // Quick Actions untuk SPI
   Widget _buildQuickActions() {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 20),
@@ -724,24 +792,23 @@ class _HomePageState extends State<HomePage>
                 Icons.add_box_rounded,
                 [Colors.blue.shade600, Colors.blue.shade400],
                 () async {
-                  _showFancyLoading(context); // kirim context
+                  _showFancyLoading(context);
                   await Future.delayed(const Duration(seconds: 1));
-                  Navigator.of(context).pop(); // tutup loading
+                  Navigator.of(context).pop();
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const BuatLaporanPage()),
                   );
                 },
               ),
-
               _buildQuickActionItem(
                 'Daftar\nLaporan',
                 Icons.list_alt_rounded,
                 [Colors.orange.shade600, Colors.orange.shade400],
                 () async {
-                  _showFancyLoading(context); // kirim context
+                  _showFancyLoading(context);
                   await Future.delayed(const Duration(seconds: 1));
-                  Navigator.of(context).pop(); // tutup loading
+                  Navigator.of(context).pop();
                   Navigator.push(
                     context,
                     MaterialPageRoute(
@@ -750,7 +817,6 @@ class _HomePageState extends State<HomePage>
                   );
                 },
               ),
-              // Tambahkan item lainnya jika perlu
             ],
           ),
         ],
@@ -762,10 +828,10 @@ class _HomePageState extends State<HomePage>
     String title,
     IconData icon,
     List<Color> colors,
-    VoidCallback onTap, // Tambahkan parameter onTap
+    VoidCallback onTap,
   ) {
     return GestureDetector(
-      onTap: onTap, // Panggil fungsi onTap di sini
+      onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -814,7 +880,6 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  // Statistik Laporan
   Widget _buildStatistics() {
     return Container(
       margin: const EdgeInsets.fromLTRB(20, 25, 20, 0),
@@ -886,7 +951,7 @@ class _HomePageState extends State<HomePage>
   ) {
     return Container(
       height: 100,
-      padding: const EdgeInsets.all(14), // Reduced padding
+      padding: const EdgeInsets.all(14),
       decoration: BoxDecoration(
         color: color.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
@@ -904,7 +969,6 @@ class _HomePageState extends State<HomePage>
           ),
           const SizedBox(width: 12),
           Expanded(
-            // SOLUSI 5: Wrap dengan Expanded
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -939,8 +1003,8 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  // Laporan Terbaru
-  Widget _buildRecentReports() {
+  // Laporan Terbaru dari data API
+  Widget _buildRecentReports(List<Map<String, dynamic>> laporanList) {
     return Container(
       margin: const EdgeInsets.fromLTRB(20, 25, 20, 0),
       child: Column(
@@ -958,7 +1022,14 @@ class _HomePageState extends State<HomePage>
                 ),
               ),
               TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const DaftarLaporanPage(),
+                    ),
+                  );
+                },
                 child: Text(
                   'Lihat Semua',
                   style: TextStyle(
@@ -970,29 +1041,75 @@ class _HomePageState extends State<HomePage>
             ],
           ),
           const SizedBox(height: 10),
-          _buildReportCard(
-            'Audit Keuangan Fakultas Teknik Q1 2025',
-            'Menunggu Verifikasi',
-            '2 jam yang lalu',
-            Colors.orange.shade600,
-            Icons.account_balance_rounded,
-          ),
-          const SizedBox(height: 12),
-          _buildReportCard(
-            'Pemeriksaan Aset Laboratorium Komputer',
-            'Dalam Proses',
-            '1 hari yang lalu',
-            Colors.blue.shade600,
-            Icons.computer_rounded,
-          ),
-          const SizedBox(height: 12),
-          _buildReportCard(
-            'Evaluasi Sistem Pengadaan Barang',
-            'Perlu Tindak Lanjut',
-            '3 hari yang lalu',
-            Colors.red.shade600,
-            Icons.shopping_cart_rounded,
-          ),
+
+          // Tampilkan loading atau data
+          _isLoadingReports
+              ? Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: CircularProgressIndicator(
+                      color: const Color(0xFFC62828),
+                    ),
+                  ),
+                )
+              : laporanList.isEmpty
+                  ? Center(
+                      child: Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Text(
+                          'Tidak ada laporan terbaru',
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                      ),
+                    )
+                  : Column(
+                      children: laporanList.take(3).map((laporan) {
+                        // Tentukan warna dan ikon berdasarkan status
+                        Color statusColor;
+                        IconData iconData;
+                        switch (laporan['status'] ?? '') {
+                          case 'Menunggu Verifikasi':
+                            statusColor = Colors.orange.shade600;
+                            iconData = Icons.pending_actions_rounded;
+                            break;
+                          case 'Dalam Proses':
+                            statusColor = Colors.blue.shade600;
+                            iconData = Icons.work_rounded;
+                            break;
+                          case 'Perlu Tindak Lanjut':
+                            statusColor = Colors.red.shade600;
+                            iconData = Icons.error_rounded;
+                            break;
+                          case 'Selesai':
+                            statusColor = Colors.green.shade600;
+                            iconData = Icons.check_circle_rounded;
+                            break;
+                          case 'Ditolak':
+                            statusColor = Colors.grey.shade600;
+                            iconData = Icons.cancel_rounded;
+                            break;
+                          default:
+                            statusColor = Colors.grey.shade600;
+                            iconData = Icons.info_rounded;
+                        }
+
+                        return Column(
+                          children: [
+                            _buildReportCard(
+                              laporan['perihal'] ?? '-',
+                              laporan['status'] ?? '-',
+                              laporan['tanggal'] ?? '-',
+                              statusColor,
+                              iconData,
+                            ),
+                            const SizedBox(height: 12),
+                          ],
+                        );
+                      }).toList(),
+                    ),
         ],
       ),
     );
@@ -1093,7 +1210,6 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  // Jadwal Audit
   Widget _buildAuditSchedule() {
     return Container(
       margin: const EdgeInsets.fromLTRB(20, 25, 20, 0),
@@ -1198,7 +1314,6 @@ class _HomePageState extends State<HomePage>
           ),
           const SizedBox(height: 15),
           Wrap(
-            // SOLUSI 6: Gunakan Wrap untuk Row yang bisa overflow
             spacing: 16,
             runSpacing: 8,
             children: [
@@ -1269,7 +1384,6 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  // Floating Action Button - Buat Laporan Baru
   Widget _buildFloatingActionButton() {
     return Container(
       width: 65,
@@ -1295,7 +1409,10 @@ class _HomePageState extends State<HomePage>
       ),
       child: FloatingActionButton(
         onPressed: () {
-          // Navigate to create report page
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => const BuatLaporanPage()),
+          );
         },
         backgroundColor: Colors.transparent,
         elevation: 0,
@@ -1304,7 +1421,6 @@ class _HomePageState extends State<HomePage>
     );
   }
 
-  // Bottom Navigation Bar
   Widget _buildBottomNavBar() {
     return Container(
       decoration: BoxDecoration(
@@ -1329,7 +1445,6 @@ class _HomePageState extends State<HomePage>
         child: BottomNavigationBar(
           currentIndex: _selectedIndex,
           onTap: (index) {
-            // Handle navigation untuk middle button (index 2)
             if (index == 2) {
               Navigator.push(
                 context,
@@ -1339,7 +1454,6 @@ class _HomePageState extends State<HomePage>
               );
               return;
             }
-
             setState(() => _selectedIndex = index);
           },
           type: BottomNavigationBarType.fixed,
@@ -1359,7 +1473,7 @@ class _HomePageState extends State<HomePage>
               label: 'Laporan',
             ),
             BottomNavigationBarItem(
-              icon: SizedBox(width: 40), // Space for FAB
+              icon: SizedBox(width: 40),
               label: '',
             ),
             BottomNavigationBarItem(

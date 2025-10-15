@@ -256,16 +256,30 @@ class _DaftarLaporanPageState extends State<DaftarLaporanPage> {
   Future<void> _fetchLaporan() async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final userId = prefs.getString('user_id') ?? '7'; // default untuk tes
+      final userId = prefs.getString('user_id') ?? '7';
 
       final response = await http.get(
         Uri.parse(
-          'http://10.125.173.33/backend/api/get_laporan_user.php?user_id=$userId',
+          'http://10.133.104.213/backend/api/get_laporan_user.php?user_id=$userId',
         ),
       );
 
+      print("=== DEBUG RESPONSE ===");
+      print("Status Code: ${response.statusCode}");
+      print("Response Body: ${response.body}"); // ✅ Lihat ini!
+      print("====================");
+
       if (response.statusCode == 200) {
+        // Cek apakah response adalah JSON
+        if (!response.body.trim().startsWith('{') &&
+            !response.body.trim().startsWith('[')) {
+          print("ERROR: Response bukan JSON!");
+          print("Response: ${response.body}");
+          return;
+        }
+
         final data = jsonDecode(response.body);
+
         if (data["status"] == "success") {
           final List laporanData = data["data"];
           setState(() {
