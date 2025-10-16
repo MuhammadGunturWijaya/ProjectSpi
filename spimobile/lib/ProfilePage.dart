@@ -17,7 +17,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   // API Base URL - sesuaikan dengan URL API Anda
-  final String baseUrl = 'http://192.168.0.104/backend/api';
+  final String baseUrl = 'http://10.133.104.252/backend/api';
 
   // User data
   String _id = '';
@@ -721,7 +721,11 @@ class _ProfilePageState extends State<ProfilePage> {
 
     // 3. Navigasi ke halaman login
     // Ganti '/login' sesuai route halaman login Anda
-    Navigator.of(context).pushReplacementNamed('/LoginPage');
+    Navigator.pushNamedAndRemoveUntil(
+      context,
+      '/LoginPage',
+      (Route<dynamic> route) => false,
+    );
   }
 
   Widget _buildSectionCard(String title, IconData icon, List<Widget> children) {

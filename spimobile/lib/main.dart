@@ -17,28 +17,57 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       routes: {
-        '/LoginPage': (context) => LoginPage(),
-        '/home': (context) => HomePage(),
+        '/LoginPage': (context) => const LoginPage(),
+        '/home': (context) => const HomePage(),
+        '/menu': (context) => const MenuScreen(),
       },
       title: 'Polije App',
       theme: ThemeData(
-        // Menggunakan warna primer Polije
-        primaryColor: const Color(0xFFC62828), // Red 800
+        primaryColor: const Color(0xFFC62828),
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFFC62828),
           primary: const Color(0xFFC62828),
-          secondary: const Color(0xFFFF9800), // Orange
+          secondary: const Color(0xFFFF9800),
         ),
         useMaterial3: true,
-        fontFamily: 'Roboto', // Menggunakan font standar yang jelas
+        fontFamily: 'Roboto',
       ),
-      home: const SplashScreen(),
+      home: const AuthWrapper(),
       debugShowCheckedModeBanner: false,
     );
   }
 }
 
-// ---------------- Splash Screen ----------------
+// Auth Wrapper untuk cek login status
+class AuthWrapper extends StatelessWidget {
+  const AuthWrapper({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: _checkLoginStatus(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const SplashScreen();
+        }
+
+        if (snapshot.data == true) {
+          return const HomePage();
+        } else {
+          return const MenuScreen();
+        }
+      },
+    );
+  }
+
+  Future<bool> _checkLoginStatus() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userId = prefs.getString('user_id');
+    return userId != null && userId.isNotEmpty;
+  }
+}
+
+// Splash Screen
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -48,11 +77,8 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen>
     with TickerProviderStateMixin {
-  // Controller untuk Animasi Utama (Fade In, Scale Up, Slide Up)
   late AnimationController _mainController;
-  // Controller untuk Animasi Pulse/Glow
   late AnimationController _pulseController;
-  // Controller untuk Animasi Rotasi Logo
   late AnimationController _rotateController;
 
   late Animation<double> _fadeAnimation;
@@ -65,25 +91,21 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
 
-    // Inisialisasi Main Controller
     _mainController = AnimationController(
       duration: const Duration(milliseconds: 2000),
       vsync: this,
     );
 
-    // Inisialisasi Pulse Controller (Infinite repeat)
     _pulseController = AnimationController(
       duration: const Duration(milliseconds: 1200),
       vsync: this,
     )..repeat(reverse: true);
 
-    // Inisialisasi Rotate Controller (Short rotation on load)
     _rotateController = AnimationController(
       duration: const Duration(milliseconds: 1500),
       vsync: this,
     );
 
-    // --- Animasi ---
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
       CurvedAnimation(
         parent: _mainController,
@@ -113,20 +135,17 @@ class _SplashScreenState extends State<SplashScreen>
       CurvedAnimation(parent: _rotateController, curve: Curves.easeOutQuad),
     );
 
-    // Mulai animasi
     _mainController.forward();
     _rotateController.forward();
 
-    // Navigasi ke LoginPage setelah 4 detik
     Timer(const Duration(seconds: 4), () {
       if (mounted) {
         Navigator.of(context).pushReplacement(
           PageRouteBuilder(
             pageBuilder: (context, animation, secondaryAnimation) =>
-                const LoginPage(),
+                const MenuScreen(),
             transitionsBuilder:
                 (context, animation, secondaryAnimation, child) {
-                  // Transisi slide dari bawah ke atas
                   const begin = Offset(0.0, 1.0);
                   const end = Offset.zero;
                   const curve = Curves.easeOutCubic;
@@ -161,140 +180,401 @@ class _SplashScreenState extends State<SplashScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       body: Container(
-        // Gradien Background yang Lebih Smooth dan Dinamis
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              const Color(0xFFD32F2F), // Red 700
-              const Color(0xFFC62828), // Red 800
-              const Color(0xFFFF9800), // Orange
+              const Color(0xFFD32F2F),
+              const Color(0xFFC62828),
+              const Color(0xFFFF9800),
             ],
             stops: const [0.0, 0.5, 1.0],
           ),
         ),
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Logo dengan Animasi Gabungan
-              RotationTransition(
-                turns: _rotateAnimation,
-                child: ScaleTransition(
-                  scale: _scaleAnimation,
-                  child: FadeTransition(
-                    opacity: _fadeAnimation,
-                    child: ScaleTransition(
-                      scale: _pulseAnimation,
-                      child: Container(
-                        padding: const EdgeInsets.all(25),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(40),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.4),
-                              blurRadius: 30,
-                              spreadRadius: 5,
-                              offset: const Offset(0, 15),
-                            ),
-                            BoxShadow(
-                              color: Colors.red.withOpacity(0.5),
-                              blurRadius: 50,
-                              spreadRadius: 10,
-                            ),
-                          ],
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                RotationTransition(
+                  turns: _rotateAnimation,
+                  child: ScaleTransition(
+                    scale: _scaleAnimation,
+                    child: FadeTransition(
+                      opacity: _fadeAnimation,
+                      child: ScaleTransition(
+                        scale: _pulseAnimation,
+                        child: Container(
+                          padding: const EdgeInsets.all(25),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(40),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withOpacity(0.4),
+                                blurRadius: 30,
+                                spreadRadius: 5,
+                                offset: const Offset(0, 15),
+                              ),
+                              BoxShadow(
+                                color: Colors.red.withOpacity(0.5),
+                                blurRadius: 50,
+                                spreadRadius: 10,
+                              ),
+                            ],
+                          ),
+                          child: const Icon(
+                            Icons.school_outlined,
+                            size: 120,
+                            color: Color(0xFFC62828),
+                          ),
                         ),
-                        // Menggunakan Icon placeholder karena gambar lokal tidak dapat diakses
-                        child: const Icon(
-                          Icons.school_outlined,
-                          size: 160,
-                          color: Color(0xFFC62828),
-                        ),
-                        // Ganti dengan:
-                        // child: Image.asset(
-                        //   'images/logoPolije2.png',
-                        //   width: 160,
-                        //   height: 160,
-                        // ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              const SizedBox(height: 50),
-              // Nama Universitas dengan Animasi Slide
-              AnimatedBuilder(
-                animation: _slideAnimation,
-                builder: (context, child) {
-                  return Transform.translate(
-                    offset: Offset(0, _slideAnimation.value),
-                    child: FadeTransition(
-                      opacity: _fadeAnimation,
-                      child: Column(
-                        children: [
-                          const Text(
-                            'POLITEKNIK NEGERI JEMBER',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 26,
-                              fontWeight: FontWeight.w900,
-                              letterSpacing: 4,
-                              shadows: [
-                                Shadow(
-                                  color: Colors.black45,
-                                  offset: Offset(2, 2),
-                                  blurRadius: 4,
+                const SizedBox(height: 40),
+                AnimatedBuilder(
+                  animation: _slideAnimation,
+                  builder: (context, child) {
+                    return Transform.translate(
+                      offset: Offset(0, _slideAnimation.value),
+                      child: FadeTransition(
+                        opacity: _fadeAnimation,
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: Column(
+                            children: [
+                              const Text(
+                                'POLITEKNIK NEGERI JEMBER',
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w900,
+                                  letterSpacing: 2,
+                                  shadows: [
+                                    Shadow(
+                                      color: Colors.black45,
+                                      offset: Offset(2, 2),
+                                      blurRadius: 4,
+                                    ),
+                                  ],
                                 ),
-                              ],
-                            ),
+                              ),
+                              const SizedBox(height: 10),
+                              Container(
+                                width: 80,
+                                height: 4,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(2),
+                                ),
+                              ),
+                            ],
                           ),
-                          const SizedBox(height: 10),
-                          Container(
-                            width: 80,
-                            height: 4,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(2),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                },
-              ),
-              const SizedBox(height: 80),
-              // Loading Indicator
-              FadeTransition(
-                opacity: _fadeAnimation,
-                child: Column(
-                  children: [
-                    SizedBox(
-                      width: 50,
-                      height: 50,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 4,
-                        valueColor: AlwaysStoppedAnimation<Color>(
-                          Colors.white.withOpacity(0.95),
                         ),
                       ),
+                    );
+                  },
+                ),
+                const SizedBox(height: 50),
+                FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        width: 50,
+                        height: 50,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 4,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white.withOpacity(0.95),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                      Text(
+                        'MEMUAT DATA...',
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.9),
+                          fontSize: 14,
+                          fontWeight: FontWeight.w400,
+                          letterSpacing: 3,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// ============= MENU SCREEN =============
+class MenuScreen extends StatefulWidget {
+  const MenuScreen({super.key});
+
+  @override
+  State<MenuScreen> createState() => _MenuScreenState();
+}
+
+class _MenuScreenState extends State<MenuScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animController;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animController = AnimationController(
+      duration: const Duration(milliseconds: 1200),
+      vsync: this,
+    );
+
+    _fadeAnimation = Tween<double>(
+      begin: 0.0,
+      end: 1.0,
+    ).animate(CurvedAnimation(parent: _animController, curve: Curves.easeIn));
+
+    _slideAnimation =
+        Tween<Offset>(begin: const Offset(0, 0.5), end: Offset.zero).animate(
+          CurvedAnimation(parent: _animController, curve: Curves.easeOutCubic),
+        );
+
+    _animController.forward();
+  }
+
+  @override
+  void dispose() {
+    _animController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    return Scaffold(
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              const Color(0xFFC62828),
+              const Color(0xFFD32F2F),
+              const Color(0xFFFF9800).withOpacity(0.8),
+            ],
+            stops: const [0.0, 0.4, 1.0],
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              child: FadeTransition(
+                opacity: _fadeAnimation,
+                child: SlideTransition(
+                  position: _slideAnimation,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minHeight:
+                          screenHeight -
+                          MediaQuery.of(context).padding.top -
+                          MediaQuery.of(context).padding.bottom -
+                          40,
                     ),
-                    const SizedBox(height: 20),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(15),
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.1),
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.3),
+                                  width: 2,
+                                ),
+                              ),
+                              child: const Icon(
+                                Icons.school_outlined,
+                                size: 60,
+                                color: Colors.white,
+                              ),
+                            ),
+                            const SizedBox(height: 15),
+                            const Text(
+                              'SPI - POLIJE',
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.w900,
+                                color: Colors.white,
+                                letterSpacing: 2,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'Sistem Pengaduan dan Informasi',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.white.withOpacity(0.9),
+                                fontWeight: FontWeight.w300,
+                              ),
+                            ),
+                            const SizedBox(height: 35),
+                          ],
+                        ),
+                        Column(
+                          children: [
+                            _buildMenuButton(
+                              title: 'Lapor dengan Akun',
+                              subtitle: 'Masuk menggunakan akun SIAKAD Anda',
+                              icon: Icons.login_outlined,
+                              color: const Color(0xFF1976D2),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const LoginPage(),
+                                  ),
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 15),
+                            _buildMenuButton(
+                              title: 'Lapor Tanpa Akun',
+                              subtitle: 'Lapor secara anonim tanpa perlu login',
+                              icon: Icons.person_off_outlined,
+                              color: const Color(0xFFF57C00),
+                              onTap: () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Fitur Lapor Anonim segera hadir',
+                                    ),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 15),
+                            _buildMenuButton(
+                              title: 'Survey Kepuasan',
+                              subtitle: 'Ikuti survey kepuasan pelayanan kami',
+                              icon: Icons.rate_review_outlined,
+                              color: const Color(0xFF388E3C),
+                              onTap: () {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text(
+                                      'Survey Kepuasan segera hadir',
+                                    ),
+                                    duration: Duration(seconds: 2),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 20),
+                          child: Text(
+                            'Pilih salah satu layanan di atas untuk melanjutkan',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.white.withOpacity(0.7),
+                              fontStyle: FontStyle.italic,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMenuButton({
+    required String title,
+    required String subtitle,
+    required IconData icon,
+    required Color color,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(15),
+        child: Container(
+          padding: const EdgeInsets.all(20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.15),
+                blurRadius: 15,
+                spreadRadius: 1,
+                offset: const Offset(0, 5),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, size: 32, color: color),
+              ),
+              const SizedBox(width: 15),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
                     Text(
-                      'MEMUAT DATA...',
+                      title,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.9),
-                        fontSize: 14,
+                        fontSize: 12,
+                        color: Colors.grey.shade600,
                         fontWeight: FontWeight.w400,
-                        letterSpacing: 3,
                       ),
                     ),
                   ],
                 ),
               ),
+              Icon(Icons.arrow_forward_ios, color: color, size: 18),
             ],
           ),
         ),
@@ -303,7 +583,7 @@ class _SplashScreenState extends State<SplashScreen>
   }
 }
 
-// ---------------- Login Page ----------------
+// ============= LOGIN PAGE =============
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -325,7 +605,6 @@ class _LoginPageState extends State<LoginPage>
   @override
   void initState() {
     super.initState();
-    // Inisialisasi animasi untuk tampilan login
     _animController = AnimationController(
       duration: const Duration(milliseconds: 1000),
       vsync: this,
@@ -352,31 +631,29 @@ class _LoginPageState extends State<LoginPage>
     super.dispose();
   }
 
-  // ---------------- Login Function ----------------
+  // Fungsi untuk handle back button
+  Future<bool> _onWillPop() async {
+    // Jika logout, tidak boleh back ke MenuScreen
+    // Langsung navigate ke MenuScreen dengan pushReplacement
+    Navigator.of(
+      context,
+    ).pushReplacement(MaterialPageRoute(builder: (_) => const MenuScreen()));
+    return false; // Cegah default back behavior
+  }
+
   void _login() async {
     String email = _emailController.text.trim();
     String password = _passwordController.text;
 
     if (email.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Email dan password wajib diisi!'),
-          backgroundColor: Colors.red.shade700,
-          behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(15),
-          ),
-          margin: const EdgeInsets.all(20),
-        ),
-      );
+      _showSnackBar('Email dan password wajib diisi!', isError: true);
       return;
     }
 
     setState(() => _isLoading = true);
 
     try {
-      // 🔹 Ganti ke IP laptop kamu kalau pakai HP fisik
-      var url = Uri.parse("http://192.168.0.104/backend/api/login.php");
+      var url = Uri.parse("http://10.133.104.252/backend/api/login.php");
 
       var response = await http.post(
         url,
@@ -397,69 +674,75 @@ class _LoginPageState extends State<LoginPage>
         await prefs.setString('user_id', id);
         await prefs.setString('user_name', name);
         await prefs.setString('user_role', role);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              "Login berhasil! Selamat datang, ${data['data']['nama']}.",
-            ),
-            backgroundColor: Colors.green.shade600,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-            margin: const EdgeInsets.all(20),
-          ),
-        );
 
-        // Navigasi ke halaman utama
-        Navigator.of(
-          context,
-        ).pushReplacement(MaterialPageRoute(builder: (_) => const HomePage()));
+        if (mounted) {
+          _showSnackBar(
+            "Login berhasil! Selamat datang, $name.",
+            isError: false,
+          );
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => const HomePage()),
+          );
+        }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(data["message"] ?? "Login gagal."),
-            backgroundColor: Colors.red.shade700,
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(15),
-            ),
-            margin: const EdgeInsets.all(20),
-          ),
-        );
+        _showSnackBar(data["message"] ?? "Login gagal.", isError: true);
       }
     } catch (e) {
       setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Terjadi kesalahan koneksi: $e"),
-          backgroundColor: Colors.red.shade700,
-        ),
-      );
+      _showSnackBar("Terjadi kesalahan koneksi: $e", isError: true);
     }
+  }
+
+  void _showSnackBar(String message, {required bool isError}) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          message,
+          style: const TextStyle(color: Colors.white, fontSize: 14),
+        ),
+        backgroundColor: isError ? Colors.red.shade600 : Colors.green.shade600,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        margin: const EdgeInsets.all(16),
+        duration: const Duration(seconds: 3),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          // Gradien Background yang Menarik
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              const Color(0xFFC62828), // Red 800
-              const Color(0xFFD32F2F), // Red 700
-              const Color(0xFFFF9800).withOpacity(0.8), // Orange
-            ],
-            stops: const [0.0, 0.4, 1.0],
+    return WillPopScope(
+      onWillPop: _onWillPop, // Tangani back button
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(
+              Icons.arrow_back_ios,
+              color: Colors.white,
+              size: 20,
+            ),
+            onPressed: _onWillPop, // Gunakan fungsi yang sama
           ),
         ),
-        child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 25),
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: [
+                const Color(0xFFC62828),
+                const Color(0xFFD32F2F),
+                const Color(0xFFFF9800).withOpacity(0.7),
+              ],
+              stops: const [0.0, 0.5, 1.0],
+            ),
+          ),
+          child: SingleChildScrollView(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
               child: FadeTransition(
                 opacity: _fadeAnimation,
                 child: SlideTransition(
@@ -467,81 +750,13 @@ class _LoginPageState extends State<LoginPage>
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Header Logo & Title
-                      Container(
-                        padding: const EdgeInsets.all(15),
-                        decoration: BoxDecoration(
-                          color: Colors.white.withOpacity(0.1),
-                          shape: BoxShape.circle,
-                          border: Border.all(
-                            color: Colors.white.withOpacity(0.3),
-                            width: 2,
-                          ),
-                        ),
-                        child: const Icon(
-                          Icons.school_outlined,
-                          size: 70,
-                          color: Colors.white,
-                        ),
-                        // Ganti dengan Image.asset jika perlu
-                      ),
-                      const SizedBox(height: 15),
-                      const Text(
-                        'SPI - POLIJE',
-                        style: TextStyle(
-                          fontSize: 34,
-                          fontWeight: FontWeight.w900,
-                          color: Colors.white,
-                          letterSpacing: 2,
-                        ),
-                      ),
-                      const SizedBox(height: 5),
-                      Text(
-                        'Masuk dengan Akun SIAKAD Anda',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.white.withOpacity(0.9),
-                          fontWeight: FontWeight.w300,
-                        ),
-                      ),
+                      SizedBox(height: MediaQuery.of(context).padding.top + 40),
+                      _buildHeader(),
                       const SizedBox(height: 40),
-
-                      // Login Card Container
                       _buildLoginCard(),
-
+                      const SizedBox(height: 24),
+                      _buildRegisterSection(),
                       const SizedBox(height: 30),
-                      // Register link
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            'Belum punya akun? ',
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.9),
-                            ),
-                          ),
-                          TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const RegisterPage(),
-                                ),
-                              );
-                            },
-                            child: const Text(
-                              'Daftar Sekarang',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                                decoration: TextDecoration.underline,
-                                decorationColor: Colors.white,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
                     ],
                   ),
                 ),
@@ -553,180 +768,296 @@ class _LoginPageState extends State<LoginPage>
     );
   }
 
-  // Widget terpisah untuk Kartu Login
+  Widget _buildHeader() {
+    return Column(
+      children: [
+        Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.15),
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.white.withOpacity(0.25), width: 2),
+          ),
+          child: const Icon(
+            Icons.school_outlined,
+            size: 56,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 16),
+        const Text(
+          'SPI POLIJE',
+          style: TextStyle(
+            fontSize: 28,
+            fontWeight: FontWeight.w900,
+            color: Colors.white,
+            letterSpacing: 1.5,
+          ),
+        ),
+        const SizedBox(height: 6),
+        Text(
+          'Sistem Pengaduan & Informasi',
+          style: TextStyle(
+            fontSize: 13,
+            color: Colors.white.withOpacity(0.85),
+            fontWeight: FontWeight.w400,
+            letterSpacing: 0.5,
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildLoginCard() {
     return Container(
-      padding: const EdgeInsets.all(35),
+      padding: const EdgeInsets.all(28),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(25),
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
-            blurRadius: 30,
-            spreadRadius: 5,
-            offset: const Offset(0, 15),
+            color: Colors.black.withOpacity(0.12),
+            blurRadius: 24,
+            spreadRadius: 2,
+            offset: const Offset(0, 12),
           ),
         ],
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Email field
+          const Text(
+            'Masuk dengan Akun SIAKAD',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w700,
+              color: Colors.black87,
+              letterSpacing: 0.3,
+            ),
+          ),
+          const SizedBox(height: 20),
           _buildInputField(
             controller: _emailController,
             label: 'Email / NIM',
-            hint: 'Masukkan Email atau NIM Anda',
+            hint: 'Masukkan email atau NIM',
             icon: Icons.person_outline,
+            keyboardType: TextInputType.emailAddress,
           ),
-          const SizedBox(height: 25),
-          // Password field
+          const SizedBox(height: 16),
           _buildInputField(
             controller: _passwordController,
             label: 'Password',
-            hint: 'Masukkan password Anda',
+            hint: 'Masukkan password',
             icon: Icons.lock_outline,
             isPassword: true,
           ),
-          const SizedBox(height: 20),
-          // Forgot password
+          const SizedBox(height: 12),
           Align(
             alignment: Alignment.centerRight,
             child: TextButton(
-              onPressed: () {
-                // Logika lupa password
-              },
+              onPressed: () {},
               child: Text(
                 'Lupa Password?',
                 style: TextStyle(
                   color: Theme.of(context).primaryColor,
                   fontWeight: FontWeight.w600,
-                  fontSize: 14,
+                  fontSize: 12,
                 ),
               ),
             ),
           ),
-          const SizedBox(height: 30),
-          // Login button dengan Gradien
-          Container(
-            width: double.infinity,
-            height: 55,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(15),
-              gradient: LinearGradient(
-                colors: [
-                  Theme.of(context).primaryColor,
-                  const Color(0xFFEF5350), // Red 400
-                  Colors.orange.shade700,
-                ],
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.red.shade700.withOpacity(0.4),
-                  blurRadius: 15,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
-            child: ElevatedButton(
-              onPressed: _isLoading ? null : _login,
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.transparent,
-                shadowColor: Colors.transparent,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                padding: EdgeInsets.zero,
-              ),
-              child: _isLoading
-                  ? const SizedBox(
-                      width: 28,
-                      height: 28,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 3,
-                      ),
-                    )
-                  : const Text(
-                      'MASUK',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        letterSpacing: 2,
-                      ),
-                    ),
-            ),
-          ),
+          const SizedBox(height: 24),
+          _buildLoginButton(),
         ],
       ),
     );
   }
 
-  // Widget terpisah untuk Input Field yang menarik
   Widget _buildInputField({
     required TextEditingController controller,
     required String label,
     required String hint,
     required IconData icon,
     bool isPassword = false,
+    TextInputType keyboardType = TextInputType.text,
   }) {
-    return TextField(
-      controller: controller,
-      obscureText: isPassword ? _obscurePassword : false,
-      keyboardType: label.contains('Email')
-          ? TextInputType.emailAddress
-          : TextInputType.text,
-      style: const TextStyle(color: Colors.black87),
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hint,
-        hintStyle: TextStyle(color: Colors.grey.shade400),
-        labelStyle: TextStyle(
-          color: Colors.grey.shade600,
-          fontWeight: FontWeight.w600,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w600,
+            color: Colors.grey.shade700,
+            letterSpacing: 0.3,
+          ),
         ),
-        prefixIcon: Icon(icon, color: Theme.of(context).primaryColor, size: 24),
+        const SizedBox(height: 8),
+        TextField(
+          controller: controller,
+          obscureText: isPassword ? _obscurePassword : false,
+          keyboardType: keyboardType,
+          style: const TextStyle(
+            color: Colors.black87,
+            fontSize: 14,
+            fontWeight: FontWeight.w500,
+          ),
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: TextStyle(
+              color: Colors.grey.shade400,
+              fontSize: 13,
+              fontWeight: FontWeight.w400,
+            ),
+            prefixIcon: Icon(
+              icon,
+              color: Theme.of(context).primaryColor,
+              size: 20,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(
+                color: Theme.of(context).primaryColor,
+                width: 2,
+              ),
+            ),
+            filled: true,
+            fillColor: Colors.grey.shade50,
+            suffixIcon: isPassword
+                ? IconButton(
+                    icon: Icon(
+                      _obscurePassword
+                          ? Icons.visibility_off_outlined
+                          : Icons.visibility_outlined,
+                      color: Colors.grey.shade500,
+                      size: 20,
+                    ),
+                    onPressed: () {
+                      setState(() => _obscurePassword = !_obscurePassword);
+                    },
+                  )
+                : null,
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 14,
+              horizontal: 14,
+            ),
+          ),
+        ),
+      ],
+    );
+  }
 
-        // Desain Border Elegan
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide.none, // Hilangkan border default
+  Widget _buildLoginButton() {
+    return Container(
+      width: double.infinity,
+      height: 52,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        gradient: LinearGradient(
+          colors: [Theme.of(context).primaryColor, const Color(0xFFEF5350)],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
         ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide.none,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide(
-            color: Theme.of(context).primaryColor,
-            width: 2,
-          ), // Border saat fokus
-        ),
-
-        filled: true,
-        fillColor: Colors.grey.shade100, // Warna isian yang lembut
-        // Ikon visibility untuk password
-        suffixIcon: isPassword
-            ? IconButton(
-                icon: Icon(
-                  _obscurePassword
-                      ? Icons.visibility_off_outlined
-                      : Icons.visibility_outlined,
-                  color: Colors.grey.shade600,
-                ),
-                onPressed: () {
-                  setState(() => _obscurePassword = !_obscurePassword);
-                },
-              )
-            : null,
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 18,
-          horizontal: 20,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.red.shade700.withOpacity(0.3),
+            blurRadius: 16,
+            offset: const Offset(0, 6),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: _isLoading ? null : _login,
+          borderRadius: BorderRadius.circular(12),
+          child: Center(
+            child: _isLoading
+                ? SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                      strokeWidth: 2.5,
+                    ),
+                  )
+                : const Text(
+                    'MASUK',
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
+                      letterSpacing: 1.2,
+                    ),
+                  ),
+          ),
         ),
       ),
+    );
+  }
+
+  Widget _buildRegisterSection() {
+    return Column(
+      children: [
+        Container(
+          height: 1,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.white.withOpacity(0.1),
+                Colors.white.withOpacity(0.3),
+                Colors.white.withOpacity(0.1),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(height: 18),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Belum punya akun? ',
+              style: TextStyle(
+                color: Colors.white.withOpacity(0.85),
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const RegisterPage()),
+                );
+              },
+              style: TextButton.styleFrom(
+                padding: const EdgeInsets.symmetric(horizontal: 0),
+                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              ),
+              child: const Text(
+                'Daftar Sekarang',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 13,
+                  decoration: TextDecoration.underline,
+                  decorationColor: Colors.white,
+                  decorationThickness: 1.5,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
