@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/gestures.dart';
 
 // ============ REGISTER PAGE ============
 class RegisterPage extends StatefulWidget {
@@ -22,6 +23,17 @@ class _RegisterPageState extends State<RegisterPage>
   bool _obscureConfirmPassword = true;
   bool _isLoading = false;
   bool _agreeTerms = false;
+
+  bool _isInternalSelected = false;
+  bool _isExternalSelected = false;
+  String? _selectedInternalCategory;
+  bool _isWhistleblower = false;
+  bool _isMasyarakat = false;
+
+  bool _isPegawaiPolijeSelected = false;
+  String? _selectedSubKategoriInternal;
+  bool _isWhistleblowerSelected = false;
+  bool _isMasyarakatSelected = false;
 
   late AnimationController _animController;
   late Animation<double> _fadeAnimation;
@@ -61,6 +73,17 @@ class _RegisterPageState extends State<RegisterPage>
   }
 
   void _register() async {
+    if (!(_isPegawaiPolijeSelected ||
+        _isWhistleblowerSelected ||
+        _isMasyarakatSelected)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Harap pilih salah satu kategori internal/eksternal'),
+        ),
+      );
+      return;
+    }
+
     if (!_formKey.currentState!.validate()) {
       return;
     }
@@ -129,18 +152,82 @@ class _RegisterPageState extends State<RegisterPage>
     }
   }
 
+  void _showTermsDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          title: const Text(
+            'Syarat dan Ketentuan',
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Color(0xFFC62828),
+            ),
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: const [
+                Text(
+                  'Dengan mendaftar akun, Anda menyetujui hal-hal berikut:',
+                  style: TextStyle(fontWeight: FontWeight.w500),
+                ),
+                SizedBox(height: 10),
+                Text(
+                  '1. Anda memberikan data yang benar, akurat, dan dapat dipertanggungjawabkan.\n\n'
+                  '2. Anda bertanggung jawab atas kerahasiaan akun dan kata sandi Anda.\n\n'
+                  '3. Anda tidak boleh menggunakan sistem ini untuk tujuan yang melanggar hukum, merugikan pihak lain, atau mengganggu keamanan data.\n\n'
+                  '4. Pihak pengelola berhak menolak atau menonaktifkan akun yang melanggar ketentuan penggunaan.\n\n'
+                  '5. Data pribadi Anda akan diproses sesuai dengan kebijakan privasi yang berlaku.',
+                  style: TextStyle(fontSize: 14, height: 1.5),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Tutup', style: TextStyle(color: Colors.grey)),
+            ),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFFC62828),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              onPressed: () {
+                Navigator.pop(context);
+                setState(() => _agreeTerms = true);
+              },
+              child: const Text(
+                'Saya Setuju',
+                style: TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Set the background color to be transparent to show the gradient on the body
+      backgroundColor: Colors.transparent,
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              const Color(0xFFC62828),
-              const Color(0xFFD32F2F),
-              const Color(0xFFFF9800).withOpacity(0.8),
+              const Color(0xFFC62828), // Dark Red (Red 900)
+              const Color(0xFFD32F2F), // Red 700
+              const Color(0xFFFF9800).withOpacity(0.8), // Orange 500
             ],
             stops: const [0.0, 0.4, 1.0],
           ),
@@ -304,6 +391,211 @@ class _RegisterPageState extends State<RegisterPage>
                             ),
                             const SizedBox(height: 20),
 
+                            // === KATEGORI INTERNAL ===
+                            if (!_isMasyarakatSelected) // Tampilkan hanya kalau Masyarakat TIDAK dipilih
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const Text(
+                                    'Kategori Internal',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+
+                                  // Pegawai Polije
+                                  if (!_isWhistleblowerSelected)
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: _isPegawaiPolijeSelected
+                                            ? Colors.red.shade50
+                                            : Colors.grey.shade100,
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: _isPegawaiPolijeSelected
+                                              ? const Color(0xFFC62828)
+                                              : Colors.grey.shade300,
+                                        ),
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          ListTile(
+                                            leading: const Icon(
+                                              Icons.business_center_rounded,
+                                              color: Color(0xFFC62828),
+                                            ),
+                                            title: const Text(
+                                              'Pegawai Polije',
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                            trailing: Icon(
+                                              _isPegawaiPolijeSelected
+                                                  ? Icons
+                                                        .keyboard_arrow_up_rounded
+                                                  : Icons
+                                                        .keyboard_arrow_down_rounded,
+                                              color: Colors.grey[600],
+                                            ),
+                                            onTap: () {
+                                              setState(() {
+                                                _isPegawaiPolijeSelected =
+                                                    !_isPegawaiPolijeSelected;
+                                                if (_isPegawaiPolijeSelected) {
+                                                  _isWhistleblowerSelected =
+                                                      false;
+                                                  _isMasyarakatSelected = false;
+                                                } else {
+                                                  _selectedSubKategoriInternal =
+                                                      null;
+                                                }
+                                              });
+                                            },
+                                          ),
+                                          // Tampilkan subkategori hanya jika expand
+                                          if (_isPegawaiPolijeSelected)
+                                            Padding(
+                                              padding: const EdgeInsets.only(
+                                                left: 20,
+                                                bottom: 10,
+                                                right: 10,
+                                              ),
+                                              child: Column(
+                                                children:
+                                                    [
+                                                          'Pimpinan',
+                                                          'Pejabat yang Ditunjuk',
+                                                          'Pegawai',
+                                                          'Admin',
+                                                          'Pengawas',
+                                                        ]
+                                                        .map(
+                                                          (
+                                                            e,
+                                                          ) => RadioListTile<String>(
+                                                            value: e,
+                                                            groupValue:
+                                                                _selectedSubKategoriInternal,
+                                                            title: Text(e),
+                                                            onChanged: (val) =>
+                                                                setState(
+                                                                  () =>
+                                                                      _selectedSubKategoriInternal =
+                                                                          val,
+                                                                ),
+                                                          ),
+                                                        )
+                                                        .toList(),
+                                              ),
+                                            ),
+                                        ],
+                                      ),
+                                    ),
+                                  const SizedBox(height: 10),
+                                  // Whistleblower
+                                  if (!_isPegawaiPolijeSelected) // Sembunyikan jika Pegawai Polije dipilih
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        color: _isWhistleblowerSelected
+                                            ? Colors.red.shade50
+                                            : Colors.grey.shade100,
+                                        borderRadius: BorderRadius.circular(12),
+                                        border: Border.all(
+                                          color: _isWhistleblowerSelected
+                                              ? const Color(0xFFC62828)
+                                              : Colors.grey.shade300,
+                                        ),
+                                      ),
+                                      child: CheckboxListTile(
+                                        activeColor: const Color(0xFFC62828),
+                                        value: _isWhistleblowerSelected,
+                                        onChanged: (val) {
+                                          setState(() {
+                                            _isWhistleblowerSelected =
+                                                val ?? false;
+                                            if (_isWhistleblowerSelected) {
+                                              _isPegawaiPolijeSelected =
+                                                  false; // Pegawai Polije hilang
+                                              _selectedSubKategoriInternal =
+                                                  null;
+                                              _isMasyarakatSelected =
+                                                  false; // Masyarakat hilang
+                                            }
+                                          });
+                                        },
+                                        title: const Text(
+                                          'Whistleblower',
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        controlAffinity:
+                                            ListTileControlAffinity.leading,
+                                      ),
+                                    ),
+                                ],
+                              ),
+
+                            // === KATEGORI EKSTERNAL ===
+                            if (!_isPegawaiPolijeSelected &&
+                                !_isWhistleblowerSelected) // Hanya tampil jika kategori internal TIDAK dipilih
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  const SizedBox(height: 10),
+                                  const Text(
+                                    'Kategori Eksternal',
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black87,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: _isMasyarakatSelected
+                                          ? Colors.red.shade50
+                                          : Colors.grey.shade100,
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: _isMasyarakatSelected
+                                            ? const Color(0xFFC62828)
+                                            : Colors.grey.shade300,
+                                      ),
+                                    ),
+                                    child: CheckboxListTile(
+                                      activeColor: const Color(0xFFC62828),
+                                      value: _isMasyarakatSelected,
+                                      onChanged: (val) {
+                                        setState(() {
+                                          _isMasyarakatSelected = val ?? false;
+                                          if (_isMasyarakatSelected) {
+                                            _isPegawaiPolijeSelected = false;
+                                            _selectedSubKategoriInternal = null;
+                                            _isWhistleblowerSelected = false;
+                                          }
+                                        });
+                                      },
+                                      title: const Text(
+                                        'Masyarakat / Non Pegawai / Instansi Lain',
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                      controlAffinity:
+                                          ListTileControlAffinity.leading,
+                                    ),
+                                  ),
+                                ],
+                              ),
+
+                            const SizedBox(height: 20),
+
                             // Terms & Conditions Checkbox
                             CheckboxListTile(
                               value: _agreeTerms,
@@ -330,11 +622,16 @@ class _RegisterPageState extends State<RegisterPage>
                                         fontWeight: FontWeight.bold,
                                         decoration: TextDecoration.underline,
                                       ),
+                                      recognizer: TapGestureRecognizer()
+                                        ..onTap = () {
+                                          _showTermsDialog(context);
+                                        },
                                     ),
                                   ],
                                 ),
                               ),
                             ),
+
                             const SizedBox(height: 25),
 
                             // Register Button
@@ -345,9 +642,9 @@ class _RegisterPageState extends State<RegisterPage>
                                 borderRadius: BorderRadius.circular(15),
                                 gradient: LinearGradient(
                                   colors: [
-                                    const Color(0xFFC62828),
-                                    const Color(0xFFEF5350),
-                                    Colors.orange.shade700,
+                                    const Color(0xFFC62828), // Dark Red
+                                    const Color(0xFFEF5350), // Lighter Red
+                                    Colors.orange.shade700, // Orange
                                   ],
                                   begin: Alignment.centerLeft,
                                   end: Alignment.centerRight,
@@ -430,72 +727,69 @@ class _RegisterPageState extends State<RegisterPage>
       ),
     );
   }
+}
 
-  Widget _buildInputField({
-    required TextEditingController controller,
-    required String label,
-    required String hint,
-    required IconData icon,
-    TextInputType keyboardType = TextInputType.text,
-    bool isPassword = false,
-    bool obscurePassword = false,
-    VoidCallback? onPasswordToggle,
-    String? Function(String?)? validator,
-  }) {
-    return TextFormField(
-      controller: controller,
-      obscureText: isPassword ? obscurePassword : false,
-      keyboardType: keyboardType,
-      validator: validator,
-      style: const TextStyle(color: Colors.black87, fontSize: 14),
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hint,
-        hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
-        labelStyle: TextStyle(
-          color: Colors.grey.shade600,
-          fontWeight: FontWeight.w600,
-          fontSize: 13,
-        ),
-        prefixIcon: Icon(icon, color: const Color(0xFFC62828), size: 22),
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide.none,
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: BorderSide.none,
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: const BorderSide(color: Color(0xFFC62828), width: 2),
-        ),
-        errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(15),
-          borderSide: const BorderSide(color: Colors.red, width: 2),
-        ),
-        filled: true,
-        fillColor: Colors.grey.shade100,
-        suffixIcon: isPassword
-            ? IconButton(
-                icon: Icon(
-                  obscurePassword
-                      ? Icons.visibility_off_outlined
-                      : Icons.visibility_outlined,
-                  color: Colors.grey.shade600,
-                  size: 20,
-                ),
-                onPressed: onPasswordToggle,
-              )
-            : null,
-        contentPadding: const EdgeInsets.symmetric(
-          vertical: 16,
-          horizontal: 20,
-        ),
-        errorStyle: const TextStyle(fontSize: 12),
+Widget _buildInputField({
+  required TextEditingController controller,
+  required String label,
+  required String hint,
+  required IconData icon,
+  TextInputType keyboardType = TextInputType.text,
+  bool isPassword = false,
+  bool obscurePassword = false,
+  VoidCallback? onPasswordToggle,
+  String? Function(String?)? validator,
+}) {
+  return TextFormField(
+    controller: controller,
+    obscureText: isPassword ? obscurePassword : false,
+    keyboardType: keyboardType,
+    validator: validator,
+    style: const TextStyle(color: Colors.black87, fontSize: 14),
+    decoration: InputDecoration(
+      labelText: label,
+      hintText: hint,
+      hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 13),
+      labelStyle: TextStyle(
+        color: Colors.grey.shade600,
+        fontWeight: FontWeight.w600,
+        fontSize: 13,
       ),
-    );
-  }
+      prefixIcon: Icon(icon, color: const Color(0xFFC62828), size: 22),
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(15),
+        borderSide: BorderSide.none,
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(15),
+        borderSide: BorderSide.none,
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(15),
+        borderSide: const BorderSide(color: Color(0xFFC62828), width: 2),
+      ),
+      errorBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(15),
+        borderSide: const BorderSide(color: Colors.red, width: 2),
+      ),
+      filled: true,
+      fillColor: Colors.grey.shade100,
+      suffixIcon: isPassword
+          ? IconButton(
+              icon: Icon(
+                obscurePassword
+                    ? Icons.visibility_off_outlined
+                    : Icons.visibility_outlined,
+                color: Colors.grey.shade600,
+                size: 20,
+              ),
+              onPressed: onPasswordToggle,
+            )
+          : null,
+      contentPadding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+      errorStyle: const TextStyle(fontSize: 12),
+    ),
+  );
 }
 
 // ============ FORGOT PASSWORD PAGE ============

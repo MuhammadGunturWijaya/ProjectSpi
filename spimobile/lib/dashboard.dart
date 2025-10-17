@@ -140,7 +140,7 @@ class _HomePageState extends State<HomePage>
     }
 
     final url = Uri.parse(
-      "http://10.133.104.252/backend/api/get_laporan_user.php?user_id=$userId",
+      "http://192.168.0.104/backend/api/get_laporan_user.php?user_id=$userId",
     );
 
     try {
@@ -407,7 +407,7 @@ class _HomePageState extends State<HomePage>
     if (userId.isEmpty) return;
 
     final url = Uri.parse(
-      "http://10.133.104.252/backend/api/user_stats.php?user_id=$userId",
+      "http://192.168.0.104/backend/api/user_stats.php?user_id=$userId",
     );
     final response = await http.get(url);
 
