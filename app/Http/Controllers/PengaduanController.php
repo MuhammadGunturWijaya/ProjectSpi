@@ -131,7 +131,8 @@ class PengaduanController extends Controller
 
         $pengaduan->delete();
 
-        return redirect()->route('pengaduan.index')->with('success', 'Pengaduan berhasil dihapus.');
+        // return redirect()->route('pengaduan.index')->with('success', 'Pengaduan berhasil dihapus.');
+        return redirect('/admin/pengaduan')->with('success', 'Pengaduan berhasil dihapus.');
     }
 
 

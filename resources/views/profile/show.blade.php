@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Profil Pengguna - SPI POLIJE</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -399,7 +400,7 @@
                         </button>
                     @endif
 
-
+                   
 
                     <script>
                         document.getElementById('btnVerifyPendaftar').addEventListener('click', function (event) {
@@ -410,14 +411,14 @@
                                 title: 'Masukkan Kode Verifikasi Pendaftar',
                                 input: 'text',
                                 inputPlaceholder: 'Contoh: REG-123456',
-                                inputAttributes: { autocapitalize: 'off' },
                                 showCancelButton: true,
-                                confirmButtonText: 'Verifikasi',
+                                confirmButtonText: 'Cek Data',
                                 cancelButtonText: 'Batal',
                                 confirmButtonColor: '#4facfe',
                                 showLoaderOnConfirm: true,
                                 preConfirm: (code) => {
-                                    return fetch("{{ route('pendaftar.verify') }}", {
+                                    // Langkah 1 — hanya cek kode, belum aktivasi
+                                    return fetch("{{ route('pendaftar.check') }}", {
                                         method: 'POST',
                                         headers: {
                                             'Content-Type': 'application/json',
@@ -429,46 +430,82 @@
                                             if (!response.ok) throw new Error(response.statusText);
                                             return response.json();
                                         })
-                                        .catch(async (error) => {
-                                            Swal.close();
-                                            console.error('Error detail:', error);
-                                            Swal.fire({
-                                                icon: 'error',
-                                                title: 'Gagal!',
-                                                text: 'Terjadi kesalahan: ' + error,
-                                                confirmButtonColor: '#dc3545'
-                                            });
+                                        .catch(error => {
+                                            Swal.showValidationMessage(`Terjadi kesalahan: ${error}`);
                                         });
                                 },
                                 allowOutsideClick: () => !Swal.isLoading()
                             }).then((result) => {
-                                if (result.isConfirmed) {
-                                    const data = result.value;
-                                    if (data.success) {
-                                        // Update status email di halaman user (jika ada)
-                                        const emailStatus = document.getElementById('emailStatus');
-                                        if (emailStatus) {
-                                            emailStatus.textContent = data.email_verified ? 'Terverifikasi' : 'Belum Terverifikasi';
-                                        }
+                                if (result.isConfirmed && result.value.success) {
+                                    const p = result.value.data;
 
-                                        Swal.fire({
-                                            icon: 'success',
-                                            title: 'Verifikasi Berhasil!',
-                                            text: 'Kode verifikasi valid. Akses pendaftar telah diaktifkan.',
-                                            confirmButtonColor: '#4facfe'
-                                        });
-                                    } else {
-                                        Swal.fire({
-                                            icon: 'error',
-                                            title: 'Kode Tidak Valid',
-                                            text: data.message || 'Kode verifikasi salah atau sudah digunakan.',
-                                            confirmButtonColor: '#dc3545'
-                                        });
-                                    }
+                                    // Tampilkan data pendaftar sebelum konfirmasi aktivasi
+                                    Swal.fire({
+                                        title: 'Konfirmasi Data Pendaftar',
+                                        html: `
+                    <div style="text-align:left">
+                        <p><strong>Nama:</strong> ${p.name}</p>
+                        <p><strong>Email:</strong> ${p.email}</p>
+                        <p><strong>No. HP:</strong> ${p.phone ?? '-'}</p>
+                        <p><strong>Alamat:</strong> ${p.address ?? '-'}</p>
+                    </div>
+                `,
+                                        icon: 'info',
+                                        showCancelButton: true,
+                                        confirmButtonText: 'Aktifkan Akses',
+                                        cancelButtonText: 'Batal',
+                                        confirmButtonColor: '#4facfe',
+                                    }).then((confirmResult) => {
+                                        if (confirmResult.isConfirmed) {
+                                            // Langkah 2 — baru aktivasi
+                                            fetch("{{ route('pendaftar.verify') }}", {
+                                                method: 'POST',
+                                                headers: {
+                                                    'Content-Type': 'application/json',
+                                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                                },
+                                                body: JSON.stringify({ code: p.code })
+                                            })
+                                                .then(response => response.json())
+                                                .then(data => {
+                                                    if (data.success) {
+                                                        Swal.fire({
+                                                            icon: 'success',
+                                                            title: 'Verifikasi Berhasil!',
+                                                            text: 'Kode verifikasi valid. Akses pendaftar telah diaktifkan.',
+                                                            confirmButtonColor: '#4facfe'
+                                                        });
+                                                    } else {
+                                                        Swal.fire({
+                                                            icon: 'error',
+                                                            title: 'Gagal Aktivasi',
+                                                            text: data.message || 'Terjadi kesalahan saat mengaktifkan akses.',
+                                                            confirmButtonColor: '#dc3545'
+                                                        });
+                                                    }
+                                                })
+                                                .catch(error => {
+                                                    Swal.fire({
+                                                        icon: 'error',
+                                                        title: 'Error!',
+                                                        text: 'Terjadi kesalahan sistem: ' + error,
+                                                        confirmButtonColor: '#dc3545'
+                                                    });
+                                                });
+                                        }
+                                    });
+                                } else if (result.isConfirmed) {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Kode Tidak Valid',
+                                        text: result.value.message || 'Kode verifikasi salah atau tidak ditemukan.',
+                                        confirmButtonColor: '#dc3545'
+                                    });
                                 }
                             });
                         });
                     </script>
+
 
                     <div class="col-12">
                         <div class="section-divider"></div>

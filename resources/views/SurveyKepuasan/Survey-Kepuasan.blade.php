@@ -294,8 +294,17 @@
 
             nextBtn.addEventListener('click', function () {
                 const currentQuestion = document.querySelector(`[data-step="${currentStep}"]`);
-                const inputs = currentQuestion.querySelectorAll('input, select, textarea');
-                let isValid = Array.from(inputs).every(input => input.value);
+                let isValid = false;
+
+                // Cek jika ada input radio (emoji rating)
+                const radios = currentQuestion.querySelectorAll('input[type="radio"]');
+                if (radios.length > 0) {
+                    isValid = Array.from(radios).some(r => r.checked);
+                } else {
+                    // Cek input/textarea/select lain yang wajib diisi
+                    const inputs = currentQuestion.querySelectorAll('input:required, select:required, textarea:required');
+                    isValid = Array.from(inputs).every(input => input.value.trim() !== '');
+                }
 
                 if (isValid) {
                     currentStep++;
@@ -303,24 +312,28 @@
                 } else {
                     const warningModalEl = document.getElementById('warningModal');
                     const warningModal = new bootstrap.Modal(warningModalEl);
+
+                    // Tambahkan efek shake saat modal muncul
                     warningModalEl.querySelector('.modal-content').classList.add('shake');
                     warningModalEl.addEventListener('animationend', function () {
                         warningModalEl.querySelector('.modal-content').classList.remove('shake');
                     }, { once: true });
+
                     warningModal.show();
                 }
             });
 
             prevBtn.addEventListener('click', function () {
-                currentStep--;
-                showStep(currentStep);
+                if (currentStep > 0) {
+                    currentStep--;
+                    showStep(currentStep);
+                }
             });
 
             showStep(currentStep); // tampilkan step awal
         });
-
-
     </script>
+
 
     <style>
         body {
@@ -540,20 +553,34 @@
     <script>
         nextBtn.addEventListener('click', function () {
             const currentQuestion = document.querySelector(`[data-step="${currentStep}"]`);
-            const inputs = currentQuestion.querySelectorAll('input:required');
-            let isValid = Array.from(inputs).some(input => input.checked);
+            let isValid = true;
+
+            // Cek apakah ada emoji-rating di step ini
+            const emojiContainer = currentQuestion.querySelector('.emoji-rating');
+            if (emojiContainer) {
+                // Pastikan ada radio yang dipilih
+                const selected = emojiContainer.querySelector('input[type="radio"]:checked');
+                if (!selected) {
+                    isValid = false;
+                }
+            } else {
+                // Validasi untuk input biasa (required)
+                const inputs = currentQuestion.querySelectorAll('input:required, select:required, textarea:required');
+                isValid = Array.from(inputs).every(input => input.value.trim() !== '');
+            }
 
             if (isValid) {
                 currentStep++;
                 showStep(currentStep);
             } else {
-                var warningModalEl = document.getElementById('warningModal');
-                var warningModal = new bootstrap.Modal(warningModalEl);
+                // Tampilkan modal warning
+                const warningModalEl = document.getElementById('warningModal');
+                const warningModal = new bootstrap.Modal(warningModalEl);
 
                 // Tambahkan kelas shake saat modal muncul
                 warningModalEl.querySelector('.modal-content').classList.add('shake');
 
-                // Hapus kelas shake setelah animasi selesai, supaya bisa dipakai lagi
+                // Hapus kelas shake setelah animasi selesai
                 warningModalEl.addEventListener('animationend', function () {
                     warningModalEl.querySelector('.modal-content').classList.remove('shake');
                 }, { once: true });
@@ -561,8 +588,8 @@
                 warningModal.show();
             }
         });
-
     </script>
+
 
     @include('layouts.NavbarBawah')
 </body>

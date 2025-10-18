@@ -66,7 +66,7 @@ Route::get('/struktur-organisasi', [StrukturController::class, 'index'])->name('
 Route::get('/profile-spi', [App\Http\Controllers\PageController::class, 'ProfileSpi'])->name('profile.spi');
 
 // Pencarian
-Route::get('/search', [SearchController::class, 'index'])->name('search');
+//Route::get('/search', [SearchController::class, 'index'])->name('search');
 
 Route::get('/search/pedoman-pengawasan', function () {
     return view('search.searchPedomanPengawasan');
@@ -590,3 +590,14 @@ Route::post('/verify-pendaftar', [ProfileController::class, 'verifyPendaftar'])-
 
 
 Route::post('/pendaftar/verify', [App\Http\Controllers\PendaftarController::class, 'verify'])->name('pendaftar.verify');
+
+Route::post('/pendaftar/check', [App\Http\Controllers\PendaftarController::class, 'check'])
+    ->name('pendaftar.check')
+    ->withoutMiddleware('auth');
+
+
+// Route untuk search
+Route::get('/berita/search', [BeritaController::class, 'search'])->name('berita.search');
+
+// Route untuk detail berita (perlu diletakkan setelah search)
+Route::get('/berita/{id}', [BeritaController::class, 'show'])->name('berita.show');
