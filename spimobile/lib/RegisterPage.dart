@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 // ============ REGISTER PAGE ============
 class RegisterPage extends StatefulWidget {
@@ -11,7 +13,6 @@ class RegisterPage extends StatefulWidget {
 
 class _RegisterPageState extends State<RegisterPage>
     with SingleTickerProviderStateMixin {
-  final _nimController = TextEditingController();
   final _namaController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -24,12 +25,6 @@ class _RegisterPageState extends State<RegisterPage>
   bool _isLoading = false;
   bool _agreeTerms = false;
 
-  bool _isInternalSelected = false;
-  bool _isExternalSelected = false;
-  String? _selectedInternalCategory;
-  bool _isWhistleblower = false;
-  bool _isMasyarakat = false;
-
   bool _isPegawaiPolijeSelected = false;
   String? _selectedSubKategoriInternal;
   bool _isWhistleblowerSelected = false;
@@ -38,6 +33,9 @@ class _RegisterPageState extends State<RegisterPage>
   late AnimationController _animController;
   late Animation<double> _fadeAnimation;
   late Animation<Offset> _slideAnimation;
+
+  // API Configuration - UBAH SESUAI IP ANDA
+  static const String API_BASE_URL = 'http://192.168.0.104/backend/api';
 
   @override
   void initState() {
@@ -62,7 +60,6 @@ class _RegisterPageState extends State<RegisterPage>
 
   @override
   void dispose() {
-    _nimController.dispose();
     _namaController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
@@ -72,22 +69,38 @@ class _RegisterPageState extends State<RegisterPage>
     super.dispose();
   }
 
+  String _convertPegawaiRoleToLowercase(String role) {
+    switch (role) {
+      case 'Pimpinan':
+        return 'pimpinan';
+      case 'Pejabat yang Ditunjuk':
+        return 'pejabat';
+      case 'Pegawai':
+        return 'pegawai';
+      case 'Admin':
+        return 'admin';
+      case 'Pengawas':
+        return 'pengawas';
+      default:
+        return role.toLowerCase();
+    }
+  }
+
   void _register() async {
+    // Validasi kategori dipilih
     if (!(_isPegawaiPolijeSelected ||
         _isWhistleblowerSelected ||
         _isMasyarakatSelected)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Harap pilih salah satu kategori internal/eksternal'),
-        ),
-      );
+      _showErrorSnackBar('Harap pilih salah satu kategori');
       return;
     }
 
+    // Validasi form
     if (!_formKey.currentState!.validate()) {
       return;
     }
 
+    // Validasi syarat dan ketentuan
     if (!_agreeTerms) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -103,53 +116,295 @@ class _RegisterPageState extends State<RegisterPage>
       return;
     }
 
-    setState(() => _isLoading = true);
-    await Future.delayed(const Duration(seconds: 2));
-    setState(() => _isLoading = false);
+    // Validasi pegawai role jika pegawai dipilih
+    if (_isPegawaiPolijeSelected && _selectedSubKategoriInternal == null) {
+      _showErrorSnackBar('Harap pilih posisi pegawai');
+      return;
+    }
 
-    if (mounted) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.green.shade100,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.check_circle_rounded,
-                  color: Colors.green.shade600,
-                  size: 28,
-                ),
+    setState(() => _isLoading = true);
+
+    try {
+      // Tentukan user_type dan pegawai_role
+      String userType = '';
+      String? pegawaiRole;
+
+      if (_isPegawaiPolijeSelected) {
+        userType = 'pegawai';
+        pegawaiRole = _convertPegawaiRoleToLowercase(_selectedSubKategoriInternal ?? '');
+      } else if (_isWhistleblowerSelected) {
+        userType = 'whistleblower';
+      } else if (_isMasyarakatSelected) {
+        userType = 'masyarakat';
+      }
+
+      // Siapkan data untuk dikirim ke API
+      final Map<String, dynamic> requestData = {
+        'name': _namaController.text.trim(),
+        'email': _emailController.text.trim(),
+        'password': _passwordController.text,
+        'confirm_password': _confirmPasswordController.text,
+        'phone': _noTelpController.text.trim(),
+        'user_type': userType,
+        'pegawai_role': pegawaiRole,
+      };
+
+      print('Sending request: $requestData');
+
+      // Kirim request ke API
+      final response = await http
+          .post(
+            Uri.parse('$API_BASE_URL/register.php'),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: jsonEncode(requestData),
+          )
+          .timeout(
+            const Duration(seconds: 30),
+            onTimeout: () {
+              throw 'Koneksi timeout. Silakan coba lagi.';
+            },
+          );
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (!mounted) return;
+
+      setState(() => _isLoading = false);
+
+      // Parse response
+      final Map<String, dynamic> result = jsonDecode(response.body);
+
+      if (response.statusCode == 200 && result['status'] == 'success') {
+        // Jika pegawai, tampilkan OTP dialog
+        if (result['data']['user_type'] == 'pegawai' && result['data']['otp'] != null) {
+          _showOTPDialog(
+            otp: result['data']['otp'],
+            email: result['data']['email'],
+          );
+        } else {
+          // Untuk whistleblower dan masyarakat
+          _showSuccessDialog();
+        }
+      } else {
+        String errorMessage =
+            result['message'] ?? 'Pendaftaran gagal. Silakan coba lagi.';
+        _showErrorSnackBar(errorMessage);
+      }
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _isLoading = false);
+      print('Error: $e');
+      _showErrorSnackBar('Error: $e');
+    }
+  }
+
+  void _showOTPDialog({
+    required String otp,
+    required String email,
+  }) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.blue.shade100,
+                shape: BoxShape.circle,
               ),
-              const SizedBox(width: 12),
-              const Expanded(child: Text('Pendaftaran Berhasil')),
-            ],
-          ),
-          content: const Text(
-            'Akun Anda telah berhasil dibuat. Silakan login menggunakan email dan password Anda.',
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context); // Close dialog
-                Navigator.pop(context); // Back to login
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFC62828),
+              child: Icon(
+                Icons.verified_user_rounded,
+                color: Colors.blue.shade600,
+                size: 28,
               ),
-              child: const Text('OK'),
             ),
+            const SizedBox(width: 12),
+            const Expanded(child: Text('Verifikasi Pegawai')),
           ],
         ),
-      );
-    }
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text(
+                'Pendaftaran berhasil! Akun Anda sedang menunggu verifikasi admin.',
+                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+              ),
+              const SizedBox(height: 20),
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: Colors.blue.shade200),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Kode OTP Anda:',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Center(
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 16,
+                        ),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: const Color(0xFFC62828),
+                            width: 2,
+                          ),
+                        ),
+                        child: Text(
+                          otp,
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Color(0xFFC62828),
+                            letterSpacing: 4,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    const Text(
+                      '⚠️ Berikan kode OTP ini kepada admin untuk verifikasi akun Anda. OTP berlaku selama 10 menit.',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: Colors.orange,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade100,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'Email Terdaftar:',
+                            style: TextStyle(
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            email,
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black87,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFC62828),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+            ),
+            child: const Text('Kembali ke Login'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showSuccessDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: Colors.green.shade100,
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.check_circle_rounded,
+                color: Colors.green.shade600,
+                size: 28,
+              ),
+            ),
+            const SizedBox(width: 12),
+            const Expanded(child: Text('Pendaftaran Berhasil')),
+          ],
+        ),
+        content: const Text(
+          'Akun Anda telah berhasil dibuat. Silakan login menggunakan email dan password Anda.',
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFC62828),
+            ),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showErrorSnackBar(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.red.shade600,
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        margin: const EdgeInsets.all(20),
+      ),
+    );
   }
 
   void _showTermsDialog(BuildContext context) {
@@ -217,7 +472,6 @@ class _RegisterPageState extends State<RegisterPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Set the background color to be transparent to show the gradient on the body
       backgroundColor: Colors.transparent,
       body: Container(
         decoration: BoxDecoration(
@@ -225,9 +479,9 @@ class _RegisterPageState extends State<RegisterPage>
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              const Color(0xFFC62828), // Dark Red (Red 900)
-              const Color(0xFFD32F2F), // Red 700
-              const Color(0xFFFF9800).withOpacity(0.8), // Orange 500
+              const Color(0xFFC62828),
+              const Color(0xFFD32F2F),
+              const Color(0xFFFF9800).withOpacity(0.8),
             ],
             stops: const [0.0, 0.4, 1.0],
           ),
@@ -295,6 +549,9 @@ class _RegisterPageState extends State<RegisterPage>
                                 if (value == null || value.isEmpty) {
                                   return 'Nama tidak boleh kosong';
                                 }
+                                if (value.length < 3) {
+                                  return 'Nama minimal 3 karakter';
+                                }
                                 return null;
                               },
                             ),
@@ -332,8 +589,8 @@ class _RegisterPageState extends State<RegisterPage>
                                 if (value == null || value.isEmpty) {
                                   return 'Nomor telepon tidak boleh kosong';
                                 }
-                                if (value.length < 10) {
-                                  return 'Nomor telepon minimal 10 digit';
+                                if (!RegExp(r'^[0-9]{10,}$').hasMatch(value)) {
+                                  return 'Nomor telepon minimal 10 digit dan hanya angka';
                                 }
                                 return null;
                               },
@@ -392,7 +649,7 @@ class _RegisterPageState extends State<RegisterPage>
                             const SizedBox(height: 20),
 
                             // === KATEGORI INTERNAL ===
-                            if (!_isMasyarakatSelected) // Tampilkan hanya kalau Masyarakat TIDAK dipilih
+                            if (!_isMasyarakatSelected)
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -456,7 +713,6 @@ class _RegisterPageState extends State<RegisterPage>
                                               });
                                             },
                                           ),
-                                          // Tampilkan subkategori hanya jika expand
                                           if (_isPegawaiPolijeSelected)
                                             Padding(
                                               padding: const EdgeInsets.only(
@@ -465,31 +721,29 @@ class _RegisterPageState extends State<RegisterPage>
                                                 right: 10,
                                               ),
                                               child: Column(
-                                                children:
-                                                    [
-                                                          'Pimpinan',
-                                                          'Pejabat yang Ditunjuk',
-                                                          'Pegawai',
-                                                          'Admin',
-                                                          'Pengawas',
-                                                        ]
-                                                        .map(
-                                                          (
-                                                            e,
-                                                          ) => RadioListTile<String>(
-                                                            value: e,
-                                                            groupValue:
-                                                                _selectedSubKategoriInternal,
-                                                            title: Text(e),
-                                                            onChanged: (val) =>
-                                                                setState(
-                                                                  () =>
-                                                                      _selectedSubKategoriInternal =
-                                                                          val,
-                                                                ),
-                                                          ),
-                                                        )
-                                                        .toList(),
+                                                children: [
+                                                  'Pimpinan',
+                                                  'Pejabat yang Ditunjuk',
+                                                  'Pegawai',
+                                                  'Admin',
+                                                  'Pengawas',
+                                                ]
+                                                    .map(
+                                                      (e) =>
+                                                          RadioListTile<String>(
+                                                        value: e,
+                                                        groupValue:
+                                                            _selectedSubKategoriInternal,
+                                                        title: Text(e),
+                                                        onChanged: (val) =>
+                                                            setState(
+                                                              () =>
+                                                                  _selectedSubKategoriInternal =
+                                                                      val,
+                                                            ),
+                                                      ),
+                                                    )
+                                                    .toList(),
                                               ),
                                             ),
                                         ],
@@ -497,7 +751,7 @@ class _RegisterPageState extends State<RegisterPage>
                                     ),
                                   const SizedBox(height: 10),
                                   // Whistleblower
-                                  if (!_isPegawaiPolijeSelected) // Sembunyikan jika Pegawai Polije dipilih
+                                  if (!_isPegawaiPolijeSelected)
                                     Container(
                                       decoration: BoxDecoration(
                                         color: _isWhistleblowerSelected
@@ -518,12 +772,10 @@ class _RegisterPageState extends State<RegisterPage>
                                             _isWhistleblowerSelected =
                                                 val ?? false;
                                             if (_isWhistleblowerSelected) {
-                                              _isPegawaiPolijeSelected =
-                                                  false; // Pegawai Polije hilang
+                                              _isPegawaiPolijeSelected = false;
                                               _selectedSubKategoriInternal =
                                                   null;
-                                              _isMasyarakatSelected =
-                                                  false; // Masyarakat hilang
+                                              _isMasyarakatSelected = false;
                                             }
                                           });
                                         },
@@ -542,7 +794,7 @@ class _RegisterPageState extends State<RegisterPage>
 
                             // === KATEGORI EKSTERNAL ===
                             if (!_isPegawaiPolijeSelected &&
-                                !_isWhistleblowerSelected) // Hanya tampil jika kategori internal TIDAK dipilih
+                                !_isWhistleblowerSelected)
                               Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -642,9 +894,9 @@ class _RegisterPageState extends State<RegisterPage>
                                 borderRadius: BorderRadius.circular(15),
                                 gradient: LinearGradient(
                                   colors: [
-                                    const Color(0xFFC62828), // Dark Red
-                                    const Color(0xFFEF5350), // Lighter Red
-                                    Colors.orange.shade700, // Orange
+                                    const Color(0xFFC62828),
+                                    const Color(0xFFEF5350),
+                                    Colors.orange.shade700,
                                   ],
                                   begin: Alignment.centerLeft,
                                   end: Alignment.centerRight,
@@ -729,6 +981,7 @@ class _RegisterPageState extends State<RegisterPage>
   }
 }
 
+// ============ WIDGET _buildInputField ============
 Widget _buildInputField({
   required TextEditingController controller,
   required String label,
@@ -790,827 +1043,4 @@ Widget _buildInputField({
       errorStyle: const TextStyle(fontSize: 12),
     ),
   );
-}
-
-// ============ FORGOT PASSWORD PAGE ============
-class ForgotPasswordPage extends StatefulWidget {
-  const ForgotPasswordPage({super.key});
-
-  @override
-  State<ForgotPasswordPage> createState() => _ForgotPasswordPageState();
-}
-
-class _ForgotPasswordPageState extends State<ForgotPasswordPage>
-    with SingleTickerProviderStateMixin {
-  int _step = 1; // 1: Email, 2: OTP, 3: Password Baru
-  final _emailController = TextEditingController();
-  final _otpController = TextEditingController();
-  final _passwordController = TextEditingController();
-  final _confirmPasswordController = TextEditingController();
-
-  bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
-  bool _isLoading = false;
-  int _otpTimeLeft = 0;
-
-  late AnimationController _animController;
-  late Animation<double> _fadeAnimation;
-
-  @override
-  void initState() {
-    super.initState();
-    _animController = AnimationController(
-      duration: const Duration(milliseconds: 500),
-      vsync: this,
-    );
-
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: _animController, curve: Curves.easeIn));
-
-    _animController.forward();
-  }
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _otpController.dispose();
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    _animController.dispose();
-    super.dispose();
-  }
-
-  void _sendOTP() async {
-    if (_emailController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Email tidak boleh kosong'),
-          backgroundColor: Colors.orange.shade600,
-        ),
-      );
-      return;
-    }
-
-    setState(() => _isLoading = true);
-    await Future.delayed(const Duration(seconds: 2));
-    setState(() {
-      _isLoading = false;
-      _step = 2;
-      _otpTimeLeft = 60;
-      _animController.reset();
-      _animController.forward();
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('OTP telah dikirim ke email Anda'),
-        backgroundColor: Colors.green,
-      ),
-    );
-
-    // Countdown timer untuk OTP
-    Future.doWhile(() async {
-      await Future.delayed(const Duration(seconds: 1));
-      if (mounted) {
-        setState(() => _otpTimeLeft--);
-      }
-      return _otpTimeLeft > 0;
-    });
-  }
-
-  void _verifyOTP() async {
-    if (_otpController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('OTP tidak boleh kosong'),
-          backgroundColor: Colors.orange.shade600,
-        ),
-      );
-      return;
-    }
-
-    setState(() => _isLoading = true);
-    await Future.delayed(const Duration(seconds: 2));
-    setState(() {
-      _isLoading = false;
-      _step = 3;
-      _animController.reset();
-      _animController.forward();
-    });
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('OTP terverifikasi'),
-        backgroundColor: Colors.green,
-      ),
-    );
-  }
-
-  void _resetPassword() async {
-    if (_passwordController.text.isEmpty ||
-        _confirmPasswordController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Password tidak boleh kosong'),
-          backgroundColor: Colors.orange.shade600,
-        ),
-      );
-      return;
-    }
-
-    if (_passwordController.text.length < 8) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Password minimal 8 karakter'),
-          backgroundColor: Colors.orange.shade600,
-        ),
-      );
-      return;
-    }
-
-    if (_passwordController.text != _confirmPasswordController.text) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: const Text('Password tidak sesuai'),
-          backgroundColor: Colors.orange.shade600,
-        ),
-      );
-      return;
-    }
-
-    setState(() => _isLoading = true);
-    await Future.delayed(const Duration(seconds: 2));
-    setState(() => _isLoading = false);
-
-    if (mounted) {
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-          title: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: Colors.green.shade100,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.check_circle_rounded,
-                  color: Colors.green.shade600,
-                  size: 28,
-                ),
-              ),
-              const SizedBox(width: 12),
-              const Expanded(child: Text('Password Berhasil Direset')),
-            ],
-          ),
-          content: const Text(
-            'Password Anda telah berhasil diubah. Silakan login dengan password baru.',
-          ),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-                Navigator.pop(context);
-              },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFFC62828),
-              ),
-              child: const Text('OK'),
-            ),
-          ],
-        ),
-      );
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [
-              const Color(0xFFC62828),
-              const Color(0xFFD32F2F),
-              const Color(0xFFFF9800).withOpacity(0.8),
-            ],
-            stops: const [0.0, 0.4, 1.0],
-          ),
-        ),
-        child: SafeArea(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-            child: FadeTransition(
-              opacity: _fadeAnimation,
-              child: Column(
-                children: [
-                  // Header
-                  Row(
-                    children: [
-                      IconButton(
-                        icon: const Icon(
-                          Icons.arrow_back_ios_rounded,
-                          color: Colors.white,
-                        ),
-                        onPressed: () => Navigator.pop(context),
-                      ),
-                      const Expanded(
-                        child: Text(
-                          'Lupa Password',
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-
-                  // Step Indicator
-                  Container(
-                    padding: const EdgeInsets.all(20),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.1),
-                      borderRadius: BorderRadius.circular(15),
-                      border: Border.all(color: Colors.white.withOpacity(0.2)),
-                    ),
-                    child: Column(
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            _buildStepIndicator(1, 'Email'),
-                            _buildStepConnector(),
-                            _buildStepIndicator(2, 'Verifikasi'),
-                            _buildStepConnector(),
-                            _buildStepIndicator(3, 'Password'),
-                          ],
-                        ),
-                        const SizedBox(height: 15),
-                        Text(
-                          _getStepTitle(),
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: Colors.white,
-                            fontWeight: FontWeight.w500,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 25),
-
-                  // Content Card
-                  Container(
-                    padding: const EdgeInsets.all(25),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(25),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.15),
-                          blurRadius: 30,
-                          spreadRadius: 5,
-                          offset: const Offset(0, 15),
-                        ),
-                      ],
-                    ),
-                    child: _buildStepContent(),
-                  ),
-
-                  const SizedBox(height: 20),
-
-                  // Back to Login
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text(
-                      'Kembali ke Login',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                        decoration: TextDecoration.underline,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildStepIndicator(int step, String label) {
-    bool isActive = _step >= step;
-    return Column(
-      children: [
-        Container(
-          width: 50,
-          height: 50,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: isActive ? const Color(0xFFC62828) : Colors.grey.shade300,
-            boxShadow: isActive
-                ? [
-                    BoxShadow(
-                      color: const Color(0xFFC62828).withOpacity(0.5),
-                      blurRadius: 10,
-                      spreadRadius: 2,
-                    ),
-                  ]
-                : [],
-          ),
-          child: Center(
-            child: _step > step
-                ? const Icon(Icons.check_rounded, color: Colors.white, size: 24)
-                : Text(
-                    '$step',
-                    style: TextStyle(
-                      color: isActive ? Colors.white : Colors.grey.shade600,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
-                  ),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 11,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildStepConnector() {
-    return Expanded(
-      child: Container(
-        height: 3,
-        margin: const EdgeInsets.only(bottom: 32),
-        decoration: BoxDecoration(
-          color: _step > 1 ? const Color(0xFFC62828) : Colors.grey.shade300,
-          borderRadius: BorderRadius.circular(2),
-        ),
-      ),
-    );
-  }
-
-  String _getStepTitle() {
-    switch (_step) {
-      case 1:
-        return 'Masukkan email Anda untuk memulai proses reset password';
-      case 2:
-        return 'Kami telah mengirim kode OTP ke email Anda';
-      case 3:
-        return 'Buat password baru yang kuat';
-      default:
-        return '';
-    }
-  }
-
-  Widget _buildStepContent() {
-    switch (_step) {
-      case 1:
-        return _buildEmailStep();
-      case 2:
-        return _buildOTPStep();
-      case 3:
-        return _buildPasswordStep();
-      default:
-        return const SizedBox();
-    }
-  }
-
-  Widget _buildEmailStep() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Email Anda',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey,
-          ),
-        ),
-        const SizedBox(height: 10),
-        TextField(
-          controller: _emailController,
-          keyboardType: TextInputType.emailAddress,
-          decoration: InputDecoration(
-            hintText: 'Masukkan email Anda',
-            prefixIcon: const Icon(
-              Icons.email_rounded,
-              color: Color(0xFFC62828),
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide.none,
-            ),
-            filled: true,
-            fillColor: Colors.grey.shade100,
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: const BorderSide(color: Color(0xFFC62828), width: 2),
-            ),
-          ),
-        ),
-        const SizedBox(height: 25),
-        SizedBox(
-          width: double.infinity,
-          height: 55,
-          child: ElevatedButton(
-            onPressed: _isLoading ? null : _sendOTP,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFC62828),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-            ),
-            child: _isLoading
-                ? const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2,
-                    ),
-                  )
-                : const Text(
-                    'KIRIM OTP',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildOTPStep() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Kode OTP',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey,
-          ),
-        ),
-        const SizedBox(height: 10),
-
-        // Hapus const di sini
-        TextField(
-          controller: _otpController,
-          keyboardType: TextInputType.number,
-          maxLength: 6,
-          decoration: InputDecoration(
-            hintText: 'Masukkan 6 digit OTP',
-            prefixIcon: const Icon(
-              Icons.verified_outlined,
-              color: Color(0xFFC62828),
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide.none,
-            ),
-            filled: true,
-            fillColor: Colors.grey.shade100,
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: const BorderSide(color: Color(0xFFC62828), width: 2),
-            ),
-          ),
-        ),
-
-        const SizedBox(height: 15),
-
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            if (_otpTimeLeft > 0)
-              Text(
-                'Kirim ulang dalam ${_otpTimeLeft}s',
-                style: TextStyle(
-                  fontSize: 13,
-                  color: Colors.red.shade600,
-                  fontWeight: FontWeight.w600,
-                ),
-              )
-            else
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    _step = 1;
-                    _animController.reset();
-                    _animController.forward();
-                  });
-                },
-                child: const Text(
-                  'Kirim ulang OTP',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Color(0xFFC62828),
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            GestureDetector(
-              onTap: () {
-                showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                    title: const Text('Email Tujuan'),
-                    content: Text(
-                      'OTP telah dikirim ke ${_emailController.text}',
-                    ),
-                    actions: [
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text('OK'),
-                      ),
-                    ],
-                  ),
-                );
-              },
-              child: Text(
-                _emailController.text,
-                style: const TextStyle(
-                  fontSize: 12,
-                  color: Colors.grey,
-                  decoration: TextDecoration.underline,
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 30),
-
-        SizedBox(
-          width: double.infinity,
-          height: 55,
-          child: ElevatedButton(
-            onPressed: (_isLoading || _otpController.text.length < 6)
-                ? null
-                : _verifyOTP,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFC62828),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              disabledBackgroundColor: Colors.grey.shade300,
-            ),
-            child: _isLoading
-                ? const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2,
-                    ),
-                  )
-                : const Text(
-                    'VERIFIKASI',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPasswordStep() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Password Baru',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey,
-          ),
-        ),
-        const SizedBox(height: 10),
-        TextField(
-          controller: _passwordController,
-          obscureText: _obscurePassword,
-          decoration: InputDecoration(
-            hintText: 'Masukkan password minimal 8 karakter',
-            prefixIcon: const Icon(
-              Icons.lock_rounded,
-              color: Color(0xFFC62828),
-            ),
-            suffixIcon: IconButton(
-              icon: Icon(
-                _obscurePassword
-                    ? Icons.visibility_off_outlined
-                    : Icons.visibility_outlined,
-                color: Colors.grey.shade600,
-              ),
-              onPressed: () =>
-                  setState(() => _obscurePassword = !_obscurePassword),
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide.none,
-            ),
-            filled: true,
-            fillColor: Colors.grey.shade100,
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: const BorderSide(color: Color(0xFFC62828), width: 2),
-            ),
-          ),
-        ),
-        const SizedBox(height: 15),
-
-        const Text(
-          'Konfirmasi Password',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey,
-          ),
-        ),
-        const SizedBox(height: 10),
-        TextField(
-          controller: _confirmPasswordController,
-          obscureText: _obscureConfirmPassword,
-          decoration: InputDecoration(
-            hintText: 'Masukkan ulang password',
-            prefixIcon: const Icon(
-              Icons.lock_rounded,
-              color: Color(0xFFC62828),
-            ),
-            suffixIcon: IconButton(
-              icon: Icon(
-                _obscureConfirmPassword
-                    ? Icons.visibility_off_outlined
-                    : Icons.visibility_outlined,
-                color: Colors.grey.shade600,
-              ),
-              onPressed: () => setState(
-                () => _obscureConfirmPassword = !_obscureConfirmPassword,
-              ),
-            ),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: BorderSide.none,
-            ),
-            filled: true,
-            fillColor: Colors.grey.shade100,
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(15),
-              borderSide: const BorderSide(color: Color(0xFFC62828), width: 2),
-            ),
-          ),
-        ),
-        const SizedBox(height: 15),
-
-        // Password Strength Indicator
-        _buildPasswordStrengthIndicator(),
-
-        const SizedBox(height: 30),
-
-        SizedBox(
-          width: double.infinity,
-          height: 55,
-          child: ElevatedButton(
-            onPressed: _isLoading ? null : _resetPassword,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFC62828),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-            ),
-            child: _isLoading
-                ? const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2,
-                    ),
-                  )
-                : const Text(
-                    'RESET PASSWORD',
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildPasswordStrengthIndicator() {
-    String password = _passwordController.text;
-    int strength = 0;
-    Color strengthColor = Colors.red;
-    String strengthText = 'Lemah';
-
-    if (password.length >= 8) strength++;
-    if (password.contains(RegExp(r'[0-9]'))) strength++;
-    if (password.contains(RegExp(r'[a-z]')) &&
-        password.contains(RegExp(r'[A-Z]')))
-      strength++;
-    if (password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) strength++;
-
-    if (strength == 1) {
-      strengthColor = Colors.red;
-      strengthText = 'Lemah';
-    } else if (strength == 2) {
-      strengthColor = Colors.orange;
-      strengthText = 'Sedang';
-    } else if (strength == 3) {
-      strengthColor = Colors.yellow.shade700;
-      strengthText = 'Kuat';
-    } else if (strength >= 4) {
-      strengthColor = Colors.green;
-      strengthText = 'Sangat Kuat';
-    }
-
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: strengthColor.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(color: strengthColor.withOpacity(0.3)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                'Kekuatan Password: $strengthText',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: strengthColor,
-                ),
-              ),
-              Text(
-                '${strength}/4',
-                style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
-              ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Row(
-            children: [
-              for (int i = 0; i < 4; i++)
-                Expanded(
-                  child: Container(
-                    height: 6,
-                    margin: EdgeInsets.only(right: i < 3 ? 6 : 0),
-                    decoration: BoxDecoration(
-                      color: i < strength
-                          ? strengthColor
-                          : Colors.grey.shade300,
-                      borderRadius: BorderRadius.circular(3),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-          const SizedBox(height: 8),
-          Text(
-            'Password harus mengandung: huruf besar, huruf kecil, angka, dan simbol',
-            style: TextStyle(fontSize: 11, color: Colors.grey.shade600),
-          ),
-        ],
-      ),
-    );
-  }
 }

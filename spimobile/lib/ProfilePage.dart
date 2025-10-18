@@ -17,7 +17,7 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   // API Base URL - sesuaikan dengan URL API Anda
-  final String baseUrl = 'http://192.168.0.104/backend/api';
+  final String baseUrl = 'http://localhost/backend/api';
 
   // User data
   String _id = '';

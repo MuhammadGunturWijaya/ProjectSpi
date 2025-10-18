@@ -357,6 +357,123 @@ class _MenuScreenState extends State<MenuScreen>
     super.dispose();
   }
 
+  // ============= METHOD UNTUK CREATE GUEST ACCOUNT =============
+  void _createGuestAccount(BuildContext context) async {
+    // Tampilkan loading dialog
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        content: Row(
+          children: [
+            const CircularProgressIndicator(color: Color(0xFFC62828)),
+            const SizedBox(width: 16),
+            const Expanded(child: Text('Membuat akun tamu...')),
+          ],
+        ),
+      ),
+    );
+
+    try {
+      // Hit API untuk membuat akun tamu
+      final response = await http
+          .post(
+            Uri.parse('http://localhost/backend/api/create_guest_account.php'),
+            headers: {'Content-Type': 'application/json'},
+          )
+          .timeout(
+            const Duration(seconds: 30),
+            onTimeout: () {
+              throw 'Koneksi timeout';
+            },
+          );
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (!context.mounted) return;
+
+      // Close loading dialog
+      Navigator.pop(context);
+
+      final result = jsonDecode(response.body);
+
+      if (response.statusCode == 200 && result['status'] == 'success') {
+        final userData = result['data'];
+        final id = userData['id_user'].toString();
+        final name = userData['nama'];
+        final role = userData['role'];
+
+        // Simpan ke SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('user_id', id);
+        await prefs.setString('user_name', name);
+        await prefs.setString('user_role', role);
+        await prefs.setBool('is_guest', true);
+
+        if (!context.mounted) return;
+
+        // Tampilkan snackbar sukses
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text(
+              'Selamat datang! Anda masuk sebagai pengunjung anonim.',
+              style: TextStyle(color: Colors.white),
+            ),
+            backgroundColor: Colors.green.shade600,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+            ),
+            margin: const EdgeInsets.all(16),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+
+        // Navigate ke HomePage
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (context.mounted) {
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => const HomePage()),
+            );
+          }
+        });
+      } else {
+        String errorMessage =
+            result['message'] ?? 'Gagal membuat akun tamu. Silakan coba lagi.';
+        _showErrorDialog(context, errorMessage);
+      }
+    } catch (e) {
+      if (!context.mounted) return;
+
+      // Close loading dialog jika masih terbuka
+      if (Navigator.canPop(context)) {
+        Navigator.pop(context);
+      }
+
+      _showErrorDialog(context, 'Error: $e');
+    }
+  }
+
+  // ============= METHOD UNTUK SHOW ERROR DIALOG =============
+  void _showErrorDialog(BuildContext context, String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+        title: const Text('Terjadi Kesalahan'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
@@ -458,14 +575,7 @@ class _MenuScreenState extends State<MenuScreen>
                               icon: Icons.person_off_outlined,
                               color: const Color(0xFFF57C00),
                               onTap: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'Fitur Lapor Anonim segera hadir',
-                                    ),
-                                    duration: Duration(seconds: 2),
-                                  ),
-                                );
+                                _createGuestAccount(context);
                               },
                             ),
                             const SizedBox(height: 15),
