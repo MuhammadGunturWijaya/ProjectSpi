@@ -754,8 +754,8 @@
                             <li><a class="dropdown-item" href="{{ route('sdm.index') }}">Sumber Daya Manusia</a></li>
                             <li><a class="dropdown-item" href="{{ route('proses-bisnis-spi') }}">Proses Bisnis SPI</a>
                             </li>
-                            <li><a class="dropdown-item" href="{{ route('search.searchPedomanPengawasan') }}">Kode Etik
-                                    SPI</a></li>
+                            <!-- <li><a class="dropdown-item" href="{{ route('search.searchPedomanPengawasan') }}">Kode Etik
+                                    SPI</a></li> -->
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
@@ -897,39 +897,6 @@
         </div>
     </section>
 
-    <!-- Stats Section -->
-    <section class="stats-section">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-3 col-6 mb-4">
-                    <div class="stat-card scroll-animate">
-                        <div class="stat-number">250+</div>
-                        <div class="stat-label">Pengawasan</div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-6 mb-4">
-                    <div class="stat-card scroll-animate">
-                        <div class="stat-number">15+</div>
-                        <div class="stat-label">Tim Profesional</div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-6 mb-4">
-                    <div class="stat-card scroll-animate">
-                        <div class="stat-number">{{ $ikm }}%</div>
-                        <div class="stat-label">Kepuasan</div>
-                    </div>
-                </div>
-
-                <div class="col-md-3 col-6 mb-4">
-                    <div class="stat-card scroll-animate">
-                        <div class="stat-number">24/7</div>
-                        <div class="stat-label">Layanan</div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- News Section -->
     <section id="berita" class="news-section">
         <div class="container">
@@ -940,18 +907,7 @@
                         Politeknik Negeri Jember</span>
                 </p>
             </div>
-
-            <!-- Search Bar -->
-            <div class="search-wrapper">
-                <form action="{{ route('berita.search') }}" method="GET" class="search-box">
-                    <div class="input-group">
-                        <input type="text" name="q" class="form-control search-input"
-                            placeholder="🔍 Cari berita, artikel, atau profil..." value="{{ request('q') }}">
-                        <button type="submit" class="btn search-btn">Cari</button>
-                    </div>
-                </form>
-            </div>
-
+            
             <!-- Tombol Tambah Berita (Admin Only) -->
             @auth
                 @if(Auth::user()->role === 'admin')
@@ -1087,6 +1043,238 @@
             </div>
         </div>
     </div>
+
+    <!-- Survey Kepuasan Section -->
+    <section class="survey-section" id="SurveyKepuasan">
+        <div class="survey-overlay"></div>
+
+        <div class="survey-container">
+            <div class="survey-content">
+                <div class="survey-icon">
+                    <i class="bi bi-clipboard-heart"></i>
+                </div>
+
+                <h2 class="survey-title">Survey Kepuasan Masyarakat</h2>
+                <p class="survey-subtitle">
+                    Kami menghargai setiap umpan balik Anda ❤️ <br />
+                    <span class="highlight">Bantu kami meningkatkan kualitas layanan SPI Polije.</span>
+                </p>
+
+                <a href="{{ route('survey.kepuasan') }}" class="btn-survey">
+                    <i class="bi bi-send-fill me-2"></i> Ikuti Survey Sekarang
+                </a>
+
+                <div class="survey-stats">
+                    <div class="stat-card">
+                        <i class="bi bi-people-fill"></i>
+                        <div class="stat-info">
+                            <h3>{{ $totalRespondents }}</h3>
+                            <p>Responden Tahun Ini</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <i class="bi bi-star-fill"></i>
+                        <div class="stat-info">
+                            <h3>{{ $ikm }}%</h3>
+                            <p>Tingkat Kepuasan</p>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <i class="bi bi-shield-check"></i>
+                        <div class="stat-info">
+                            <h3>100%</h3>
+                            <p>Data Aman & Rahasia</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <style>
+        /* ======= Survey Section ======= */
+        .survey-section {
+            position: relative;
+            background: url('https://polije.ac.id/wp-content/uploads/2021/09/Polije-scaled.jpg') center/cover no-repeat;
+            background-attachment: fixed;
+            color: white;
+            padding: 120px 0;
+            overflow: hidden;
+        }
+
+        .survey-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(0, 100, 255, 0.75), rgba(0, 0, 120, 0.85));
+            backdrop-filter: blur(6px);
+        }
+
+        .survey-container {
+            position: relative;
+            z-index: 2;
+            max-width: 900px;
+            margin: 0 auto;
+            text-align: center;
+            padding: 0 20px;
+            animation: fadeInUp 1.2s ease forwards;
+        }
+
+        /* ======= Icon & Title ======= */
+        .survey-icon {
+            font-size: 6rem;
+            margin-bottom: 20px;
+            color: #ffffff;
+            animation: bounce 2s infinite;
+        }
+
+        .survey-subtitle .highlight {
+            color: #ffffff !important;
+            /* paksa putih */
+            font-weight: 600;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+            /* opsional: efek glow halus */
+        }
+
+
+        .survey-title {
+            font-size: 3rem;
+            font-weight: 800;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            margin-bottom: 15px;
+        }
+
+        .survey-subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            margin-bottom: 45px;
+        }
+
+        .survey-subtitle .highlight {
+            color: #ffeb3b;
+            font-weight: 600;
+        }
+
+        /* ======= Button ======= */
+        .btn-survey {
+            background: linear-gradient(90deg, #fff, #e0f3ff);
+            color: #0056d2;
+            padding: 16px 45px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            transition: all 0.4s ease;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-survey:hover {
+            transform: translateY(-6px);
+            background: linear-gradient(90deg, #e0f3ff, #ffffff);
+            box-shadow: 0 20px 45px rgba(0, 0, 0, 0.4);
+        }
+
+        /* ======= Stats Cards ======= */
+        .survey-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 70px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.25);
+            padding: 25px 35px;
+            border-radius: 20px;
+            backdrop-filter: blur(12px);
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.25);
+            text-align: center;
+            width: 220px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px) scale(1.03);
+            box-shadow: 0 10px 35px rgba(0, 0, 0, 0.4);
+        }
+
+        .stat-card i {
+            font-size: 2.2rem;
+            margin-bottom: 12px;
+            color: #ffd700;
+        }
+
+        .stat-info h3 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin: 0;
+        }
+
+        .stat-info p {
+            font-size: 0.95rem;
+            opacity: 0.85;
+            margin: 5px 0 0;
+        }
+
+        /* ======= Animations ======= */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-20px);
+            }
+
+            60% {
+                transform: translateY(-10px);
+            }
+        }
+
+        /* ======= Responsive ======= */
+        @media (max-width: 768px) {
+            .survey-title {
+                font-size: 2.2rem;
+            }
+
+            .survey-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .btn-survey {
+                padding: 14px 35px;
+                font-size: 1rem;
+            }
+
+            .stat-card {
+                width: 90%;
+            }
+        }
+    </style>
 
     <!-- Footer -->
     <footer>

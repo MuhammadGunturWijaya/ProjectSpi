@@ -17,7 +17,7 @@
         body {
             min-height: 100vh;
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #c62828 0%, #d32f2f 50%, #e53935 100%);
+            background: linear-gradient(135deg, #6e0d0d 0%, #8c1b1b 50%, #a92525 100%);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -594,7 +594,7 @@
             Swal.fire({
                 title: 'Kode Verifikasi Pegawai',
                 html: `<p>Silakan kirim kode berikut ke Admin untuk verifikasi dan Anda Bisa Melihat Di Dalam Profile:</p>
-               <h2 style="color:#0d6efd; font-weight:bold;">{{ session('pegawai_code') }}</h2>`,
+                   <h2 style="color:#0d6efd; font-weight:bold;">{{ session('pegawai_code') }}</h2>`,
                 icon: 'info',
                 confirmButtonText: 'Salin Kode',
             }).then((result) => {

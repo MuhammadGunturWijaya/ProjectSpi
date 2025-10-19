@@ -115,7 +115,7 @@
                             <li><a class="dropdown-item" href="{{ route('struktur.index') }}">Struktur Organisasi</a></li>
                             <li><a class="dropdown-item" href="{{ route('sdm.index') }}">Sumber Daya Manusia</a></li>
                             <li><a class="dropdown-item" href="{{ route('proses-bisnis-spi') }}">Proses Bisnis SPI</a></li>
-                            <li><a class="dropdown-item" href="{{ route('search.searchPedomanPengawasan') }}">Kode Etik SPI</a></li>
+                            <!-- <li><a class="dropdown-item" href="{{ route('search.searchPedomanPengawasan') }}">Kode Etik SPI</a></li> -->
                         </ul>
                     </li>
 

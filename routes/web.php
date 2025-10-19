@@ -95,7 +95,7 @@ Route::delete('/pengaduan/{id}', [PengaduanController::class, 'destroy'])
 
 // Pengaduan
 Route::get('/pengaduan', [PengaduanController::class, 'create'])->name('pengaduan.create');
-Route::post('/pengaduan', [PengaduanController::class, 'store'])->name('pengaduan.store');
+
 
 // Hanya user login yang boleh kirim
 Route::middleware(['auth'])->group(function () {

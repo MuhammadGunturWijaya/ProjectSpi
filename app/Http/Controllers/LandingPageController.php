@@ -14,8 +14,9 @@ class LandingPageController extends Controller
         $surveys = Survey::all(); // ambil semua survey
         $ikm = 0;
         $ikmCategory = '-';
+        $totalRespondents = $surveys->count(); // ✅ jumlah total responden
 
-        if ($surveys->count() > 0) {
+        if ($totalRespondents > 0) {
             // Mapping teks ke skor 1–5
             $scoreMap = [
                 'Sangat Puas' => 5,
@@ -44,7 +45,8 @@ class LandingPageController extends Controller
             $ikmCategory = $this->getCategoryByScore($ikm);
         }
 
-        return view('LandingPages', compact('beritas', 'ikm', 'ikmCategory'));
+        // kirim data ke view
+        return view('LandingPages', compact('beritas', 'ikm', 'ikmCategory', 'totalRespondents'));
     }
 
     private function getCategoryByScore($score)
@@ -56,4 +58,3 @@ class LandingPageController extends Controller
         return 'Kurang Puas';
     }
 }
-
