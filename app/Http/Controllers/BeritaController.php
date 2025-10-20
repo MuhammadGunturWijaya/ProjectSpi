@@ -37,11 +37,9 @@ class BeritaController extends Controller
         $gambarPath = null;
 
         if ($request->hasFile('gambar')) {
-            // Simpan file upload
             $path = $request->file('gambar')->store('berita', 'public');
             $gambarPath = 'storage/' . $path;
         } elseif ($request->gambar_url) {
-            // Ambil gambar dari URL
             $gambarPath = $request->gambar_url;
         }
 
@@ -67,8 +65,7 @@ class BeritaController extends Controller
             'judul' => 'required|string|max:255',
             'isi' => 'required|string',
             'tanggal' => 'required|date',
-            'gambar' => 'nullable|image|max:2048|required_without:gambar_url',
-            'gambar_url' => 'nullable|url|required_without:gambar',
+            'gambar' => 'nullable|image|max:2048',
         ]);
 
         $berita = Berita::findOrFail($id);
@@ -76,17 +73,40 @@ class BeritaController extends Controller
         $berita->isi = $request->isi;
         $berita->tanggal = $request->tanggal;
 
+        // Jika ada gambar baru
         if ($request->hasFile('gambar')) {
+            // Hapus gambar lama kalau ada
+            if ($berita->gambar && file_exists(public_path($berita->gambar))) {
+                unlink(public_path($berita->gambar));
+            }
+
             $file = $request->file('gambar');
             $filename = time() . '_' . $file->getClientOriginalName();
             $file->move(public_path('uploads/berita'), $filename);
             $berita->gambar = 'uploads/berita/' . $filename;
-        } elseif ($request->gambar_url) {
-            $berita->gambar = $request->gambar_url;
         }
 
         $berita->save();
 
         return redirect()->route('berita.index')->with('success', 'Berita berhasil diperbarui!');
+    }
+
+
+    // ===================== Tambahan =====================
+    public function destroy($id)
+    {
+        $berita = Berita::findOrFail($id);
+
+        // Hapus file gambar lokal jika ada
+        if ($berita->gambar && str_starts_with($berita->gambar, 'uploads/')) {
+            $filePath = public_path($berita->gambar);
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+        }
+
+        $berita->delete();
+
+        return redirect()->route('berita.index')->with('success', 'Berita berhasil dihapus!');
     }
 }

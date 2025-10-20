@@ -18,7 +18,7 @@
             color: #1a202c;
             line-height: 1.6;
             overflow-x: hidden;
-            
+
         }
 
         h2,
@@ -206,7 +206,7 @@
             min-width: 120px;
             font-weight: 600;
         }
-        
+
         /* Animasi muncul */
         .fade-in {
             opacity: 0;
@@ -214,15 +214,38 @@
             animation: fadeInUp 0.8s ease forwards;
         }
 
-        .fade-in:nth-child(1) { animation-delay: 0.1s; }
-        .fade-in:nth-child(2) { animation-delay: 0.2s; }
-        .fade-in:nth-child(3) { animation-delay: 0.3s; }
-        .fade-in:nth-child(4) { animation-delay: 0.4s; }
-        .fade-in:nth-child(5) { animation-delay: 0.5s; }
-        .fade-in:nth-child(6) { animation-delay: 0.6s; }
-        .fade-in:nth-child(7) { animation-delay: 0.7s; }
-        .fade-in:nth-child(8) { animation-delay: 0.8s; }
-        
+        .fade-in:nth-child(1) {
+            animation-delay: 0.1s;
+        }
+
+        .fade-in:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .fade-in:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .fade-in:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        .fade-in:nth-child(5) {
+            animation-delay: 0.5s;
+        }
+
+        .fade-in:nth-child(6) {
+            animation-delay: 0.6s;
+        }
+
+        .fade-in:nth-child(7) {
+            animation-delay: 0.7s;
+        }
+
+        .fade-in:nth-child(8) {
+            animation-delay: 0.8s;
+        }
+
         @keyframes fadeInUp {
             to {
                 opacity: 1;
@@ -246,39 +269,53 @@
         <h3 class="text-center mb-5">Tim Kami</h3>
 
         @if(Auth::check() && Auth::user()->role == 'admin')
-        <div class="text-center mb-5">
-            <a href="{{ route('sdm.create') }}" class="btn btn-gradient">
-                <i class="bi bi-person-plus-fill me-2"></i> Tambah SDM
-            </a>
-        </div>
+            <div class="text-center mb-5">
+                <a href="{{ route('sdm.create') }}" class="btn btn-gradient">
+                    <i class="bi bi-person-plus-fill me-2"></i> Tambah SDM
+                </a>
+            </div>
         @endif
 
         <div class="row-cols-custom">
             @foreach($sdm as $index => $person)
-            <div class="fade-in">
-                <div class="card person-card" style="cursor: pointer;" data-bs-toggle="modal"
-                    data-bs-target="#personModal" data-nama="{{ $person->nama }}"
-                    data-jabatan="{{ $person->jabatan }}" data-bidang="{{ $person->bidang }}"
-                    data-biodata="{{ $person->biodata }}" data-pengalaman="{{ $person->pengalaman }}"
-                    data-tanggal_lahir="{{ $person->tanggal_lahir }}"
-                    data-foto="{{ $person->foto ? asset('images/' . $person->foto) : asset('images/default.jpg') }}">
+                <div class="fade-in">
+                    <div class="card person-card" style="cursor: pointer;" data-bs-toggle="modal"
+                        data-bs-target="#personModal" data-nama="{{ $person->nama }}" data-jabatan="{{ $person->jabatan }}"
+                        data-bidang="{{ $person->bidang }}" data-biodata="{{ $person->biodata }}"
+                        data-pengalaman="{{ $person->pengalaman }}" data-tanggal_lahir="{{ $person->tanggal_lahir }}"
+                        data-foto="{{ $person->foto ? asset('images/' . $person->foto) : asset('images/default.jpg') }}">
 
-                    <img src="{{ $person->foto ? asset('images/' . $person->foto) : asset('images/default.jpg') }}"
-                        class="card-img-top" alt="{{ $person->nama }}">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ $person->nama }}</h5>
-                        <p class="card-text">{{ $person->jabatan }}</p>
-                       
+                        <img src="{{ $person->foto ? asset('images/' . $person->foto) : asset('images/default.jpg') }}"
+                            class="card-img-top" alt="{{ $person->nama }}">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ $person->nama }}</h5>
+                            <p class="card-text">{{ $person->jabatan }}</p>
 
-                        @if(Auth::check() && Auth::user()->role == 'admin')
-                        <a href="{{ route('sdm.edit', ['id' => $person->id]) }}" class="btn btn-edit mt-3"
-                            onclick="event.stopPropagation();">
-                            <i class="bi bi-pencil-fill me-1"></i> Edit
-                        </a>
-                        @endif
+
+                            @if(Auth::check() && Auth::user()->role == 'admin')
+                                <div class="d-flex justify-content-center gap-2 mt-3">
+                                    <a href="{{ route('sdm.edit', $person) }}" class="btn btn-edit mt-3"
+                                        onclick="event.stopPropagation();">
+                                        <i class="bi bi-pencil-fill me-1"></i> Edit
+                                    </a>
+
+
+                                    <!-- Tombol Hapus -->
+                                    <form action="{{ route('sdm.destroy', $person) }}" method="POST"
+                                        onsubmit="return confirm('Yakin ingin menghapus SDM ini?');" style="display:inline;">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="btn btn-danger">
+                                            <i class="bi bi-trash-fill me-1"></i> Hapus
+                                        </button>
+                                    </form>
+
+                                </div>
+                            @endif
+
+                        </div>
                     </div>
                 </div>
-            </div>
             @endforeach
         </div>
     </div>

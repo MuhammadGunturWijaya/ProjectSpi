@@ -601,3 +601,8 @@ Route::get('/berita/search', [BeritaController::class, 'search'])->name('berita.
 
 // Route untuk detail berita (perlu diletakkan setelah search)
 Route::get('/berita/{id}', [BeritaController::class, 'show'])->name('berita.show');
+
+
+Route::resource('berita', App\Http\Controllers\BeritaController::class);
+
+Route::resource('sdm', App\Http\Controllers\SdmController::class);

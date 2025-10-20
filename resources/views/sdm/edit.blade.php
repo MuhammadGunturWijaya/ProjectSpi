@@ -96,34 +96,36 @@
                     <div class="card-body p-4">
                         <form action="{{ route('sdm.update', $sdm->id) }}" method="POST" enctype="multipart/form-data">
                             @csrf
+                            @method('PUT') <!-- tambahkan ini -->
 
                             <div class="mb-3">
                                 <label for="nama" class="form-label">Nama</label>
-                                <input type="text" name="nama" class="form-control" value="{{ $sdm->nama }}" required>
+                                <input type="text" name="nama" class="form-control"
+                                    value="{{ old('nama', $sdm->nama) }}" required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="jabatan" class="form-label">Jabatan</label>
-                                <input type="text" name="jabatan" class="form-control" value="{{ $sdm->jabatan }}"
-                                    required>
+                                <input type="text" name="jabatan" class="form-control"
+                                    value="{{ old('jabatan', $sdm->jabatan) }}" required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="bidang" class="form-label">Bidang</label>
-                                <input type="text" name="bidang" class="form-control" value="{{ $sdm->bidang }}"
-                                    required>
+                                <input type="text" name="bidang" class="form-control"
+                                    value="{{ old('bidang', $sdm->bidang) }}" required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="biodata" class="form-label">Biodata</label>
                                 <textarea name="biodata" class="form-control" rows="3"
-                                    required>{{ $sdm->biodata }}</textarea>
+                                    required>{{ old('biodata', $sdm->biodata) }}</textarea>
                             </div>
 
                             <div class="mb-3">
                                 <label for="pengalaman" class="form-label">Pengalaman</label>
-                                <input type="text" name="pengalaman" class="form-control" value="{{ $sdm->pengalaman }}"
-                                    required>
+                                <input type="text" name="pengalaman" class="form-control"
+                                    value="{{ old('pengalaman', $sdm->pengalaman) }}" required>
                             </div>
 
                             <div class="mb-3">
@@ -151,6 +153,7 @@
                                 </button>
                             </div>
                         </form>
+
                     </div>
                 </div>
             </div>

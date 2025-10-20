@@ -16,7 +16,6 @@
 
         :root {
             --primary: #BC0016;
-            --secondary: #0084ff;
             --dark: #1c2833;
             --light: #f8f9fa;
             --gradient: linear-gradient(135deg, #BC0016 0%, #650c16 100%);

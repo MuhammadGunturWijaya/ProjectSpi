@@ -70,7 +70,7 @@
                                 <p class="text-muted mb-2" style="font-size: 0.9rem;">
                                     <i class="bi bi-calendar-event me-1"></i> {{ $berita->tanggal }}
                                 </p>
-                                <div class="mt-auto d-flex justify-content-between">
+                                <div class="mt-auto d-flex justify-content-between align-items-center gap-1">
                                     <a href="{{ route('berita.show', $berita->id) }}"
                                         class="btn btn-outline-primary btn-sm px-3">
                                         <i class="bi bi-eye"></i> Detail
@@ -80,9 +80,18 @@
                                         <a href="{{ route('berita.edit', $berita->id) }}" class="btn btn-warning btn-sm px-3">
                                             <i class="bi bi-pencil"></i> Edit
                                         </a>
+
+                                        <!-- Tombol Hapus -->
+                                        <form action="{{ route('berita.destroy', $berita->id) }}" method="POST"
+                                              onsubmit="return confirm('Yakin ingin menghapus berita ini?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn btn-danger btn-sm px-3">
+                                                <i class="bi bi-trash"></i> Hapus
+                                            </button>
+                                        </form>
                                     @endif
                                 </div>
-
                             </div>
                         </div>
                     </div>

@@ -92,5 +92,19 @@ class SdmController extends Controller
         }
     }
 
+    public function destroy($id)
+    {
+        $person = Sdm::findOrFail($id);
+
+        // Hapus foto lokal jika ada
+        if ($person->foto && file_exists(public_path('images/' . $person->foto))) {
+            unlink(public_path('images/' . $person->foto));
+        }
+
+        $person->delete();
+
+        return redirect()->route('sdm.index')->with('success', 'SDM berhasil dihapus!');
+    }
+
 
 }
