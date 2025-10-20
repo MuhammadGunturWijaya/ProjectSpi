@@ -24,6 +24,7 @@
             min-height: 100vh;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             padding: 20px 0;
+            overflow-x : hidden;
         }
 
         .profile-container {
@@ -267,7 +268,7 @@
 </head>
 
 <body>
-    <!-- @include('layouts.navbar') -->
+    
     <div class="container profile-container">
         <!-- Alert Success -->
         <div class="alert alert-success alert-dismissible fade show" role="alert" style="display: none;"

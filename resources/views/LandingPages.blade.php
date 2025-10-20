@@ -196,7 +196,7 @@
         .hero-section {
             position: relative;
             height: 100vh;
-            background: linear-gradient(135deg, rgba(28, 40, 51, 0.85), rgba(188, 0, 22, 0.75)),
+            background: linear-gradient(135deg, rgba(28, 40, 51, 0.85), rgba(82, 27, 27, 0.75)),
                 url('https://tender-indonesia.com/newsrectory/events/15(6).png');
             background-size: cover;
             background-position: center;
@@ -284,7 +284,6 @@
 
         .quick-card:hover {
             transform: translateY(-20px) scale(1.05);
-            box-shadow: 0 25px 60px rgba(188, 0, 22, 0.3);
         }
 
         .quick-card i {
@@ -836,29 +835,59 @@
     <section id="beranda" class="hero-section">
         <div class="hero-content">
             <h1 class="hero-title">SATUAN PENGAWAS INTERNAL</h1>
-            <p class="hero-subtitle">Politeknik Negeri Jember</p>
+            <p class="hero-subtitle">
+                <span style="font-size: 2.2rem; font-weight: 400; color: #ffffffff;">
+                    Politeknik Negeri Jember
+                </span>
+            </p>
             <a href="#carousel" class="scroll-down-btn">⌄</a>
         </div>
+
 
         <!-- Quick Access -->
         <div class="quick-access">
             <a href="#BeritaTerbaru" class="quick-card">
-                <i class="bi bi-newspaper"></i>
-                <h4>Berita</h4>
+                <img src="{{ asset('images/logo/news.png') }}" alt="Berita" class="news-img1">
+                <h4 style="color: white;"> Berita</h4>
             </a>
+
             <a href="#PengaduanMasyarakat" class="quick-card">
-                <i class="bi bi-megaphone"></i>
-                <h4>Laporan Pengaduan</h4>
+                <img src="{{ asset('images/logo/laporan.png') }}" alt="Berita" class="news-img1">
+                <h4 style="color: white;"> Pengaduan </h4>
+                <h4 style="color: white;"> Lapor Di Sini</h4>
             </a>
+
             <a href="{{ route('survey.kepuasan') }}" class="quick-card">
-                <i class="bi bi-clipboard-data"></i>
-                <h4>Survey Kepuasan Masyarakat</h4>
+                <img src="{{ asset('images/logo/survey2.png') }}" alt="Berita" class="news-img1">
+                <h4 style="color: white;"> Penilaian Layanan</h4>
+                <h4 style="color: white;"> Klik Disini</h4>
             </a>
-            <!-- <a href="{{ route('piagam.index') }}" class="quick-card">
-                <i class="bi bi-file-earmark-text"></i>
-                <h4>Dokumen</h4>
-            </a> -->
         </div>
+
+        <style>
+            .quick-card {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                text-decoration: none;
+                color: inherit;
+                background: transparent;
+                /* ⬅️ Hilangkan background putih */
+                box-shadow: none;
+                /* ⬅️ Hilangkan bayangan */
+            }
+
+            .news-img1 {
+                width: 100px;
+                height: 100px;
+                object-fit: contain;
+                border-radius: 10px;
+                margin-bottom: 10px;
+                background: transparent;
+                /* ⬅️ Pastikan tidak ada latar putih */
+            }
+        </style>
+
     </section>
 
     <!-- Carousel Section -->
@@ -902,12 +931,12 @@
         <div class="container">
             <div class="text-center mb-5" id="BeritaTerbaru">
                 <h2 class="section-title">📰 Berita Terbaru</h2>
-                <p class="mt-4 text-muted" style="font-size: 1.15rem;">
+                <p class="mt-4 text-muted" style="font-size: 1.50rem;">
                     Dapatkan informasi terkini seputar kegiatan dan aktivitas <span class="fw-semibold text-primary">SPI
                         Politeknik Negeri Jember</span>
                 </p>
             </div>
-            
+
             <!-- Tombol Tambah Berita (Admin Only) -->
             @auth
                 @if(Auth::user()->role === 'admin')
