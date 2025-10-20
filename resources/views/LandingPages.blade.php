@@ -729,10 +729,7 @@
         <div class="container">
             <a class="navbar-brand" href="#">
                 <img src="{{ asset('images/logoPolije.png') }}" alt="Logo" height="50">
-                <span class="logo-text">
-                    SATUAN PENGAWAS INTERNAL<br>
-                    POLITEKNIK NEGERI JEMBER
-                </span>
+                <img src="{{ asset('images/logo/blu.png') }}" alt="Logo" height="50">
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                 style="background: white;">
@@ -740,7 +737,10 @@
             </button>
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
                 <ul class="navbar-nav">
-                    <li class="nav-item"><a class="nav-link highlight" href="#">Beranda</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link highlight" style="color: white !important;" href="#">Beranda</a>
+                    </li>
+
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Profil</a>
                         <ul class="dropdown-menu">
@@ -831,7 +831,7 @@
     </nav>
 
     <!-- Hero Section -->
-    <section id="beranda" class="hero-section">
+    <section id="beranda" class="hero-section" style="position: relative;">
         <div class="hero-content">
             <h1 class="hero-title">SATUAN PENGAWAS INTERNAL</h1>
             <p class="hero-subtitle">
@@ -841,7 +841,6 @@
             </p>
             <a href="#carousel" class="scroll-down-btn">⌄</a>
         </div>
-
 
         <!-- Quick Access -->
         <div class="quick-access">
@@ -863,6 +862,15 @@
             </a>
         </div>
 
+        <!-- Stat Card (Tingkat Kepuasan) -->
+        <div class="stat-card2">
+            <i class="bi bi-star-fill"></i>
+            <div class="stat-info">
+                <h3>{{ $ikm }}%</h3>
+                <p>Tingkat Kepuasan</p>
+            </div>
+        </div>
+
         <style>
             .quick-card {
                 display: flex;
@@ -871,9 +879,7 @@
                 text-decoration: none;
                 color: inherit;
                 background: transparent;
-                /* ⬅️ Hilangkan background putih */
                 box-shadow: none;
-                /* ⬅️ Hilangkan bayangan */
             }
 
             .news-img1 {
@@ -883,10 +889,28 @@
                 border-radius: 10px;
                 margin-bottom: 10px;
                 background: transparent;
-                /* ⬅️ Pastikan tidak ada latar putih */
+            }
+
+            .stat-card2 {
+                position: absolute;
+                bottom: 20px;
+                /* jarak dari bawah */
+                right: 20px;
+                /* jarak dari kanan */
+                background: rgba(0, 0, 0, 0.6);
+                color: white;
+                padding: 15px 20px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .stat-card2 i {
+                font-size: 2rem;
+                color: gold;
             }
         </style>
-
     </section>
 
     <!-- Carousel Section -->
@@ -940,7 +964,7 @@
             @auth
                 @if(Auth::user()->role === 'admin')
                     <div class="text-end mb-4">
-                        <a href="{{ route('berita.create') }}" class="btn btn-read-more">
+                        <a href="{{ route('admin.berita.create') }}" class="btn btn-read-more">
                             <i class="bi bi-plus-circle me-2"></i>Tambah Berita
                         </a>
                     </div>

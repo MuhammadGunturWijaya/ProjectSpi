@@ -122,7 +122,7 @@ class PedomanPengawasanController extends Controller
             'jenis' => 'required|string',
             'judul' => 'required|string|max:255',
             'tahun' => 'required|integer',
-            'file_pdf' => 'nullable|mimes:pdf|max:10240', // max 10 MB
+            'file_pdf' => 'nullable|mimes:pdf|max:40000', // max 10 MB
         ]);
 
         // Update field dasar

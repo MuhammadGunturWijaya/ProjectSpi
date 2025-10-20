@@ -52,7 +52,7 @@ Route::get('/berita/{id}', [BeritaController::class, 'show'])->name('berita.show
 
 
 Route::middleware(['auth'])->prefix('admin/berita')->group(function () {
-    Route::get('create', [BeritaController::class, 'create'])->name('berita.create');
+    Route::get('create', [BeritaController::class, 'create'])->name('admin.berita.create');
     Route::post('store', [BeritaController::class, 'store'])->name('berita.store');
     Route::get('{id}/edit', [BeritaController::class, 'edit'])->name('berita.edit');
     Route::put('{id}', [BeritaController::class, 'update'])->name('berita.update');
@@ -103,7 +103,15 @@ Route::middleware(['auth'])->group(function () {
 });
 
 // Visi Misi
+// Halaman publik
 Route::get('/visi-misi', [VisiMisiController::class, 'index'])->name('visi-misi.index');
+
+// Admin
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/visi-misi/edit', [VisiMisiController::class, 'edit'])->name('visi-misi.edit');
+    Route::post('/admin/visi-misi/update', [VisiMisiController::class, 'update'])->name('visi-misi.update');
+});
+
 
 // Login/Register
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -263,6 +271,10 @@ Route::get('/pedoman-pengawasan/{id}/json', [PedomanPengawasanController::class,
 Route::get('/pedoman-audit', [DetailPengawasanController::class, 'index'])
     ->name('pedoman.audit');
 
+
+    //button kembali 
+Route::get('/pedomanpengawasan/detail', [PedomanPengawasanController::class, 'index'])
+    ->name('pedomanpengawasan.detail-pedoman');
 
 
 

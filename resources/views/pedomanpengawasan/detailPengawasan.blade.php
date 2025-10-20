@@ -228,33 +228,33 @@
                         <div class="d-flex gap-2 mt-2">
                             <!-- Tombol Edit -->
                             <button type="button" class="btn btn-warning" onclick="openEditModal(
-                                                            {{ $pedoman->id }},
-                                                            '{{ $pedoman->judul }}',
-                                                            '{{ $pedoman->tahun }}',
-                                                            '{{ $pedoman->jenis }}',
-                                                            '{{ $pedoman->kata_kunci }}',
-                                                            `{{ $pedoman->abstrak }}`,
-                                                            `{{ $pedoman->catatan }}`,
-                                                            '{{ $pedoman->tipe_dokumen }}',
-                                                            '{{ $pedoman->judul_meta }}',
-                                                            '{{ $pedoman->teu }}',
-                                                            '{{ $pedoman->nomor }}',
-                                                            '{{ $pedoman->bentuk }}',
-                                                            '{{ $pedoman->bentuk_singkat }}',
-                                                            '{{ $pedoman->tahun_meta }}',
-                                                            '{{ $pedoman->tempat_penetapan }}',
-                                                            '{{ optional($pedoman->tanggal_penetapan)->format("Y-m-d") }}',
-                                                            '{{ optional($pedoman->tanggal_pengundangan)->format("Y-m-d") }}',
-                                                            '{{ optional($pedoman->tanggal_berlaku)->format("Y-m-d") }}',
-                                                            '{{ $pedoman->sumber }}',
-                                                            '{{ $pedoman->subjek }}',
-                                                            '{{ $pedoman->status }}',
-                                                            '{{ $pedoman->bahasa }}',
-                                                            '{{ $pedoman->lokasi }}',
-                                                            '{{ $pedoman->bidang }}',
-                                                            '{{ $pedoman->mencabut }}',
-                                                            '{{ $pedoman->file_name }}'
-                                                        )">
+                                                                                                            {{ $pedoman->id }},
+                                                                                                            '{{ $pedoman->judul }}',
+                                                                                                            '{{ $pedoman->tahun }}',
+                                                                                                            '{{ $pedoman->jenis }}',
+                                                                                                            '{{ $pedoman->kata_kunci }}',
+                                                                                                            `{{ $pedoman->abstrak }}`,
+                                                                                                            `{{ $pedoman->catatan }}`,
+                                                                                                            '{{ $pedoman->tipe_dokumen }}',
+                                                                                                            '{{ $pedoman->judul_meta }}',
+                                                                                                            '{{ $pedoman->teu }}',
+                                                                                                            '{{ $pedoman->nomor }}',
+                                                                                                            '{{ $pedoman->bentuk }}',
+                                                                                                            '{{ $pedoman->bentuk_singkat }}',
+                                                                                                            '{{ $pedoman->tahun_meta }}',
+                                                                                                            '{{ $pedoman->tempat_penetapan }}',
+                                                                                                            '{{ optional($pedoman->tanggal_penetapan)->format("Y-m-d") }}',
+                                                                                                            '{{ optional($pedoman->tanggal_pengundangan)->format("Y-m-d") }}',
+                                                                                                            '{{ optional($pedoman->tanggal_berlaku)->format("Y-m-d") }}',
+                                                                                                            '{{ $pedoman->sumber }}',
+                                                                                                            '{{ $pedoman->subjek }}',
+                                                                                                            '{{ $pedoman->status }}',
+                                                                                                            '{{ $pedoman->bahasa }}',
+                                                                                                            '{{ $pedoman->lokasi }}',
+                                                                                                            '{{ $pedoman->bidang }}',
+                                                                                                            '{{ $pedoman->mencabut }}',
+                                                                                                            '{{ $pedoman->file_name }}'
+                                                                                                        )">
                                 <i class="fa fa-edit"></i> Edit
                             </button>
 
@@ -315,33 +315,33 @@
                         <div class="d-flex gap-2 mt-2">
                             <!-- Tombol Edit -->
                             <button type="button" class="btn btn-warning" onclick="openEditModal(
-                                                        {{ $pedoman->id }},
-                                                        '{{ $pedoman->judul }}',
-                                                        '{{ $pedoman->tahun }}',
-                                                        '{{ $pedoman->jenis }}',
-                                                        '{{ $pedoman->kata_kunci }}',
-                                                        `{{ $pedoman->abstrak }}`,
-                                                        `{{ $pedoman->catatan }}`,
-                                                        '{{ $pedoman->tipe_dokumen }}',
-                                                        '{{ $pedoman->judul_meta }}',
-                                                        '{{ $pedoman->teu }}',
-                                                        '{{ $pedoman->nomor }}',
-                                                        '{{ $pedoman->bentuk }}',
-                                                        '{{ $pedoman->bentuk_singkat }}',
-                                                        '{{ $pedoman->tahun_meta }}',
-                                                        '{{ $pedoman->tempat_penetapan }}',
-                                                        '{{ optional($pedoman->tanggal_penetapan)->format("Y-m-d") }}',
-                                                        '{{ optional($pedoman->tanggal_pengundangan)->format("Y-m-d") }}',
-                                                        '{{ optional($pedoman->tanggal_berlaku)->format("Y-m-d") }}',
-                                                        '{{ $pedoman->sumber }}',
-                                                        '{{ $pedoman->subjek }}',
-                                                        '{{ $pedoman->status }}',
-                                                        '{{ $pedoman->bahasa }}',
-                                                        '{{ $pedoman->lokasi }}',
-                                                        '{{ $pedoman->bidang }}',
-                                                        '{{ $pedoman->mencabut }}',
-                                                        '{{ $pedoman->file_name }}'
-                                                    )">
+                                                                                                        {{ $pedoman->id }},
+                                                                                                        '{{ $pedoman->judul }}',
+                                                                                                        '{{ $pedoman->tahun }}',
+                                                                                                        '{{ $pedoman->jenis }}',
+                                                                                                        '{{ $pedoman->kata_kunci }}',
+                                                                                                        `{{ $pedoman->abstrak }}`,
+                                                                                                        `{{ $pedoman->catatan }}`,
+                                                                                                        '{{ $pedoman->tipe_dokumen }}',
+                                                                                                        '{{ $pedoman->judul_meta }}',
+                                                                                                        '{{ $pedoman->teu }}',
+                                                                                                        '{{ $pedoman->nomor }}',
+                                                                                                        '{{ $pedoman->bentuk }}',
+                                                                                                        '{{ $pedoman->bentuk_singkat }}',
+                                                                                                        '{{ $pedoman->tahun_meta }}',
+                                                                                                        '{{ $pedoman->tempat_penetapan }}',
+                                                                                                        '{{ optional($pedoman->tanggal_penetapan)->format("Y-m-d") }}',
+                                                                                                        '{{ optional($pedoman->tanggal_pengundangan)->format("Y-m-d") }}',
+                                                                                                        '{{ optional($pedoman->tanggal_berlaku)->format("Y-m-d") }}',
+                                                                                                        '{{ $pedoman->sumber }}',
+                                                                                                        '{{ $pedoman->subjek }}',
+                                                                                                        '{{ $pedoman->status }}',
+                                                                                                        '{{ $pedoman->bahasa }}',
+                                                                                                        '{{ $pedoman->lokasi }}',
+                                                                                                        '{{ $pedoman->bidang }}',
+                                                                                                        '{{ $pedoman->mencabut }}',
+                                                                                                        '{{ $pedoman->file_name }}'
+                                                                                                    )">
                                 <i class="fa fa-edit"></i> Edit
                             </button>
 
@@ -401,33 +401,33 @@
                         <div class="d-flex gap-2 mt-2">
                             <!-- Tombol Edit -->
                             <button type="button" class="btn btn-warning" onclick="openEditModal(
-                                            {{ $pedoman->id }},
-                                            '{{ $pedoman->judul }}',
-                                            '{{ $pedoman->tahun }}',
-                                            '{{ $pedoman->jenis }}',
-                                            '{{ $pedoman->kata_kunci }}',
-                                            `{{ $pedoman->abstrak }}`,
-                                            `{{ $pedoman->catatan }}`,
-                                            '{{ $pedoman->tipe_dokumen }}',
-                                            '{{ $pedoman->judul_meta }}',
-                                            '{{ $pedoman->teu }}',
-                                            '{{ $pedoman->nomor }}',
-                                            '{{ $pedoman->bentuk }}',
-                                            '{{ $pedoman->bentuk_singkat }}',
-                                            '{{ $pedoman->tahun_meta }}',
-                                            '{{ $pedoman->tempat_penetapan }}',
-                                            '{{ optional($pedoman->tanggal_penetapan)->format("Y-m-d") }}',
-                                            '{{ optional($pedoman->tanggal_pengundangan)->format("Y-m-d") }}',
-                                            '{{ optional($pedoman->tanggal_berlaku)->format("Y-m-d") }}',
-                                            '{{ $pedoman->sumber }}',
-                                            '{{ $pedoman->subjek }}',
-                                            '{{ $pedoman->status }}',
-                                            '{{ $pedoman->bahasa }}',
-                                            '{{ $pedoman->lokasi }}',
-                                            '{{ $pedoman->bidang }}',
-                                            '{{ $pedoman->mencabut }}',
-                                            '{{ $pedoman->file_name }}'
-                                        )">
+                                                                                            {{ $pedoman->id }},
+                                                                                            '{{ $pedoman->judul }}',
+                                                                                            '{{ $pedoman->tahun }}',
+                                                                                            '{{ $pedoman->jenis }}',
+                                                                                            '{{ $pedoman->kata_kunci }}',
+                                                                                            `{{ $pedoman->abstrak }}`,
+                                                                                            `{{ $pedoman->catatan }}`,
+                                                                                            '{{ $pedoman->tipe_dokumen }}',
+                                                                                            '{{ $pedoman->judul_meta }}',
+                                                                                            '{{ $pedoman->teu }}',
+                                                                                            '{{ $pedoman->nomor }}',
+                                                                                            '{{ $pedoman->bentuk }}',
+                                                                                            '{{ $pedoman->bentuk_singkat }}',
+                                                                                            '{{ $pedoman->tahun_meta }}',
+                                                                                            '{{ $pedoman->tempat_penetapan }}',
+                                                                                            '{{ optional($pedoman->tanggal_penetapan)->format("Y-m-d") }}',
+                                                                                            '{{ optional($pedoman->tanggal_pengundangan)->format("Y-m-d") }}',
+                                                                                            '{{ optional($pedoman->tanggal_berlaku)->format("Y-m-d") }}',
+                                                                                            '{{ $pedoman->sumber }}',
+                                                                                            '{{ $pedoman->subjek }}',
+                                                                                            '{{ $pedoman->status }}',
+                                                                                            '{{ $pedoman->bahasa }}',
+                                                                                            '{{ $pedoman->lokasi }}',
+                                                                                            '{{ $pedoman->bidang }}',
+                                                                                            '{{ $pedoman->mencabut }}',
+                                                                                            '{{ $pedoman->file_name }}'
+                                                                                        )">
                                 <i class="fa fa-edit"></i> Edit
                             </button>
 
@@ -447,7 +447,40 @@
             @endforelse
         </div>
     </section>
-    
+
+    <div class="back-button-container">
+        <a href="{{ route('pedomanpengawasan.detail-pedoman') }}" class="modern-back-button">
+            &larr; Kembali
+        </a>
+    </div>
+
+    <style>
+        /* Kontainer baru untuk memusatkan tombol */
+        .back-button-container {
+            text-align: center;
+            /* Memusatkan konten inline (tombol 'a') */
+            margin: 20px 0;
+            /* Memberikan sedikit ruang di atas dan bawah */
+        }
+
+        .modern-back-button {
+            display: inline-block;
+            background-color: #074e61;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .modern-back-button:hover {
+            background-color: #074e61;
+            transform: scale(1.05);
+        }
+    </style>
+
+
 
     <!-- Modal Tambah Pedoman -->
     <div id="modalTambahPedoman" class="modal">
