@@ -23,7 +23,7 @@ class PedomanMRController extends Controller
         $request->validate([
             'judul' => 'required|string|max:255',
             'tahun' => 'required|integer',
-            'file_pdf' => 'nullable|mimes:pdf|max:10240',
+            'file_pdf' => 'nullable|mimes:pdf|max:40000',
         ]);
 
         $pedomanmr = new PedomanMR();
@@ -87,7 +87,7 @@ class PedomanMRController extends Controller
         $request->validate([
             'judul' => 'required|string|max:255',
             'tahun' => 'required|integer',
-            'file_pdf' => 'nullable|mimes:pdf|max:10240',
+            'file_pdf' => 'nullable|mimes:pdf|max:40000',
         ]);
 
         $pedomanmr->judul = $request->judul;

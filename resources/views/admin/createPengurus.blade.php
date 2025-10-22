@@ -1,5 +1,9 @@
 @extends('layouts.app')
-
+<style>
+    body {
+                   overflow-x: hidden;
+        }
+</style>
 @section('content')
 <div class="container mt-5">
     <div class="card shadow-lg mx-auto" style="max-width: 600px; border-radius: 15px;">

@@ -26,7 +26,7 @@ class InstrumenController  extends Controller
             'jenis' => 'required|string',
             'judul' => 'required|string|max:255',
             'tahun' => 'required|integer',
-            'file_pdf' => 'nullable|mimes:pdf|max:10240',
+            'file_pdf' => 'nullable|mimes:pdf|max:40000',
         ]);
 
         $Instrumen = new Instrumen();
@@ -152,7 +152,7 @@ class InstrumenController  extends Controller
             'jenis' => 'required|string',
             'judul' => 'required|string|max:255',
             'tahun' => 'required|integer',
-            'file_pdf' => 'nullable|mimes:pdf|max:10240',
+            'file_pdf' => 'nullable|mimes:pdf|max:40000',
         ]);
 
         $Instrumen->jenis = $request->jenis;

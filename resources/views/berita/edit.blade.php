@@ -1,5 +1,10 @@
 <!DOCTYPE html>
 <html lang="id">
+    <style>
+        body {
+                   overflow-x: hidden;
+        }
+    </style>
 <head>
     <meta charset="UTF-8">
     <title>Edit Berita</title>

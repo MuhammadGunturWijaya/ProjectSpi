@@ -41,7 +41,7 @@ class TambahPedomanController extends Controller
                 'bidang' => 'nullable|string|max:255',
 
                 // File & Status
-                'file_pdf' => 'nullable|mimes:pdf|max:5120',
+                'file_pdf' => 'nullable|mimes:pdf|max:40000',
                 'mencabut' => 'nullable|string|max:255',
             ]);
 

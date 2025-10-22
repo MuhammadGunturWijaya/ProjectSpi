@@ -1,4 +1,9 @@
 <footer class="footer">
+    <style>
+        body {
+                   overflow-x: hidden;
+        }
+    </style>
     <div class="footer-container">
         <a class="navbar-brand d-flex align-items-center" href="{{ route('landingpage') }}">
             <img src="{{ asset('images/logoPolije.png') }}" alt="Logo Polije" class="footer-logo">

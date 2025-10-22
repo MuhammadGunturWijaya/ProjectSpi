@@ -24,7 +24,7 @@ class KonsideranSPIController extends Controller
 
             'judul' => 'required|string|max:255',
             'tahun' => 'required|integer',
-            'file_pdf' => 'nullable|mimes:pdf|max:10240',
+            'file_pdf' => 'nullable|mimes:pdf|max:40000',
         ]);
 
         $Konsideran = new KonsideranSPI();
@@ -85,7 +85,7 @@ class KonsideranSPIController extends Controller
 
             'judul' => 'required|string|max:255',
             'tahun' => 'required|integer',
-            'file_pdf' => 'nullable|mimes:pdf|max:10240',
+            'file_pdf' => 'nullable|mimes:pdf|max:40000',
         ]);
 
 

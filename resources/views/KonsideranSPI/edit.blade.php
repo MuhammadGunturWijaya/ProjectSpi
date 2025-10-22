@@ -4,7 +4,11 @@ use Carbon\Carbon;
 
 @extends('layouts.app')
 
-
+<style>
+    body {
+                   overflow-x: hidden;
+        }
+</style>
 @section('content')
     <div class="container py-5">
         <div class="text-center mb-5">
