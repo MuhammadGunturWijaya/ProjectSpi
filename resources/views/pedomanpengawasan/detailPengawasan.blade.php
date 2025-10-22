@@ -199,9 +199,6 @@
                         onsubmit="return confirm('Yakin ingin menghapus semua pedoman audit?')">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger">
-                            <i class="fa fa-trash"></i> Hapus Semua
-                        </button>
                         <a href="#" id="btnTambahAudit">
                             <i class="fa fa-plus"></i> Tambah Pedoman
                         </a>
@@ -286,9 +283,6 @@
                         onsubmit="return confirm('Yakin ingin menghapus semua pedoman reviu?')">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger">
-                            <i class="fa fa-trash"></i> Hapus Semua
-                        </button>
                         <a href="#" id="btnTambahReviu">
                             <i class="fa fa-plus"></i> Tambah Pedoman
                         </a>
@@ -372,9 +366,6 @@
                         onsubmit="return confirm('Yakin ingin menghapus semua pedoman monev?')">
                         @csrf
                         @method('DELETE')
-                        <button type="submit" class="btn btn-danger">
-                            <i class="fa fa-trash"></i> Hapus Semua
-                        </button>
                         <a href="#" id="btnTambahMonev">
                             <i class="fa fa-plus"></i> Tambah Pedoman
                         </a>

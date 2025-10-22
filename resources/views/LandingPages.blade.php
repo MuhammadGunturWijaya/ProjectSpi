@@ -867,7 +867,7 @@
             <i class="bi bi-star-fill"></i>
             <div class="stat-info">
                 <h3>{{ $ikm }}%</h3>
-                <p>Tingkat Kepuasan</p>
+                <p>Tingkat Kepuasan Hari Ini</p>
             </div>
         </div>
 
@@ -1129,7 +1129,7 @@
                         <i class="bi bi-star-fill"></i>
                         <div class="stat-info">
                             <h3>{{ $ikm }}%</h3>
-                            <p>Tingkat Kepuasan</p>
+                            <p>Tingkat Kepuasan Hari Ini</p>
                         </div>
                     </div>
 
