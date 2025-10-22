@@ -618,3 +618,6 @@ Route::get('/berita/{id}', [BeritaController::class, 'show'])->name('berita.show
 Route::resource('berita', App\Http\Controllers\BeritaController::class);
 
 Route::resource('sdm', App\Http\Controllers\SdmController::class);
+
+
+Route::get('/pedoman/search', [PedomanPengawasanController::class, 'search'])->name('pedoman.search');
