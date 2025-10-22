@@ -64,6 +64,8 @@ class PiagamSPIController extends Controller
     public function show($id)
     {
         $piagam = PiagamSPI::findOrFail($id);
+
+        $piagam->increment('views');
         return view('PiagamSPI.detail', compact('piagam'));
     }
 
