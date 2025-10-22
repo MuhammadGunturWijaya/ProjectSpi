@@ -110,62 +110,88 @@
             }
         });
     </script>
-
+<!-- gacor -->
     <section class="popular">
         <h2>Peraturan Terpopuler 2 Minggu Terakhir</h2>
-        <div class="carousel-wrapper"> <button id="carousel-prev" class="carousel-btn prev-btn"><i
-                    class="fas fa-chevron-left"></i></button>
+        <div class="carousel-wrapper">
+            <button id="carousel-prev" class="carousel-btn prev-btn">
+                <i class="fas fa-chevron-left"></i>
+            </button>
             <div class="carousel-track-container">
-                <div class="carousel-track"> @foreach($popular as $item) <a
-                    href="{{ route('pedoman.show', $item->id) }}" class="card-link">
-                    <div class="card-item-new">
-                        <div class="card-icon-new"> <i class="fas fa-gavel"></i> </div>
-                        <div class="card-content-new"> <span class="card-title-new">{{ $item->judul }}</span> <span
-                                class="cardItems">{{ $item->tahun }}</span> <span class="card-type-new">📜
-                                {{ strtoupper($item->jenis) }}</span> </div>
-                    </div>
-                </a> @endforeach </div>
-            </div> <button id="carousel-next" class="carousel-btn next-btn"><i
-                    class="fas fa-chevron-right"></i></button>
+                <div class="carousel-track">
+                    @foreach($popular as $item)
+                        <a href="{{ route('pedoman.show', $item->id) }}" class="card-link">
+                            <div class="card-item-new">
+                                <div class="card-glow"></div>
+                                <div class="card-icon-new">
+                                    <i
+                                        class="{{ $item->jenis == 'undang-undang' ? 'fas fa-gavel' : 'fas fa-file-invoice' }}"></i>
+                                </div>
+                                <div class="card-content-new">
+                                    <span class="card-title-new">{{ $item->judul }}</span>
+                                    <small class="card-subtitle-new">{{ $item->tahun }}</small>
+                                    <span class="card-type-new">📜 {{ strtoupper($item->jenis) }}</span>
+                                </div>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            </div>
+            <button id="carousel-next" class="carousel-btn next-btn">
+                <i class="fas fa-chevron-right"></i>
+            </button>
         </div>
     </section>
 
     <style>
-        ```css
-
-        /* Section Wrapper */
+        /* === SECTION === */
         .popular {
-            padding: 2rem 1rem;
-            background: linear-gradient(135deg, #f0f4ff, #ffffff);
-            border-radius: 16px;
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+            padding: 3rem 1rem;
+            background: linear-gradient(135deg, #eef3ff 0%, #ffffff 100%);
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .popular::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.1), transparent 60%);
+            transform: rotate(25deg);
+            z-index: 0;
         }
 
         .popular h2 {
-            font-size: 1.7rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
+            font-size: 1.9rem;
+            font-weight: 800;
             text-align: center;
             color: #1e293b;
-            letter-spacing: 0.5px;
+            margin-bottom: 2rem;
             position: relative;
+            z-index: 2;
         }
 
         .popular h2::after {
             content: "";
             display: block;
-            width: 80px;
-            height: 3px;
-            background: linear-gradient(to right, #2563eb, #06b6d4);
-            margin: 0.5rem auto 0;
+            width: 90px;
+            height: 4px;
+            background: linear-gradient(to right, #2563eb, #0ea5e9);
+            margin: 0.6rem auto 0;
             border-radius: 2px;
         }
 
-        /* Carousel Container */
+        /* === CAROUSEL === */
         .carousel-wrapper {
-            position: relative;
             display: flex;
             align-items: center;
+            position: relative;
+            z-index: 2;
         }
 
         .carousel-track-container {
@@ -175,96 +201,67 @@
 
         .carousel-track {
             display: flex;
-            gap: 1.2rem;
+            gap: 1.5rem;
             transition: transform 0.4s ease;
             padding: 0.5rem;
         }
 
-        /* Card Style */
+        /* === CARD === */
         .card-link {
             text-decoration: none;
             color: inherit;
         }
 
         .card-item-new {
-            width: 260px;
-            height: 280px;
-            background: linear-gradient(180deg, #dbe9ff, #618cdd);
-            /* gradient lembut biru muda */
-            border-radius: 14px;
-            padding: 1.2rem;
+            width: 270px;
+            min-height: 280px;
+            background:  color: var(--primary);
+            /* warna card  */
+            border-radius: 16px;
+            position: relative;
+            padding: 1.4rem;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            gap: 0.6rem;
-            align-items: flex-start;
-            box-shadow: 0 6px 15px rgba(37, 99, 235, 0.1);
-            border: 1px solid rgba(37, 99, 235, 0.15);
-            transition: transform 0.3s, box-shadow 0.3s, border 0.3s;
-            position: relative;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(37, 99, 235, 0.12);
             overflow: hidden;
-            animation: fadeUp 0.6s ease both;
-        }
-
-
-        .card-item-new::before {
-            content: "";
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(37, 99, 235, 0.08), transparent 60%);
-            transform: rotate(25deg);
-            transition: opacity 0.3s;
-            opacity: 0;
-        }
-
-        .card-item-new:hover::before {
-            opacity: 1;
-        }
-
-        /* Animasi saat card masuk */
-        @keyframes fadeUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .card-item-new::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            border-radius: 14px;
-            background: radial-gradient(circle at top left, rgba(37, 99, 235, 0.08), transparent 60%);
-            opacity: 0;
-            transition: opacity 0.4s;
-        }
-
-        .card-item-new:hover::after {
-            opacity: 1;
+            transition: all 0.35s ease;
         }
 
         .card-item-new:hover {
-            transform: translateY(-8px) scale(1.02);
-            box-shadow: 0 12px 24px rgba(37, 99, 235, 0.25);
-            border: 1px solid transparent;
-            background: linear-gradient(#fff, #6d8ae9ff) padding-box, linear-gradient(135deg, #2563eb, #06b6d4) border-box;
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 12px 28px rgba(37, 99, 235, 0.25);
+            border-color: transparent;
+        }
+
+        .card-glow {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 30% 30%, rgba(37, 99, 235, 0.15), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 0;
+        }
+
+        .card-item-new:hover .card-glow {
+            opacity: 1;
         }
 
         .card-icon-new {
             font-size: 2rem;
             color: #2563eb;
-            background: linear-gradient(135deg, #eff6ff, #dbeafe);
-            padding: 0.6rem;
-            border-radius: 12px;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            background: #f1f5ff;
+            padding: 0.7rem;
+            border-radius: 14px;
+            box-shadow: inset 0 0 8px rgba(37, 99, 235, 0.15);
+            margin-bottom: 0.8rem;
+            z-index: 1;
+        }
+
+        .card-content-new {
+            z-index: 1;
         }
 
         .card-title-new {
@@ -274,59 +271,56 @@
             line-height: 1.4;
             display: -webkit-box;
             -webkit-line-clamp: 2;
-            /* Maksimal 2 baris */
             -webkit-box-orient: vertical;
             overflow: hidden;
-            text-overflow: ellipsis;
-            min-height: 2.8rem;
-            /* Supaya tinggi judul konsisten */
+            margin-bottom: 0.4rem;
         }
 
-
-        /* Tahun */
-        .cardItems {
-            font-size: 0.95rem;
+        .card-subtitle-new {
+            font-size: 0.9rem;
             color: #475569;
-            font-style: italic;
+            margin-bottom: 0.6rem;
+            display: block;
         }
 
-        /* Jenis */
         .card-type-new {
             font-size: 0.85rem;
-            background: linear-gradient(to right, #2563eb, #06b6d4);
+            background: linear-gradient(to right, #2563eb, #0ea5e9);
             color: #fff;
-            padding: 0.35rem 0.7rem;
+            padding: 0.4rem 0.7rem;
             border-radius: 10px;
             font-weight: 500;
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
             align-self: flex-start;
         }
 
-        /* Carousel Buttons */
+        /* === BUTTONS === */
         .carousel-btn {
-            background: linear-gradient(135deg, #2563eb, #06b6d4);
+            background: linear-gradient(135deg, #2563eb, #0ea5e9);
             border: none;
             color: #fff;
             font-size: 1.3rem;
-            width: 42px;
-            height: 42px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
             cursor: pointer;
             transition: all 0.3s;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            margin: 0 0.5rem;
+            box-shadow: 0 5px 12px rgba(37, 99, 235, 0.3);
         }
 
         .carousel-btn:hover {
-            background: linear-gradient(135deg, #1d4ed8, #0891b2);
+            background: linear-gradient(135deg, #1d4ed8, #0284c7);
             transform: scale(1.1);
         }
 
-        ```
+        .carousel-btn:active {
+            transform: scale(0.96);
+        }
     </style>
+
 
     <script>
         const carouselTrack = document.querySelector('.carousel-track');
