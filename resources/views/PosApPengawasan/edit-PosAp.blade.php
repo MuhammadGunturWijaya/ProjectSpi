@@ -26,12 +26,12 @@
                             <h5 class="card-title mb-0"><i class="bi bi-file-earmark-text me-2"></i>Informasi Dokumen</h5>
                         </div>
                         <div class="card-body">
-                            <div class="mb-3">
+                            <!-- <div class="mb-3">
                                 <label for="jenis" class="form-label fw-semibold">Jenis <span
                                         class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="jenis" name="jenis"
                                     value="{{ old('jenis', $PosAp->jenis) }}" required>
-                            </div>
+                            </div> -->
                             <div class="mb-3">
                                 <label for="judul" class="form-label fw-semibold">Judul <span
                                         class="text-danger">*</span></label>
@@ -88,14 +88,28 @@
                                 @endphp
 
                                 @foreach($metaFields as $field)
+                                    @php
+                                        $value = $PosAp->{$field['name']} ?? null;
+
+                                        // Kalau field tipe date, pastikan diformat aman
+                                        if (($field['type'] ?? '') === 'date' && $value) {
+                                            try {
+                                                $value = \Carbon\Carbon::parse($value)->format('Y-m-d');
+                                            } catch (\Exception $e) {
+                                                // kalau gagal parse, biarkan nilai aslinya
+                                            }
+                                        }
+                                    @endphp
+
                                     <div class="col-md-6">
                                         <label for="{{ $field['name'] }}"
                                             class="form-label fw-semibold">{{ $field['label'] }}</label>
                                         <input type="{{ $field['type'] ?? 'text' }}" class="form-control"
                                             id="{{ $field['name'] }}" name="{{ $field['name'] }}"
-                                            value="{{ old($field['name'], $PosAp->{$field['name']}?->format('Y-m-d') ?? $PosAp->{$field['name']}) }}">
+                                            value="{{ old($field['name'], $value) }}">
                                     </div>
                                 @endforeach
+
                             </div>
 
                             <hr class="my-4">

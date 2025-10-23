@@ -180,16 +180,61 @@ class ProgramKerjaSPIController extends Controller
         }
 
         $programKerja->delete();
-
         return redirect()->back()->with('success', 'Program Kerja SPI berhasil dihapus.');
     }
 
-    // Lihat semua data
+    // Lihat semua
     public function lihat()
     {
         $title = "DAFTAR PROGRAM KERJA SPI";
         $programKerjaList = ProgramKerjaSPI::all();
 
         return view('program-kerja.lihat', compact('title', 'programKerjaList'));
+    }
+
+    // Search Program Kerja
+    public function search(Request $request)
+    {
+        $keyword = trim($request->input('keyword', ''));
+        $nomor = $request->input('nomor');
+        $tahun = $request->input('tahun');
+        $bidang = $request->input('bidang');
+        $subjek = $request->input('subjek');
+
+        $query = ProgramKerjaSPI::query();
+
+        if ($keyword) {
+            $keywords = explode(' ', $keyword);
+            foreach ($keywords as $word) {
+                $query->where(function ($q) use ($word) {
+                    $q->where('judul', 'like', "%{$word}%")
+                        ->orWhere('abstrak', 'like', "%{$word}%")
+                        ->orWhere('kata_kunci', 'like', "%{$word}%")
+                        ->orWhere('catatan', 'like', "%{$word}%");
+                });
+            }
+        }
+
+        if ($nomor)
+            $query->where('nomor', 'like', "%{$nomor}%");
+        if ($tahun)
+            $query->where('tahun', $tahun);
+        if ($bidang)
+            $query->where('bidang', 'like', "%{$bidang}%");
+        if ($subjek)
+            $query->where('subjek', 'like', "%{$subjek}%");
+
+        $programKerjaList = $query->paginate(10)->appends($request->all());
+        $title = "Hasil Pencarian Program Kerja SPI";
+
+        return view('program-kerja.search', compact(
+            'programKerjaList',
+            'keyword',
+            'nomor',
+            'tahun',
+            'bidang',
+            'subjek',
+            'title'
+        ));
     }
 }

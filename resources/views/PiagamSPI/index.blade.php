@@ -26,10 +26,8 @@
 
 
     <div class="search-wrapper">
-        <form action="{{ route('search.searchPedomanPengawasan') }}" method="GET" class="search-form"
-            style="display: contents;">
+        <form action="{{ route('piagamspi.search') }}" method="GET" class="search-form" style="display: contents;">
             <div class="input-group">
-                <i class="fa fa-search"></i>
                 <input type="text" name="keyword" placeholder="Cari peraturan ..." value="{{ $keyword ?? '' }}">
             </div>
             <button type="submit" class="search-btn"><i class="fa fa-search"></i> Cari</button>

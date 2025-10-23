@@ -24,16 +24,15 @@
         </div>
     </header>
 
-
-    <div class="search-wrapper">
+    <!-- search.searchPedomanPengawasan -->
+     <div class="search-wrapper">
         <form action="{{ route('search.searchPedomanPengawasan') }}" method="GET" class="search-form"
             style="display: contents;">
             <div class="input-group">
-                <i class="fa fa-search"></i>
-                <input type="text" name="keyword" placeholder="Cari peraturan ..." value="{{ $keyword ?? '' }}">
+                <input type="text" name="keyword" placeholder="Cari peraturan ..." value="{{ request('keyword') }}">
             </div>
             <button type="submit" class="search-btn"><i class="fa fa-search"></i> Cari</button>
-            <button type="button" class="adv-btn"><i class="fa fa-sliders-h"></i> Adv. Search</button>
+            <button type="button" class="adv-btn" id="openAdvModal"><i class="fa fa-sliders-h"></i> Adv. Search</button>
         </form>
     </div>
 
@@ -41,11 +40,13 @@
         <div class="modal-box">
             <span class="close">&times;</span>
             <h2 class="modal-title"><i class="fa fa-sliders-h"></i> Advanced Search</h2>
+
+            <!-- Form sudah diarahkan ke route search, method GET -->
             <form class="adv-form" action="{{ route('search.searchPedomanPengawasan') }}" method="GET">
                 <div class="form-group">
-                    <label for="tentang">Tentang</label>
-                    <input type="text" name="judul" id="tentang" placeholder="Masukkan kata kunci ..."
-                        value="{{ request('judul') }}">
+                    <label for="keyword">Tentang</label>
+                    <input type="text" name="keyword" id="keyword" placeholder="Masukkan kata kunci ..."
+                        value="{{ request('keyword') }}">
                 </div>
 
                 <div class="form-group">
@@ -72,8 +73,8 @@
 
                 <div class="form-group">
                     <label for="tag">Tag</label>
-                    <input type="text" name="kata_kunci" id="tag" placeholder="Pisahkan dengan koma"
-                        value="{{ request('kata_kunci') }}">
+                    <input type="text" name="tag" id="tag" placeholder="Pisahkan dengan koma"
+                        value="{{ request('tag') }}">
                 </div>
 
                 <div class="form-actions">
@@ -84,6 +85,8 @@
             </form>
         </div>
     </div>
+
+
 
 
     <script>
@@ -110,7 +113,7 @@
             }
         });
     </script>
-<!-- gacor -->
+    <!-- gacor -->
     <section class="popular">
         <h2>Peraturan Terpopuler 2 Minggu Terakhir</h2>
         <div class="carousel-wrapper">
@@ -215,7 +218,7 @@
         .card-item-new {
             width: 270px;
             min-height: 280px;
-            background:  color: var(--primary);
+            background: color: var(--primary);
             /* warna card  */
             border-radius: 16px;
             position: relative;

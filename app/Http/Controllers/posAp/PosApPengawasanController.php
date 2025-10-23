@@ -77,16 +77,26 @@ class PosApPengawasanController extends Controller
     }
 
 
-    // Halaman detail PosAp berdasarkan ID
+    // // Halaman detail PosAp berdasarkan ID
+    // public function show($id)
+    // {
+    //     // pastikan model benar: PosAP atau PosAp sesuai definisi model Anda
+    //     $PosAp = PosAP::findOrFail($id);
+    //     return view('PosApPengawasan.detail-posap', compact('PosAp'));
+    // }
+
     public function show($id)
     {
-        // pastikan model benar: PosAP atau PosAp sesuai definisi model Anda
         $PosAp = PosAP::findOrFail($id);
+        $title = "Detail POS AP Pengawasan";
+        // return view('PosApPengawasan.show', compact('PosAp', 'title'));
 
         // Tambah jumlah view setiap kali dibuka
         $PosAp->increment('views');
-        return view('PosApPengawasan.detail-posap', compact('PosAp'));
+        return view('PosApPengawasan.detail-posap', compact('PosAp', 'title'));
+
     }
+
 
 
 
@@ -174,14 +184,14 @@ class PosApPengawasanController extends Controller
 
         // Validasi data
         $request->validate([
-            'jenis' => 'required|string',
+           
             'judul' => 'required|string|max:255',
             'tahun' => 'required|integer',
             'file_pdf' => 'nullable|mimes:pdf|max:40000', // max 10 MB
         ]);
 
         // Update field dasar
-        $PosAp->jenis = $request->jenis;
+        // $PosAp->jenis = $request->jenis;
         $PosAp->judul = $request->judul;
         $PosAp->tahun = $request->tahun;
         $PosAp->kata_kunci = $request->kata_kunci;
@@ -228,6 +238,7 @@ class PosApPengawasanController extends Controller
     }
     public function showByJenis($jenis)
     {
+
         $posAps = PosAP::where('jenis', $jenis)->get();
 
         $judul = match ($jenis) {
@@ -252,7 +263,47 @@ class PosApPengawasanController extends Controller
     }
 
 
+    public function search(Request $request)
+    {
+        $keyword = trim($request->input('keyword', ''));
+        $nomor = $request->input('nomor');
+        $tahun = $request->input('tahun');
+        $jenis = $request->input('jenis');
+        $entitas = $request->input('entitas');
+        $tag = $request->input('tag');
 
+        $query = PosAP::query();
+
+        if ($keyword) {
+            $keywords = explode(' ', $keyword);
+            foreach ($keywords as $word) {
+                $query->where(function ($q) use ($word) {
+                    $q->where('judul', 'like', "%{$word}%")
+                        ->orWhere('abstrak', 'like', "%{$word}%")
+                        ->orWhere('subjek', 'like', "%{$word}%"); // ganti 'tentang'
+                });
+            }
+        }
+
+        if ($nomor)
+            $query->where('nomor', 'like', "%{$nomor}%");
+        if ($tahun)
+            $query->where('tahun', $tahun);
+        if ($jenis)
+            $query->where('jenis', 'like', "%{$jenis}%");
+        if ($entitas)
+            $query->where('entitas', 'like', "%{$entitas}%");
+        if ($tag)
+            $query->where('tag', 'like', "%{$tag}%");
+
+        $posaps = $query->paginate(10)->appends($request->all());
+
+        return view('PosApPengawasan.search', compact('posaps', 'keyword'));
+    }
 
 
 }
+
+
+
+

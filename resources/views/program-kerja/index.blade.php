@@ -26,26 +26,27 @@
 
 
     <div class="search-wrapper">
-        <form action="{{ route('search.searchPedomanPengawasan') }}" method="GET" class="search-form"
-            style="display: contents;">
+        <!-- FORM PENCARIAN UTAMA -->
+        <form action="{{ route('program-kerja.search') }}" method="GET" class="search-form" style="display: contents;">
             <div class="input-group">
-                <i class="fa fa-search"></i>
-                <input type="text" name="keyword" placeholder="Cari peraturan ..." value="{{ $keyword ?? '' }}">
+                <input type="text" name="keyword" placeholder="Cari Program Kerja ..." value="{{ request('keyword') }}">
             </div>
             <button type="submit" class="search-btn"><i class="fa fa-search"></i> Cari</button>
-            <button type="button" class="adv-btn"><i class="fa fa-sliders-h"></i> Adv. Search</button>
+            <button type="button" class="adv-btn" id="openAdvModal"><i class="fa fa-sliders-h"></i> Adv. Search</button>
         </form>
     </div>
 
+    <!-- MODAL ADVANCED SEARCH -->
     <div id="advModal" class="modal">
         <div class="modal-box">
             <span class="close">&times;</span>
             <h2 class="modal-title"><i class="fa fa-sliders-h"></i> Advanced Search</h2>
-            <form class="adv-form" action="{{ route('search.searchPedomanPengawasan') }}" method="GET">
+
+            <form class="adv-form" action="{{ route('program-kerja.search') }}" method="GET">
                 <div class="form-group">
-                    <label for="tentang">Tentang</label>
-                    <input type="text" name="judul" id="tentang" placeholder="Masukkan kata kunci ..."
-                        value="{{ request('judul') }}">
+                    <label for="keyword">Tentang</label>
+                    <input type="text" name="keyword" id="keyword" placeholder="Masukkan kata kunci ..."
+                        value="{{ request('keyword') }}">
                 </div>
 
                 <div class="form-group">
@@ -59,21 +60,15 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="jenis">Jenis</label>
-                    <input type="text" name="jenis" id="jenis" placeholder="Peraturan / UU / PP ..."
-                        value="{{ request('jenis') }}">
+                    <label for="bidang">Bidang</label>
+                    <input type="text" name="bidang" id="bidang" placeholder="Contoh: Keuangan, Operasional ..."
+                        value="{{ request('bidang') }}">
                 </div>
 
                 <div class="form-group">
-                    <label for="entitas">Entitas</label>
-                    <input type="text" name="entitas" id="entitas" placeholder="Nama instansi ..."
-                        value="{{ request('entitas') }}">
-                </div>
-
-                <div class="form-group">
-                    <label for="tag">Tag</label>
-                    <input type="text" name="kata_kunci" id="tag" placeholder="Pisahkan dengan koma"
-                        value="{{ request('kata_kunci') }}">
+                    <label for="subjek">Subjek</label>
+                    <input type="text" name="subjek" id="subjek" placeholder="Contoh: Audit, Pengawasan ..."
+                        value="{{ request('subjek') }}">
                 </div>
 
                 <div class="form-actions">
@@ -84,7 +79,6 @@
             </form>
         </div>
     </div>
-
 
     <script>
         const advBtn = document.querySelector('.adv-btn');

@@ -67,7 +67,7 @@ class PenguatanAkuntabilitasController extends Controller
     public function show($id)
     {
         $penguatan = PenguatanAkuntabilitas::findOrFail($id);
-        $piagam->increment('views');
+        $penguatan->increment('views');
         return view('PenguatanAkuntabilitas.detail', compact('penguatan'));
     }
 

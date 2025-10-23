@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -9,54 +8,32 @@ class SearchPedomanController extends Controller
 {
     public function index(Request $request)
     {
-        $pedoman = Pedoman::query();
+        $keyword = trim($request->input('keyword', ''));
 
-        // Ambil semua input
-        $judul = $request->input('judul');
-        $nomor = $request->input('nomor');
-        $tahun = $request->input('tahun');
-        $jenis = $request->input('jenis');
-        $entitas = $request->input('entitas');
-        $kata_kunci = $request->input('kata_kunci');
+        $query = Pedoman::query();
 
-        // Filter jika ada input
-        if ($judul) {
-            $pedoman->where('judul', 'like', "%{$judul}%");
+        if ($keyword) {
+            // Filter keyword di judul, abstrak, catatan, kata_kunci
+            $query->where(function($q) use ($keyword){
+                $q->where('judul','like',"%{$keyword}%")
+                  ->orWhere('abstrak','like',"%{$keyword}%")
+                  ->orWhere('catatan','like',"%{$keyword}%")
+                  ->orWhere('kata_kunci','like',"%{$keyword}%")
+                  ->orWhere('tahun','like',"%{$keyword}%");
+            });
+
+            // Prioritaskan judul yang mengandung keyword
+            $query->orderByRaw("CASE WHEN judul LIKE ? THEN 0 ELSE 1 END", ["%{$keyword}%"])
+                  ->orderByDesc('created_at');
+        } else {
+            $query->whereRaw('1 = 0'); // kembalikan kosong jika keyword kosong
         }
 
-        if ($nomor) {
-            $pedoman->where('nomor', 'like', "%{$nomor}%");
-        }
-
-        if ($tahun) {
-            $pedoman->where('tahun', $tahun);
-        }
-
-        if ($jenis) {
-            $pedoman->where('jenis', 'like', "%{$jenis}%");
-        }
-
-        if ($entitas) {
-            $pedoman->where('subjek', 'like', "%{$entitas}%");
-        }
-
-        if ($kata_kunci) {
-            $pedoman->where('kata_kunci', 'like', "%{$kata_kunci}%");
-        }
-
-        $pedoman = $pedoman->paginate(10)->withQueryString();
+        $pedoman = $query->paginate(10)->withQueryString();
 
         return view('search.searchPedomanPengawasan', [
             'pedoman' => $pedoman,
-            'keyword' => $request->input('keyword', ''),
-            'judul' => $judul,
-            'nomor' => $nomor,
-            'tahun' => $tahun,
-            'jenis' => $jenis,
-            'entitas' => $entitas,
-            'kata_kunci' => $kata_kunci
+            'keyword' => $keyword,
         ]);
     }
-
-
 }

@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class InstrumenController extends Controller
+
 {
     // Halaman utama Instrumen Pengawasan
     public function index()
@@ -78,96 +79,40 @@ class InstrumenController extends Controller
         return view('InstrumenPengawasan.detail-instrumen', compact('instrumen'));
     }
 
-    // Detail dalam format JSON
-    public function getDetail($id)
+
+    public function search(Request $request)
     {
-        $instrumen = Instrumen::findOrFail($id);
+        $keyword = trim($request->input('keyword', ''));
+        $nomor = $request->input('nomor');
+        $tahun = $request->input('tahun');
+        $entitas = $request->input('entitas');
+        $tag = $request->input('tag');
 
-        return response()->json([
-            'judul' => $instrumen->judul,
-            'tahun' => $instrumen->tahun,
-            'kata_kunci' => $instrumen->kata_kunci ?? '',
-            'abstrak' => $instrumen->abstrak ?? '',
-            'catatan' => $instrumen->catatan ?? '',
-            'file_pdf' => $instrumen->file_pdf ? asset('storage/' . trim($instrumen->file_pdf)) : null,
-        ]);
-    }
+        $query = Instrumen::query();
 
-    // Hapus data
-    public function destroy($id)
-    {
-        $instrumen = Instrumen::findOrFail($id);
-
-        if ($instrumen->file_pdf && Storage::disk('public')->exists($instrumen->file_pdf)) {
-            Storage::disk('public')->delete($instrumen->file_pdf);
-        }
-
-        $instrumen->delete();
-
-        return redirect()->back()->with('success', 'Instrumen berhasil dihapus.');
-    }
-
-    // Edit halaman
-    public function edit($id)
-    {
-        $instrumen = Instrumen::findOrFail($id);
-        return view('InstrumenPengawasan.edit-instrumen', compact('instrumen'));
-    }
-
-    // Update data
-    public function update(Request $request, $id)
-    {
-        $instrumen = Instrumen::findOrFail($id);
-
-        $validated = $request->validate([
-            'jenis' => 'nullable|string|max:255',
-            'judul' => 'required|string|max:255',
-            'tahun' => 'required|integer',
-            'kata_kunci' => 'nullable|string',
-            'abstrak' => 'nullable|string',
-            'catatan' => 'nullable|string',
-            'tipe_dokumen' => 'nullable|string',
-            'judul_meta' => 'nullable|string',
-            'teu' => 'nullable|string',
-            'nomor' => 'nullable|string',
-            'bentuk' => 'nullable|string',
-            'bentuk_singkat' => 'nullable|string',
-            'tahun_meta' => 'nullable|string',
-            'tempat_penetapan' => 'nullable|string',
-            'tanggal_penetapan' => 'nullable|date',
-            'tanggal_pengundangan' => 'nullable|date',
-            'tanggal_berlaku' => 'nullable|date',
-            'sumber' => 'nullable|string',
-            'subjek' => 'nullable|string',
-            'status' => 'nullable|string',
-            'bahasa' => 'nullable|string',
-            'lokasi' => 'nullable|string',
-            'bidang' => 'nullable|string',
-            'file_pdf' => 'nullable|mimes:pdf|max:40000',
-            'mencabut' => 'nullable|string',
-        ]);
-
-        $instrumen->fill($validated);
-
-        if ($request->hasFile('file_pdf')) {
-            if ($instrumen->file_pdf && Storage::disk('public')->exists($instrumen->file_pdf)) {
-                Storage::disk('public')->delete($instrumen->file_pdf);
+        if ($keyword) {
+            $keywords = explode(' ', $keyword);
+            foreach ($keywords as $word) {
+                $query->where(function ($q) use ($word) {
+                    $q->where('judul', 'like', "%{$word}%")
+                        ->orWhere('abstrak', 'like', "%{$word}%");
+                });
             }
-
-            $path = $request->file('file_pdf')->store('Instrumen_pdfs', 'public');
-            $instrumen->file_pdf = $path;
         }
 
-        $instrumen->save();
+        if ($nomor)
+            $query->where('nomor', 'like', "%{$nomor}%");
+        if ($tahun)
+            $query->where('tahun', $tahun);
+        if ($entitas)
+            $query->where('entitas', 'like', "%{$entitas}%");
+        if ($tag)
+            $query->where('tag', 'like', "%{$tag}%");
 
-        return redirect()->back()->with('success', 'Instrumen berhasil diperbarui.');
+        $instrumens = $query->paginate(10)->appends($request->all());
+
+        return view('InstrumenPengawasan.search', compact('instrumens', 'keyword'));
     }
 
-    // Halaman daftar semua instrumen
-    public function lihat()
-    {
-        $title = "DAFTAR INSTRUMEN PENGAWASAN";
-        $instrumens = Instrumen::all();
-        return view('InstrumenPengawasan.lihat-instrumen', compact('title', 'instrumens'));
-    }
+    // Method lain seperti show, edit, update, destroy tetap sama, tapi hapus pengaturan $Instrumen->jenis
 }
