@@ -13,8 +13,12 @@ class PenataanTataKelolaController extends Controller
     {
         $title = "PENATAAN TATA KELOLA";
         $penataans = PenataanTataKelola::all();
+         $popular = PenataanTataKelola::where('created_at', '>=', now()->subDays(14))
+            ->orderByDesc('views')
+            ->take(10)
+            ->get();
 
-        return view('PenataanTataKelola.index', compact('title', 'penataans'));
+        return view('PenataanTataKelola.index', compact('title', 'penataans', 'popular'));
     }
 
     public function store(Request $request)
@@ -63,6 +67,7 @@ class PenataanTataKelolaController extends Controller
     public function show($id)
     {
         $penataan = PenataanTataKelola::findOrFail($id);
+         $penataan->increment('views');
         return view('PenataanTataKelola.detail', compact('penataan'));
     }
 

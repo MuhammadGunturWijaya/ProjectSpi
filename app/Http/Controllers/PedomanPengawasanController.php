@@ -17,6 +17,7 @@ class PedomanPengawasanController extends Controller
         $pedomanReviu = Pedoman::where('jenis', 'reviu')->take(4)->get();
         $pedomanMonev = Pedoman::where('jenis', 'monev')->take(4)->get();
 
+        //1
         //Ambil top 6 pedoman paling populer (views terbanyak) dalam 14 hari terakhir 
         $popular = Pedoman::where('created_at', '>=', Carbon::now()->subDays(14))->orderByDesc('views')->limit(8)->get();
         
@@ -28,6 +29,7 @@ class PedomanPengawasanController extends Controller
     {
         $pedoman = Pedoman::findOrFail($id);
 
+        //2
         // Tambah jumlah view setiap kali dibuka
         $pedoman->increment('views');
 

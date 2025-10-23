@@ -14,8 +14,13 @@ class PedomanMRController extends Controller
         $title = "PEDOMAN MR";
         // gunakan nama jamak yang sama dengan Blade
         $pedomanmrs = PedomanMR::all();
+        // Tambahkan data piagam terpopuler (2 minggu terakhir)
+        $popular = PedomanMR::where('created_at', '>=', now()->subDays(14))
+            ->orderByDesc('views')
+            ->take(10)
+            ->get();
 
-        return view('pedomanmr.index', compact('title', 'pedomanmrs'));
+        return view('pedomanmr.index', compact('title', 'pedomanmrs', 'popular'));
     }
 
     public function store(Request $request)
@@ -64,6 +69,7 @@ class PedomanMRController extends Controller
     public function show($id)
     {
         $pedomanmr = PedomanMR::findOrFail($id);
+        $pedomanmr->increment('views');
         return view('pedomanmr.detail', compact('pedomanmr'));
     }
 

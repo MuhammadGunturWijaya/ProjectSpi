@@ -7,6 +7,7 @@ use App\Models\PosAP;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use App\Models\Controllers\posApController;
+use Carbon\Carbon;
 
 class PosApPengawasanController extends Controller
 {
@@ -18,7 +19,10 @@ class PosApPengawasanController extends Controller
         $PosApReviu = PosAp::where('jenis', 'reviu')->take(4)->get();
         $PosApMonev = PosAp::where('jenis', 'monev')->take(4)->get();
 
-        return view('PosApPengawasan.index', compact('title', 'PosApAudit', 'PosApReviu', 'PosApMonev'));
+         //Ambil top 6 pedoman paling populer (views terbanyak) dalam 14 hari terakhir 
+        $popular = PosAp::where('created_at', '>=', Carbon::now()->subDays(14))->orderByDesc('views')->limit(8)->get();
+
+        return view('PosApPengawasan.index', compact('title', 'PosApAudit', 'PosApReviu', 'PosApMonev', 'popular'));
     }
 
     public function store(Request $request)
@@ -78,6 +82,9 @@ class PosApPengawasanController extends Controller
     {
         // pastikan model benar: PosAP atau PosAp sesuai definisi model Anda
         $PosAp = PosAP::findOrFail($id);
+
+        // Tambah jumlah view setiap kali dibuka
+        $PosAp->increment('views');
         return view('PosApPengawasan.detail-posap', compact('PosAp'));
     }
 

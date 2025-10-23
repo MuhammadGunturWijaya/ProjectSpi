@@ -13,8 +13,12 @@ class PerubahanController extends Controller
     {
         $title = "MANAJEMEN PERUBAHAN";
         $perubahans = Perubahan::all();
+         $popular = Perubahan::where('created_at', '>=', now()->subDays(14))
+            ->orderByDesc('views')
+            ->take(10)
+            ->get();
 
-        return view('Perubahan.index', compact('title', 'perubahans'));
+        return view('Perubahan.index', compact('title', 'perubahans', 'popular'));
     }
 
     public function store(Request $request)
@@ -63,6 +67,7 @@ class PerubahanController extends Controller
     public function show($id)
     {
         $perubahan = Perubahan::findOrFail($id);
+         $perubahan->increment('views');
         return view('Perubahan.detail', compact('perubahan'));
     }
 

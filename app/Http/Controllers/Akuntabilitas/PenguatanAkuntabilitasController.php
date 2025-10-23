@@ -13,8 +13,12 @@ class PenguatanAkuntabilitasController extends Controller
     {
         $title = "PENGUATAN AKUNTABILITAS";
         $penguatans = PenguatanAkuntabilitas::all();
+         $popular = PenguatanAkuntabilitas::where('created_at', '>=', now()->subDays(14))
+            ->orderByDesc('views')
+            ->take(10)
+            ->get();
 
-        return view('PenguatanAkuntabilitas.index', compact('title', 'penguatans'));
+        return view('PenguatanAkuntabilitas.index', compact('title', 'penguatans', 'popular'));
     }
 
     public function store(Request $request)
@@ -63,6 +67,7 @@ class PenguatanAkuntabilitasController extends Controller
     public function show($id)
     {
         $penguatan = PenguatanAkuntabilitas::findOrFail($id);
+        $piagam->increment('views');
         return view('PenguatanAkuntabilitas.detail', compact('penguatan'));
     }
 

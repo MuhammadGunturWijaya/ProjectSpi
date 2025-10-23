@@ -468,7 +468,7 @@
     @include('layouts.navbar')
     <header>
         <div class="header-text-container">
-            <h1>{{  $Instrumen->judul ?? '-'  }}</h1>
+            <h1>{{  $instrumen->judul ?? '-'  }}</h1>
         </div>
     </header>
 
@@ -490,12 +490,12 @@
                 <div class="card">
                     <div class="card-header">
                         <h2><i class="fas fa-info-circle"></i> Ringkasan Instrumen</h2>
-                        <a href="#" class="btn-primary openPopup" data-id="{{ $Instrumen->id }}">
+                        <a href="#" class="btn-primary openPopup" data-id="{{ $instrumen->id }}">
                             Lihat Selengkapnya
                         </a>
                     </div>
                     <p class="abstract-content">
-                        {{ $Instrumen->abstrak ?? 'Tidak ada ringkasan tersedia.' }}
+                        {{ $instrumen->abstrak ?? 'Tidak ada ringkasan tersedia.' }}
                     </p>
                 </div>
 
@@ -507,75 +507,75 @@
                     <dl class="metadata-grid">
                         <div class="metadata-item">
                             <dt>Tipe Dokumen</dt>
-                            <dd>{{ $Instrumen->tipe_dokumen ?? '-' }}</dd>
+                            <dd>{{ $instrumen->tipe_dokumen ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Judul</dt>
-                            <dd>{{ $Instrumen->judul_meta ?? '-' }}</dd>
+                            <dd>{{ $instrumen->judul_meta ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>T.E.U.</dt>
-                            <dd>{{ $Instrumen->teu ?? '-' }}</dd>
+                            <dd>{{ $instrumen->teu ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Nomor</dt>
-                            <dd>{{ $Instrumen->nomor ?? '-' }}</dd>
+                            <dd>{{ $instrumen->nomor ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Bentuk</dt>
-                            <dd>{{ $Instrumen->bentuk ?? '-' }}</dd>
+                            <dd>{{ $instrumen->bentuk ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Bentuk Singkat</dt>
-                            <dd>{{ $Instrumen->bentuk_singkat ?? '-' }}</dd>
+                            <dd>{{ $instrumen->bentuk_singkat ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Tahun</dt>
-                            <dd>{{ $Instrumen->tahun_meta ?? '-' }}</dd>
+                            <dd>{{ $instrumen->tahun_meta ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Tempat Penetapan</dt>
-                            <dd>{{ $Instrumen->tempat_penetapan ?? '-' }}</dd>
+                            <dd>{{ $instrumen->tempat_penetapan ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Tanggal Penetapan</dt>
-                            <dd>{{ $Instrumen->tanggal_penetapan?->format('d F Y') ?? '-' }}</dd>
+                            <dd>{{ $instrumen->tanggal_penetapan?->format('d F Y') ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Tanggal Pengundangan</dt>
-                            <dd>{{ $Instrumen->tanggal_pengundangan?->format('d F Y') ?? '-' }}</dd>
+                            <dd>{{ $instrumen->tanggal_pengundangan?->format('d F Y') ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Tanggal Berlaku</dt>
-                            <dd>{{ $Instrumen->tanggal_berlaku?->format('d F Y') ?? '-' }}</dd>
+                            <dd>{{ $instrumen->tanggal_berlaku?->format('d F Y') ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Sumber</dt>
-                            <dd>{{ $Instrumen->sumber ?? '-' }}</dd>
+                            <dd>{{ $instrumen->sumber ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Subjek</dt>
-                            <dd>{{ $Instrumen->subjek ?? '-' }}</dd>
+                            <dd>{{ $instrumen->subjek ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Status</dt>
-                            <dd>{{ $Instrumen->status ?? '-' }}</dd>
+                            <dd>{{ $instrumen->status ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Bahasa</dt>
-                            <dd>{{ $Instrumen->bahasa ?? '-' }}</dd>
+                            <dd>{{ $instrumen->bahasa ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Lokasi</dt>
-                            <dd>{{ $Instrumen->lokasi ?? '-' }}</dd>
+                            <dd>{{ $instrumen->lokasi ?? '-' }}</dd>
                         </div>
                         <div class="metadata-item">
                             <dt>Bidang</dt>
-                            <dd>{{ $Instrumen->bidang ?? '-' }}</dd>
+                            <dd>{{ $instrumen->bidang ?? '-' }}</dd>
                         </div>
                     </dl>
                     <div class="social-share">
-                        <span class="share-text">Halaman ini telah diakses {{ $Instrumen->view_count ?? 0 }} kali</span>
+                        <span class="share-text">Halaman ini telah diakses {{ $instrumen->views}} kali</span>
                         <a href="#" class="social-icon twitter"><i class="fab fa-twitter"></i></a>
                         <a href="#" class="social-icon facebook"><i class="fab fa-facebook-f"></i></a>
                         <a href="#" class="social-icon whatsapp"><i class="fab fa-whatsapp"></i></a>
@@ -587,7 +587,7 @@
                     <div class="card-header">
                         <h2><i class="fas fa-balance-scale"></i> Uji Materi</h2>
                     </div>
-                    <p class="abstract-content">{{ $Instrumen->uji_materi ?? 'Belum Tersedia' }}</p>
+                    <p class="abstract-content">{{ $instrumen->uji_materi ?? 'Belum Tersedia' }}</p>
                 </div>
             </div>
 
@@ -600,11 +600,11 @@
                     </div>
                     <div class="file-card-content">
                         <i class="fas fa-file-pdf file-icon"></i>
-                        <div class="file-name">{{ $Instrumen->file_pdf ?? 'Tidak ada file' }}</div>
+                        <div class="file-name">{{ $instrumen->file_pdf ?? 'Tidak ada file' }}</div>
                         <div class="btn-group">
                             @php
-                                $filePath = $Instrumen->file_pdf
-                                    ? asset('storage/' . trim($Instrumen->file_pdf))
+                                $filePath = $instrumen->file_pdf
+                                    ? asset('storage/' . trim($instrumen->file_pdf))
                                     : null;
                             @endphp
 
@@ -624,13 +624,13 @@
                             <h2><i class="fas fa-check-circle"></i> Status Instrumen</h2>
                         </div>
                         <div class="related-regulations">
-                            @if($Instrumen->mencabut)
+                            @if($instrumen->mencabut)
                                 <div class="status-item">
                                     <i class="fas fa-arrow-circle-right"></i>
                                     <div>
                                         <div class="status-label">Mencabut:</div>
                                         <ul>
-                                            @foreach(explode("\n", str_replace("\r", '', $Instrumen->mencabut)) as $item)
+                                            @foreach(explode("\n", str_replace("\r", '', $instrumen->mencabut)) as $item)
                                                 <li>{{ $item }}</li>
                                             @endforeach
                                         </ul>

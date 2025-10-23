@@ -14,8 +14,13 @@ class KonsideranSPIController extends Controller
     {
         $title = "KONSIDERAN SPI";
         $konsiderans = KonsideranSPI::all();
+         // Tambahkan data piagam terpopuler (2 minggu terakhir)
+        $popular = KonsideranSPI::where('created_at', '>=', now()->subDays(14))
+            ->orderByDesc('views')
+            ->take(10)
+            ->get();
 
-        return view('KonsideranSPI.index', compact('title', 'konsiderans'));
+        return view('KonsideranSPI.index', compact('title', 'konsiderans', 'popular'));
     }
 
     public function store(Request $request)
@@ -68,6 +73,7 @@ class KonsideranSPIController extends Controller
     public function show($id)
     {
         $Konsideran = KonsideranSPI::findOrFail($id);
+         $Konsideran->increment('views');
         return view('KonsideranSPI.detail', compact('Konsideran'));
     }
 

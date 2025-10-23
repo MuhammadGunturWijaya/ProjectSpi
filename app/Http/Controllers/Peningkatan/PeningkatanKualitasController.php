@@ -13,8 +13,12 @@ class PeningkatanKualitasController extends Controller
     {
         $title = "PENINGKATAN KUALITAS";
         $peningkatans = PeningkatanKualitas::all();
+        $popular = PeningkatanKualitas::where('created_at', '>=', now()->subDays(14))
+            ->orderByDesc('views')
+            ->take(10)
+            ->get();
 
-        return view('PeningkatanKualitas.index', compact('title', 'peningkatans'));
+        return view('PeningkatanKualitas.index', compact('title', 'peningkatans', 'popular'));
     }
 
     public function store(Request $request)
@@ -63,6 +67,7 @@ class PeningkatanKualitasController extends Controller
     public function show($id)
     {
         $peningkatan = PeningkatanKualitas::findOrFail($id);
+        $peningkatan->increment('views');
         return view('PeningkatanKualitas.detail', compact('peningkatan'));
     }
 

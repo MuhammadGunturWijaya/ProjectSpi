@@ -14,8 +14,15 @@ class PiagamSPIController extends Controller
         $title = "PIAGAM SPI";
         $piagams = PiagamSPI::all();
 
-        return view('PiagamSPI.index', compact('title', 'piagams'));
+        // Tambahkan data piagam terpopuler (2 minggu terakhir)
+        $popular = PiagamSPI::where('created_at', '>=', now()->subDays(14))
+            ->orderByDesc('views')
+            ->take(10)
+            ->get();
+
+        return view('PiagamSPI.index', compact('title', 'piagams', 'popular'));
     }
+
 
     public function store(Request $request)
     {

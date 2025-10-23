@@ -13,8 +13,12 @@ class PenguatanPengawasanController extends Controller
     {
         $title = "PENGUATAN PENGAWASAN";
         $penguatans = PenguatanPengawasan::all();
+        $popular = PenguatanPengawasan::where('created_at', '>=', now()->subDays(14))
+            ->orderByDesc('views')
+            ->take(10)
+            ->get();
 
-        return view('PenguatanPengawasan.index', compact('title', 'penguatans'));
+        return view('PenguatanPengawasan.index', compact('title', 'penguatans', 'popular'));
     }
 
     public function store(Request $request)
@@ -63,6 +67,7 @@ class PenguatanPengawasanController extends Controller
     public function show($id)
     {
         $penguatan = PenguatanPengawasan::findOrFail($id);
+        $penguatan->increment('views');
         return view('PenguatanPengawasan.detail', compact('penguatan'));
     }
 

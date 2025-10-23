@@ -106,78 +106,215 @@
         });
     </script>
 
-    <section class="popular">
+  <section class="popular">
         <h2>Peraturan Terpopuler 2 Minggu Terakhir</h2>
         <div class="carousel-wrapper">
-            <button id="carousel-prev" class="carousel-btn prev-btn"><i class="fas fa-chevron-left"></i></button>
+            <button id="carousel-prev" class="carousel-btn prev-btn">
+                <i class="fas fa-chevron-left"></i>
+            </button>
             <div class="carousel-track-container">
                 <div class="carousel-track">
-                    <div class="card-item-new">
-                        <div class="card-icon-new">
-                            <i class="fas fa-gavel"></i>
-                        </div>
-                        <div class="card-content-new">
-                            <span class="card-title-new">UU No. 1 Tahun 2023</span>
-                            <small class="card-subtitle-new">Kitab Undang-Undang Hukum Pidana</small>
-                            <span class="card-type-new">📜 Undang-Undang</span>
-                        </div>
-                    </div>
-                    <div class="card-item-new">
-                        <div class="card-icon-new">
-                            <i class="fas fa-file-invoice"></i>
-                        </div>
-                        <div class="card-content-new">
-                            <span class="card-title-new">UU No. 11 Tahun 2020</span>
-                            <small class="card-subtitle-new">Cipta Kerja</small>
-                            <span class="card-type-new">📜 Undang-Undang</span>
-                        </div>
-                    </div>
-                    <div class="card-item-new">
-                        <div class="card-icon-new">
-                            <i class="fas fa-gavel"></i>
-                        </div>
-                        <div class="card-content-new">
-                            <span class="card-title-new">UU No. 1 Tahun 2023</span>
-                            <small class="card-subtitle-new">Kitab Undang-Undang Hukum Pidana</small>
-                            <span class="card-type-new">📜 Undang-Undang</span>
-                        </div>
-                    </div>
-                    <div class="card-item-new">
-                        <div class="card-icon-new">
-                            <i class="fas fa-file-invoice"></i>
-                        </div>
-                        <div class="card-content-new">
-                            <span class="card-title-new">UU No. 11 Tahun 2020</span>
-                            <small class="card-subtitle-new">Cipta Kerja</small>
-                            <span class="card-type-new">📜 Undang-Undang</span>
-                        </div>
-                    </div>
-                    <div class="card-item-new">
-                        <div class="card-icon-new">
-                            <i class="fas fa-gavel"></i>
-                        </div>
-                        <div class="card-content-new">
-                            <span class="card-title-new">UU No. 1 Tahun 2023</span>
-                            <small class="card-subtitle-new">Kitab Undang-Undang Hukum Pidana</small>
-                            <span class="card-type-new">📜 Undang-Undang</span>
-                        </div>
-                    </div>
-                    <div class="card-item-new">
-                        <div class="card-icon-new">
-                            <i class="fas fa-file-invoice"></i>
-                        </div>
-                        <div class="card-content-new">
-                            <span class="card-title-new">UUU No. 11 Tahun 2020</span>
-                            <small class="card-subtitle-new">Cipta Kerja</small>
-                            <span class="card-type-new">📜 Undang-Undang</span>
-                        </div>
-                    </div>
-
+                    @foreach($popular as $item)
+                        <a href="{{ route('penataan_tata_kelola.show', $item->id) }}" class="card-link">
+                            <div class="card-item-new">
+                                <div class="card-glow"></div>
+                                <div class="card-icon-new">
+                                    <i
+                                        class="{{ $item->jenis == 'undang-undang' ? 'fas fa-gavel' : 'fas fa-file-invoice' }}"></i>
+                                </div>
+                                <div class="card-content-new">
+                                    <span class="card-title-new">{{ $item->judul }}</span>
+                                    <small class="card-subtitle-new">{{ $item->tahun }}</small>
+                                    <span class="card-type-new">📜 {{ strtoupper($item->jenis) }}</span>
+                                </div>
+                            </div>
+                        </a>
+                    @endforeach
                 </div>
             </div>
-            <button id="carousel-next" class="carousel-btn next-btn"><i class="fas fa-chevron-right"></i></button>
+            <button id="carousel-next" class="carousel-btn next-btn">
+                <i class="fas fa-chevron-right"></i>
+            </button>
         </div>
     </section>
+
+    <style>
+        /* === SECTION === */
+        .popular {
+            padding: 3rem 1rem;
+            background: linear-gradient(135deg, #eef3ff 0%, #ffffff 100%);
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .popular::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.1), transparent 60%);
+            transform: rotate(25deg);
+            z-index: 0;
+        }
+
+        .popular h2 {
+            font-size: 1.9rem;
+            font-weight: 800;
+            text-align: center;
+            color: #1e293b;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .popular h2::after {
+            content: "";
+            display: block;
+            width: 90px;
+            height: 4px;
+            background: linear-gradient(to right, #2563eb, #0ea5e9);
+            margin: 0.6rem auto 0;
+            border-radius: 2px;
+        }
+
+        /* === CAROUSEL === */
+        .carousel-wrapper {
+            display: flex;
+            align-items: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .carousel-track-container {
+            overflow: hidden;
+            flex: 1;
+        }
+
+        .carousel-track {
+            display: flex;
+            gap: 1.5rem;
+            transition: transform 0.4s ease;
+            padding: 0.5rem;
+        }
+
+        /* === CARD === */
+        .card-link {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        .card-item-new {
+            width: 270px;
+            min-height: 280px;
+            background:  color: var(--primary);
+            /* warna card  */
+            border-radius: 16px;
+            position: relative;
+            padding: 1.4rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(37, 99, 235, 0.12);
+            overflow: hidden;
+            transition: all 0.35s ease;
+        }
+
+        .card-item-new:hover {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 12px 28px rgba(37, 99, 235, 0.25);
+            border-color: transparent;
+        }
+
+        .card-glow {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 30% 30%, rgba(37, 99, 235, 0.15), transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: 0;
+        }
+
+        .card-item-new:hover .card-glow {
+            opacity: 1;
+        }
+
+        .card-icon-new {
+            font-size: 2rem;
+            color: #2563eb;
+            background: #f1f5ff;
+            padding: 0.7rem;
+            border-radius: 14px;
+            box-shadow: inset 0 0 8px rgba(37, 99, 235, 0.15);
+            margin-bottom: 0.8rem;
+            z-index: 1;
+        }
+
+        .card-content-new {
+            z-index: 1;
+        }
+
+        .card-title-new {
+            font-weight: 700;
+            font-size: 1.05rem;
+            color: #1e293b;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin-bottom: 0.4rem;
+        }
+
+        .card-subtitle-new {
+            font-size: 0.9rem;
+            color: #475569;
+            margin-bottom: 0.6rem;
+            display: block;
+        }
+
+        .card-type-new {
+            font-size: 0.85rem;
+            background: linear-gradient(to right, #2563eb, #0ea5e9);
+            color: #fff;
+            padding: 0.4rem 0.7rem;
+            border-radius: 10px;
+            font-weight: 500;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+            align-self: flex-start;
+        }
+
+        /* === BUTTONS === */
+        .carousel-btn {
+            background: linear-gradient(135deg, #2563eb, #0ea5e9);
+            border: none;
+            color: #fff;
+            font-size: 1.3rem;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .carousel-btn:hover {
+            background: linear-gradient(135deg, #1d4ed8, #0284c7);
+            transform: scale(1.1);
+        }
+
+        .carousel-btn:active {
+            transform: scale(0.96);
+        }
+    </style>
 
     <script>
         const carouselTrack = document.querySelector('.carousel-track');

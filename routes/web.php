@@ -336,9 +336,7 @@ Route::get('/instrumen/{id}', [InstrumenController::class, 'show'])
 Route::get('/instrumen/detail/{id}', [InstrumenController::class, 'getDetail'])
     ->name('instrumen.getDetail');
 
-// Route untuk menyimpan data instrumen (store)
-Route::post('/instrumen/store', [InstrumenController::class, 'store'])
-    ->name('instrumen.store');
+
 
 Route::resource('instrumen', InstrumenController::class);
 
@@ -618,3 +616,40 @@ Route::get('/berita/{id}', [BeritaController::class, 'show'])->name('berita.show
 Route::resource('berita', App\Http\Controllers\BeritaController::class);
 
 Route::resource('sdm', App\Http\Controllers\SdmController::class);
+
+// route detail POS AP
+Route::get('/posap/{id}', [PosApPengawasanController::class, 'show'])->name('posap.show');
+
+// Halaman detail instrumen (show)
+Route::get('/instrumen/{id}', [InstrumenController::class, 'show'])->name('instrumen.show');
+
+Route::post('/instrumen', [InstrumenController::class, 'store'])->name('instrumen.store');
+
+// Halaman detail Program Kerja
+Route::get('/program_kerja/{id}', [App\Http\Controllers\ProgramKerjaController::class, 'show'])
+    ->name('program_kerja.show');
+   
+ Route::get('/konsideran_SPI/{id}', [KonsideranSPIController::class, 'show'])
+    ->name('konsideran_SPI.show');
+
+    Route::get('/pedomanmr/{id}', [PedomanMRController::class, 'show'])->name('pedomanmr.show');
+
+    Route::get('/Perubahan/{id}', [PerubahanController::class, 'show'])
+    ->name('Perubahan.show');
+
+    // Route detail data Penguatan Akuntabilitas
+Route::get('/penguatan_akuntabilitas/{id}', [PenguatanAkuntabilitasController::class, 'show'])
+    ->name('penguatan_akuntabilitas.show');
+
+    // Route detail data Penataan Tata Kelola
+Route::get('/penataan_tata_kelola/{id}', [PenataanTataKelolaController::class, 'show'])
+    ->name('penataan_tata_kelola.show');
+
+    Route::get('/penataan_sistem/{id}', [PenataanSistemController::class, 'show'])
+    ->name('penataan_sistem.show');
+
+    Route::get('/penguatan_pengawasan/{id}', [PenguatanPengawasanController::class, 'show'])
+    ->name('penguatan_pengawasan.show');
+
+    Route::get('/peningkatan_kualitas/{id}', [PeningkatanKualitasController::class, 'show'])
+    ->name('peningkatan_kualitas.show');

@@ -13,8 +13,12 @@ class PenataanSistemController extends Controller
     {
         $title = "PENATAAN SISTEM";
         $penataans = PenataanSistem::all();
+         $popular = PenataanSistem::where('created_at', '>=', now()->subDays(14))
+            ->orderByDesc('views')
+            ->take(10)
+            ->get();
 
-        return view('PenataanSistem.index', compact('title', 'penataans'));
+        return view('PenataanSistem.index', compact('title', 'penataans', 'popular'));
     }
 
     public function store(Request $request)
@@ -63,6 +67,7 @@ class PenataanSistemController extends Controller
     public function show($id)
     {
         $penataan = PenataanSistem::findOrFail($id);
+        $penataan->increment('views');
         return view('PenataanSistem.detail', compact('penataan'));
     }
 
