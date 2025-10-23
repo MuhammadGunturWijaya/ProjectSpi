@@ -571,7 +571,7 @@
                         </div>
                     </dl>
                     <div class="social-share">
-                        <span class="share-text">Halaman ini telah diakses {{ $pedoman->view_count ?? 0 }} kali</span>
+                        <span class="share-text">Halaman ini telah diakses {{ $pedoman->views }} kali</span>
                         <a href="#" class="social-icon twitter"><i class="fab fa-twitter"></i></a>
                         <a href="#" class="social-icon facebook"><i class="fab fa-facebook-f"></i></a>
                         <a href="#" class="social-icon whatsapp"><i class="fab fa-whatsapp"></i></a>

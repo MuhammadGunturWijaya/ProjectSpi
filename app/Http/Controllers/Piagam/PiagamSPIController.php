@@ -147,4 +147,39 @@ class PiagamSPIController extends Controller
         return response()->json(PiagamSPI::findOrFail($id));
     }
 
+    public function search(Request $request)
+    {
+        $keyword = trim($request->input('keyword', ''));
+
+        $query = PiagamSPI::query();
+
+        if ($keyword) {
+            // Filter kolom berdasarkan kata kunci
+            $query->where(function ($q) use ($keyword) {
+                $q->where('judul', 'like', "%{$keyword}%")
+                    ->orWhere('abstrak', 'like', "%{$keyword}%")
+                    ->orWhere('catatan', 'like', "%{$keyword}%")
+                    ->orWhere('kata_kunci', 'like', "%{$keyword}%")
+                    ->orWhere('tahun', 'like', "%{$keyword}%");
+            });
+
+            // Prioritaskan hasil yang mengandung keyword di judul
+            $query->orderByRaw("CASE WHEN judul LIKE ? THEN 0 ELSE 1 END", ["%{$keyword}%"])
+                ->orderByDesc('created_at');
+        } else {
+            // Jika tidak ada keyword, kembalikan hasil kosong
+            $query->whereRaw('1 = 0');
+        }
+
+        // Pagination
+        $piagams = $query->paginate(10)->withQueryString();
+
+        return view('PiagamSPI.search', [
+            'piagams' => $piagams,
+            'keyword' => $keyword,
+            'title' => 'Pencarian Piagam SPI',
+        ]);
+    }
+
+
 }

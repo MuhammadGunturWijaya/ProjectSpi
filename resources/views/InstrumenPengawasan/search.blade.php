@@ -405,10 +405,9 @@
         startAuto();
     </script>
     <div class="search-wrapper">
-        <form action="{{ route('search.searchPedomanPengawasan') }}" method="GET" class="search-form"
-            style="display: contents;">
+        <form action="{{ route('instrumen.search') }}" method="GET" class="search-form" style="display: contents;">
             <div class="input-group">
-                <input type="text" name="keyword" placeholder="Cari peraturan ..." value="{{ request('keyword') }}">
+                <input type="text" name="keyword" placeholder="Cari Instrumen ..." value="{{ request('keyword') }}">
             </div>
             <button type="submit" class="search-btn"><i class="fa fa-search"></i> Cari</button>
             <button type="button" class="adv-btn" id="openAdvModal"><i class="fa fa-sliders-h"></i> Adv. Search</button>
@@ -420,10 +419,9 @@
             <span class="close">&times;</span>
             <h2 class="modal-title"><i class="fa fa-sliders-h"></i> Advanced Search</h2>
 
-            <!-- Form sudah diarahkan ke route search, method GET -->
-            <form class="adv-form" action="{{ route('search.searchPedomanPengawasan') }}" method="GET">
+            <form class="adv-form" action="{{ route('instrumen.search') }}" method="GET">
                 <div class="form-group">
-                    <label for="keyword">Tentang</label>
+                    <label for="keyword">Keyword</label>
                     <input type="text" name="keyword" id="keyword" placeholder="Masukkan kata kunci ..."
                         value="{{ request('keyword') }}">
                 </div>
@@ -440,7 +438,7 @@
 
                 <div class="form-group">
                     <label for="jenis">Jenis</label>
-                    <input type="text" name="jenis" id="jenis" placeholder="Peraturan / UU / PP ..."
+                    <input type="text" name="jenis" id="jenis" placeholder="audit / reviu / monev ..."
                         value="{{ request('jenis') }}">
                 </div>
 
@@ -465,20 +463,20 @@
         </div>
     </div>
 
-    <!-- disini isinya -->
     <div class="legal-search-container">
         <div class="search-header-panel">
             <div class="search-info">
-                <h1>PENCARIAN <span class="highlight-text">PERATURAN</span></h1>
+                <h1>PENCARIAN <span class="highlight-text">INSTRUMEN</span></h1>
                 <p class="search-summary">
                     Menemukan
-                    <span class="result-count">{{ $pedoman->total() }}</span>
-                    pedoman
+                    <span class="result-count">{{ $instrumens->total() }}</span>
+                    Instrumen
                     @if($keyword)
                         untuk keyword: <strong>{{ $keyword }}</strong>
                     @endif
                 </p>
             </div>
+
             @if($keyword)
                 <div class="search-criteria-chip">
                     <span class="chip-label">Keyword:</span>
@@ -488,15 +486,15 @@
         </div>
 
         <div class="results-grid">
-            @forelse($pedoman as $item)
+            @forelse($instrumens as $item)
                 <div class="result-card">
                     <div class="card-header">
-                        <span class="card-tag">{{ $item->jenis ?? 'Standar/Pedoman' }}</span>
-                        <span class="card-source">{{ $item->nomor }} Tahun {{ $item->tahun }}</span>
+                        <span class="card-tag">{{ $item->jenis ?? '-' }}</span>
+                        <span class="card-source">{{ $item->nomor ?? '-' }} Tahun {{ $item->tahun ?? '-' }}</span>
                     </div>
 
                     <h3 class="card-title">
-                        <a href="{{ route('pedoman.show', $item->id) }}" class="detail-link">{{ $item->judul }}</a>
+                        <a href="{{ route('instrumen.show', $item->id) }}" class="detail-link">{{ $item->judul }}</a>
                     </h3>
 
                     <div class="card-content">
@@ -507,8 +505,7 @@
 
                     <div class="card-footer">
                         @if($item->file_pdf)
-                            <a href="{{ asset('storage/pedoman_pdfs/' . $item->file_pdf) }}" class="download-btn"
-                                target="_blank">
+                            <a href="{{ asset('storage/' . $item->file_pdf) }}" class="download-btn" target="_blank">
                                 <i class="fas fa-file-download"></i> Download PDF
                             </a>
                         @else
@@ -517,44 +514,14 @@
                     </div>
                 </div>
             @empty
-                <p>Tidak ada data yang sesuai dengan pencarian.</p>
+                <p>Tidak ada Instrumen yang sesuai dengan pencarian.</p>
             @endforelse
         </div>
 
-        {{ $pedoman->links() }}
-
-
-
-        {{-- Pagination custom --}}
-        @if ($pedoman->hasPages())
-            <div class="pagination-bar">
-                {{-- Tombol First --}}
-                @if (!$pedoman->onFirstPage())
-                    <a href="{{ $pedoman->url(1) }}" class="page-link first">First</a>
-                @else
-                    <span class="page-link first disabled">First</span>
-                @endif
-
-                {{-- Angka halaman --}}
-                <div class="page-numbers">
-                    @foreach ($pedoman->getUrlRange(1, $pedoman->lastPage()) as $page => $url)
-                        @if ($page == $pedoman->currentPage())
-                            <span class="page-number active">{{ $page }}</span>
-                        @else
-                            <a href="{{ $url }}" class="page-number">{{ $page }}</a>
-                        @endif
-                    @endforeach
-                </div>
-
-                {{-- Tombol Next --}}
-                @if ($pedoman->hasMorePages())
-                    <a href="{{ $pedoman->nextPageUrl() }}" class="page-link next">Next</a>
-                @else
-                    <span class="page-link next disabled">Next</span>
-                @endif
-            </div>
-        @endif
+        {{ $instrumens->links() }}
     </div>
+
+
 
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">

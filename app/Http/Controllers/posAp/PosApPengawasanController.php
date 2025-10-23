@@ -73,13 +73,23 @@ class PosApPengawasanController extends Controller
     }
 
 
-    // Halaman detail PosAp berdasarkan ID
+    // // Halaman detail PosAp berdasarkan ID
+    // public function show($id)
+    // {
+    //     // pastikan model benar: PosAP atau PosAp sesuai definisi model Anda
+    //     $PosAp = PosAP::findOrFail($id);
+    //     return view('PosApPengawasan.detail-posap', compact('PosAp'));
+    // }
+
     public function show($id)
     {
-        // pastikan model benar: PosAP atau PosAp sesuai definisi model Anda
         $PosAp = PosAP::findOrFail($id);
-        return view('PosApPengawasan.detail-posap', compact('PosAp'));
+        $title = "Detail POS AP Pengawasan";
+        // return view('PosApPengawasan.show', compact('PosAp', 'title'));
+        return view('PosApPengawasan.detail-posap', compact('PosAp', 'title'));
+
     }
+
 
 
 
@@ -221,6 +231,7 @@ class PosApPengawasanController extends Controller
     }
     public function showByJenis($jenis)
     {
+
         $posAps = PosAP::where('jenis', $jenis)->get();
 
         $judul = match ($jenis) {
@@ -245,7 +256,47 @@ class PosApPengawasanController extends Controller
     }
 
 
+    public function search(Request $request)
+    {
+        $keyword = trim($request->input('keyword', ''));
+        $nomor = $request->input('nomor');
+        $tahun = $request->input('tahun');
+        $jenis = $request->input('jenis');
+        $entitas = $request->input('entitas');
+        $tag = $request->input('tag');
 
+        $query = PosAP::query();
+
+        if ($keyword) {
+            $keywords = explode(' ', $keyword);
+            foreach ($keywords as $word) {
+                $query->where(function ($q) use ($word) {
+                    $q->where('judul', 'like', "%{$word}%")
+                        ->orWhere('abstrak', 'like', "%{$word}%")
+                        ->orWhere('subjek', 'like', "%{$word}%"); // ganti 'tentang'
+                });
+            }
+        }
+
+        if ($nomor)
+            $query->where('nomor', 'like', "%{$nomor}%");
+        if ($tahun)
+            $query->where('tahun', $tahun);
+        if ($jenis)
+            $query->where('jenis', 'like', "%{$jenis}%");
+        if ($entitas)
+            $query->where('entitas', 'like', "%{$entitas}%");
+        if ($tag)
+            $query->where('tag', 'like', "%{$tag}%");
+
+        $posaps = $query->paginate(10)->appends($request->all());
+
+        return view('PosApPengawasan.search', compact('posaps', 'keyword'));
+    }
 
 
 }
+
+
+
+

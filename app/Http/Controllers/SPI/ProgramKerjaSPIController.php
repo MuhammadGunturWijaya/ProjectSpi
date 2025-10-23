@@ -14,33 +14,29 @@ class ProgramKerjaSPIController extends Controller
     {
         $title = "PROGRAM KERJA SPI";
 
-        // Bisa ditambahkan filter jenis jika ada kategori
-        $programKerjaAudit = ProgramKerjaSPI::where('jenis', 'audit')->take(4)->get();
-        $programKerjaReviu = ProgramKerjaSPI::where('jenis', 'reviu')->take(4)->get();
-        $programKerjaMonev = ProgramKerjaSPI::where('jenis', 'monev')->take(4)->get();
+        // Ambil beberapa program kerja terbaru (limit 12)
+        $programKerjaList = ProgramKerjaSPI::latest()->take(12)->get();
 
-        return view('program-kerja.index', compact('title', 'programKerjaAudit', 'programKerjaReviu', 'programKerjaMonev'));
+        return view('program-kerja.index', compact('title', 'programKerjaList'));
     }
 
     // Simpan data baru
     public function store(Request $request)
     {
         $request->validate([
-            'jenis' => 'required|string',
             'judul' => 'required|string|max:255',
             'tahun' => 'required|integer',
             'file_pdf' => 'nullable|mimes:pdf|max:10240',
         ]);
 
         $programKerja = new ProgramKerjaSPI();
-        $programKerja->jenis = $request->jenis;
         $programKerja->judul = $request->judul;
         $programKerja->tahun = $request->tahun;
         $programKerja->kata_kunci = $request->kata_kunci;
         $programKerja->abstrak = $request->abstrak;
         $programKerja->catatan = $request->catatan;
 
-        // Metadata lengkap seperti Instrumen
+        // Metadata lengkap
         $programKerja->tipe_dokumen = $request->tipe_dokumen;
         $programKerja->judul_meta = $request->judul_meta;
         $programKerja->teu = $request->teu;
@@ -78,42 +74,6 @@ class ProgramKerjaSPIController extends Controller
         return view('program-kerja.detail', compact('programKerja'));
     }
 
-    // Detail JSON
-    public function getDetail($id)
-    {
-        $programKerja = ProgramKerjaSPI::findOrFail($id);
-
-        return response()->json([
-            'judul' => $programKerja->judul,
-            'tahun' => $programKerja->tahun,
-            'kata_kunci' => $programKerja->kata_kunci ?? '',
-            'abstrak' => $programKerja->abstrak ?? '',
-            'catatan' => $programKerja->catatan ?? '',
-
-            'tipe_dokumen' => $programKerja->tipe_dokumen ?? '',
-            'judul_meta' => $programKerja->judul_meta ?? '',
-            'teu' => $programKerja->teu ?? '',
-            'nomor' => $programKerja->nomor ?? '',
-            'bentuk' => $programKerja->bentuk ?? '',
-            'bentuk_singkat' => $programKerja->bentuk_singkat ?? '',
-            'tahun_meta' => $programKerja->tahun_meta ?? '',
-            'tempat_penetapan' => $programKerja->tempat_penetapan ?? '',
-            'tanggal_penetapan' => $programKerja->tanggal_penetapan ? date('d F Y', strtotime($programKerja->tanggal_penetapan)) : '',
-            'tanggal_pengundangan' => $programKerja->tanggal_pengundangan ? date('d F Y', strtotime($programKerja->tanggal_pengundangan)) : '',
-            'tanggal_berlaku' => $programKerja->tanggal_berlaku ? date('d F Y', strtotime($programKerja->tanggal_berlaku)) : '',
-
-            'sumber' => $programKerja->sumber ?? '',
-            'subjek' => $programKerja->subjek ?? '',
-            'status' => $programKerja->status ?? '',
-            'bahasa' => $programKerja->bahasa ?? '',
-            'lokasi' => $programKerja->lokasi ?? '',
-            'bidang' => $programKerja->bidang ?? '',
-
-            'file_pdf' => $programKerja->file_pdf ? asset('storage/' . trim($programKerja->file_pdf)) : null,
-            'mencabut' => $programKerja->mencabut ? str_replace("\r", '', trim($programKerja->mencabut)) : null,
-        ]);
-    }
-
     // Edit halaman
     public function edit($id)
     {
@@ -127,13 +87,11 @@ class ProgramKerjaSPIController extends Controller
         $programKerja = ProgramKerjaSPI::findOrFail($id);
 
         $request->validate([
-            'jenis' => 'required|string',
             'judul' => 'required|string|max:255',
             'tahun' => 'required|integer',
             'file_pdf' => 'nullable|mimes:pdf|max:10240',
         ]);
 
-        $programKerja->jenis = $request->jenis;
         $programKerja->judul = $request->judul;
         $programKerja->tahun = $request->tahun;
         $programKerja->kata_kunci = $request->kata_kunci;
@@ -168,7 +126,6 @@ class ProgramKerjaSPIController extends Controller
         }
 
         $programKerja->mencabut = $request->mencabut;
-
         $programKerja->save();
 
         return redirect()->back()->with('success', 'Program Kerja SPI berhasil diperbarui.');
@@ -184,34 +141,61 @@ class ProgramKerjaSPIController extends Controller
         }
 
         $programKerja->delete();
-
         return redirect()->back()->with('success', 'Program Kerja SPI berhasil dihapus.');
     }
 
-    public function showByJenis($jenis)
-    {
-        $programKerjaList = ProgramKerjaSPI::where('jenis', $jenis)->get();
-
-        $judul = match ($jenis) {
-            'spi' => 'Program Kerja SPI',
-            'audit' => 'Program Kerja SPI Audit',
-            'reviu' => 'Program Kerja SPI Reviu',
-            'monev' => 'Program Kerja SPI Monev',
-            default => 'Program Kerja SPI',
-        };
-
-        return view('program-kerja.index', compact('programKerjaList', 'judul'));
-    }
-
-
     // Lihat semua
-    public function lihat($jenis = null)
+    public function lihat()
     {
-        $title = $jenis ? strtoupper($jenis) . ' PROGRAM KERJA SPI' : "DAFTAR PROGRAM KERJA SPI";
-        $programKerjaList = $jenis ? ProgramKerjaSPI::where('jenis', $jenis)->get() : ProgramKerjaSPI::all();
+        $title = "DAFTAR PROGRAM KERJA SPI";
+        $programKerjaList = ProgramKerjaSPI::all();
 
-        return view('program-kerja.lihat', compact('title', 'programKerjaList', 'jenis'));
+        return view('program-kerja.lihat', compact('title', 'programKerjaList'));
     }
 
+    // Search Program Kerja
+    public function search(Request $request)
+    {
+        $keyword = trim($request->input('keyword', ''));
+        $nomor = $request->input('nomor');
+        $tahun = $request->input('tahun');
+        $bidang = $request->input('bidang');
+        $subjek = $request->input('subjek');
 
+        $query = ProgramKerjaSPI::query();
+
+        if ($keyword) {
+            $keywords = explode(' ', $keyword);
+            foreach ($keywords as $word) {
+                $query->where(function ($q) use ($word) {
+                    $q->where('judul', 'like', "%{$word}%")
+                        ->orWhere('abstrak', 'like', "%{$word}%")
+                        ->orWhere('kata_kunci', 'like', "%{$word}%")
+                        ->orWhere('catatan', 'like', "%{$word}%");
+                });
+            }
+        }
+
+        if ($nomor)
+            $query->where('nomor', 'like', "%{$nomor}%");
+        if ($tahun)
+            $query->where('tahun', $tahun);
+        if ($bidang)
+            $query->where('bidang', 'like', "%{$bidang}%");
+        if ($subjek)
+            $query->where('subjek', 'like', "%{$subjek}%");
+
+        $programKerjaList = $query->paginate(10)->appends($request->all());
+        $title = "Hasil Pencarian Program Kerja SPI";
+
+        return view('program-kerja.search', compact(
+            'programKerjaList',
+            'keyword',
+            'nomor',
+            'tahun',
+            'bidang',
+            'subjek',
+            'title'
+        ));
+    }
 }

@@ -272,7 +272,7 @@ Route::get('/pedoman-audit', [DetailPengawasanController::class, 'index'])
     ->name('pedoman.audit');
 
 
-    //button kembali 
+//button kembali 
 Route::get('/pedomanpengawasan/detail', [PedomanPengawasanController::class, 'index'])
     ->name('pedomanpengawasan.detail-pedoman');
 
@@ -323,6 +323,7 @@ Route::prefix('posAp')->name('posAp.')->group(function () {
 // Halaman daftar instrumen berdasarkan jenis
 Route::get('/instrumen/lihat/{jenis}', [InstrumenController::class, 'lihat'])
     ->name('instrumen.lihat');
+    Route::get('/instrumen/search', [InstrumenController::class, 'search'])->name('instrumen.search');
 
 // Halaman index instrumen
 Route::get('/instrumen', [InstrumenController::class, 'index'])
@@ -621,3 +622,25 @@ Route::resource('sdm', App\Http\Controllers\SdmController::class);
 
 
 Route::get('/pedoman/search', [PedomanPengawasanController::class, 'search'])->name('pedoman.search');
+
+Route::get('/piagamspi/search', [App\Http\Controllers\Piagam\PiagamSPIController::class, 'search'])
+    ->name('piagamspi.search');
+
+Route::prefix('piagamspi')->group(function () {
+    Route::get('/', [PiagamSPIController::class, 'index'])->name('piagamspi.index');
+    Route::get('/{id}', [PiagamSPIController::class, 'show'])->name('piagamspi.show');
+});
+
+Route::get('/search/posappengawasan', [PosApPengawasanController::class, 'searchPosApPengawasan'])
+    ->name('search.searchPosApPengawasan');
+
+// Route search Pos AP
+Route::get('/posap/search', [PosApPengawasanController::class, 'search'])->name('posap.search');
+
+// Route show detail Pos AP
+Route::get('/posap/{id}', [PosApPengawasanController::class, 'show'])->name('posap.show');
+
+Route::get('/program-kerja/search', [ProgramKerjaSPIController::class, 'search'])->name('program-kerja.search');
+
+Route::get('/konsideranspi/search', [KonsideranSPIController::class, 'search'])->name('konsideranspi.search');
+

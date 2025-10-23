@@ -405,10 +405,10 @@
         startAuto();
     </script>
     <div class="search-wrapper">
-        <form action="{{ route('search.searchPedomanPengawasan') }}" method="GET" class="search-form"
-            style="display: contents;">
+        <form action="{{ route('konsideranspi.search') }}" method="GET" class="search-form" style="display: contents;">
             <div class="input-group">
-                <input type="text" name="keyword" placeholder="Cari peraturan ..." value="{{ request('keyword') }}">
+                <input type="text" name="keyword" placeholder="Cari Konsideran SPI ..."
+                    value="{{ request('keyword') }}">
             </div>
             <button type="submit" class="search-btn"><i class="fa fa-search"></i> Cari</button>
             <button type="button" class="adv-btn" id="openAdvModal"><i class="fa fa-sliders-h"></i> Adv. Search</button>
@@ -420,8 +420,7 @@
             <span class="close">&times;</span>
             <h2 class="modal-title"><i class="fa fa-sliders-h"></i> Advanced Search</h2>
 
-            <!-- Form sudah diarahkan ke route search, method GET -->
-            <form class="adv-form" action="{{ route('search.searchPedomanPengawasan') }}" method="GET">
+            <form class="adv-form" action="{{ route('konsideranspi.search') }}" method="GET">
                 <div class="form-group">
                     <label for="keyword">Tentang</label>
                     <input type="text" name="keyword" id="keyword" placeholder="Masukkan kata kunci ..."
@@ -439,21 +438,15 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="jenis">Jenis</label>
-                    <input type="text" name="jenis" id="jenis" placeholder="Peraturan / UU / PP ..."
-                        value="{{ request('jenis') }}">
+                    <label for="bidang">Bidang</label>
+                    <input type="text" name="bidang" id="bidang" placeholder="Nama bidang ..."
+                        value="{{ request('bidang') }}">
                 </div>
 
                 <div class="form-group">
-                    <label for="entitas">Entitas</label>
-                    <input type="text" name="entitas" id="entitas" placeholder="Nama instansi ..."
-                        value="{{ request('entitas') }}">
-                </div>
-
-                <div class="form-group">
-                    <label for="tag">Tag</label>
-                    <input type="text" name="tag" id="tag" placeholder="Pisahkan dengan koma"
-                        value="{{ request('tag') }}">
+                    <label for="subjek">Subjek</label>
+                    <input type="text" name="subjek" id="subjek" placeholder="Subjek ..."
+                        value="{{ request('subjek') }}">
                 </div>
 
                 <div class="form-actions">
@@ -465,20 +458,21 @@
         </div>
     </div>
 
-    <!-- disini isinya -->
+    <!-- ISI HASIL PENCARIAN -->
     <div class="legal-search-container">
         <div class="search-header-panel">
             <div class="search-info">
-                <h1>PENCARIAN <span class="highlight-text">PERATURAN</span></h1>
+                <h1>PENCARIAN <span class="highlight-text">KONSIDERAN SPI</span></h1>
                 <p class="search-summary">
                     Menemukan
-                    <span class="result-count">{{ $pedoman->total() }}</span>
-                    pedoman
+                    <span class="result-count">{{ $konsiderans->total() }}</span>
+                    Konsideran SPI
                     @if($keyword)
                         untuk keyword: <strong>{{ $keyword }}</strong>
                     @endif
                 </p>
             </div>
+
             @if($keyword)
                 <div class="search-criteria-chip">
                     <span class="chip-label">Keyword:</span>
@@ -488,15 +482,15 @@
         </div>
 
         <div class="results-grid">
-            @forelse($pedoman as $item)
+            @forelse($konsiderans as $item)
                 <div class="result-card">
                     <div class="card-header">
-                        <span class="card-tag">{{ $item->jenis ?? 'Standar/Pedoman' }}</span>
-                        <span class="card-source">{{ $item->nomor }} Tahun {{ $item->tahun }}</span>
+                        <span class="card-tag">{{ $item->bentuk ?? 'Konsideran' }}</span>
+                        <span class="card-source">{{ $item->nomor ?? '-' }} Tahun {{ $item->tahun ?? '-' }}</span>
                     </div>
 
                     <h3 class="card-title">
-                        <a href="{{ route('pedoman.show', $item->id) }}" class="detail-link">{{ $item->judul }}</a>
+                        <a href="{{ route('konsideranspi.show', $item->id) }}" class="detail-link">{{ $item->judul }}</a>
                     </h3>
 
                     <div class="card-content">
@@ -507,8 +501,7 @@
 
                     <div class="card-footer">
                         @if($item->file_pdf)
-                            <a href="{{ asset('storage/pedoman_pdfs/' . $item->file_pdf) }}" class="download-btn"
-                                target="_blank">
+                            <a href="{{ asset('storage/' . $item->file_pdf) }}" class="download-btn" target="_blank">
                                 <i class="fas fa-file-download"></i> Download PDF
                             </a>
                         @else
@@ -517,28 +510,26 @@
                     </div>
                 </div>
             @empty
-                <p>Tidak ada data yang sesuai dengan pencarian.</p>
+                <p>Tidak ada Konsideran SPI yang sesuai dengan pencarian.</p>
             @endforelse
         </div>
 
-        {{ $pedoman->links() }}
+        <!-- PAGINATION -->
+        {{ $konsiderans->links() }}
 
-
-
-        {{-- Pagination custom --}}
-        @if ($pedoman->hasPages())
+        @if ($konsiderans->hasPages())
             <div class="pagination-bar">
                 {{-- Tombol First --}}
-                @if (!$pedoman->onFirstPage())
-                    <a href="{{ $pedoman->url(1) }}" class="page-link first">First</a>
+                @if (!$konsiderans->onFirstPage())
+                    <a href="{{ $konsiderans->url(1) }}" class="page-link first">First</a>
                 @else
                     <span class="page-link first disabled">First</span>
                 @endif
 
                 {{-- Angka halaman --}}
                 <div class="page-numbers">
-                    @foreach ($pedoman->getUrlRange(1, $pedoman->lastPage()) as $page => $url)
-                        @if ($page == $pedoman->currentPage())
+                    @foreach ($konsiderans->getUrlRange(1, $konsiderans->lastPage()) as $page => $url)
+                        @if ($page == $konsiderans->currentPage())
                             <span class="page-number active">{{ $page }}</span>
                         @else
                             <a href="{{ $url }}" class="page-number">{{ $page }}</a>
@@ -547,14 +538,15 @@
                 </div>
 
                 {{-- Tombol Next --}}
-                @if ($pedoman->hasMorePages())
-                    <a href="{{ $pedoman->nextPageUrl() }}" class="page-link next">Next</a>
+                @if ($konsiderans->hasMorePages())
+                    <a href="{{ $konsiderans->nextPageUrl() }}" class="page-link next">Next</a>
                 @else
                     <span class="page-link next disabled">Next</span>
                 @endif
             </div>
         @endif
     </div>
+
 
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">

@@ -148,4 +148,56 @@ class KonsideranSPIController extends Controller
         return view('KonsideranSPI.lihat', compact('title', 'konsiderans'));
     }
 
+    public function search(Request $request)
+    {
+        $keyword = trim($request->input('keyword', ''));
+        $nomor = $request->input('nomor');
+        $tahun = $request->input('tahun');
+        $bidang = $request->input('bidang');
+        $subjek = $request->input('subjek');
+
+        $query = KonsideranSPI::query();
+
+        if ($keyword) {
+            $keywords = explode(' ', $keyword);
+            foreach ($keywords as $word) {
+                $query->where(function ($q) use ($word) {
+                    $q->where('judul', 'like', "%{$word}%")
+                        ->orWhere('abstrak', 'like', "%{$word}%")
+                        ->orWhere('kata_kunci', 'like', "%{$word}%")
+                        ->orWhere('catatan', 'like', "%{$word}%");
+                });
+            }
+        }
+
+        if ($nomor) {
+            $query->where('nomor', 'like', "%{$nomor}%");
+        }
+        if ($tahun) {
+            $query->where('tahun', $tahun);
+        }
+        if ($bidang) {
+            $query->where('bidang', 'like', "%{$bidang}%");
+        }
+        if ($subjek) {
+            $query->where('subjek', 'like', "%{$subjek}%");
+        }
+
+        // Pagination
+        $konsiderans = $query->paginate(10)->appends($request->all());
+
+        $title = "Hasil Pencarian Konsideran SPI";
+
+        return view('KonsideranSPI.search', compact(
+            'konsiderans', // harus sama dengan yang di blade
+            'keyword',
+            'nomor',
+            'tahun',
+            'bidang',
+            'subjek',
+            'title'
+        ));
+    }
+
+
 }

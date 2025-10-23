@@ -404,157 +404,130 @@
         // Mulai otomatis saat halaman dimuat
         startAuto();
     </script>
-    <div class="search-wrapper">
-        <form action="{{ route('search.searchPedomanPengawasan') }}" method="GET" class="search-form"
-            style="display: contents;">
-            <div class="input-group">
-                <input type="text" name="keyword" placeholder="Cari peraturan ..." value="{{ request('keyword') }}">
+  <div class="search-wrapper">
+    <!-- FORM PENCARIAN UTAMA -->
+    <form action="{{ route('program-kerja.search') }}" method="GET" class="search-form" style="display: contents;">
+        <div class="input-group">
+            <input type="text" name="keyword" placeholder="Cari Program Kerja ..." value="{{ request('keyword') }}">
+        </div>
+        <button type="submit" class="search-btn"><i class="fa fa-search"></i> Cari</button>
+        <button type="button" class="adv-btn" id="openAdvModal"><i class="fa fa-sliders-h"></i> Adv. Search</button>
+    </form>
+</div>
+
+<!-- MODAL ADVANCED SEARCH -->
+<div id="advModal" class="modal">
+    <div class="modal-box">
+        <span class="close">&times;</span>
+        <h2 class="modal-title"><i class="fa fa-sliders-h"></i> Advanced Search</h2>
+
+        <form class="adv-form" action="{{ route('program-kerja.search') }}" method="GET">
+            <div class="form-group">
+                <label for="keyword">Tentang</label>
+                <input type="text" name="keyword" id="keyword" placeholder="Masukkan kata kunci ..." value="{{ request('keyword') }}">
             </div>
-            <button type="submit" class="search-btn"><i class="fa fa-search"></i> Cari</button>
-            <button type="button" class="adv-btn" id="openAdvModal"><i class="fa fa-sliders-h"></i> Adv. Search</button>
+
+            <div class="form-group">
+                <label for="nomor">Nomor</label>
+                <input type="text" name="nomor" id="nomor" placeholder="Contoh: 12" value="{{ request('nomor') }}">
+            </div>
+
+            <div class="form-group">
+                <label for="tahun">Tahun</label>
+                <input type="number" name="tahun" id="tahun" placeholder="2023" value="{{ request('tahun') }}">
+            </div>
+
+            <div class="form-group">
+                <label for="bidang">Bidang</label>
+                <input type="text" name="bidang" id="bidang" placeholder="Contoh: Keuangan, Operasional ..." value="{{ request('bidang') }}">
+            </div>
+
+            <div class="form-group">
+                <label for="subjek">Subjek</label>
+                <input type="text" name="subjek" id="subjek" placeholder="Contoh: Audit, Pengawasan ..." value="{{ request('subjek') }}">
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn-submit">
+                    <i class="fa fa-search"></i> Cari
+                </button>
+            </div>
         </form>
     </div>
+</div>
 
-    <div id="advModal" class="modal">
-        <div class="modal-box">
-            <span class="close">&times;</span>
-            <h2 class="modal-title"><i class="fa fa-sliders-h"></i> Advanced Search</h2>
-
-            <!-- Form sudah diarahkan ke route search, method GET -->
-            <form class="adv-form" action="{{ route('search.searchPedomanPengawasan') }}" method="GET">
-                <div class="form-group">
-                    <label for="keyword">Tentang</label>
-                    <input type="text" name="keyword" id="keyword" placeholder="Masukkan kata kunci ..."
-                        value="{{ request('keyword') }}">
-                </div>
-
-                <div class="form-group">
-                    <label for="nomor">Nomor</label>
-                    <input type="text" name="nomor" id="nomor" placeholder="Contoh: 12" value="{{ request('nomor') }}">
-                </div>
-
-                <div class="form-group">
-                    <label for="tahun">Tahun</label>
-                    <input type="number" name="tahun" id="tahun" placeholder="2023" value="{{ request('tahun') }}">
-                </div>
-
-                <div class="form-group">
-                    <label for="jenis">Jenis</label>
-                    <input type="text" name="jenis" id="jenis" placeholder="Peraturan / UU / PP ..."
-                        value="{{ request('jenis') }}">
-                </div>
-
-                <div class="form-group">
-                    <label for="entitas">Entitas</label>
-                    <input type="text" name="entitas" id="entitas" placeholder="Nama instansi ..."
-                        value="{{ request('entitas') }}">
-                </div>
-
-                <div class="form-group">
-                    <label for="tag">Tag</label>
-                    <input type="text" name="tag" id="tag" placeholder="Pisahkan dengan koma"
-                        value="{{ request('tag') }}">
-                </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn-submit">
-                        <i class="fa fa-search"></i> Cari
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- disini isinya -->
-    <div class="legal-search-container">
-        <div class="search-header-panel">
-            <div class="search-info">
-                <h1>PENCARIAN <span class="highlight-text">PERATURAN</span></h1>
-                <p class="search-summary">
-                    Menemukan
-                    <span class="result-count">{{ $pedoman->total() }}</span>
-                    pedoman
-                    @if($keyword)
-                        untuk keyword: <strong>{{ $keyword }}</strong>
-                    @endif
-                </p>
-            </div>
-            @if($keyword)
-                <div class="search-criteria-chip">
-                    <span class="chip-label">Keyword:</span>
-                    <span class="chip-keyword">{{ $keyword }}</span>
-                </div>
-            @endif
-        </div>
-
-        <div class="results-grid">
-            @forelse($pedoman as $item)
-                <div class="result-card">
-                    <div class="card-header">
-                        <span class="card-tag">{{ $item->jenis ?? 'Standar/Pedoman' }}</span>
-                        <span class="card-source">{{ $item->nomor }} Tahun {{ $item->tahun }}</span>
-                    </div>
-
-                    <h3 class="card-title">
-                        <a href="{{ route('pedoman.show', $item->id) }}" class="detail-link">{{ $item->judul }}</a>
-                    </h3>
-
-                    <div class="card-content">
-                        @if($item->abstrak)
-                            <p class="snippet">{{ Str::limit($item->abstrak, 200) }}</p>
-                        @endif
-                    </div>
-
-                    <div class="card-footer">
-                        @if($item->file_pdf)
-                            <a href="{{ asset('storage/pedoman_pdfs/' . $item->file_pdf) }}" class="download-btn"
-                                target="_blank">
-                                <i class="fas fa-file-download"></i> Download PDF
-                            </a>
-                        @else
-                            <span>Tidak ada file</span>
-                        @endif
-                    </div>
-                </div>
-            @empty
-                <p>Tidak ada data yang sesuai dengan pencarian.</p>
-            @endforelse
-        </div>
-
-        {{ $pedoman->links() }}
-
-
-
-        {{-- Pagination custom --}}
-        @if ($pedoman->hasPages())
-            <div class="pagination-bar">
-                {{-- Tombol First --}}
-                @if (!$pedoman->onFirstPage())
-                    <a href="{{ $pedoman->url(1) }}" class="page-link first">First</a>
-                @else
-                    <span class="page-link first disabled">First</span>
+<!-- HASIL PENCARIAN -->
+<div class="legal-search-container">
+    <div class="search-header-panel">
+        <div class="search-info">
+            <h1>PENCARIAN <span class="highlight-text">PROGRAM KERJA SPI</span></h1>
+            <p class="search-summary">
+                Menemukan <span class="result-count">{{ $programKerjaList->total() }}</span> Program Kerja
+                @if($keyword)
+                    untuk keyword: <strong>{{ $keyword }}</strong>
                 @endif
+            </p>
+        </div>
 
-                {{-- Angka halaman --}}
-                <div class="page-numbers">
-                    @foreach ($pedoman->getUrlRange(1, $pedoman->lastPage()) as $page => $url)
-                        @if ($page == $pedoman->currentPage())
-                            <span class="page-number active">{{ $page }}</span>
-                        @else
-                            <a href="{{ $url }}" class="page-number">{{ $page }}</a>
-                        @endif
-                    @endforeach
-                </div>
-
-                {{-- Tombol Next --}}
-                @if ($pedoman->hasMorePages())
-                    <a href="{{ $pedoman->nextPageUrl() }}" class="page-link next">Next</a>
-                @else
-                    <span class="page-link next disabled">Next</span>
+        <!-- CHIP FILTER -->
+        @if($keyword || $nomor || $tahun || $bidang || $subjek)
+            <div class="search-criteria-chip">
+                @if($keyword)
+                    <span class="chip-label">Keyword:</span> <span class="chip-keyword">{{ $keyword }}</span>
+                @endif
+                @if($nomor)
+                    <span class="chip-label">Nomor:</span> <span class="chip-keyword">{{ $nomor }}</span>
+                @endif
+                @if($tahun)
+                    <span class="chip-label">Tahun:</span> <span class="chip-keyword">{{ $tahun }}</span>
+                @endif
+                @if($bidang)
+                    <span class="chip-label">Bidang:</span> <span class="chip-keyword">{{ $bidang }}</span>
+                @endif
+                @if($subjek)
+                    <span class="chip-label">Subjek:</span> <span class="chip-keyword">{{ $subjek }}</span>
                 @endif
             </div>
         @endif
     </div>
+
+    <!-- GRID HASIL -->
+    <div class="results-grid">
+        @forelse($programKerjaList as $item)
+            <div class="result-card">
+                <div class="card-header">
+                    <span class="card-source">{{ $item->nomor ?? '-' }} Tahun {{ $item->tahun ?? '-' }}</span>
+                    <span class="card-tag">{{ $item->bidang ?? '-' }}</span>
+                </div>
+
+                <h3 class="card-title">
+                    <a href="{{ route('program-kerja.show', $item->id) }}" class="detail-link">{{ $item->judul }}</a>
+                </h3>
+
+                <div class="card-content">
+                    @if($item->abstrak)
+                        <p class="snippet">{{ Str::limit($item->abstrak, 200) }}</p>
+                    @endif
+                </div>
+
+                <div class="card-footer">
+                    @if($item->file_pdf)
+                        <a href="{{ asset('storage/' . $item->file_pdf) }}" class="download-btn" target="_blank">
+                            <i class="fas fa-file-download"></i> Download PDF
+                        </a>
+                    @else
+                        <span>Tidak ada file</span>
+                    @endif
+                </div>
+            </div>
+        @empty
+            <p>Tidak ada Program Kerja SPI yang sesuai dengan pencarian.</p>
+        @endforelse
+    </div>
+
+    <!-- PAGINATION -->
+    {{ $programKerjaList->links() }}
+</div>
 
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
