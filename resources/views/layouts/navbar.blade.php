@@ -115,7 +115,7 @@
                             Profil
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="profilDropdown">
-                            <li><a class="dropdown-item" href="{{ route('sejarah') }}">Sejarah</a></li>
+                            <li><a class="dropdown-item" href="{{ route('spi.sejarah') }}">Sejarah</a></li>
                             <li><a class="dropdown-item" href="{{ route('visi-misi.index') }}">Visi & Misi</a></li>
                             <li><a class="dropdown-item" href="{{ route('struktur.index') }}">Struktur Organisasi</a></li>
                             <li><a class="dropdown-item" href="{{ route('sdm.index') }}">Sumber Daya Manusia</a></li>

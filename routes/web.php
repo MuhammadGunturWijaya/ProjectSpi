@@ -39,7 +39,8 @@ use App\Http\Controllers\Peningkatan\PeningkatanKualitasController;
 use App\Http\Controllers\Akuntabilitas\PenguatanAkuntabilitasController;
 use App\Http\Controllers\MR\PedomanMRController;
 use App\Http\Middleware\IsAdmin;
-
+use App\Http\Controllers\Admin\TimelineController;
+use App\Http\Controllers\ProcessController;
 
 // Halaman landing
 Route::get('/', [LandingPageController::class, 'index'])->name('landingpage');
@@ -49,6 +50,17 @@ Route::get('/landing', [LandingPageController::class, 'index'])->name('landing')
 Route::get('/berita', [BeritaController::class, 'index'])->name('berita.index');
 Route::get('/berita/{id}', [BeritaController::class, 'show'])->name('berita.show');
 
+
+// Group admin middleware
+Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('timeline', TimelineController::class);
+});
+
+
+Route::get('/spi/sejarah', [TimelineController::class, 'index'])->name('spi.sejarah');
+Route::get('/sejarah', function () {
+    return redirect()->route('spi.sejarah');
+})->name('sejarah');
 
 
 Route::middleware(['auth'])->prefix('admin/berita')->group(function () {
@@ -181,7 +193,7 @@ Route::get('/pedoman-audit', [PedomanAuditController::class, 'index'])
     ->name('pedoman-audit');
 
 // Route Ke halaman pedoman monev SPI
-Route::get('/pedoman-monev', [PedomanMonevController::class, 'index'])->name('pedoman-monev');
+// Route::get('/pedoman-monev', [PedomanMonevController::class, 'index'])->name('pedoman-monev');
 
 // Route Ke halaman pedoman reviu SPI
 Route::get('/pedoman-reviu', [PedomanReviuController::class, 'index'])->name('pedoman-reviu');
@@ -323,7 +335,7 @@ Route::prefix('posAp')->name('posAp.')->group(function () {
 // Halaman daftar instrumen berdasarkan jenis
 Route::get('/instrumen/lihat/{jenis}', [InstrumenController::class, 'lihat'])
     ->name('instrumen.lihat');
-    Route::get('/instrumen/search', [InstrumenController::class, 'search'])->name('instrumen.search');
+Route::get('/instrumen/search', [InstrumenController::class, 'search'])->name('instrumen.search');
 
 // Halaman index instrumen
 Route::get('/instrumen', [InstrumenController::class, 'index'])
@@ -587,11 +599,6 @@ Route::get('/PedomanMR/lihat', [PedomanMRController::class, 'lihat'])
 Route::get('/pedomanmr/detail/{id}', [PedomanMRController::class, 'detail'])->name('pedomanmr.detail');
 
 
-Route::get('/sejarah', function () {
-    return view('sejarah');
-})->name('sejarah');
-
-
 // web.php
 Route::get('/lapor-guest', [GuestReportController::class, 'createGuest'])->name('pengaduan.createGuest');
 
@@ -654,30 +661,37 @@ Route::post('/instrumen', [InstrumenController::class, 'store'])->name('instrume
 // Halaman detail Program Kerja
 Route::get('/program_kerja/{id}', [App\Http\Controllers\ProgramKerjaController::class, 'show'])
     ->name('program_kerja.show');
-   
- Route::get('/konsideran_SPI/{id}', [KonsideranSPIController::class, 'show'])
+
+Route::get('/konsideran_SPI/{id}', [KonsideranSPIController::class, 'show'])
     ->name('konsideran_SPI.show');
 
-    Route::get('/pedomanmr/{id}', [PedomanMRController::class, 'show'])->name('pedomanmr.show');
+Route::get('/pedomanmr/{id}', [PedomanMRController::class, 'show'])->name('pedomanmr.show');
 
-    Route::get('/Perubahan/{id}', [PerubahanController::class, 'show'])
+Route::get('/Perubahan/{id}', [PerubahanController::class, 'show'])
     ->name('Perubahan.show');
 
-    // Route detail data Penguatan Akuntabilitas
+// Route detail data Penguatan Akuntabilitas
 Route::get('/penguatan_akuntabilitas/{id}', [PenguatanAkuntabilitasController::class, 'show'])
     ->name('penguatan_akuntabilitas.show');
 
-    // Route detail data Penataan Tata Kelola
+// Route detail data Penataan Tata Kelola
 Route::get('/penataan_tata_kelola/{id}', [PenataanTataKelolaController::class, 'show'])
     ->name('penataan_tata_kelola.show');
 
-    Route::get('/penataan_sistem/{id}', [PenataanSistemController::class, 'show'])
+Route::get('/penataan_sistem/{id}', [PenataanSistemController::class, 'show'])
     ->name('penataan_sistem.show');
 
-    Route::get('/penguatan_pengawasan/{id}', [PenguatanPengawasanController::class, 'show'])
+Route::get('/penguatan_pengawasan/{id}', [PenguatanPengawasanController::class, 'show'])
     ->name('penguatan_pengawasan.show');
 
-    Route::get('/peningkatan_kualitas/{id}', [PeningkatanKualitasController::class, 'show'])
+Route::get('/peningkatan_kualitas/{id}', [PeningkatanKualitasController::class, 'show'])
     ->name('peningkatan_kualitas.show');
 
-    Route::put('/posap/{id}', [PosApPengawasanController::class, 'update'])->name('posAp.update');
+Route::put('/posap/{id}', [PosApPengawasanController::class, 'update'])->name('posAp.update');
+
+Route::get('/processes', [ProcessController::class, 'index'])->name('processes.index');
+Route::get('/processes/create', [ProcessController::class, 'create'])->name('processes.create');
+Route::post('/processes', [ProcessController::class, 'store'])->name('processes.store');
+Route::get('/processes/{process}/edit', [ProcessController::class, 'edit'])->name('processes.edit');
+Route::put('/processes/{process}', [ProcessController::class, 'update'])->name('processes.update');
+Route::delete('/processes/{process}', [ProcessController::class, 'destroy'])->name('processes.destroy');

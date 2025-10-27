@@ -12,6 +12,7 @@ class IsAdmin
         if ($request->user()?->role !== 'admin') {
             abort(403, 'Unauthorized');
         }
+
         return $next($request);
     }
 }
