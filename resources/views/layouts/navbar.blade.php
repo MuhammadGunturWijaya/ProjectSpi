@@ -181,9 +181,9 @@
                     </li>
                 </ul>
 
-                <a href="{{ route('login') }}"  class="btn btn-login ms-lg-3 mt-2 mt-lg-0">
+                <!-- <a href="{{ route('login') }}"  class="btn btn-login ms-lg-3 mt-2 mt-lg-0">
                     <i class="bi bi-box-arrow-in-right me-1"></i> Login
-                </a>
+                </a> -->
             </div>
         </div>
     </nav>

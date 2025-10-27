@@ -610,6 +610,12 @@ Route::post('/pendaftar/check', [App\Http\Controllers\PendaftarController::class
     ->name('pendaftar.check')
     ->withoutMiddleware('auth');
 
+Route::middleware('auth')->group(function () {
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/pendaftar/check', [ProfileController::class, 'checkPendaftar'])->name('pendaftar.check');
+    Route::post('/pendaftar/verify', [ProfileController::class, 'verifyPendaftar'])->name('pendaftar.verify');
+});
 
 // Route untuk search
 Route::get('/berita/search', [BeritaController::class, 'search'])->name('berita.search');
