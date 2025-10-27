@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 
 class InstrumenController extends Controller
+
 {
     // Halaman utama Instrumen Pengawasan
     public function index()
@@ -24,14 +25,13 @@ class InstrumenController extends Controller
         return view('InstrumenPengawasan.index', compact('title', 'instrumens', 'popular'));
     }
 
-    public function lihat($tipe)
+       public function lihat($tipe)
     {
         // Ambil data instrumen berdasarkan tipe, contoh: 'audit'
         $instrumens = Instrumen::where('jenis', $tipe)->get();
-        $title = "Instrumen " . ucfirst($tipe);
+        
 
-
-        return view('InstrumenPengawasan.lihat-instrumen', compact('instrumens', 'tipe', 'title'));
+        return view('InstrumenPengawasan.lihat-instrumen', compact('instrumens', 'tipe'));
     }
 
     // Simpan data baru

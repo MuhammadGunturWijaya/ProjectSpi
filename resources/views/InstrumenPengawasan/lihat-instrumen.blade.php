@@ -20,7 +20,7 @@
 
     <header>
         <div class="header-text-container">
-            <h1>LIHAT LEBIH {{ $title }} </h1>
+            <h1>LIHAT LEBIH INSTRUMEN </h1>
         </div>
     </header>
 
@@ -193,7 +193,7 @@
     </script>
 
     <div class="container">
-        <h2 class="section-title">Daftar {{ $title }}</h2>
+        <h2 class="section-title">Daftar Dokumen Instrumen</h2>
 
         <div class="document-grid">
             @forelse($instrumens as $Instrumen)
