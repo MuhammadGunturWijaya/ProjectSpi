@@ -695,3 +695,4 @@ Route::post('/processes', [ProcessController::class, 'store'])->name('processes.
 Route::get('/processes/{process}/edit', [ProcessController::class, 'edit'])->name('processes.edit');
 Route::put('/processes/{process}', [ProcessController::class, 'update'])->name('processes.update');
 Route::delete('/processes/{process}', [ProcessController::class, 'destroy'])->name('processes.destroy');
+
