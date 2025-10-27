@@ -430,7 +430,6 @@
     </div>
 
     <div class="container process-container">
-        @isset($processes)
         @forelse ($processes as $process)
             <div class="process-step">
                 <div class="step-header">
@@ -472,7 +471,6 @@
         @empty
             <p class="text-center text-muted">Belum ada data proses yang ditambahkan.</p>
         @endforelse
-        @endisset
     </div>
 
     @auth

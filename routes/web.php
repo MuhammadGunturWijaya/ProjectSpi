@@ -175,9 +175,6 @@ Route::delete('/sumber-daya-manusia/{id}', [SdmController::class, 'destroy'])->n
 Route::get('/sumber-daya-manusia/{id}/edit', [SdmController::class, 'edit'])->name('sdm.edit');
 Route::post('/sumber-daya-manusia/{id}/update', [SdmController::class, 'update'])->name('sdm.update');
 
-// Route ke halaman Proses Bisnis SPI
-Route::get('/proses-bisnis-spi', [ProsesBisnisSPIController::class, 'index'])
-    ->name('proses-bisnis-spi');
 
 // Route ke halaman Kode Etik SPI
 Route::get('/kode-etik-spi', [KodeEtikSPIController::class, 'index'])
@@ -696,3 +693,4 @@ Route::get('/processes/{process}/edit', [ProcessController::class, 'edit'])->nam
 Route::put('/processes/{process}', [ProcessController::class, 'update'])->name('processes.update');
 Route::delete('/processes/{process}', [ProcessController::class, 'destroy'])->name('processes.destroy');
 
+Route::get('/proses-bisnis-spi', [ProcessController::class, 'index'])->name('proses-bisnis-spi');
