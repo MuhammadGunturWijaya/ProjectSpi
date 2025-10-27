@@ -665,6 +665,8 @@
       });
     });
   </script>
+   <p></p>
+    @include('layouts.NavbarBawah')
 </body>
 
 </html>
