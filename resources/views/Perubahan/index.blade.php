@@ -25,7 +25,7 @@
     </header>
 
 
-    <div class="search-wrapper">
+    <!-- <div class="search-wrapper">
         <form action="{{ route('search.searchPedomanPengawasan') }}" method="GET" class="search-form"
             style="display: contents;">
             <div class="input-group">
@@ -78,7 +78,7 @@
                 </div>
             </form>
         </div>
-    </div>
+    </div> -->
 
 
     <script>
