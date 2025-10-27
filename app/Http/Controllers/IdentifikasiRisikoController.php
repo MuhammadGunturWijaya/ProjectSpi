@@ -288,6 +288,7 @@ class IdentifikasiRisikoController extends Controller
             'abjad' => 'required|string|max:5',
             'tujuan' => 'required|string',
             'unit' => 'required|string|max:255', // <-- ambil dari select unit
+            'departemen' => 'required|string|max:255',
             'proses_bisnis' => 'required|string',
             'kategori_risiko' => 'required|string',
             'uraian_risiko' => 'required|string',

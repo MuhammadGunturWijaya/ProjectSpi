@@ -2,9 +2,10 @@
 <html lang="id">
 <style>
     body {
-                   overflow-x: hidden;
-        }
+        overflow-x: hidden;
+    }
 </style>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -46,6 +47,13 @@
                             <input type="text" class="form-control" id="tujuan" name="tujuan"
                                 value="{{ old('tujuan', $risiko->tujuan ?? '') }}" required>
                         </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="departemen" class="form-label">departemen</label>
+                        <input type="text" name="departemen" class="form-control"
+                            value="{{ old('departemen', $risiko->departemen ?? '') }}"
+                            placeholder="Masukkan Departemen">
                     </div>
 
                     <div class="mb-3">

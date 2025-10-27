@@ -2,9 +2,10 @@
 <html lang="id">
 <style>
     body {
-                   overflow-x: hidden;
-        }
+        overflow-x: hidden;
+    }
 </style>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -528,13 +529,14 @@
                                         $scoreValue = isset($scoreMap[$jawaban]) ? $scoreMap[$jawaban] * 20 : 0;
                                         $category = getCategoryByScore($scoreValue);
 
-                                        $badgeClass = match ($category) {
+                                        $badgeClass = match ($jawaban) {
                                             'Sangat Puas' => 'text-bg-success',
                                             'Puas' => 'text-bg-primary',
                                             'Cukup Puas' => 'text-bg-warning',
                                             'Kurang Puas' => 'text-bg-danger',
                                             default => 'text-bg-secondary',
                                         };
+
                                     @endphp
                                     <td class="answer-column">
                                         <span class="badge badge-score {{ $badgeClass }}" data-bs-toggle="tooltip"
