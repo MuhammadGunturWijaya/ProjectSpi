@@ -2,9 +2,18 @@
 <html lang="id">
 <style>
     body {
-                   overflow-x: hidden;
-        }
+        overflow-x: hidden;
+    }
+
+    .section-header {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        border: 1px solid #dee2e6;
+    }
 </style>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -41,6 +50,31 @@
                         {{ session('success') }}
                     </div>
                 @endif
+
+                <!-- Modal Tambah Bagian -->
+                <div class="modal fade" id="modalTambahBagian" tabindex="-1" aria-labelledby="modalTambahBagianLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-success text-white">
+                                <h5 class="modal-title" id="modalTambahBagianLabel">Tambah Bagian</h5>
+                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="formTambahBagian">
+                                    <div class="mb-3">
+                                        <label for="namaBagian" class="form-label">Nama Bagian</label>
+                                        <input type="text" class="form-control" id="namaBagian" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-success w-100">Simpan</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- FORM UTAMA DIMULAI DI SINI --}}
                 <form
                     action="{{ isset($risiko) ? route('evaluasiMr.update', $risiko->id) : route('evaluasiMr.store') }}"
                     method="POST">
@@ -49,25 +83,51 @@
                         @method('PUT')
                     @endif
 
+                    {{-- Bagian Section - Unit/Bagian --}}
+                    <div class="section-header">
+                        <div class="row align-items-center">
+                            <div class="col-md-3">
+                                <button type="button" class="btn btn-success w-100" id="btnTambahBagian">
+                                    <i class="fas fa-plus"></i> Tambah Bagian
+                                </button>
+                            </div>
+                            <div class="col-md-9">
+                                <label for="unit" class="form-label">Pilih Unit/Bagian</label>
+                                <select class="form-select" id="unit" name="unit" required>
+                                    <option value="">-- Pilih Unit --</option>
+                                    @foreach($bagians as $bagian)
+                                        <option value="{{ $bagian->nama_bagian }}" {{ old('unit', $risiko->bagian ?? '') == $bagian->nama_bagian ? 'selected' : '' }}>
+                                            {{ $bagian->nama_bagian }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
 
                     {{-- Identifikasi Awal --}}
                     <div class="row mb-3">
-                        <div class="col-md-2">
+                        <div class="col-md-12">
                             <label for="abjad" class="form-label">Kode Unit</label>
                             <input type="text" class="form-control" id="abjad" name="abjad"
                                 value="{{ old('abjad', $risiko->abjad ?? '') }}" required>
                         </div>
-                        <div class="col-md-5">
-                            <label for="tujuan" class="form-label">Tujuan</label>
-                            <input type="text" class="form-control" id="tujuan" name="tujuan"
-                                value="{{ old('tujuan', $risiko->tujuan ?? '') }}" required>
-                        </div>
-                        <div class="col-md-5">
-                            <label for="departemen" class="form-label">Unit</label>
-                            <input type="text" class="form-control" id="departemen" name="departemen"
-                                value="{{ old('departemen', $risiko->departemen ?? '') }}" required>
-                        </div>
                     </div>
+
+                    <div class="mb-3">
+                        <label for="tujuan" class="form-label">Tujuan</label>
+                        <input type="text" class="form-control" id="tujuan" name="tujuan"
+                            value="{{ old('tujuan', $risiko->tujuan ?? '') }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="departemen" class="form-label">departemen</label>
+                        <input type="text" name="departemen" class="form-control"
+                            value="{{ old('departemen', $risiko->departemen ?? '') }}"
+                            placeholder="Masukkan Departemen">
+                    </div>
+
+
 
                     <div class="mb-3">
                         <label for="proses_bisnis" class="form-label">Proses Bisnis</label>
@@ -199,7 +259,6 @@
                     </div>
 
                     {{-- Mitigasi Risiko --}}
-                    {{-- Mitigasi Risiko --}}
                     <h5 class="mt-4">Mitigasi Risiko</h5>
                     <div class="mb-3">
                         <label for="mitigasi_opsi" class="form-label">Opsi Mitigasi</label>
@@ -243,123 +302,6 @@
                         </div>
                     </div>
 
-                    <script>
-                        (function () {
-                            // Warna sesuai matriks (index: likelihood 1..5, impact 1..5)
-                            const riskColors = {
-                                1: { 1: '#099DDE', 2: '#9ED26A', 3: '#9ED26A', 4: '#2F8B3A', 5: '#E6DE2F' }, // bottom row (Rare)
-                                2: { 1: '#9ED26A', 2: '#9ED26A', 3: '#2F8B3A', 4: '#E6DE2F', 5: '#9B4FF0' },
-                                3: { 1: '#9ED26A', 2: '#2F8B3A', 3: '#E6DE2F', 4: '#9B4FF0', 5: '#9B4FF0' },
-                                4: { 1: '#2F8B3A', 2: '#E6DE2F', 3: '#9B4FF0', 4: '#C83218', 5: '#C83218' },
-                                5: { 1: '#E6DE2F', 2: '#9B4FF0', 3: '#9B4FF0', 4: '#C83218', 5: '#C83218' }  // top row (Almost Certain)
-                            };
-
-                            // Warna teks untuk kontras
-                            const textColorMap = {
-                                '#099DDE': 'white',   // blue
-                                '#9ED26A': 'black',   // light green
-                                '#2F8B3A': 'white',   // dark green
-                                '#E6DE2F': 'black',   // yellow
-                                '#9B4FF0': 'white',   // purple
-                                '#C83218': 'white'    // red
-                            };
-
-                            function applyColor(levelInput, likelihood, impact) {
-                                if (likelihood >= 1 && likelihood <= 5 && impact >= 1 && impact <= 5) {
-                                    const color = riskColors[likelihood][impact];
-                                    levelInput.value = likelihood * impact;
-                                    levelInput.style.backgroundColor = color;
-                                    levelInput.style.color = textColorMap[color] || 'white';
-                                    levelInput.style.fontWeight = '700';
-                                    levelInput.style.textAlign = 'center';
-                                } else {
-                                    // jika kosong / out of range --> reset
-                                    levelInput.value = '';
-                                    levelInput.style.backgroundColor = '';
-                                    levelInput.style.color = '';
-                                    levelInput.style.fontWeight = '';
-                                    levelInput.style.textAlign = '';
-                                }
-                            }
-
-                            function setupCalculator(lhId, imId, lvId) {
-                                const lh = document.getElementById(lhId);
-                                const im = document.getElementById(imId);
-                                const lv = document.getElementById(lvId);
-
-                                const handler = () => {
-                                    const l = parseInt(lh.value) || 0;
-                                    const i = parseInt(im.value) || 0;
-                                    applyColor(lv, l, i);
-                                };
-
-                                lh.addEventListener('input', handler);
-                                im.addEventListener('input', handler);
-
-                                // inisialisasi saat load
-                                handler();
-                            }
-
-                            window.addEventListener('DOMContentLoaded', () => {
-                                setupCalculator('skor_likelihood', 'skor_impact', 'skor_level');
-                                setupCalculator('residu_likelihood', 'residu_impact', 'residu_level');
-                                setupCalculator('akhir_likelihood', 'akhir_impact', 'akhir_level');
-                            });
-                        })();
-                    </script>
-
-
-                    <script>
-                        // Skor Awal
-                        const skorLikelihood = document.getElementById('skor_likelihood');
-                        const skorImpact = document.getElementById('skor_impact');
-                        const skorLevel = document.getElementById('skor_level');
-
-                        function hitungSkorLevel() {
-                            const likelihood = parseInt(skorLikelihood.value) || 0;
-                            const impact = parseInt(skorImpact.value) || 0;
-                            skorLevel.value = likelihood * impact;
-                        }
-
-                        skorLikelihood.addEventListener('input', hitungSkorLevel);
-                        skorImpact.addEventListener('input', hitungSkorLevel);
-
-                        // Nilai Residu
-                        const residuLikelihood = document.getElementById('residu_likelihood');
-                        const residuImpact = document.getElementById('residu_impact');
-                        const residuLevel = document.getElementById('residu_level');
-
-                        function hitungResiduLevel() {
-                            const likelihood = parseInt(residuLikelihood.value) || 0;
-                            const impact = parseInt(residuImpact.value) || 0;
-                            residuLevel.value = likelihood * impact;
-                        }
-
-                        residuLikelihood.addEventListener('input', hitungResiduLevel);
-                        residuImpact.addEventListener('input', hitungResiduLevel);
-
-                        // Skor Akhir
-                        const akhirLikelihood = document.getElementById('akhir_likelihood');
-                        const akhirImpact = document.getElementById('akhir_impact');
-                        const akhirLevel = document.getElementById('akhir_level');
-
-                        function hitungAkhirLevel() {
-                            const likelihood = parseInt(akhirLikelihood.value) || 0;
-                            const impact = parseInt(akhirImpact.value) || 0;
-                            akhirLevel.value = likelihood * impact;
-                        }
-
-                        akhirLikelihood.addEventListener('input', hitungAkhirLevel);
-                        akhirImpact.addEventListener('input', hitungAkhirLevel);
-
-                        // Optional: hitung saat halaman load
-                        window.addEventListener('DOMContentLoaded', () => {
-                            hitungSkorLevel();
-                            hitungResiduLevel();
-                            hitungAkhirLevel();
-                        });
-                    </script>
-
                     <button type="submit" class="btn btn-primary">
                         {{ isset($risiko) ? 'Update Risiko' : 'Simpan Risiko' }}
                     </button>
@@ -370,6 +312,136 @@
     </div>
 
     @include('layouts.NavbarBawah')
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const btnTambahBagian = document.getElementById('btnTambahBagian');
+        const modalTambahBagian = new bootstrap.Modal(document.getElementById('modalTambahBagian'));
+        const formTambahBagian = document.getElementById('formTambahBagian');
+        const selectUnit = document.getElementById('unit');
+
+        btnTambahBagian.addEventListener('click', () => {
+            modalTambahBagian.show();
+        });
+
+        formTambahBagian.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const namaBagian = document.getElementById('namaBagian').value.trim();
+            if (namaBagian === '') return;
+
+            const btnSubmit = formTambahBagian.querySelector('button[type="submit"]');
+            const originalText = btnSubmit.textContent;
+            btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Menyimpan...';
+            btnSubmit.disabled = true;
+
+            fetch("{{ route('bagian.store') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ nama_bagian: namaBagian })
+            })
+                .then(res => res.json())
+                .then(res => {
+                    if (res.success) {
+                        const option = document.createElement('option');
+                        option.value = res.data.nama_bagian;
+                        option.textContent = res.data.nama_bagian;
+                        option.selected = true;
+                        selectUnit.appendChild(option);
+
+                        formTambahBagian.reset();
+                        modalTambahBagian.hide();
+
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Berhasil!',
+                            text: `Bagian "${res.data.nama_bagian}" berhasil ditambahkan.`,
+                            timer: 2000,
+                            showConfirmButton: false
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Gagal!',
+                            text: res.message || 'Bagian gagal ditambahkan.'
+                        });
+                    }
+                })
+                .catch(err => {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Gagal!',
+                        text: 'Terjadi kesalahan server.'
+                    });
+                })
+                .finally(() => {
+                    btnSubmit.innerHTML = originalText;
+                    btnSubmit.disabled = false;
+                });
+        });
+
+        // Script untuk kalkulasi level risiko dengan warna
+        (function () {
+            const riskColors = {
+                1: { 1: '#099DDE', 2: '#9ED26A', 3: '#9ED26A', 4: '#2F8B3A', 5: '#E6DE2F' },
+                2: { 1: '#9ED26A', 2: '#9ED26A', 3: '#2F8B3A', 4: '#E6DE2F', 5: '#9B4FF0' },
+                3: { 1: '#9ED26A', 2: '#2F8B3A', 3: '#E6DE2F', 4: '#9B4FF0', 5: '#9B4FF0' },
+                4: { 1: '#2F8B3A', 2: '#E6DE2F', 3: '#9B4FF0', 4: '#C83218', 5: '#C83218' },
+                5: { 1: '#E6DE2F', 2: '#9B4FF0', 3: '#9B4FF0', 4: '#C83218', 5: '#C83218' }
+            };
+
+            const textColorMap = {
+                '#099DDE': 'white',
+                '#9ED26A': 'black',
+                '#2F8B3A': 'white',
+                '#E6DE2F': 'black',
+                '#9B4FF0': 'white',
+                '#C83218': 'white'
+            };
+
+            function applyColor(levelInput, likelihood, impact) {
+                if (likelihood >= 1 && likelihood <= 5 && impact >= 1 && impact <= 5) {
+                    const color = riskColors[likelihood][impact];
+                    levelInput.value = likelihood * impact;
+                    levelInput.style.backgroundColor = color;
+                    levelInput.style.color = textColorMap[color] || 'white';
+                    levelInput.style.fontWeight = '700';
+                    levelInput.style.textAlign = 'center';
+                } else {
+                    levelInput.value = '';
+                    levelInput.style.backgroundColor = '';
+                    levelInput.style.color = '';
+                    levelInput.style.fontWeight = '';
+                    levelInput.style.textAlign = '';
+                }
+            }
+
+            function setupCalculator(lhId, imId, lvId) {
+                const lh = document.getElementById(lhId);
+                const im = document.getElementById(imId);
+                const lv = document.getElementById(lvId);
+
+                const handler = () => {
+                    const l = parseInt(lh.value) || 0;
+                    const i = parseInt(im.value) || 0;
+                    applyColor(lv, l, i);
+                };
+
+                lh.addEventListener('input', handler);
+                im.addEventListener('input', handler);
+                handler();
+            }
+
+            window.addEventListener('DOMContentLoaded', () => {
+                setupCalculator('skor_likelihood', 'skor_impact', 'skor_level');
+                setupCalculator('residu_likelihood', 'residu_impact', 'residu_level');
+                setupCalculator('akhir_likelihood', 'akhir_impact', 'akhir_level');
+            });
+        })();
+    </script>
 </body>
 
 </html>

@@ -41,6 +41,7 @@ use App\Http\Controllers\MR\PedomanMRController;
 use App\Http\Middleware\IsAdmin;
 use App\Http\Controllers\Admin\TimelineController;
 use App\Http\Controllers\ProcessController;
+use App\Http\Controllers\BagianController;
 
 // Halaman landing
 Route::get('/', [LandingPageController::class, 'index'])->name('landingpage');
@@ -700,3 +701,12 @@ Route::put('/processes/{process}', [ProcessController::class, 'update'])->name('
 Route::delete('/processes/{process}', [ProcessController::class, 'destroy'])->name('processes.destroy');
 
 Route::get('/proses-bisnis-spi', [ProcessController::class, 'index'])->name('proses-bisnis-spi');
+Route::delete('/instrumen/{id}', [InstrumenController::class, 'destroy'])->name('instrumen.destroy');
+Route::get('/instrumen/{id}/edit', [InstrumenController::class, 'edit'])->name('instrumen.edit');
+Route::resource('instrumen', App\Http\Controllers\Instrumen\InstrumenController::class);
+
+// route untuk menyimpan unit via AJAX
+Route::post('/unit/store', [IdentifikasiRisikoController::class, 'storeUnit'])->name('unit.store');
+Route::post('/bagian/store', [BagianController::class, 'store'])->name('bagian.store');
+Route::get('/bagian/list', [BagianController::class, 'list'])->name('bagian.list');
+Route::post('/evaluasi-mr/tambah-bagian', [IdentifikasiRisikoController::class, 'ajaxTambahBagian'])->name('evaluasiMr.ajaxTambahBagian');

@@ -13,6 +13,7 @@ class IdentifikasiRisiko extends Model
         'abjad',
         'tujuan',
         'departemen',
+        'bagian',
         'proses_bisnis',
         'kategori_risiko',
         'uraian_risiko',

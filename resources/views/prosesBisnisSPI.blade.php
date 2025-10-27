@@ -436,7 +436,7 @@
                     <div class="step-left">
                         <div class="step-number">{{ $process->step_number }}</div>
                         <div class="step-info">
-                            <div class="step-label">Langkah {{ $process->step_number }}</div>
+                            <div class="step-label">Proses {{ $process->step_number }}</div>
                             <h5 class="step-title">{{ $process->title }}</h5>
                         </div>
                     </div>

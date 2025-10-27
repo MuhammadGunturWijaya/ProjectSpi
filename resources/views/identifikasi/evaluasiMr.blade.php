@@ -2,9 +2,10 @@
 <html lang="id">
 <style>
     body {
-                   overflow-x: hidden;
-        }
+        overflow-x: hidden;
+    }
 </style>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -199,8 +200,24 @@
 
 
 
+                {{-- Dropdown Filter Bagian --}}
+                <div class="mb-3">
+                    <strong>Filter Unit :</strong>
+                    <select class="form-select form-select-sm d-inline-block" style="width: 200px;"
+                        onchange="filterBagian(this.value)">
+                        <option value="all"> Semua Unit </option>
+                        @php
+                            $bagians = $risikos->pluck('bagian')->unique();
+                        @endphp
+                        @foreach($bagians as $bagian)
+                            <option value="{{ $bagian }}">{{ $bagian }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                {{-- Tabel Risiko --}}
                 <div class="table-responsive">
-                    <table class="table table-bordered table-striped align-middle">
+                    <table class="table table-bordered table-striped align-middle" id="risikoTable">
                         <thead>
                             <tr class="text-center">
                                 <th rowspan="2">#</th>
@@ -213,7 +230,7 @@
                                 <th rowspan="2">Sumber Risiko</th>
                                 <th rowspan="2">Akibat / Potensi Kerugian</th>
                                 <th rowspan="2">Pemilik Risiko</th>
-                                <th rowspan="2">Departemen/Bagian</th>
+                                <th rowspan="2">Bagian</th>
 
                                 {{-- Skor Awal --}}
                                 <th colspan="3">Skor Awal</th>
@@ -257,7 +274,9 @@
                         </thead>
                         <tbody>
                             @forelse($risikos as $risiko)
-                                <tr>
+                                <tr data-bagian="{{ $risiko->bagian }}">
+                                    <td>{{ $risiko->bagian }}</td>
+
                                     <td>{{ $loop->iteration }}</td>
                                     <td>{{ $risiko->abjad }}</td>
                                     <td>{{ $risiko->tujuan }}</td>
@@ -268,8 +287,7 @@
                                     <td>{{ $risiko->sumber_risiko }}</td>
                                     <td>{{ $risiko->akibat }}</td>
                                     <td>{{ $risiko->pemilik_risiko }}</td>
-                                    <td>{{ $risiko->departemen }}</td>
-
+                                    <td>{{ $risiko->bagian }}</td>
                                     {{-- Skor Awal --}}
                                     <td>{{ $risiko->skor_likelihood }}</td>
                                     <td>{{ $risiko->skor_impact }}</td>
@@ -277,7 +295,6 @@
                                     <td class="text-center"><span class="badge"
                                             style="{{ $styleAwal }}">{{ $risiko->skor_likelihood * $risiko->skor_impact }}</span>
                                     </td>
-
                                     {{-- Pengendalian Intern --}}
                                     <td class="text-center">
                                         <div>{{ $risiko->pengendalian_intern_ada }}</div>
@@ -306,7 +323,6 @@
                                             </div>
                                         @endif
                                     </td>
-
                                     {{-- Nilai Residu --}}
                                     <td>{{ $risiko->residu_likelihood }}</td>
                                     <td>{{ $risiko->residu_impact }}</td>
@@ -314,11 +330,9 @@
                                     <td class="text-center"><span class="badge"
                                             style="{{ $styleResidu }}">{{ $risiko->residu_likelihood * $risiko->residu_impact }}</span>
                                     </td>
-
                                     {{-- Mitigasi --}}
                                     <td>{{ $risiko->mitigasi_opsi }}</td>
                                     <td>{{ $risiko->mitigasi_deskripsi }}</td>
-
                                     {{-- Skor Akhir --}}
                                     <td>{{ $risiko->akhir_likelihood }}</td>
                                     <td>{{ $risiko->akhir_impact }}</td>
@@ -326,13 +340,10 @@
                                     <td class="text-center"><span class="badge"
                                             style="{{ $styleAkhir }}">{{ $risiko->akhir_likelihood * $risiko->akhir_impact }}</span>
                                     </td>
-
                                     <td class="text-center">
                                         @if(Auth::check() && Auth::user()->role === 'admin')
                                             <a href="{{ route('evaluasiMr.edit', $risiko->id) }}"
-                                                class="btn btn-sm btn-warning mb-1">
-                                                <i class="fa fa-edit"></i> Edit
-                                            </a>
+                                                class="btn btn-sm btn-warning mb-1"><i class="fa fa-edit"></i> Edit</a>
                                             <form action="{{ route('evaluasiMr.destroy', $risiko->id) }}" method="POST"
                                                 style="display:inline;">
                                                 @csrf
@@ -351,6 +362,26 @@
                         </tbody>
                     </table>
                 </div>
+
+                <script>
+                    function filterBagian(bagian) {
+                        console.log('Filter Bagian:', bagian);
+                        const rows = document.querySelectorAll('#risikoTable tbody tr');
+                        rows.forEach(row => {
+                            console.log('Row bagian:', row.getAttribute('data-bagian'));
+                            if (bagian === 'all' || row.getAttribute('data-bagian').trim() === bagian.trim()) {
+                                row.style.display = '';
+                            } else {
+                                row.style.display = 'none';
+                            }
+                        });
+                    }
+
+                </script>
+                <!-- Bootstrap JS + Popper -->
+                <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
+
             </div>
         </div>
     </div>

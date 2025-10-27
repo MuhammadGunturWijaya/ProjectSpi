@@ -3,9 +3,9 @@
 @section('content')
     <div class="container py-5">
         <div class="text-center mb-5">
-            <h2 class="fw-bold text-primary"><i class="bi bi-pencil-square me-2"></i>Edit Dokumen {{ $Instrumen->judul }}
+            <h2 class="fw-bold text-primary"><i class="bi bi-pencil-square me-2"></i>Edit Dokumen {{ $instrumen->judul }}
             </h2>
-            <p class="text-muted fs-6">Perbarui informasi dan metadata dokumen Instrumen Pengawasan dengan mudah.</p>
+            <p class="text-muted fs-6">Perbarui informasi dan metadata dokumen instrumen Pengawasan dengan mudah.</p>
         </div>
 
         @if(session('success'))
@@ -15,7 +15,7 @@
             </div>
         @endif
 
-        <form action="{{ route('instrumen.update', $Instrumen->id) }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('instrumen.update', $instrumen->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
@@ -31,34 +31,34 @@
                                 <label for="jenis" class="form-label fw-semibold">Jenis <span
                                         class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="jenis" name="jenis"
-                                    value="{{ old('jenis', $Instrumen->jenis) }}" required>
+                                    value="{{ old('jenis', $instrumen->jenis) }}" required>
                             </div>
                             <div class="mb-3">
                                 <label for="judul" class="form-label fw-semibold">Judul <span
                                         class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="judul" name="judul"
-                                    value="{{ old('judul', $Instrumen->judul) }}" required>
+                                    value="{{ old('judul', $instrumen->judul) }}" required>
                             </div>
                             <div class="mb-3">
                                 <label for="tahun" class="form-label fw-semibold">Tahun <span
                                         class="text-danger">*</span></label>
                                 <input type="number" class="form-control" id="tahun" name="tahun"
-                                    value="{{ old('tahun', $Instrumen->tahun) }}" required>
+                                    value="{{ old('tahun', $instrumen->tahun) }}" required>
                             </div>
                             <div class="mb-3">
                                 <label for="kata_kunci" class="form-label fw-semibold">Kata Kunci</label>
                                 <input type="text" class="form-control" id="kata_kunci" name="kata_kunci"
-                                    value="{{ old('kata_kunci', $Instrumen->kata_kunci) }}">
+                                    value="{{ old('kata_kunci', $instrumen->kata_kunci) }}">
                             </div>
                             <div class="mb-3">
                                 <label for="abstrak" class="form-label fw-semibold">Abstrak</label>
                                 <textarea class="form-control" id="abstrak" name="abstrak"
-                                    rows="4">{{ old('abstrak', $Instrumen->abstrak) }}</textarea>
+                                    rows="4">{{ old('abstrak', $instrumen->abstrak) }}</textarea>
                             </div>
                             <div class="mb-3">
                                 <label for="catatan" class="form-label fw-semibold">Catatan</label>
                                 <textarea class="form-control" id="catatan" name="catatan"
-                                    rows="3">{{ old('catatan', $Instrumen->catatan) }}</textarea>
+                                    rows="3">{{ old('catatan', $instrumen->catatan) }}</textarea>
                             </div>
                         </div>
                     </div>
@@ -100,7 +100,7 @@
                                             class="form-label fw-semibold">{{ $field['label'] }}</label>
                                         <input type="{{ $field['type'] ?? 'text' }}" class="form-control"
                                             id="{{ $field['name'] }}" name="{{ $field['name'] }}"
-                                            value="{{ old($field['name'], $Instrumen->{$field['name']}?->format('Y-m-d') ?? $Instrumen->{$field['name']}) }}">
+                                            value="{{ old($field['name'], $instrumen->{$field['name']}?->format('Y-m-d') ?? $instrumen->{$field['name']}) }}">
                                     </div>
                                 @endforeach
 
@@ -108,10 +108,10 @@
                                 <div class="col-12">
                                     <label for="file_pdf" class="form-label fw-semibold">File PDF</label>
                                     <input type="file" class="form-control" id="file_pdf" name="file_pdf">
-                                    @if($Instrumen->file_pdf)
+                                    @if($instrumen->file_pdf)
                                         <p class="mt-2 text-muted"><i class="bi bi-file-earmark-pdf me-1"></i>File saat ini:
-                                            <a href="{{ asset('storage/' . $Instrumen->file_pdf) }}"
-                                                target="_blank">{{ $Instrumen->file_pdf }}</a>
+                                            <a href="{{ asset('storage/' . $instrumen->file_pdf) }}"
+                                                target="_blank">{{ $instrumen->file_pdf }}</a>
                                         </p>
                                     @endif
                                 </div>
@@ -120,7 +120,7 @@
                                 <div class="col-12">
                                     <label for="mencabut" class="form-label fw-semibold">Mencabut</label>
                                     <textarea class="form-control" id="mencabut" name="mencabut"
-                                        rows="3">{{ old('mencabut', $Instrumen->mencabut) }}</textarea>
+                                        rows="3">{{ old('mencabut', $instrumen->mencabut) }}</textarea>
                                 </div>
                             </div>
 
