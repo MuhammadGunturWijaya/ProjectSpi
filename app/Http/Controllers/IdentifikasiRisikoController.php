@@ -133,6 +133,8 @@ class IdentifikasiRisikoController extends Controller
             'mitigasi_deskripsi' => 'nullable|string',
             'akhir_likelihood' => 'nullable|integer|min:1|max:5',
             'akhir_impact' => 'nullable|integer|min:1|max:5',
+            'akhir_level' => 'nullable|string|max:50',
+            'residu_level' => 'nullable|string|max:50',
         ]);
 
         // Hitung level-level otomatis
@@ -155,9 +157,11 @@ class IdentifikasiRisikoController extends Controller
             'tanggal_evaluasi' => $validated['tanggal_evaluasi'],
             'abjad' => $validated['abjad'],
             'tujuan' => $validated['tujuan'],
-            'bagian' => $validated['departemen'],
-            'proses_bisnis' => $validated['proses_bisnis'], // 🟢 tambahkan ini
-            'kategori_risiko' => $validated['kategori_risiko'], // 🟢 tambahkan juga ini
+            'unit' => $validated['unit'],
+            'bagian' => $validated['unit'],
+            'departemen' => $validated['departemen'],
+            'proses_bisnis' => $validated['proses_bisnis'],
+            'kategori_risiko' => $validated['kategori_risiko'],
             'uraian_risiko' => $validated['uraian_risiko'],
             'penyebab_risiko' => $validated['penyebab_risiko'],
             'sumber_risiko' => $validated['sumber_risiko'],
@@ -165,8 +169,29 @@ class IdentifikasiRisikoController extends Controller
             'pemilik_risiko' => $validated['pemilik_risiko'],
             'skor_likelihood' => $validated['skor_likelihood'],
             'skor_impact' => $validated['skor_impact'],
-            'skor_level' => $validated['skor_level'],
+            'skor_level' => $validated['skor_level'] ?? null,
+
+            'pengendalian_intern_ada' => $validated['pengendalian_intern_ada'] ?? null,
+            'pengendalian_intern_memadai' => $validated['pengendalian_intern_memadai'] ?? null,
+            'pengendalian_intern_dijalankan' => $validated['pengendalian_intern_dijalankan'] ?? null,
+            'pengendalian_intern_ada_keterangan' => $validated['pengendalian_intern_ada_keterangan'] ?? null,
+            'pengendalian_intern_memadai_keterangan' => $validated['pengendalian_intern_memadai_keterangan'] ?? null,
+            'pengendalian_intern_dijalankan_keterangan' => $validated['pengendalian_intern_dijalankan_keterangan'] ?? null,
+
+            'residu_likelihood' => $validated['residu_likelihood'] ?? null,
+            'residu_impact' => $validated['residu_impact'] ?? null,
+            'residu_level' => $validated['residu_level'] ?? null,
+
+            'mitigasi_opsi' => $validated['mitigasi_opsi'] ?? null,
+            'mitigasi_opsi_keterangan' => $validated['mitigasi_opsi_keterangan'] ?? null,
+            'mitigasi_deskripsi' => $validated['mitigasi_deskripsi'] ?? null,
+
+            'akhir_likelihood' => $validated['akhir_likelihood'] ?? null,
+            'akhir_impact' => $validated['akhir_impact'] ?? null,
+            'akhir_level' => $validated['akhir_level'] ?? null,
+
         ]);
+
 
 
 
@@ -204,6 +229,8 @@ class IdentifikasiRisikoController extends Controller
             'mitigasi_deskripsi' => 'nullable|string',
             'akhir_likelihood' => 'nullable|integer|min:1|max:5',
             'akhir_impact' => 'nullable|integer|min:1|max:5',
+            'akhir_level' => 'nullable|string|max:50',
+            'residu_level' => 'nullable|string|max:50',
         ]);
 
         $validated['skor_level'] = $validated['skor_likelihood'] * $validated['skor_impact'];
@@ -221,22 +248,45 @@ class IdentifikasiRisikoController extends Controller
 
         // Tambah history baru setiap kali update
         IdentifikasiRisikoHistory::create([
-    'identifikasi_risiko_id' => $risiko->id,
-    'tanggal_evaluasi' => $validated['tanggal_evaluasi'],
-    'abjad' => $validated['abjad'],
-    'tujuan' => $validated['tujuan'],
-    'bagian' => $validated['departemen'],
-    'proses_bisnis' => $validated['proses_bisnis'], // 🟢 tambahkan ini
-    'kategori_risiko' => $validated['kategori_risiko'], // 🟢 tambahkan juga ini
-    'uraian_risiko' => $validated['uraian_risiko'],
-    'penyebab_risiko' => $validated['penyebab_risiko'],
-    'sumber_risiko' => $validated['sumber_risiko'],
-    'akibat' => $validated['akibat'],
-    'pemilik_risiko' => $validated['pemilik_risiko'],
-    'skor_likelihood' => $validated['skor_likelihood'],
-    'skor_impact' => $validated['skor_impact'],
-    'skor_level' => $validated['skor_level'],
-]);
+            'identifikasi_risiko_id' => $risiko->id,
+            'tanggal_evaluasi' => $validated['tanggal_evaluasi'],
+            'abjad' => $validated['abjad'],
+            'tujuan' => $validated['tujuan'],
+            'unit' => $validated['unit'],
+            'bagian' => $validated['unit'],
+            'departemen' => $validated['departemen'],
+            'proses_bisnis' => $validated['proses_bisnis'],
+            'kategori_risiko' => $validated['kategori_risiko'],
+            'uraian_risiko' => $validated['uraian_risiko'],
+            'penyebab_risiko' => $validated['penyebab_risiko'],
+            'sumber_risiko' => $validated['sumber_risiko'],
+            'akibat' => $validated['akibat'],
+            'pemilik_risiko' => $validated['pemilik_risiko'],
+            'skor_likelihood' => $validated['skor_likelihood'],
+            'skor_impact' => $validated['skor_impact'],
+            'skor_level' => $validated['skor_level'] ?? null,
+
+            'pengendalian_intern_ada' => $validated['pengendalian_intern_ada'] ?? null,
+            'pengendalian_intern_memadai' => $validated['pengendalian_intern_memadai'] ?? null,
+            'pengendalian_intern_dijalankan' => $validated['pengendalian_intern_dijalankan'] ?? null,
+            'pengendalian_intern_ada_keterangan' => $validated['pengendalian_intern_ada_keterangan'] ?? null,
+            'pengendalian_intern_memadai_keterangan' => $validated['pengendalian_intern_memadai_keterangan'] ?? null,
+            'pengendalian_intern_dijalankan_keterangan' => $validated['pengendalian_intern_dijalankan_keterangan'] ?? null,
+
+            'residu_likelihood' => $validated['residu_likelihood'] ?? null,
+            'residu_impact' => $validated['residu_impact'] ?? null,
+            'residu_level' => $validated['residu_level'] ?? null,
+
+            'mitigasi_opsi' => $validated['mitigasi_opsi'] ?? null,
+            'mitigasi_opsi_keterangan' => $validated['mitigasi_opsi_keterangan'] ?? null,
+            'mitigasi_deskripsi' => $validated['mitigasi_deskripsi'] ?? null,
+
+            'akhir_likelihood' => $validated['akhir_likelihood'] ?? null,
+            'akhir_impact' => $validated['akhir_impact'] ?? null,
+            'akhir_level' => $validated['akhir_level'] ?? null,
+
+        ]);
+
 
 
 

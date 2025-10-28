@@ -348,7 +348,7 @@
                         <i class="fas fa-history"></i> History Evaluasi ({{ $risiko->histories->count() }} Versi)
                     </h4>
                     
-                    @foreach($risiko->histories as $index => $history)
+                    @foreach($risiko->histories->sortByDesc('created_at') as $index => $history)
                     <div class="history-card">
                         <div class="d-flex justify-content-between align-items-start mb-3">
                             <div>

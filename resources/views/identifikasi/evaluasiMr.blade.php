@@ -292,7 +292,8 @@
                                                 <tr>
                                                     <td>{{ $loop->iteration }}</td>
                                                     <td>{{ $risiko->abjad }}</td>
-                                                    <td>{{ \Carbon\Carbon::parse($risiko->tanggal_evaluasi)->format('d-m-Y') }}</td>
+                                                    <td>{{ \Carbon\Carbon::parse($risiko->tanggal_evaluasi)->format('d-m-Y') }}
+                                                    </td>
                                                     <td>{{ $risiko->tujuan }}</td>
                                                     <td>{{ $risiko->proses_bisnis }}</td>
                                                     <td>{{ $risiko->kategori_risiko }}</td>
@@ -340,7 +341,16 @@
                                                     <td class="text-center"><span class="badge"
                                                             style="{{ $styleResidu }}">{{ $risiko->residu_likelihood * $risiko->residu_impact }}</span>
                                                     </td>
-                                                    <td>{{ $risiko->mitigasi_opsi }}</td>
+                                                    <td class="text-center">
+                                                        <div>{{ $risiko->mitigasi_opsi }}</div>
+                                                        @if($risiko->mitigasi_opsi_keterangan)
+                                                            <div
+                                                                style="border-top:1px solid #ccc; margin-top:2px; font-size:0.8rem; color:#6c757d;">
+                                                                {{ $risiko->mitigasi_opsi_keterangan }}
+                                                            </div>
+                                                        @endif
+                                                    </td>
+
                                                     <td>{{ $risiko->mitigasi_deskripsi }}</td>
                                                     <td>{{ $risiko->akhir_likelihood }}</td>
                                                     <td>{{ $risiko->akhir_impact }}</td>
@@ -351,9 +361,10 @@
                                                     <td class="text-center">
                                                         @if(Auth::check() && Auth::user()->role === 'admin')
                                                             <a href="{{ route('evaluasiMr.edit', $risiko->id) }}"
-                                                                class="btn btn-sm btn-warning mb-1"><i class="fa fa-edit"></i> Edit</a>
-                                                            <form action="{{ route('evaluasiMr.destroy', $risiko->id) }}" method="POST"
-                                                                style="display:inline;">
+                                                                class="btn btn-sm btn-warning mb-1"><i class="fa fa-edit"></i>
+                                                                Edit</a>
+                                                            <form action="{{ route('evaluasiMr.destroy', $risiko->id) }}"
+                                                                method="POST" style="display:inline;">
                                                                 @csrf
                                                                 @method('DELETE')
                                                                 <button type="submit" class="btn btn-danger btn-sm"
@@ -465,7 +476,17 @@
                                             <td class="text-center"><span class="badge"
                                                     style="{{ $styleResidu }}">{{ $risiko->residu_likelihood * $risiko->residu_impact }}</span>
                                             </td>
-                                            <td>{{ $risiko->mitigasi_opsi }}</td>
+                                            <td class="text-center">
+                                                <div>{{ $risiko->mitigasi_opsi }}</div>
+                                                @if($risiko->mitigasi_opsi_keterangan)
+                                                    <div
+                                                        style="border-top:1px solid #ccc; margin-top:2px; font-size:0.8rem; color:#6c757d;">
+                                                        {{ $risiko->mitigasi_opsi_keterangan }}
+                                                    </div>
+                                                @endif
+                                            </td>
+
+
                                             <td>{{ $risiko->mitigasi_deskripsi }}</td>
                                             <td>{{ $risiko->akhir_likelihood }}</td>
                                             <td>{{ $risiko->akhir_impact }}</td>
@@ -498,7 +519,7 @@
                     function filterBagian(bagian) {
                         const groupedTables = document.getElementById('groupedTables');
                         const singleTable = document.getElementById('singleTable');
-                        
+
                         if (bagian === 'all') {
                             // Show grouped tables (multiple tables by bagian)
                             groupedTables.style.display = 'block';
@@ -507,7 +528,7 @@
                             // Show single table with filtered rows
                             groupedTables.style.display = 'none';
                             singleTable.style.display = 'block';
-                            
+
                             const rows = document.querySelectorAll('#risikoTable tbody tr');
                             rows.forEach(row => {
                                 if (row.getAttribute('data-bagian').trim() === bagian.trim()) {
