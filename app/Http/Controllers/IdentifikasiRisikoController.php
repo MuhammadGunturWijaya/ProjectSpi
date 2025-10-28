@@ -287,12 +287,16 @@ class IdentifikasiRisikoController extends Controller
 
         ]);
 
-
-
-
-
         return redirect()->route('evaluasiMr.index')->with('success', 'Data risiko berhasil diperbarui!');
     }
+
+    public function destroy($id)
+    {
+        $bagian = Bagian::findOrFail($id);
+        $bagian->delete();
+        return response()->json(['success' => true]);
+    }
+
 
     public function destroyEvaluasiMr($id)
     {

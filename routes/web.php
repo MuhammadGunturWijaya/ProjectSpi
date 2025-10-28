@@ -710,3 +710,6 @@ Route::post('/unit/store', [IdentifikasiRisikoController::class, 'storeUnit'])->
 Route::post('/bagian/store', [BagianController::class, 'store'])->name('bagian.store');
 Route::get('/bagian/list', [BagianController::class, 'list'])->name('bagian.list');
 Route::post('/evaluasi-mr/tambah-bagian', [IdentifikasiRisikoController::class, 'ajaxTambahBagian'])->name('evaluasiMr.ajaxTambahBagian');
+
+Route::delete('/bagian/{id}', [App\Http\Controllers\IdentifikasiRisikoController::class, 'destroy'])
+    ->name('bagian.destroy');

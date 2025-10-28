@@ -42,6 +42,174 @@
         font-weight: 600;
         margin-bottom: 20px;
     }
+
+    /* Unit List Styles */
+    .unit-list-section {
+        margin-top: 40px;
+        padding: 25px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .unit-list-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .unit-list-title {
+        color: white;
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .unit-count-badge {
+        background: rgba(255, 255, 255, 0.25);
+        color: white;
+        padding: 5px 15px;
+        border-radius: 20px;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .unit-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 15px;
+        margin-top: 20px;
+    }
+
+    .unit-card {
+        background: white;
+        border-radius: 12px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .unit-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 5px;
+        height: 100%;
+        background: linear-gradient(180deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .unit-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .unit-card-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .unit-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .unit-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2d3748;
+        margin-bottom: 8px;
+        word-wrap: break-word;
+    }
+
+    .unit-meta {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .unit-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        background: #f7fafc;
+        border-radius: 6px;
+        font-size: 0.75rem;
+        color: #718096;
+    }
+
+    .btn-delete-unit {
+        padding: 10px 15px;
+        background: linear-gradient(135deg, #fc5c7d 0%, #6a82fb 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        box-shadow: 0 4px 10px rgba(252, 92, 125, 0.3);
+    }
+
+    .btn-delete-unit:hover {
+        transform: scale(1.05);
+        box-shadow: 0 6px 15px rgba(252, 92, 125, 0.4);
+    }
+
+    .btn-delete-unit:active {
+        transform: scale(0.98);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .empty-state-icon {
+        font-size: 4rem;
+        color: #cbd5e0;
+        margin-bottom: 20px;
+    }
+
+    .empty-state-text {
+        font-size: 1.1rem;
+        color: #718096;
+        margin-bottom: 10px;
+    }
+
+    .empty-state-subtext {
+        font-size: 0.9rem;
+        color: #a0aec0;
+    }
+
+    @media (max-width: 768px) {
+        .unit-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .unit-list-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+    }
 </style>
 
 <head>
@@ -87,17 +255,22 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header bg-success text-white">
-                                <h5 class="modal-title" id="modalTambahBagianLabel">Tambah Unit</h5>
+                                <h5 class="modal-title" id="modalTambahBagianLabel">
+                                    <i class="fas fa-plus-circle"></i> Tambah Unit Baru
+                                </h5>
                                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body">
                                 <form id="formTambahBagian">
                                     <div class="mb-3">
-                                        <label for="namaBagian" class="form-label">Nama Bagian</label>
-                                        <input type="text" class="form-control" id="namaBagian" required>
+                                        <label for="namaBagian" class="form-label">Nama Unit</label>
+                                        <input type="text" class="form-control" id="namaBagian" 
+                                               placeholder="Contoh: Bagian Akademik" required>
                                     </div>
-                                    <button type="submit" class="btn btn-success w-100">Simpan</button>
+                                    <button type="submit" class="btn btn-success w-100">
+                                        <i class="fas fa-save"></i> Simpan Unit
+                                    </button>
                                 </form>
                             </div>
                         </div>
@@ -129,11 +302,13 @@
                                 </button>
                             </div>
                             <div class="col-md-9">
-                                <label for="unit" class="form-label">Pilih Unit</label>
+                                <label for="unit" class="form-label">Pilih Unit <span class="text-danger">*</span></label>
                                 <select class="form-select" id="unit" name="unit" required>
                                     <option value="">-- Pilih Unit --</option>
                                     @foreach($bagians as $bagian)
-                                        <option value="{{ $bagian->nama_bagian }}" {{ old('unit', $risiko->bagian ?? '') == $bagian->nama_bagian ? 'selected' : '' }}>
+                                        <option value="{{ $bagian->nama_bagian }}" 
+                                                data-id="{{ $bagian->id }}"
+                                                {{ old('unit', $risiko->bagian ?? '') == $bagian->nama_bagian ? 'selected' : '' }}>
                                             {{ $bagian->nama_bagian }}
                                         </option>
                                     @endforeach
@@ -336,10 +511,155 @@
                     </div>
 
                     <button type="submit" class="btn btn-primary">
-                        {{ isset($risiko) ? 'Update Risiko' : 'Simpan Risiko' }}
+                        <i class="fas fa-save"></i> {{ isset($risiko) ? 'Update Risiko' : 'Simpan Risiko' }}
                     </button>
-                    <a href="{{ route('evaluasiMr.index') }}" class="btn btn-secondary">Kembali</a>
+                    <a href="{{ route('evaluasiMr.index') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Kembali
+                    </a>
                 </form>
+
+                {{-- SECTION DAFTAR UNIT --}}
+                <div class="unit-list-section">
+                    <div class="unit-list-header">
+                        <h4 class="unit-list-title">
+                            <i class="fas fa-building"></i>
+                            Daftar Unit Tersedia
+                        </h4>
+                        <span class="unit-count-badge" id="unitCountBadge">
+                            <i class="fas fa-layer-group"></i> {{ $bagians->count() }} Unit
+                        </span>
+                    </div>
+
+                    <div class="unit-grid" id="unitGrid">
+                        @forelse($bagians as $bagian)
+                            <div class="unit-card" data-unit-id="{{ $bagian->id }}">
+                                <div class="unit-card-content">
+                                    <div class="unit-info">
+                                        <div class="unit-name">{{ $bagian->nama_bagian }}</div>
+                                        <div class="unit-meta">
+                                            <span class="unit-badge">
+                                                <i class="fas fa-hashtag"></i> ID: {{ $bagian->id }}
+                                            </span>
+                                            <span class="unit-badge">
+                                                <i class="fas fa-calendar"></i> 
+                                                {{ $bagian->created_at->format('d M Y') }}
+                                            </span>
+                                        </div>
+                                    </div>
+                                    <button type="button" class="btn-delete-unit" 
+                                            onclick="deleteUnit({{ $bagian->id }}, '{{ $bagian->nama_bagian }}')">
+                                        <i class="fas fa-trash-alt"></i>
+                                        Hapus
+                                    </button>
+                                </div>
+                            </div>
+                        @empty
+                            <div class="empty-state" style="grid-column: 1/-1;">
+                                <div class="empty-state-icon">
+                                    <i class="fas fa-inbox"></i>
+                                </div>
+                                <div class="empty-state-text">Belum Ada Unit</div>
+                                <div class="empty-state-subtext">
+                                    Klik tombol "Tambah Unit" untuk menambahkan unit baru
+                                </div>
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+
+                <style>
+.btn-delete-unit {
+    background-color: #dc3545;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+.btn-delete-unit:hover {
+    background-color: #c82333;
+    transform: scale(1.05);
+}
+.unit-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.unit-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+}
+</style>
+
+
+                <!-- SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+function deleteUnit(id, nama) {
+    Swal.fire({
+        title: 'Hapus Unit?',
+        html: `
+            <div style="font-size: 15px;">
+                Anda akan menghapus <b>${nama}</b> dari daftar unit.<br>
+                Tindakan ini tidak dapat dibatalkan.
+            </div>
+        `,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Ya, Hapus',
+        cancelButtonText: 'Batal',
+        reverseButtons: true,
+        customClass: {
+            popup: 'rounded-4 shadow-lg',
+            confirmButton: 'btn btn-danger px-4',
+            cancelButton: 'btn btn-secondary px-4'
+        },
+        buttonsStyling: false,
+    }).then((result) => {
+        if (result.isConfirmed) {
+            fetch(`/bagian/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Terhapus!',
+                        text: `Unit ${nama} berhasil dihapus.`,
+                        icon: 'success',
+                        timer: 1600,
+                        showConfirmButton: false
+                    });
+                    // Hapus elemen dari tampilan secara animasi
+                    const unitCard = document.querySelector(`.unit-card[data-unit-id="${id}"]`);
+                    if (unitCard) {
+                        unitCard.style.transition = "all 0.4s ease";
+                        unitCard.style.opacity = "0";
+                        setTimeout(() => unitCard.remove(), 400);
+                    }
+                } else {
+                    Swal.fire({
+                        title: 'Gagal!',
+                        text: 'Unit tidak dapat dihapus.',
+                        icon: 'error',
+                    });
+                }
+            })
+            .catch(() => {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Terjadi kesalahan saat menghapus data.',
+                    icon: 'error',
+                });
+            });
+        }
+    });
+}
+</script>
+
 
                 {{-- SECTION HISTORY --}}
                 @if(isset($risiko) && $risiko->histories->count() > 0)
