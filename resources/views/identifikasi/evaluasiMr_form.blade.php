@@ -57,7 +57,7 @@
                     <div class="modal-dialog">
                         <div class="modal-content">
                             <div class="modal-header bg-success text-white">
-                                <h5 class="modal-title" id="modalTambahBagianLabel">Tambah Bagian</h5>
+                                <h5 class="modal-title" id="modalTambahBagianLabel">Tambah Unit</h5>
                                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                                     aria-label="Close"></button>
                             </div>
@@ -88,11 +88,11 @@
                         <div class="row align-items-center">
                             <div class="col-md-3">
                                 <button type="button" class="btn btn-success w-100" id="btnTambahBagian">
-                                    <i class="fas fa-plus"></i> Tambah Bagian
+                                    <i class="fas fa-plus"></i> Tambah Unit
                                 </button>
                             </div>
                             <div class="col-md-9">
-                                <label for="unit" class="form-label">Pilih Unit/Bagian</label>
+                                <label for="unit" class="form-label">Pilih Unit</label>
                                 <select class="form-select" id="unit" name="unit" required>
                                     <option value="">-- Pilih Unit --</option>
                                     @foreach($bagians as $bagian)

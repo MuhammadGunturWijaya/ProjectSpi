@@ -66,6 +66,21 @@
             color: #fff;
         }
 
+        .bagian-section {
+            margin-bottom: 3rem;
+        }
+
+        .bagian-title {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
         @media (max-width: 992px) {
             table {
                 font-size: 0.875rem;
@@ -95,7 +110,7 @@
             </div>
             <script>
                 function printLaporan() {
-                    const table = document.querySelector('.table-responsive table');
+                    const container = document.getElementById('allTablesContainer');
 
                     const printWindow = window.open('', '', 'height=800,width=1200');
 
@@ -113,12 +128,22 @@
                 text-align: center;
                 margin-bottom: 20px;
             }
+            .bagian-title {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 0.5rem 1rem;
+                margin: 20px 0 10px 0;
+                font-weight: 600;
+                font-size: 14px;
+            }
             table {
                 width: 100%;
                 border-collapse: collapse;
-                font-size: 10px; /* kecilkan font agar muat semua kolom */
+                font-size: 10px;
                 table-layout: fixed;
                 word-wrap: break-word;
+                margin-bottom: 30px;
+                page-break-inside: avoid;
             }
             table, th, td {
                 border: 1px solid #000;
@@ -139,7 +164,6 @@
                 color: white;
                 font-size: 10px;
             }
-            /* biar tabel bisa di-scroll horizontal di cetak jika masih kebesaran */
             .table-container {
                 width: 100%;
                 overflow-x: auto;
@@ -156,7 +180,7 @@
         <body>
             <h2>Laporan Evaluasi MR - SPI Polije</h2>
             <div class="table-container">
-                ${table.outerHTML}
+                ${container.innerHTML}
             </div>
         </body>
         </html>
@@ -196,9 +220,10 @@
 
                         return $colorMap[$matrix[$likelihood][$impact] ?? 'red'];
                     }
+
+                    // Group risiko by bagian
+                    $risikosByBagian = $risikos->groupBy('bagian');
                 @endphp
-
-
 
                 {{-- Dropdown Filter Bagian --}}
                 <div class="mb-3">
@@ -215,169 +240,282 @@
                     </select>
                 </div>
 
-                {{-- Tabel Risiko --}}
-                <div class="table-responsive">
-                    <table class="table table-bordered table-striped align-middle" id="risikoTable">
-                        <thead>
-                            <tr class="text-center">
-                                <th rowspan="2">#</th>
-                                <th rowspan="2">Abjad</th>
-                                <th rowspan="2">Tujuan</th>
-                                <th rowspan="2">Proses Bisnis</th>
-                                <th rowspan="2">Kategori Risiko</th>
-                                <th rowspan="2">Uraian Risiko</th>
-                                <th rowspan="2">Penyebab Risiko</th>
-                                <th rowspan="2">Sumber Risiko</th>
-                                <th rowspan="2">Akibat / Potensi Kerugian</th>
-                                <th rowspan="2">Pemilik Risiko</th>
-                                <th rowspan="2">Bagian</th>
+                {{-- Container untuk semua tabel --}}
+                <div id="allTablesContainer">
+                    {{-- Tabel untuk mode "Semua Unit" (grouped by bagian) --}}
+                    <div id="groupedTables" style="display: block;">
+                        @foreach($risikosByBagian as $bagian => $risikoGroup)
+                            <div class="bagian-section" data-bagian-group="{{ $bagian }}">
+                                <div class="bagian-title">
+                                    <i class="fa fa-building"></i> Unit: {{ $bagian }}
+                                </div>
+                                <div class="table-responsive">
+                                    <table class="table table-bordered table-striped align-middle">
+                                        <thead>
+                                            <tr class="text-center">
+                                                <th rowspan="2">#</th>
+                                                <th rowspan="2">Abjad</th>
+                                                <th rowspan="2">Tujuan</th>
+                                                <th rowspan="2">Proses Bisnis</th>
+                                                <th rowspan="2">Kategori Risiko</th>
+                                                <th rowspan="2">Uraian Risiko</th>
+                                                <th rowspan="2">Penyebab Risiko</th>
+                                                <th rowspan="2">Sumber Risiko</th>
+                                                <th rowspan="2">Akibat / Potensi Kerugian</th>
+                                                <th rowspan="2">Pemilik Risiko</th>
+                                                <th colspan="3">Skor Awal</th>
+                                                <th colspan="3">Pengendalian Intern</th>
+                                                <th colspan="3">Nilai Residu</th>
+                                                <th rowspan="2">Mitigasi Opsi</th>
+                                                <th rowspan="2">Mitigasi Deskripsi</th>
+                                                <th colspan="3">Skor Akhir</th>
+                                                <th rowspan="2">Edit & Hapus</th>
+                                            </tr>
+                                            <tr class="text-center">
+                                                <th>Likelihood</th>
+                                                <th>Impact</th>
+                                                <th>Level</th>
+                                                <th>Ada</th>
+                                                <th>Memadai</th>
+                                                <th>Dijalankan</th>
+                                                <th>Likelihood</th>
+                                                <th>Impact</th>
+                                                <th>Level</th>
+                                                <th>Likelihood</th>
+                                                <th>Impact</th>
+                                                <th>Level</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach($risikoGroup as $risiko)
+                                                <tr>
+                                                    <td>{{ $loop->iteration }}</td>
+                                                    <td>{{ $risiko->abjad }}</td>
+                                                    <td>{{ $risiko->tujuan }}</td>
+                                                    <td>{{ $risiko->proses_bisnis }}</td>
+                                                    <td>{{ $risiko->kategori_risiko }}</td>
+                                                    <td>{{ $risiko->uraian_risiko }}</td>
+                                                    <td>{{ $risiko->penyebab_risiko }}</td>
+                                                    <td>{{ $risiko->sumber_risiko }}</td>
+                                                    <td>{{ $risiko->akibat }}</td>
+                                                    <td>{{ $risiko->pemilik_risiko }}</td>
+                                                    <td>{{ $risiko->skor_likelihood }}</td>
+                                                    <td>{{ $risiko->skor_impact }}</td>
+                                                    @php $styleAwal = getRiskColor($risiko->skor_likelihood, $risiko->skor_impact); @endphp
+                                                    <td class="text-center"><span class="badge"
+                                                            style="{{ $styleAwal }}">{{ $risiko->skor_likelihood * $risiko->skor_impact }}</span>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <div>{{ $risiko->pengendalian_intern_ada }}</div>
+                                                        @if($risiko->pengendalian_intern_ada_keterangan)
+                                                            <div
+                                                                style="border-top:1px solid #ccc; margin-top:2px; font-size:0.8rem; color:#6c757d;">
+                                                                {{ $risiko->pengendalian_intern_ada_keterangan }}
+                                                            </div>
+                                                        @endif
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <div>{{ $risiko->pengendalian_intern_memadai }}</div>
+                                                        @if($risiko->pengendalian_intern_memadai_keterangan)
+                                                            <div
+                                                                style="border-top:1px solid #ccc; margin-top:2px; font-size:0.8rem; color:#6c757d;">
+                                                                {{ $risiko->pengendalian_intern_memadai_keterangan }}
+                                                            </div>
+                                                        @endif
+                                                    </td>
+                                                    <td class="text-center">
+                                                        <div>{{ $risiko->pengendalian_intern_dijalankan }}%</div>
+                                                        @if($risiko->pengendalian_intern_dijalankan_keterangan)
+                                                            <div
+                                                                style="border-top:1px solid #ccc; margin-top:2px; font-size:0.8rem; color:#6c757d;">
+                                                                {{ $risiko->pengendalian_intern_dijalankan_keterangan }}
+                                                            </div>
+                                                        @endif
+                                                    </td>
+                                                    <td>{{ $risiko->residu_likelihood }}</td>
+                                                    <td>{{ $risiko->residu_impact }}</td>
+                                                    @php $styleResidu = getRiskColor($risiko->residu_likelihood, $risiko->residu_impact); @endphp
+                                                    <td class="text-center"><span class="badge"
+                                                            style="{{ $styleResidu }}">{{ $risiko->residu_likelihood * $risiko->residu_impact }}</span>
+                                                    </td>
+                                                    <td>{{ $risiko->mitigasi_opsi }}</td>
+                                                    <td>{{ $risiko->mitigasi_deskripsi }}</td>
+                                                    <td>{{ $risiko->akhir_likelihood }}</td>
+                                                    <td>{{ $risiko->akhir_impact }}</td>
+                                                    @php $styleAkhir = getRiskColor($risiko->akhir_likelihood, $risiko->akhir_impact); @endphp
+                                                    <td class="text-center"><span class="badge"
+                                                            style="{{ $styleAkhir }}">{{ $risiko->akhir_likelihood * $risiko->akhir_impact }}</span>
+                                                    </td>
+                                                    <td class="text-center">
+                                                        @if(Auth::check() && Auth::user()->role === 'admin')
+                                                            <a href="{{ route('evaluasiMr.edit', $risiko->id) }}"
+                                                                class="btn btn-sm btn-warning mb-1"><i class="fa fa-edit"></i> Edit</a>
+                                                            <form action="{{ route('evaluasiMr.destroy', $risiko->id) }}" method="POST"
+                                                                style="display:inline;">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="btn btn-danger btn-sm"
+                                                                    onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
+                                                            </form>
+                                                        @endif
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
 
-                                {{-- Skor Awal --}}
-                                <th colspan="3">Skor Awal</th>
-
-                                {{-- Pengendalian Intern --}}
-                                <th colspan="3">Pengendalian Intern</th>
-
-                                {{-- Nilai Residu --}}
-                                <th colspan="3">Nilai Residu</th>
-
-                                {{-- Mitigasi Risiko --}}
-                                <th rowspan="2">Mitigasi Opsi</th>
-                                <th rowspan="2">Mitigasi Deskripsi</th>
-
-                                {{-- Skor Akhir --}}
-                                <th colspan="3">Skor Akhir</th>
-
-                                <th rowspan="2">Edit & Hapus</th>
-                            </tr>
-                            <tr class="text-center">
-                                {{-- Skor Awal --}}
-                                <th>Likelihood</th>
-                                <th>Impact</th>
-                                <th>Level</th>
-
-                                {{-- Pengendalian Intern --}}
-                                <th>Ada</th>
-                                <th>Memadai</th>
-                                <th>Dijalankan</th>
-
-                                {{-- Nilai Residu --}}
-                                <th>Likelihood</th>
-                                <th>Impact</th>
-                                <th>Level</th>
-
-                                {{-- Skor Akhir --}}
-                                <th>Likelihood</th>
-                                <th>Impact</th>
-                                <th>Level</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($risikos as $risiko)
-                                <tr data-bagian="{{ $risiko->bagian }}">
-                                    <td>{{ $risiko->bagian }}</td>
-
-                                    <td>{{ $loop->iteration }}</td>
-                                    <td>{{ $risiko->abjad }}</td>
-                                    <td>{{ $risiko->tujuan }}</td>
-                                    <td>{{ $risiko->proses_bisnis }}</td>
-                                    <td>{{ $risiko->kategori_risiko }}</td>
-                                    <td>{{ $risiko->uraian_risiko }}</td>
-                                    <td>{{ $risiko->penyebab_risiko }}</td>
-                                    <td>{{ $risiko->sumber_risiko }}</td>
-                                    <td>{{ $risiko->akibat }}</td>
-                                    <td>{{ $risiko->pemilik_risiko }}</td>
-                                    <td>{{ $risiko->bagian }}</td>
-                                    {{-- Skor Awal --}}
-                                    <td>{{ $risiko->skor_likelihood }}</td>
-                                    <td>{{ $risiko->skor_impact }}</td>
-                                    @php $styleAwal = getRiskColor($risiko->skor_likelihood, $risiko->skor_impact); @endphp
-                                    <td class="text-center"><span class="badge"
-                                            style="{{ $styleAwal }}">{{ $risiko->skor_likelihood * $risiko->skor_impact }}</span>
-                                    </td>
-                                    {{-- Pengendalian Intern --}}
-                                    <td class="text-center">
-                                        <div>{{ $risiko->pengendalian_intern_ada }}</div>
-                                        @if($risiko->pengendalian_intern_ada_keterangan)
-                                            <div
-                                                style="border-top:1px solid #ccc; margin-top:2px; font-size:0.8rem; color:#6c757d;">
-                                                {{ $risiko->pengendalian_intern_ada_keterangan }}
-                                            </div>
-                                        @endif
-                                    </td>
-                                    <td class="text-center">
-                                        <div>{{ $risiko->pengendalian_intern_memadai }}</div>
-                                        @if($risiko->pengendalian_intern_memadai_keterangan)
-                                            <div
-                                                style="border-top:1px solid #ccc; margin-top:2px; font-size:0.8rem; color:#6c757d;">
-                                                {{ $risiko->pengendalian_intern_memadai_keterangan }}
-                                            </div>
-                                        @endif
-                                    </td>
-                                    <td class="text-center">
-                                        <div>{{ $risiko->pengendalian_intern_dijalankan }}%</div>
-                                        @if($risiko->pengendalian_intern_dijalankan_keterangan)
-                                            <div
-                                                style="border-top:1px solid #ccc; margin-top:2px; font-size:0.8rem; color:#6c757d;">
-                                                {{ $risiko->pengendalian_intern_dijalankan_keterangan }}
-                                            </div>
-                                        @endif
-                                    </td>
-                                    {{-- Nilai Residu --}}
-                                    <td>{{ $risiko->residu_likelihood }}</td>
-                                    <td>{{ $risiko->residu_impact }}</td>
-                                    @php $styleResidu = getRiskColor($risiko->residu_likelihood, $risiko->residu_impact); @endphp
-                                    <td class="text-center"><span class="badge"
-                                            style="{{ $styleResidu }}">{{ $risiko->residu_likelihood * $risiko->residu_impact }}</span>
-                                    </td>
-                                    {{-- Mitigasi --}}
-                                    <td>{{ $risiko->mitigasi_opsi }}</td>
-                                    <td>{{ $risiko->mitigasi_deskripsi }}</td>
-                                    {{-- Skor Akhir --}}
-                                    <td>{{ $risiko->akhir_likelihood }}</td>
-                                    <td>{{ $risiko->akhir_impact }}</td>
-                                    @php $styleAkhir = getRiskColor($risiko->akhir_likelihood, $risiko->akhir_impact); @endphp
-                                    <td class="text-center"><span class="badge"
-                                            style="{{ $styleAkhir }}">{{ $risiko->akhir_likelihood * $risiko->akhir_impact }}</span>
-                                    </td>
-                                    <td class="text-center">
-                                        @if(Auth::check() && Auth::user()->role === 'admin')
-                                            <a href="{{ route('evaluasiMr.edit', $risiko->id) }}"
-                                                class="btn btn-sm btn-warning mb-1"><i class="fa fa-edit"></i> Edit</a>
-                                            <form action="{{ route('evaluasiMr.destroy', $risiko->id) }}" method="POST"
-                                                style="display:inline;">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="btn btn-danger btn-sm"
-                                                    onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
-                                            </form>
-                                        @endif
-                                    </td>
-                                </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="20" class="text-center">Belum ada data risiko.</td>
-                                </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                    {{-- Tabel tunggal untuk mode filter spesifik --}}
+                    <div id="singleTable" style="display: none;">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped align-middle" id="risikoTable">
+                                <thead>
+                                    <tr class="text-center">
+                                        <th rowspan="2">#</th>
+                                        <th rowspan="2">Abjad</th>
+                                        <th rowspan="2">Tujuan</th>
+                                        <th rowspan="2">Proses Bisnis</th>
+                                        <th rowspan="2">Kategori Risiko</th>
+                                        <th rowspan="2">Uraian Risiko</th>
+                                        <th rowspan="2">Penyebab Risiko</th>
+                                        <th rowspan="2">Sumber Risiko</th>
+                                        <th rowspan="2">Akibat / Potensi Kerugian</th>
+                                        <th rowspan="2">Pemilik Risiko</th>
+                                        <th rowspan="2">Bagian</th>
+                                        <th colspan="3">Skor Awal</th>
+                                        <th colspan="3">Pengendalian Intern</th>
+                                        <th colspan="3">Nilai Residu</th>
+                                        <th rowspan="2">Mitigasi Opsi</th>
+                                        <th rowspan="2">Mitigasi Deskripsi</th>
+                                        <th colspan="3">Skor Akhir</th>
+                                        <th rowspan="2">Edit & Hapus</th>
+                                    </tr>
+                                    <tr class="text-center">
+                                        <th>Likelihood</th>
+                                        <th>Impact</th>
+                                        <th>Level</th>
+                                        <th>Ada</th>
+                                        <th>Memadai</th>
+                                        <th>Dijalankan</th>
+                                        <th>Likelihood</th>
+                                        <th>Impact</th>
+                                        <th>Level</th>
+                                        <th>Likelihood</th>
+                                        <th>Impact</th>
+                                        <th>Level</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($risikos as $risiko)
+                                        <tr data-bagian="{{ $risiko->bagian }}">
+                                            <td>{{ $loop->iteration }}</td>
+                                            <td>{{ $risiko->abjad }}</td>
+                                            <td>{{ $risiko->tujuan }}</td>
+                                            <td>{{ $risiko->proses_bisnis }}</td>
+                                            <td>{{ $risiko->kategori_risiko }}</td>
+                                            <td>{{ $risiko->uraian_risiko }}</td>
+                                            <td>{{ $risiko->penyebab_risiko }}</td>
+                                            <td>{{ $risiko->sumber_risiko }}</td>
+                                            <td>{{ $risiko->akibat }}</td>
+                                            <td>{{ $risiko->pemilik_risiko }}</td>
+                                            <td>{{ $risiko->bagian }}</td>
+                                            <td>{{ $risiko->skor_likelihood }}</td>
+                                            <td>{{ $risiko->skor_impact }}</td>
+                                            @php $styleAwal = getRiskColor($risiko->skor_likelihood, $risiko->skor_impact); @endphp
+                                            <td class="text-center"><span class="badge"
+                                                    style="{{ $styleAwal }}">{{ $risiko->skor_likelihood * $risiko->skor_impact }}</span>
+                                            </td>
+                                            <td class="text-center">
+                                                <div>{{ $risiko->pengendalian_intern_ada }}</div>
+                                                @if($risiko->pengendalian_intern_ada_keterangan)
+                                                    <div
+                                                        style="border-top:1px solid #ccc; margin-top:2px; font-size:0.8rem; color:#6c757d;">
+                                                        {{ $risiko->pengendalian_intern_ada_keterangan }}
+                                                    </div>
+                                                @endif
+                                            </td>
+                                            <td class="text-center">
+                                                <div>{{ $risiko->pengendalian_intern_memadai }}</div>
+                                                @if($risiko->pengendalian_intern_memadai_keterangan)
+                                                    <div
+                                                        style="border-top:1px solid #ccc; margin-top:2px; font-size:0.8rem; color:#6c757d;">
+                                                        {{ $risiko->pengendalian_intern_memadai_keterangan }}
+                                                    </div>
+                                                @endif
+                                            </td>
+                                            <td class="text-center">
+                                                <div>{{ $risiko->pengendalian_intern_dijalankan }}%</div>
+                                                @if($risiko->pengendalian_intern_dijalankan_keterangan)
+                                                    <div
+                                                        style="border-top:1px solid #ccc; margin-top:2px; font-size:0.8rem; color:#6c757d;">
+                                                        {{ $risiko->pengendalian_intern_dijalankan_keterangan }}
+                                                    </div>
+                                                @endif
+                                            </td>
+                                            <td>{{ $risiko->residu_likelihood }}</td>
+                                            <td>{{ $risiko->residu_impact }}</td>
+                                            @php $styleResidu = getRiskColor($risiko->residu_likelihood, $risiko->residu_impact); @endphp
+                                            <td class="text-center"><span class="badge"
+                                                    style="{{ $styleResidu }}">{{ $risiko->residu_likelihood * $risiko->residu_impact }}</span>
+                                            </td>
+                                            <td>{{ $risiko->mitigasi_opsi }}</td>
+                                            <td>{{ $risiko->mitigasi_deskripsi }}</td>
+                                            <td>{{ $risiko->akhir_likelihood }}</td>
+                                            <td>{{ $risiko->akhir_impact }}</td>
+                                            @php $styleAkhir = getRiskColor($risiko->akhir_likelihood, $risiko->akhir_impact); @endphp
+                                            <td class="text-center"><span class="badge"
+                                                    style="{{ $styleAkhir }}">{{ $risiko->akhir_likelihood * $risiko->akhir_impact }}</span>
+                                            </td>
+                                            <td class="text-center">
+                                                @if(Auth::check() && Auth::user()->role === 'admin')
+                                                    <a href="{{ route('evaluasiMr.edit', $risiko->id) }}"
+                                                        class="btn btn-sm btn-warning mb-1"><i class="fa fa-edit"></i> Edit</a>
+                                                    <form action="{{ route('evaluasiMr.destroy', $risiko->id) }}" method="POST"
+                                                        style="display:inline;">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="btn btn-danger btn-sm"
+                                                            onclick="return confirm('Yakin ingin menghapus?')">Hapus</button>
+                                                    </form>
+                                                @endif
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
 
                 <script>
                     function filterBagian(bagian) {
-                        console.log('Filter Bagian:', bagian);
-                        const rows = document.querySelectorAll('#risikoTable tbody tr');
-                        rows.forEach(row => {
-                            console.log('Row bagian:', row.getAttribute('data-bagian'));
-                            if (bagian === 'all' || row.getAttribute('data-bagian').trim() === bagian.trim()) {
-                                row.style.display = '';
-                            } else {
-                                row.style.display = 'none';
-                            }
-                        });
+                        const groupedTables = document.getElementById('groupedTables');
+                        const singleTable = document.getElementById('singleTable');
+                        
+                        if (bagian === 'all') {
+                            // Show grouped tables (multiple tables by bagian)
+                            groupedTables.style.display = 'block';
+                            singleTable.style.display = 'none';
+                        } else {
+                            // Show single table with filtered rows
+                            groupedTables.style.display = 'none';
+                            singleTable.style.display = 'block';
+                            
+                            const rows = document.querySelectorAll('#risikoTable tbody tr');
+                            rows.forEach(row => {
+                                if (row.getAttribute('data-bagian').trim() === bagian.trim()) {
+                                    row.style.display = '';
+                                } else {
+                                    row.style.display = 'none';
+                                }
+                            });
+                        }
                     }
-
                 </script>
+
                 <!-- Bootstrap JS + Popper -->
                 <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"></script>
                 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"></script>
