@@ -2,9 +2,10 @@
 <html lang="id">
 <style>
     body {
-                   overflow-x: hidden;
-        }
+        overflow-x: hidden;
+    }
 </style>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -1060,11 +1061,15 @@
             <div class="meta-info">
                 <div class="meta-item">
                     <i class="bi bi-calendar-event"></i>
-                    <span style="color: white;">10 Oktober 2025</span>
+                    <span style="color: white;">
+                        {{ \Carbon\Carbon::parse($visimisi->tanggal)->translatedFormat('d F Y') ?? '-' }}
+                    </span>
                 </div>
                 <div class="meta-item">
                     <i class="bi bi-clock"></i>
-                    <span style="color: white;">14:17 WIB</span>
+                    <span style="color: white;">
+                       {{ $visimisi->jam ? \Carbon\Carbon::parse($visimisi->jam)->format('H:i') . ' WIB' : '-' }}
+                    </span>
                 </div>
                 <div class="meta-item">
                     <i class="bi bi-person-badge"></i>

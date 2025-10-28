@@ -28,15 +28,21 @@ class VisiMisiController extends Controller
             'tujuan' => 'required',
             'visi' => 'required',
             'misi' => 'required',
+            'tanggal' => 'nullable|date',
+            'jam' => 'nullable|date_format:H:i',
         ]);
 
-        $visimisi = VisiMisi::firstOrCreate([]); // buat record jika belum ada
+        $visimisi = VisiMisi::firstOrCreate([]);
+
         $visimisi->update([
             'tujuan' => $request->tujuan,
             'visi' => $request->visi,
             'misi' => $request->misi,
+            'tanggal' => $request->tanggal,
+            'jam' => $request->jam,
         ]);
 
         return redirect()->route('visi-misi.index')->with('success', 'Visi, Misi & Tujuan berhasil diperbarui.');
     }
+
 }

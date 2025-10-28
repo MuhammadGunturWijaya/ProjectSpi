@@ -12,6 +12,36 @@
         margin-bottom: 20px;
         border: 1px solid #dee2e6;
     }
+
+    .history-card {
+        background-color: #f8f9fa;
+        border-left: 4px solid #6c757d;
+        margin-bottom: 15px;
+        padding: 15px;
+        border-radius: 5px;
+    }
+
+    .history-badge {
+        background-color: #6c757d;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-size: 0.85rem;
+        display: inline-block;
+        margin-bottom: 10px;
+    }
+
+    .history-section {
+        margin-top: 40px;
+        padding-top: 30px;
+        border-top: 3px solid #dee2e6;
+    }
+
+    .history-title {
+        color: #495057;
+        font-weight: 600;
+        margin-bottom: 20px;
+    }
 </style>
 
 <head>
@@ -83,6 +113,13 @@
                         @method('PUT')
                     @endif
 
+                    {{-- Input Tanggal Evaluasi --}}
+                    <div class="mb-3">
+                        <label for="tanggal_evaluasi" class="form-label">Tanggal Evaluasi <span class="text-danger">*</span></label>
+                        <input type="date" class="form-control" id="tanggal_evaluasi" name="tanggal_evaluasi"
+                            value="{{ old('tanggal_evaluasi', isset($risiko) ? $risiko->tanggal_evaluasi?->format('Y-m-d') : date('Y-m-d')) }}" required>
+                    </div>
+
                     {{-- Bagian Section - Unit/Bagian --}}
                     <div class="section-header">
                         <div class="row align-items-center">
@@ -121,13 +158,11 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="departemen" class="form-label">departemen</label>
+                        <label for="departemen" class="form-label">Departemen</label>
                         <input type="text" name="departemen" class="form-control"
                             value="{{ old('departemen', $risiko->departemen ?? '') }}"
-                            placeholder="Masukkan Departemen">
+                            placeholder="Masukkan Departemen" required>
                     </div>
-
-
 
                     <div class="mb-3">
                         <label for="proses_bisnis" class="form-label">Proses Bisnis</label>
@@ -236,7 +271,6 @@
                         </div>
                     </div>
 
-
                     {{-- Nilai Residu --}}
                     <h5 class="mt-4">Nilai Residu</h5>
                     <div class="row mb-3">
@@ -280,7 +314,6 @@
                             rows="2">{{ old('mitigasi_deskripsi', $risiko->mitigasi_deskripsi ?? '') }}</textarea>
                     </div>
 
-
                     {{-- Skor Akhir --}}
                     <h5 class="mt-4">Skor Akhir</h5>
                     <div class="row mb-3">
@@ -307,6 +340,107 @@
                     </button>
                     <a href="{{ route('evaluasiMr.index') }}" class="btn btn-secondary">Kembali</a>
                 </form>
+
+                {{-- SECTION HISTORY --}}
+                @if(isset($risiko) && $risiko->histories->count() > 0)
+                <div class="history-section">
+                    <h4 class="history-title">
+                        <i class="fas fa-history"></i> History Evaluasi ({{ $risiko->histories->count() }} Versi)
+                    </h4>
+                    
+                    @foreach($risiko->histories as $index => $history)
+                    <div class="history-card">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div>
+                                <span class="history-badge">
+                                    <i class="fas fa-calendar-alt"></i> 
+                                    {{ $history->tanggal_evaluasi->format('d M Y') }}
+                                </span>
+                                <span class="badge bg-secondary ms-2">Versi #{{ $risiko->histories->count() - $index }}</span>
+                            </div>
+                            <small class="text-muted">Disimpan: {{ $history->created_at->format('d M Y H:i') }}</small>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <strong>Unit:</strong> {{ $history->bagian }}<br>
+                                <strong>Departemen:</strong> {{ $history->departemen }}<br>
+                                <strong>Kode Unit:</strong> {{ $history->abjad }}
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Pemilik Risiko:</strong> {{ $history->pemilik_risiko }}<br>
+                                <strong>Sumber Risiko:</strong> {{ ucfirst($history->sumber_risiko) }}
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <div class="mb-2">
+                            <strong>Tujuan:</strong><br>
+                            <p class="mb-1">{{ $history->tujuan }}</p>
+                        </div>
+
+                        <div class="mb-2">
+                            <strong>Uraian Risiko:</strong><br>
+                            <p class="mb-1">{{ $history->uraian_risiko }}</p>
+                        </div>
+
+                        <div class="mb-2">
+                            <strong>Penyebab Risiko:</strong><br>
+                            <p class="mb-1">{{ $history->penyebab_risiko }}</p>
+                        </div>
+
+                        <hr>
+
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <div class="card bg-light">
+                                    <div class="card-body p-2">
+                                        <h6 class="card-title mb-2">Skor Awal</h6>
+                                        <div class="d-flex justify-content-between">
+                                            <span>L: {{ $history->skor_likelihood }}</span>
+                                            <span>I: {{ $history->skor_impact }}</span>
+                                            <span><strong>Level: {{ $history->skor_level }}</strong></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-light">
+                                    <div class="card-body p-2">
+                                        <h6 class="card-title mb-2">Residu</h6>
+                                        <div class="d-flex justify-content-between">
+                                            <span>L: {{ $history->residu_likelihood ?? '-' }}</span>
+                                            <span>I: {{ $history->residu_impact ?? '-' }}</span>
+                                            <span><strong>Level: {{ $history->residu_level ?? '-' }}</strong></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="card bg-light">
+                                    <div class="card-body p-2">
+                                        <h6 class="card-title mb-2">Skor Akhir</h6>
+                                        <div class="d-flex justify-content-between">
+                                            <span>L: {{ $history->akhir_likelihood ?? '-' }}</span>
+                                            <span>I: {{ $history->akhir_impact ?? '-' }}</span>
+                                            <span><strong>Level: {{ $history->akhir_level ?? '-' }}</strong></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        @if($history->mitigasi_deskripsi)
+                        <div class="mt-3">
+                            <strong>Mitigasi ({{ ucfirst($history->mitigasi_opsi) }}):</strong><br>
+                            <p class="mb-0">{{ $history->mitigasi_deskripsi }}</p>
+                        </div>
+                        @endif
+                    </div>
+                    @endforeach
+                </div>
+                @endif
             </div>
         </div>
     </div>
@@ -444,4 +578,4 @@
     </script>
 </body>
 
-</html>
+</html

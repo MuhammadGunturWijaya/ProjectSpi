@@ -13,6 +13,8 @@ class VisiMisi extends Model
             $table->longText('tujuan')->nullable();
             $table->longText('visi')->nullable();
             $table->longText('misi')->nullable();
+            $table->longText('tanggal')->nullable();
+            $table->longText('jam')->nullable();
             $table->timestamps();
         });
     }
@@ -21,6 +23,8 @@ class VisiMisi extends Model
         'tujuan',
         'visi',
         'misi',
+        'tanggal',
+        'jam',
     ];
 
 }

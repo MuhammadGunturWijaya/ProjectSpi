@@ -255,6 +255,7 @@
                                             <tr class="text-center">
                                                 <th rowspan="2">#</th>
                                                 <th rowspan="2">Abjad</th>
+                                                <th rowspan="2">Tanggal Evaluasi</th>
                                                 <th rowspan="2">Tujuan</th>
                                                 <th rowspan="2">Proses Bisnis</th>
                                                 <th rowspan="2">Kategori Risiko</th>
@@ -291,6 +292,7 @@
                                                 <tr>
                                                     <td>{{ $loop->iteration }}</td>
                                                     <td>{{ $risiko->abjad }}</td>
+                                                    <td>{{ \Carbon\Carbon::parse($risiko->tanggal_evaluasi)->format('d-m-Y') }}</td>
                                                     <td>{{ $risiko->tujuan }}</td>
                                                     <td>{{ $risiko->proses_bisnis }}</td>
                                                     <td>{{ $risiko->kategori_risiko }}</td>
@@ -376,6 +378,7 @@
                                     <tr class="text-center">
                                         <th rowspan="2">#</th>
                                         <th rowspan="2">Abjad</th>
+                                        <th rowspan="2">Tanggal Evaluasi</th>
                                         <th rowspan="2">Tujuan</th>
                                         <th rowspan="2">Proses Bisnis</th>
                                         <th rowspan="2">Kategori Risiko</th>
@@ -413,6 +416,7 @@
                                         <tr data-bagian="{{ $risiko->bagian }}">
                                             <td>{{ $loop->iteration }}</td>
                                             <td>{{ $risiko->abjad }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($risiko->tanggal_evaluasi)->format('d-m-Y') }}</td>
                                             <td>{{ $risiko->tujuan }}</td>
                                             <td>{{ $risiko->proses_bisnis }}</td>
                                             <td>{{ $risiko->kategori_risiko }}</td>
