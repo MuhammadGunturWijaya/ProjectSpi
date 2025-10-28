@@ -520,54 +520,98 @@
 
                 {{-- SECTION DAFTAR UNIT --}}
                 <div class="unit-list-section">
-                    <div class="unit-list-header">
-                        <h4 class="unit-list-title">
-                            <i class="fas fa-building"></i>
-                            Daftar Unit Tersedia
-                        </h4>
-                        <span class="unit-count-badge" id="unitCountBadge">
-                            <i class="fas fa-layer-group"></i> {{ $bagians->count() }} Unit
-                        </span>
+    <div class="unit-list-header">
+        <h4 class="unit-list-title">
+            <i class="fas fa-building"></i>
+            Daftar Unit Tersedia
+        </h4>
+        <span class="unit-count-badge" id="unitCountBadge">
+            <i class="fas fa-layer-group"></i> {{ $bagians->count() }} Unit
+        </span>
+    </div>
+
+    <div class="unit-grid" id="unitGrid">
+        @forelse($bagians as $bagian)
+            <div class="unit-card" data-unit-id="{{ $bagian->id }}">
+                <div class="unit-card-content">
+                    <div class="unit-info">
+                        <div class="unit-name">{{ $bagian->nama_bagian }}</div>
+                        <div class="unit-meta">
+                            <span class="unit-badge">
+                                <i class="fas fa-hashtag"></i> ID: {{ $bagian->id }}
+                            </span>
+                            <span class="unit-badge">
+                                <i class="fas fa-calendar"></i> 
+                                {{ $bagian->created_at->format('d M Y') }}
+                            </span>
+                        </div>
                     </div>
 
-                    <div class="unit-grid" id="unitGrid">
-                        @forelse($bagians as $bagian)
-                            <div class="unit-card" data-unit-id="{{ $bagian->id }}">
-                                <div class="unit-card-content">
-                                    <div class="unit-info">
-                                        <div class="unit-name">{{ $bagian->nama_bagian }}</div>
-                                        <div class="unit-meta">
-                                            <span class="unit-badge">
-                                                <i class="fas fa-hashtag"></i> ID: {{ $bagian->id }}
-                                            </span>
-                                            <span class="unit-badge">
-                                                <i class="fas fa-calendar"></i> 
-                                                {{ $bagian->created_at->format('d M Y') }}
-                                            </span>
-                                        </div>
-                                    </div>
-                                    <button type="button" class="btn-delete-unit" 
-                                            onclick="deleteUnit({{ $bagian->id }}, '{{ $bagian->nama_bagian }}')">
-                                        <i class="fas fa-trash-alt"></i>
-                                        Hapus
-                                    </button>
-                                </div>
-                            </div>
-                        @empty
-                            <div class="empty-state" style="grid-column: 1/-1;">
-                                <div class="empty-state-icon">
-                                    <i class="fas fa-inbox"></i>
-                                </div>
-                                <div class="empty-state-text">Belum Ada Unit</div>
-                                <div class="empty-state-subtext">
-                                    Klik tombol "Tambah Unit" untuk menambahkan unit baru
-                                </div>
-                            </div>
-                        @endforelse
+                    <div class="unit-actions-vertical">
+                        <button type="button" class="btn-delete-unit" 
+                                onclick="editUnit({{ $bagian->id }}, '{{ $bagian->nama_bagian }}')">
+                            <i class="fas fa-edit"></i> Edit
+                        </button>
+                        <button type="button" class="btn-delete-unit" 
+                                onclick="deleteUnit({{ $bagian->id }}, '{{ $bagian->nama_bagian }}')">
+                            <i class="fas fa-trash-alt"></i> Hapus
+                        </button>
                     </div>
                 </div>
+            </div>
+        @empty
+            <div class="empty-state" style="grid-column: 1/-1;">
+                <div class="empty-state-icon">
+                    <i class="fas fa-inbox"></i>
+                </div>
+                <div class="empty-state-text">Belum Ada Unit</div>
+                <div class="empty-state-subtext">
+                    Klik tombol "Tambah Unit" untuk menambahkan unit baru
+                </div>
+            </div>
+        @endforelse
+    </div>
+</div>
 
-                <style>
+<style>
+.unit-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 16px;
+    border-radius: 10px;
+    border: 1px solid #eee;
+    background-color: #fff;
+}
+.unit-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+}
+
+.unit-actions-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+    align-items: flex-start;
+}
+
+.btn-edit-unit {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 6px 12px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 100%;
+    text-align: left;
+}
+.btn-edit-unit:hover {
+    background-color: #0069d9;
+    transform: scale(1.03);
+}
+
 .btn-delete-unit {
     background-color: #dc3545;
     color: #fff;
@@ -575,23 +619,84 @@
     border-radius: 6px;
     padding: 6px 12px;
     transition: background-color 0.3s ease, transform 0.2s ease;
+    width: 100%;
+    text-align: left;
 }
 .btn-delete-unit:hover {
     background-color: #c82333;
-    transform: scale(1.05);
-}
-.unit-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-.unit-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 4px 14px rgba(0,0,0,0.1);
+    transform: scale(1.03);
 }
 </style>
 
-
                 <!-- SweetAlert2 -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+function editUnit(id, namaLama) {
+    Swal.fire({
+        title: 'Edit Nama Unit',
+        input: 'text',
+        inputValue: namaLama,
+        inputLabel: 'Masukkan nama baru untuk unit ini:',
+        showCancelButton: true,
+        confirmButtonText: 'Simpan',
+        cancelButtonText: 'Batal',
+        inputValidator: (value) => {
+            if (!value) {
+                return 'Nama unit tidak boleh kosong!';
+            }
+        },
+        customClass: {
+            popup: 'rounded-4 shadow-lg',
+            confirmButton: 'btn btn-primary px-4',
+            cancelButton: 'btn btn-secondary px-4'
+        },
+        buttonsStyling: false
+    }).then((result) => {
+        if (result.isConfirmed) {
+            const newName = result.value;
+            fetch(`/bagian/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify({ nama_bagian: newName })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Berhasil!',
+                        text: `Nama unit berhasil diperbarui menjadi "${newName}".`,
+                        icon: 'success',
+                        timer: 1600,
+                        showConfirmButton: false
+                    });
+                    // Update nama di tampilan tanpa reload
+                    const unitCard = document.querySelector(`.unit-card[data-unit-id="${id}"] .unit-name`);
+                    if (unitCard) unitCard.textContent = newName;
+                } else {
+                    Swal.fire({
+                        title: 'Gagal!',
+                        text: 'Tidak dapat memperbarui data unit.',
+                        icon: 'error',
+                    });
+                }
+            })
+            .catch(() => {
+                Swal.fire({
+                    title: 'Error!',
+                    text: 'Terjadi kesalahan saat memperbarui data.',
+                    icon: 'error',
+                });
+            });
+        }
+    });
+}
+</script>
+
 
 <script>
 function deleteUnit(id, nama) {

@@ -713,3 +713,5 @@ Route::post('/evaluasi-mr/tambah-bagian', [IdentifikasiRisikoController::class, 
 
 Route::delete('/bagian/{id}', [App\Http\Controllers\IdentifikasiRisikoController::class, 'destroy'])
     ->name('bagian.destroy');
+Route::put('/bagian/{id}', [App\Http\Controllers\IdentifikasiRisikoController::class, 'updateBagian'])
+    ->name('bagian.update');

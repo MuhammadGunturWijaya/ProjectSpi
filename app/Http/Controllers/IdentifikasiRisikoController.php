@@ -297,6 +297,20 @@ class IdentifikasiRisikoController extends Controller
         return response()->json(['success' => true]);
     }
 
+    public function updateBagian(Request $request, $id)
+    {
+        $request->validate([
+            'nama_bagian' => 'required|string|max:255',
+        ]);
+
+        $bagian = Bagian::findOrFail($id);
+        $bagian->nama_bagian = $request->nama_bagian;
+        $bagian->save();
+
+        return response()->json(['success' => true]);
+    }
+
+
 
     public function destroyEvaluasiMr($id)
     {

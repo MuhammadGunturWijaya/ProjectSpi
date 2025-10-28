@@ -859,7 +859,8 @@
                 <h4 style="color: white;"> Lapor Di Sini</h4>
             </a>
 
-            <a href="{{ route('survey.kepuasan') }}" class="quick-card">
+            <!-- {{ route('survey.kepuasan') }} -->
+            <a href="#PenilaianMasyarakat" class="quick-card">
                 <img src="{{ asset('images/logo/survey2.png') }}" alt="Berita" class="news-img1">
                 <h4 style="color: white;"> Penilaian Layanan</h4>
                 <h4 style="color: white;"> Klik Disini</h4>
@@ -1101,7 +1102,7 @@
     </div>
 
     <!-- Survey Kepuasan Section -->
-    <section class="survey-section" id="SurveyKepuasan">
+    <section class="survey-section" id="PenilaianMasyarakat">
         <div class="survey-overlay"></div>
 
         <div class="survey-container">
