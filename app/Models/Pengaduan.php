@@ -32,6 +32,7 @@ class Pengaduan extends Model
         'identitas_diketahui',
         'pihak_terkait',
         'status',
+        'link_video',
     ];
 
     protected $casts = [

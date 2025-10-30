@@ -448,15 +448,26 @@
                                             </div>
 
                                             {{-- Bukti File --}}
-                                            @if($laporan->bukti_file)
-                                                @php $files = json_decode($laporan->bukti_file, true); @endphp
+                                            @if($laporan->bukti_file || $laporan->link_video)
                                                 <div class="mt-3">
                                                     <p class="mb-1 text-secondary">Bukti:</p>
-                                                    @foreach($files as $file)
-                                                        <a href="{{ asset('storage/' . $file) }}" target="_blank" class="d-block mb-2">
-                                                            <i class="bi bi-paperclip"></i> {{ basename($file) }}
+
+                                                    {{-- Tampilkan file upload --}}
+                                                    @if($laporan->bukti_file)
+                                                        @php $files = json_decode($laporan->bukti_file, true); @endphp
+                                                        @foreach($files as $file)
+                                                            <a href="{{ asset('storage/' . $file) }}" target="_blank" class="d-block mb-2">
+                                                                <i class="bi bi-paperclip"></i> {{ basename($file) }}
+                                                            </a>
+                                                        @endforeach
+                                                    @endif
+
+                                                    {{-- Tampilkan link video --}}
+                                                    @if($laporan->link_video)
+                                                        <a href="{{ $laporan->link_video }}" target="_blank" class="d-block mb-2">
+                                                            <i class="bi bi-play-circle"></i> Video Link
                                                         </a>
-                                                    @endforeach
+                                                    @endif
                                                 </div>
                                             @endif
 
@@ -588,12 +599,21 @@
                     </div>
 
                     <div class="mt-4">
-                        <label for="bukti_file" class="form-label">Upload File / Foto / Video (max ...)</label>
+                        <label for="bukti_file" class="form-label">Upload File / Foto / Video (maksimal 100 MB per
+                            file)</label>
                         <input type="file" id="bukti_file" name="bukti_file[]" class="form-control"
                             accept="image/*,video/*,.pdf,.doc,.docx" multiple>
                         <small class="text-muted">Anda dapat mengupload lebih dari satu file</small>
-                        <!-- tambahann input link video -->
                     </div>
+
+                    <div class="mt-3">
+                        <label for="link_video" class="form-label">Link Video (YouTube, Vimeo, dll)</label>
+                        <input type="url" id="link_video" name="link_video" class="form-control"
+                            placeholder="Masukkan URL video, misal: https://www.youtube.com/watch?v=XXXX"
+                            value="{{ old('link_video') }}">
+                        <small class="text-muted">Opsional: jika video di-upload dari link</small>
+                    </div>
+
 
                     <hr class="my-5">
 

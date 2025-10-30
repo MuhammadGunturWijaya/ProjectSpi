@@ -63,9 +63,12 @@
         }
 
         @keyframes floating {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: translateY(0) rotate(0deg);
             }
+
             50% {
                 transform: translateY(-30px) rotate(180deg);
             }
@@ -88,6 +91,7 @@
                 opacity: 0;
                 transform: translateY(-30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -124,6 +128,7 @@
                 opacity: 0;
                 transform: translateY(50px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -487,7 +492,7 @@
 
         <!-- Main Detail Card -->
         <div class="detail-card mx-auto" style="max-width: 900px;">
-            
+
             <!-- Info Dasar -->
             <div class="info-box">
                 <strong><i class="bi bi-calendar-check me-2"></i>Tanggal Pengaduan</strong>
@@ -575,10 +580,24 @@
                 <h5>Kontak yang Bisa Dihubungi</h5>
             </div>
 
-            @if($pengaduan->kontak)
+            @php
+                $kontak = $pengaduan->kontak;
+
+                // Jika ternyata masih string, coba decode manual
+                if (is_string($kontak)) {
+                    $kontak = json_decode($kontak, true);
+                }
+
+                // Pastikan array agar aman di foreach
+                $kontak = is_array($kontak) ? $kontak : [];
+            @endphp
+
+            @if(!empty($kontak))
                 <ul class="custom-list">
-                    @foreach($pengaduan->kontak ?? [] as $k)
-                        <li>{{ $k }}</li>
+                    @foreach($kontak as $key => $value)
+                        @if($value)
+                            <li><strong>{{ ucfirst($key) }}:</strong> {{ $value }}</li>
+                        @endif
                     @endforeach
                 </ul>
             @else
@@ -637,17 +656,32 @@
                                 <th>Jenis Kelamin</th>
                             </tr>
                         </thead>
-                        <tbody>
-                            @foreach($terlapors as $t)
-                                <tr>
-                                    <td>{{ $t['nama'] ?? '-' }}</td>
-                                    <td>{{ $t['nip'] ?? '-' }}</td>
-                                    <td>{{ $t['satuan_kerja'] ?? '-' }}</td>
-                                    <td>{{ $t['jabatan'] ?? '-' }}</td>
-                                    <td>{{ $t['jenis_kelamin'] ?? '-' }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
+                       @php
+    $terlapors = $pengaduan->terlapor ?? [];
+
+    // Jika ternyata string JSON, decode manual
+    if (is_string($terlapors)) {
+        $decoded = json_decode($terlapors, true);
+        $terlapors = is_array($decoded) ? $decoded : [];
+    }
+@endphp
+
+<tbody>
+    @forelse($terlapors as $t)
+        <tr>
+            <td>{{ $t['nama'] ?? '-' }}</td>
+            <td>{{ $t['nip'] ?? '-' }}</td>
+            <td>{{ $t['satuan_kerja'] ?? '-' }}</td>
+            <td>{{ $t['jabatan'] ?? '-' }}</td>
+            <td>{{ $t['jenis_kelamin'] ?? '-' }}</td>
+        </tr>
+    @empty
+        <tr>
+            <td colspan="5" class="text-center text-muted">Tidak ada data terlapor</td>
+        </tr>
+    @endforelse
+</tbody>
+
                     </table>
                 </div>
             @else
@@ -676,24 +710,37 @@
             </div>
 
             <!-- Bukti -->
-            @if($pengaduan->bukti_file)
-                <div class="section-header">
-                    <div class="icon-box">
-                        <i class="bi bi-paperclip"></i>
-                    </div>
-                    <h5>Bukti Pendukung</h5>
-                </div>
+           @if($pengaduan->bukti_file || $pengaduan->link_video)
+    <div class="section-header">
+        <div class="icon-box">
+            <i class="bi bi-paperclip"></i>
+        </div>
+        <h5>Bukti Pendukung</h5>
+    </div>
 
-                @php $files = json_decode($pengaduan->bukti_file, true); @endphp
-                <div class="file-list">
-                    @foreach($files as $file)
-                        <a href="{{ asset('storage/' . $file) }}" target="_blank" class="file-link">
-                            <i class="bi bi-file-earmark-arrow-down"></i>
-                            <span>{{ basename($file) }}</span>
-                        </a>
-                    @endforeach
-                </div>
-            @endif
+    {{-- Tampilkan file upload --}}
+    @if($pengaduan->bukti_file)
+        @php $files = json_decode($pengaduan->bukti_file, true); @endphp
+        <div class="file-list mb-2">
+            @foreach($files as $file)
+                <a href="{{ asset('storage/' . $file) }}" target="_blank" class="file-link d-block mb-1">
+                    <i class="bi bi-file-earmark-arrow-down"></i>
+                    <span>{{ basename($file) }}</span>
+                </a>
+            @endforeach
+        </div>
+    @endif
+
+    {{-- Tampilkan link video --}}
+    @if($pengaduan->link_video)
+        <div class="file-list">
+            <a href="{{ $pengaduan->link_video }}" target="_blank" class="file-link d-block mb-1">
+                <i class="bi bi-play-circle"></i>
+                <span>Video Link</span>
+            </a>
+        </div>
+    @endif
+@endif
 
             <!-- Status -->
             <div class="section-header">
@@ -705,12 +752,12 @@
 
             <div style="text-align: center; padding: 20px;">
                 <span class="status-badge 
-                    @if($pengaduan->status == 'selesai') status-selesai
-                    @elseif($pengaduan->status == 'tindak_lanjut') status-tindak
-                    @elseif($pengaduan->status == 'diverifikasi') status-verifikasi
-                    @elseif($pengaduan->status == 'tanggapan_pelapor') status-tanggapan
-                    @else status-laporan
-                    @endif">
+                            @if($pengaduan->status == 'selesai') status-selesai
+                            @elseif($pengaduan->status == 'tindak_lanjut') status-tindak
+                            @elseif($pengaduan->status == 'diverifikasi') status-verifikasi
+                            @elseif($pengaduan->status == 'tanggapan_pelapor') status-tanggapan
+                            @else status-laporan
+                            @endif">
                     <i class="bi bi-circle-fill" style="font-size: 0.6rem;"></i>
                     {{ str_replace('_', ' ', $pengaduan->status) }}
                 </span>

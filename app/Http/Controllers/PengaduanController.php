@@ -37,6 +37,9 @@ class PengaduanController extends Controller
             'jam_kejadian' => 'required',
             'tempat_kejadian' => 'required|string',
             'identitas_diketahui' => 'required|string',
+
+            'bukti_file.*' => 'nullable|file|max:102400|mimetypes:video/mp4,video/avi,video/mpeg,video/quicktime,image/jpeg,image/png',
+            'link_video' => 'nullable|url|max:255',
         ]);
 
         // Upload multiple file
@@ -46,6 +49,9 @@ class PengaduanController extends Controller
                 $files[] = $file->store('bukti', 'public');
             }
         }
+
+        $validated['bukti_file'] = json_encode($files);
+        $validated['link_video'] = $request->link_video;
 
         // ✅ Simpan data tambahan
         $validated['bukti_file'] = json_encode($files);
@@ -107,6 +113,7 @@ class PengaduanController extends Controller
         }
 
         $pengaduan = Pengaduan::findOrFail($id);
+
         return view('admin.pengaduanShow', compact('pengaduan'));
     }
 
