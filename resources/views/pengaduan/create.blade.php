@@ -2,9 +2,10 @@
 <html lang="id">
 <style>
     body {
-                   overflow-x: hidden;
-        }
+        overflow-x: hidden;
+    }
 </style>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -93,126 +94,126 @@
         }
 
         /* Timeline */
-.process-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin: 60px auto;
-    max-width: 1200px;
-    position: relative;
-}
+        .process-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin: 60px auto;
+            max-width: 1200px;
+            position: relative;
+        }
 
-.process-step {
-    text-align: center;
-    position: relative;
-    flex: 1;
-    padding: 0 15px;
-}
+        .process-step {
+            text-align: center;
+            position: relative;
+            flex: 1;
+            padding: 0 15px;
+        }
 
-.process-icon-container {
-    width: 65px;
-    height: 65px;
-    border-radius: 50%;
-    margin: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.7rem;
-    font-weight: bold;
-    color: #fff;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
-    margin-bottom: 12px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
-    opacity: 0.6;
-    position: relative;
-    z-index: 2;
-    background: white;
-    border: 3px solid white;
-}
+        .process-icon-container {
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            margin: auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.7rem;
+            font-weight: bold;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.15);
+            margin-bottom: 12px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.3s ease;
+            opacity: 0.6;
+            position: relative;
+            z-index: 2;
+            background: white;
+            border: 3px solid white;
+        }
 
-.process-step.active .process-icon-container {
-    transform: scale(1.15);
-    opacity: 1;
-    box-shadow: 0 6px 20px rgba(13, 110, 253, 0.18);
-    border: 3px solid white;
-}
+        .process-step.active .process-icon-container {
+            transform: scale(1.15);
+            opacity: 1;
+            box-shadow: 0 6px 20px rgba(13, 110, 253, 0.18);
+            border: 3px solid white;
+        }
 
-.process-title {
-    font-weight: 700;
-    margin-top: 10px;
-    position: relative;
-    z-index: 3;
-}
+        .process-title {
+            font-weight: 700;
+            margin-top: 10px;
+            position: relative;
+            z-index: 3;
+        }
 
-.process-detail {
-    font-size: 0.9rem;
-    color: #6c757d;
-    position: relative;
-    z-index: 3;
-}
+        .process-detail {
+            font-size: 0.9rem;
+            color: #6c757d;
+            position: relative;
+            z-index: 3;
+        }
 
-/* Garis background (abu-abu) */
-.process-row::before {
-    content: "";
-    position: absolute;
-    top: 32px;
-    left: 8%;
-    right: 8%;
-    height: 4px;
-    background: #dee2e6;
-    z-index: 0;
-    border-radius: 2px;
-}
+        /* Garis background (abu-abu) */
+        .process-row::before {
+            content: "";
+            position: absolute;
+            top: 32px;
+            left: 8%;
+            right: 8%;
+            height: 4px;
+            background: #dee2e6;
+            z-index: 0;
+            border-radius: 2px;
+        }
 
-/* Garis aktif (biru) */
-.process-row::after {
-    content: "";
-    position: absolute;
-    top: 32px;
-    left: 8%;
-    height: 4px;
-    background: var(--primary);
-    z-index: 0;
-    border-radius: 2px;
-    width: 0%;
-    transition: width 0.5s;
-}
+        /* Garis aktif (biru) */
+        .process-row::after {
+            content: "";
+            position: absolute;
+            top: 32px;
+            left: 8%;
+            height: 4px;
+            background: var(--primary);
+            z-index: 0;
+            border-radius: 2px;
+            width: 0%;
+            transition: width 0.5s;
+        }
 
-@media (max-width: 767px) {
-    .process-row {
-        flex-direction: column;
-    }
+        @media (max-width: 767px) {
+            .process-row {
+                flex-direction: column;
+            }
 
-    .process-row::before,
-    .process-row::after {
-        display: none;
-    }
+            .process-row::before,
+            .process-row::after {
+                display: none;
+            }
 
-    .process-step {
-        margin-bottom: 40px;
-    }
-}
+            .process-step {
+                margin-bottom: 40px;
+            }
+        }
 
-/* Step colors */
-.step-1 .process-icon-container {
-    background: var(--warning);
-}
+        /* Step colors */
+        .step-1 .process-icon-container {
+            background: var(--warning);
+        }
 
-.step-2 .process-icon-container {
-    background: #0dcaf0;
-}
+        .step-2 .process-icon-container {
+            background: #0dcaf0;
+        }
 
-.step-3 .process-icon-container {
-    background: var(--primary);
-}
+        .step-3 .process-icon-container {
+            background: var(--primary);
+        }
 
-.step-4 .process-icon-container {
-    background: var(--secondary);
-}
+        .step-4 .process-icon-container {
+            background: var(--secondary);
+        }
 
-.step-5 .process-icon-container {
-    background: var(--success);
-}
+        .step-5 .process-icon-container {
+            background: var(--success);
+        }
     </style>
 </head>
 
@@ -357,14 +358,17 @@
                                                         }
                                                         $pelanggaranList = $pelanggaranList ?? [];
                                                     @endphp
+
                                                     @foreach($pelanggaranList as $p)
                                                         <li>{{ $p }}</li>
                                                     @endforeach
-                                                    @if($laporan->pelanggaran_lain)
-                                                        <li>{{ $laporan->pelanggaran_lain }}</li>
+
+                                                    @if(!empty($laporan->pelanggaran_lain))
+                                                        <li>lainnya ({{ $laporan->pelanggaran_lain }})</li>
                                                     @endif
                                                 </ul>
                                             </div>
+
 
                                             <div class="mt-3">
                                                 <p class="mb-1 text-secondary">Kontak yang bisa dihubungi:</p>
@@ -394,42 +398,42 @@
                                             <div class="mt-3">
                                                 <p class="mb-1 text-secondary">Terlapor:</p>
                                                 @php
-    $terlapors = [];
+                                                    $terlapors = [];
 
-    if (!empty($laporan->terlapor)) {
-        $decoded = json_decode($laporan->terlapor, true);
-        if (is_array($decoded)) {
-            $terlapors = $decoded;
-        }
-    }
-@endphp
+                                                    if (!empty($laporan->terlapor)) {
+                                                        $decoded = json_decode($laporan->terlapor, true);
+                                                        if (is_array($decoded)) {
+                                                            $terlapors = $decoded;
+                                                        }
+                                                    }
+                                                @endphp
 
-@if(count($terlapors) > 0)
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Nama</th>
-                <th>NIP</th>
-                <th>Satuan Kerja</th>
-                <th>Jabatan</th>
-                <th>Jenis Kelamin</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($terlapors as $t)
-                <tr>
-                    <td>{{ $t['nama'] ?? '-' }}</td>
-                    <td>{{ $t['nip'] ?? '-' }}</td>
-                    <td>{{ $t['satuan_kerja'] ?? '-' }}</td>
-                    <td>{{ $t['jabatan'] ?? '-' }}</td>
-                    <td>{{ $t['jenis_kelamin'] ?? '-' }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
-@else
-    <p class="text-muted">Tidak ada data terlapor</p>
-@endif
+                                                @if(count($terlapors) > 0)
+                                                    <table class="table table-bordered">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Nama</th>
+                                                                <th>NIP</th>
+                                                                <th>Satuan Kerja</th>
+                                                                <th>Jabatan</th>
+                                                                <th>Jenis Kelamin</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach($terlapors as $t)
+                                                                <tr>
+                                                                    <td>{{ $t['nama'] ?? '-' }}</td>
+                                                                    <td>{{ $t['nip'] ?? '-' }}</td>
+                                                                    <td>{{ $t['satuan_kerja'] ?? '-' }}</td>
+                                                                    <td>{{ $t['jabatan'] ?? '-' }}</td>
+                                                                    <td>{{ $t['jenis_kelamin'] ?? '-' }}</td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                @else
+                                                    <p class="text-muted">Tidak ada data terlapor</p>
+                                                @endif
                                             </div>
 
                                             {{-- Identitas & Pihak Terkait --}}
@@ -579,7 +583,8 @@
                     <div class="mt-4">
                         <label for="uraian" class="form-label">Uraian Aduan <span class="text-danger">*</span></label>
                         <textarea id="uraian" name="uraian" class="form-control" rows="5"
-                            placeholder="Tuliskan uraian aduan secara detail (apa, siapa, kapan, dimana, mengapa, bagaimana kejadian) " required></textarea>
+                            placeholder="Tuliskan uraian aduan secara detail (apa, siapa, kapan, dimana, mengapa, bagaimana kejadian) "
+                            required></textarea>
                     </div>
 
                     <div class="mt-4">
@@ -649,64 +654,235 @@
                     <!-- Bagian 3: Bentuk Pelanggaran & Kontak -->
                     <h5 class="mb-3">Bentuk Pelanggaran & Cara Menghubungi</h5>
                     <div class="mt-3">
-                        <label class="form-label">Bentuk pelanggaran yang akan Anda laporkan? <span
-                                class="text-danger">*</span></label>
-                        <div class="row">
-                            <div class="col-md-6">
+                        <label class="form-label">
+                            Bentuk pelanggaran yang akan Anda laporkan? <span class="text-danger">*</span>
+                        </label>
+
+                        <!-- Kotak 1 -->
+                        <div class="card mb-3 shadow-sm border-primary">
+                            <div class="card-body">
+                                <h6 class="card-title mb-3 text-primary">Pelanggaran Etika & Integritas Akademik</h6>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="pelanggaran[]"
-                                        value="Pemerasan/Pungutan" id="pel1">
-                                    <label class="form-check-label" for="pel1">Pemerasan / Pungutan</label>
+                                        value="Pelanggaran norma dan etika" id="pel1">
+                                    <label class="form-check-label" for="pel1">Pelanggaran norma dan etika</label>
                                 </div>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="pelanggaran[]"
-                                        value="Penyuapan" id="pel2">
-                                    <label class="form-check-label" for="pel2">Penyuapan</label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="pelanggaran[]"
-                                        value="Gratifikasi" id="pel3">
-                                    <label class="form-check-label" for="pel3">Gratifikasi</label>
+                                        value="Plagiasi / Falsifikasi / Fabrikasi" id="pel2">
+                                    <label class="form-check-label" for="pel2">Plagiasi / Falsifikasi /
+                                        Fabrikasi</label>
                                 </div>
                             </div>
-                            <div class="col-md-6">
+                        </div>
+
+                        <!-- Kotak 2 -->
+                        <div class="card mb-3 shadow-sm border-success">
+                            <div class="card-body">
+                                <h6 class="card-title mb-3 text-success">Pelanggaran Integritas & Anti Korupsi</h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="pelanggaran[]"
+                                                value="Korupsi" id="pel3">
+                                            <label class="form-check-label" for="pel3">Korupsi</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="pelanggaran[]"
+                                                value="Kolusi" id="pel4">
+                                            <label class="form-check-label" for="pel4">Kolusi</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="pelanggaran[]"
+                                                value="Nepotisme" id="pel5">
+                                            <label class="form-check-label" for="pel5">Nepotisme</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="pelanggaran[]"
+                                                value="Gratifikasi / Penyuapan" id="pel6">
+                                            <label class="form-check-label" for="pel6">Gratifikasi / Penyuapan</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="pelanggaran[]"
+                                                value="Benturan / Konflik Kepentingan" id="pel7">
+                                            <label class="form-check-label" for="pel7">Benturan / Konflik
+                                                Kepentingan</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="pelanggaran[]"
+                                                value="Kecurangan / Fraud" id="pel8">
+                                            <label class="form-check-label" for="pel8">Kecurangan / Fraud</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Kotak 3 -->
+                        <div class="card mb-3 shadow-sm border-warning">
+                            <div class="card-body">
+                                <h6 class="card-title mb-3 text-warning">Pelanggaran Kejujuran & Kriminal</h6>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="pelanggaran[]"
+                                                value="Penipuan" id="pel9">
+                                            <label class="form-check-label" for="pel9">Penipuan</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="pelanggaran[]"
+                                                value="Pencurian" id="pel10">
+                                            <label class="form-check-label" for="pel10">Pencurian</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="pelanggaran[]"
+                                                value="Pemerasan / Pungutan liar" id="pel11">
+                                            <label class="form-check-label" for="pel11">Pemerasan / Pungutan
+                                                liar</label>
+                                        </div>
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" name="pelanggaran[]"
+                                                value="Pemalsuan data atau dokumen" id="pel12">
+                                            <label class="form-check-label" for="pel12">Pemalsuan data atau
+                                                dokumen</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Kotak 4 -->
+                        <div class="card mb-3 shadow-sm border-danger">
+                            <div class="card-body">
+                                <h6 class="card-title mb-3 text-danger">Pelanggaran Moral & Sosial</h6>
                                 <div class="form-check">
                                     <input class="form-check-input" type="checkbox" name="pelanggaran[]"
-                                        value="Pelanggaran hukum acara" id="pel4">
-                                    <label class="form-check-label" for="pel4">Pelanggaran hukum acara</label>
+                                        value="Pelecehan seksual" id="pel13">
+                                    <label class="form-check-label" for="pel13">Pelecehan seksual</label>
                                 </div>
                                 <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" name="pelanggaran[]" value="lainnya"
-                                        id="pel5" onchange="togglePelanggaranLain()">
-                                    <label class="form-check-label" for="pel5">Lainnya</label>
+                                    <input class="form-check-input" type="checkbox" name="pelanggaran[]"
+                                        value="Perundungan" id="pel14">
+                                    <label class="form-check-label" for="pel14">Perundungan</label>
                                 </div>
-                                <input type="text" id="pelanggaran_lain" name="pelanggaran_lain"
-                                    class="form-control mt-2 d-none"
-                                    placeholder="Jelaskan jenis pelanggaran lainnya...">
+                            </div>
+                        </div>
+
+                        <!-- Kotak 5 -->
+                        <div class="card mb-3 shadow-sm border-info">
+                            <div class="card-body">
+                                <h6 class="card-title mb-3 text-info">Permohonan atau Lainnya</h6>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="pelanggaran[]"
+                                        value="Permohonan" id="pel15">
+                                    <label class="form-check-label" for="pel15">Permohonan</label>
+                                </div>
+
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="pel16" name="pelanggaran[]"
+                                        value="Lainnya" onchange="togglePelanggaranLain()">
+                                    <label class="form-check-label" for="pel16">Lainnya</label>
+                                </div>
+
+                                <div class="form-group mt-2 d-none" id="pelanggaran_lain">
+                                    <label for="inputPelanggaranLain">Pelanggaran Lainnya:</label>
+                                    <input type="text" name="pelanggaran_lain" id="inputPelanggaranLain"
+                                        class="form-control" placeholder="Tuliskan pelanggaran lainnya...">
+                                </div>
+
+
+
                             </div>
                         </div>
                     </div>
 
-                    <div class="mt-4">
-                        <label class="form-label">Bagaimana kami menghubungi Anda? <span
-                                class="text-danger">*</span></label>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="kontak[]" value="Email" id="kontak1">
-                            <label class="form-check-label" for="kontak1">Email</label>
+
+
+
+                    <div class="row">
+                        <h6 class="card-title mb-3">Bagaimana kami dapat menghubungi Anda?</h6>
+                        <p class="text-muted mb-3">Pilih salah satu atau lebih metode komunikasi yang Anda inginkan,
+                            lalu isi informasinya.</p>
+                        <div class="col-md-4">
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="hubEmail"
+                                    onchange="toggleHubungiField()">
+                                <label class="form-check-label" for="hubEmail">Email</label>
+                            </div>
+                            <input type="email" id="inputEmail" name="email" class="form-control mt-2 d-none"
+                                placeholder="Masukkan alamat email Anda...">
                         </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="kontak[]" value="Telepon/Handphone"
-                                id="kontak2">
-                            <label class="form-check-label" for="kontak2">Telepon / Handphone</label>
+
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="hubTelepon"
+                                    onchange="toggleHubungiField()">
+                                <label class="form-check-label" for="hubTelepon">Telepon / Handphone</label>
+                            </div>
+                            <input type="text" id="inputTelepon" name="telepon" class="form-control mt-2 d-none"
+                                placeholder="Masukkan nomor telepon Anda...">
                         </div>
-                        <div class="form-check">
-                            <input class="form-check-input" type="checkbox" name="kontak[]" value="WhatsApp"
-                                id="kontak3">
-                            <label class="form-check-label" for="kontak3">WhatsApp</label>
+
+                        <div class="col-md-4">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="hubWhatsApp"
+                                    onchange="toggleHubungiField()">
+                                <label class="form-check-label" for="hubWhatsApp">WhatsApp</label>
+                            </div>
+                            <input type="text" id="inputWhatsApp" name="whatsapp" class="form-control mt-2 d-none"
+                                placeholder="Masukkan nomor WhatsApp Anda...">
                         </div>
                     </div>
 
-                    <hr class="my-5">
+                    <script>
+                        function toggleHubungiField() {
+                            const emailCheck = document.getElementById('hubEmail');
+                            const telpCheck = document.getElementById('hubTelepon');
+                            const waCheck = document.getElementById('hubWhatsApp');
+
+                            const emailInput = document.getElementById('inputEmail');
+                            const telpInput = document.getElementById('inputTelepon');
+                            const waInput = document.getElementById('inputWhatsApp');
+
+                            // Email
+                            if (emailCheck.checked) {
+                                emailInput.classList.remove('d-none');
+                                emailInput.setAttribute('required', true);
+                            } else {
+                                emailInput.classList.add('d-none');
+                                emailInput.removeAttribute('required');
+                                emailInput.value = '';
+                            }
+
+                            // Telepon
+                            if (telpCheck.checked) {
+                                telpInput.classList.remove('d-none');
+                                telpInput.setAttribute('required', true);
+                            } else {
+                                telpInput.classList.add('d-none');
+                                telpInput.removeAttribute('required');
+                                telpInput.value = '';
+                            }
+
+                            // WhatsApp
+                            if (waCheck.checked) {
+                                waInput.classList.remove('d-none');
+                                waInput.setAttribute('required', true);
+                            } else {
+                                waInput.classList.add('d-none');
+                                waInput.removeAttribute('required');
+                                waInput.value = '';
+                            }
+                        }
+                    </script>
+
+
+                    <p></p>
 
                     <!-- Bagian 4: Tempat & Perkiraan Waktu Kejadian -->
                     <h5 class="mb-3">Tempat & Perkiraan Waktu Kejadian</h5>
@@ -903,9 +1079,10 @@
         }
 
         function togglePelanggaranLain() {
-            const pelanggaran = document.getElementById('pel5').checked;
+            const pelanggaran = document.getElementById('pel16').checked;
             document.getElementById('pelanggaran_lain').classList.toggle('d-none', !pelanggaran);
         }
+
 
         document.getElementById('tempat_kejadian').addEventListener('change', function () {
             document.getElementById('tempat_lain').classList.toggle('d-none', this.value !== 'lainnya');

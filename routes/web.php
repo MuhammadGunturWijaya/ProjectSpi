@@ -42,6 +42,7 @@ use App\Http\Middleware\IsAdmin;
 use App\Http\Controllers\Admin\TimelineController;
 use App\Http\Controllers\ProcessController;
 use App\Http\Controllers\BagianController;
+use App\Http\Controllers\AspirasiController;
 
 // Halaman landing
 Route::get('/', [LandingPageController::class, 'index'])->name('landingpage');
@@ -728,3 +729,7 @@ Route::delete('/evaluasi-mr/{id}', [IdentifikasiRisikoController::class, 'destro
 Route::post('/evaluasi-mr/update-order', [IdentifikasiRisikoController::class, 'updateOrder'])
     ->name('evaluasiMr.updateOrder')
     ->middleware('auth');
+
+Route::get('/aspirasi/create', [AspirasiController::class, 'create'])->name('aspirasi.create');
+Route::post('/aspirasi/store', [AspirasiController::class, 'store'])->name('aspirasi.store');
+

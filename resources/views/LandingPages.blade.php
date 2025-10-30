@@ -2,9 +2,10 @@
 <html lang="id">
 <style>
     body {
-                   overflow-x: hidden;
-        }
+        overflow-x: hidden;
+    }
 </style>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -859,7 +860,7 @@
                 <h4 style="color: white;"> Lapor Di Sini</h4>
             </a>
 
-            <a href="#PengaduanMasyarakat" class="quick-card">
+            <a href="#aspirasikritik" class="quick-card">
                 <img src="{{ asset('images/logo/laporan.png') }}" alt="Berita" class="news-img1">
                 <h4 style="color: white;"> Aspirasi / Kritik </h4>
                 <h4 style="color: white;"> Klik Disini</h4>
@@ -883,6 +884,47 @@
         </div>
 
         <style>
+            /* Tambahan untuk hero-section */
+            .hero-section {
+                /* Pastikan section memiliki tinggi yang cukup untuk menampung elemen */
+                /* Anda mungkin perlu menyesuaikan tinggi ini */
+                height: 100vh;
+                /* Contoh tinggi layar penuh */
+            }
+
+            /* Memastikan hero-content (judul) berada di tengah atas */
+            .hero-content {
+                text-align: center;
+                padding-top: 2vh;
+                /* Sesuaikan jarak dari atas */
+            }
+
+            /* CSS Baru untuk Quick Access: Menata elemen secara horizontal */
+            .quick-access {
+                position: absolute;
+                /* Posisikan relatif terhadap hero-section */
+                bottom: 50px;
+                /* Jarak dari bawah. */
+                left: 50%;
+                transform: translateX(-50%);
+                /* Posisikan di tengah horizontal */
+                width: 80%;
+                /* Lebar kontainer */
+                display: flex;
+                /* Aktifkan Flexbox */
+
+                /* ⬇️ DIUBAH: Mengganti 'space-around' menjadi 'center' untuk merapatkan ke tengah */
+                justify-content: center;
+
+                /* ⬇️ TAMBAH: Mengatur jarak (gap) antar setiap kartu */
+                gap: 10px;
+
+                align-items: flex-start;
+                /* Sejajarkan item ke atas */
+                z-index: 10;
+                /* Pastikan di atas elemen lain jika ada tumpang tindih */
+            }
+
             .quick-card {
                 display: flex;
                 flex-direction: column;
@@ -891,23 +933,31 @@
                 color: inherit;
                 background: transparent;
                 box-shadow: none;
+                /* Tambahan: Pastikan teks di bawah ikon rata tengah */
+                text-align: center;
+                /* flex-basis: 20%; ⬅️ Komentar ini dihilangkan agar kartu lebih fleksibel di mode 'center' */
+            }
+
+            .quick-card h4 {
+                font-size: 0.85rem;
+                /* Mengecilkan ukuran font untuk menyesuaikan dengan ikon yang lebih kecil */
             }
 
             .news-img1 {
-                width: 100px;
-                height: 100px;
+                width: 70px;
+                height: 70px;
                 object-fit: contain;
                 border-radius: 10px;
-                margin-bottom: 10px;
+                margin-bottom: 5px;
+                /* Kurangi margin untuk menghemat ruang */
                 background: transparent;
             }
 
+            /* CSS Anda yang sudah ada */
             .stat-card2 {
                 position: absolute;
                 bottom: 20px;
-                /* jarak dari bawah */
                 right: 20px;
-                /* jarak dari kanan */
                 background: rgba(0, 0, 0, 0.6);
                 color: white;
                 padding: 15px 20px;
@@ -1048,6 +1098,158 @@
             @endif
         </div>
     </section>
+
+    <section class="report-section aspiration-section" id="aspirasikritik">
+        <div class="report-content">
+            <div class="report-icon">
+                <i class="bi bi-chat-left-text-fill"></i>
+            </div>
+
+            <h2 class="report-title">Sampaikan Aspirasi & Kritik Anda 💬</h2>
+
+            <p class="report-text">
+                Suara Anda membantu kami tumbuh dan berbenah.
+                Bagikan ide, saran, atau kritik konstruktif agar
+                <strong>Satuan Pengawas Internal Politeknik Negeri Jember</strong>
+                dapat mewujudkan pelayanan yang <em>lebih transparan, akuntabel, dan berintegritas</em>.
+            </p>
+
+            @auth
+                <a href="{{ route('aspirasi.create') }}" class="btn-report btn-aspiration">
+                    <i class="bi bi-lightbulb-fill me-2"></i>Berikan Aspirasi Sekarang
+                </a>
+            @else
+                <button class="btn-report btn-aspiration" data-bs-toggle="modal" data-bs-target="#aspirasiModal">
+                    <i class="bi bi-lightbulb-fill me-2"></i>Berikan Aspirasi Sekarang
+                </button>
+            @endauth
+
+
+            @if(Auth::user()?->role === 'admin')
+                <a href="#" class="btn-report btn-admin">
+                    <i class="bi bi-list-check me-2"></i>Lihat Aspirasi
+                </a>
+            @endif
+        </div>
+
+        <style>
+            .aspiration-section {
+                background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+                color: white;
+                padding: 80px 20px;
+                text-align: center;
+                position: relative;
+                overflow: hidden;
+            }
+
+            /* Tambahkan pola transparan di background */
+            .aspiration-section::before {
+                content: "";
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+                background-size: 40px 40px;
+                z-index: 0;
+            }
+
+            .report-content {
+                position: relative;
+                z-index: 2;
+                max-width: 700px;
+                margin: 0 auto;
+                padding: 20px;
+            }
+
+            .report-icon {
+                font-size: 4rem;
+                color: #ffc107;
+                margin-bottom: 20px;
+                animation: floatIcon 3s ease-in-out infinite;
+            }
+
+            @keyframes floatIcon {
+
+                0%,
+                100% {
+                    transform: translateY(0);
+                }
+
+                50% {
+                    transform: translateY(-8px);
+                }
+            }
+
+            .report-title {
+                font-size: 2.2rem;
+                font-weight: 700;
+                margin-bottom: 15px;
+            }
+
+            .report-text {
+                font-size: 1.1rem;
+                line-height: 1.7;
+                color: #f1f1f1;
+                margin-bottom: 30px;
+            }
+
+            .btn-report {
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                background: #ffc107;
+                color: #1a1a1a;
+                border: none;
+                border-radius: 50px;
+                padding: 12px 28px;
+                font-weight: 600;
+                font-size: 1rem;
+                text-decoration: none;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 10px rgba(255, 193, 7, 0.3);
+            }
+
+            .btn-report:hover {
+                background: #ffda3d;
+                transform: translateY(-4px);
+                box-shadow: 0 6px 15px rgba(255, 193, 7, 0.4);
+            }
+
+            .btn-admin {
+                margin-left: 15px;
+                background: white;
+                color: #2c5364;
+            }
+
+            .btn-admin:hover {
+                background: #f1f1f1;
+                transform: translateY(-4px);
+            }
+
+            @media (max-width: 768px) {
+                .report-title {
+                    font-size: 1.8rem;
+                }
+
+                .report-text {
+                    font-size: 1rem;
+                }
+
+                .btn-report {
+                    width: 80%;
+                    justify-content: center;
+                }
+
+                .btn-admin {
+                    display: block;
+                    margin: 15px auto 0;
+                }
+            }
+        </style>
+    </section>
+
 
     <!-- Modal Laporan -->
     <div class="modal fade" id="laporModal" tabindex="-1" aria-hidden="true">
