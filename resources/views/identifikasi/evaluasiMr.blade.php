@@ -79,11 +79,79 @@
             font-weight: 600;
             font-size: 1.2rem;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .reorder-toggle {
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 0.4rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .reorder-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .reorder-toggle.active {
+            background: #28a745;
+            border-color: #28a745;
+        }
+
+        /* Drag and Drop Styles */
+        .draggable-row {
+            cursor: default;
+            transition: all 0.2s;
+        }
+
+        .reorder-mode .draggable-row {
+            cursor: move;
+        }
+
+        .draggable-row.dragging {
+            opacity: 0.5;
+            background-color: #e3f2fd;
+        }
+
+        .draggable-row.drag-over {
+            border-top: 3px solid #007bff;
+        }
+
+        .drag-handle {
+            display: none;
+            cursor: move;
+            color: #6c757d;
+            padding: 0 8px;
+        }
+
+        .reorder-mode .drag-handle {
+            display: inline-block;
+        }
+
+        .reorder-mode tbody tr {
+            background-color: #f8f9fa;
+        }
+
+        .reorder-mode tbody tr:hover {
+            background-color: #e9ecef !important;
         }
 
         @media (max-width: 992px) {
             table {
                 font-size: 0.875rem;
+            }
+
+            .bagian-title {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: flex-start;
             }
         }
     </style>
@@ -106,8 +174,82 @@
                     <button onclick="printLaporan()" class="btn btn-primary">
                         <i class="fa fa-print"></i> Cetak Laporan
                     </button>
+                    <button onclick="exportToExcel()" class="btn btn-success">
+                        <i class="fa fa-file-excel"></i> Export Excel
+                    </button>
                 </div>
             </div>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+            <script>
+                function exportToExcel() {
+                    const workbook = XLSX.utils.book_new();
+
+                    // Get all tables by unit
+                    const bagianSections = document.querySelectorAll('.bagian-section');
+
+                    bagianSections.forEach(section => {
+                        const unitName = section.querySelector('.bagian-title').textContent.trim().replace('Unit: ', '').replace('Pindah Urutan', '').trim();
+                        const table = section.querySelector('table');
+
+                        if (table) {
+                            // Clone table to manipulate
+                            const clonedTable = table.cloneNode(true);
+
+                            // Remove drag handles and action buttons
+                            clonedTable.querySelectorAll('.drag-handle').forEach(el => el.remove());
+                            clonedTable.querySelectorAll('td:last-child').forEach(el => el.textContent = '');
+
+                            // Convert table to worksheet
+                            const worksheet = XLSX.utils.table_to_sheet(clonedTable);
+
+                            // Set column widths
+                            worksheet['!cols'] = [
+                                { wch: 5 },   // #
+                                { wch: 8 },   // Abjad
+                                { wch: 15 },  // Tanggal
+                                { wch: 20 },  // Tujuan
+                                { wch: 20 },  // Proses Bisnis
+                                { wch: 15 },  // Kategori
+                                { wch: 30 },  // Uraian
+                                { wch: 25 },  // Penyebab
+                                { wch: 15 },  // Sumber
+                                { wch: 25 },  // Akibat
+                                { wch: 15 },  // Pemilik
+                                { wch: 10 },  // Likelihood
+                                { wch: 10 },  // Impact
+                                { wch: 10 },  // Level
+                                { wch: 12 },  // Ada
+                                { wch: 12 },  // Memadai
+                                { wch: 12 },  // Dijalankan
+                                { wch: 10 },  // Residu L
+                                { wch: 10 },  // Residu I
+                                { wch: 10 },  // Residu Level
+                                { wch: 15 },  // Mitigasi Opsi
+                                { wch: 30 },  // Mitigasi Desk
+                                { wch: 10 },  // Akhir L
+                                { wch: 10 },  // Akhir I
+                                { wch: 10 }   // Akhir Level
+                            ];
+
+                            // Sanitize sheet name (max 31 chars, no special chars)
+                            let sheetName = unitName.substring(0, 31).replace(/[:\\\/\?\*\[\]]/g, '_');
+
+                            XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
+                        }
+                    });
+
+                    // Generate filename with current date
+                    const today = new Date();
+                    const dateStr = today.getFullYear() + '-' +
+                        String(today.getMonth() + 1).padStart(2, '0') + '-' +
+                        String(today.getDate()).padStart(2, '0');
+
+                    const filename = `Evaluasi_MR_SPI_Polije_${dateStr}.xlsx`;
+
+                    // Save file
+                    XLSX.writeFile(workbook, filename);
+                }
+            </script>
             <script>
                 function printLaporan() {
                     const container = document.getElementById('allTablesContainer');
@@ -167,6 +309,12 @@
             .table-container {
                 width: 100%;
                 overflow-x: auto;
+            }
+            .drag-handle {
+                display: none !important;
+            }
+            .reorder-toggle {
+                display: none !important;
             }
         </style>
     `;
@@ -247,10 +395,18 @@
                         @foreach($risikosByBagian as $bagian => $risikoGroup)
                             <div class="bagian-section" data-bagian-group="{{ $bagian }}">
                                 <div class="bagian-title">
-                                    <i class="fa fa-building"></i> Unit: {{ $bagian }}
+                                    <div>
+                                        <i class="fa fa-building"></i> Unit: {{ $bagian }}
+                                    </div>
+                                    @if(Auth::check() && Auth::user()->role === 'admin')
+                                        <button class="reorder-toggle" onclick="toggleReorderMode(this, '{{ $bagian }}')">
+                                            <i class="fa fa-arrows-alt"></i> Pindah Urutan
+                                        </button>
+                                    @endif
                                 </div>
                                 <div class="table-responsive">
-                                    <table class="table table-bordered table-striped align-middle">
+                                    <table class="table table-bordered table-striped align-middle"
+                                        data-unit="{{ $bagian }}">
                                         <thead>
                                             <tr class="text-center">
                                                 <th rowspan="2">#</th>
@@ -289,8 +445,9 @@
                                         </thead>
                                         <tbody>
                                             @foreach($risikoGroup as $risiko)
-                                                <tr>
-                                                    <td>{{ $loop->iteration }}</td>
+                                                <tr class="draggable-row" draggable="false" data-id="{{ $risiko->id }}">
+                                                    <td><span class="drag-handle"><i class="fa fa-grip-vertical"></i></span>
+                                                        {{ $loop->iteration }}</td>
                                                     <td>{{ $risiko->abjad }}</td>
                                                     <td>{{ \Carbon\Carbon::parse($risiko->tanggal_evaluasi)->format('d-m-Y') }}
                                                     </td>
@@ -516,6 +673,162 @@
                 </div>
 
                 <script>
+                    let draggedElement = null;
+                    let activeTable = null;
+
+                    function toggleReorderMode(button, unit) {
+                        const table = document.querySelector(`table[data-unit="${unit}"]`);
+                        const tbody = table.querySelector('tbody');
+                        const rows = tbody.querySelectorAll('.draggable-row');
+
+                        button.classList.toggle('active');
+                        tbody.classList.toggle('reorder-mode');
+
+                        const isReorderMode = button.classList.contains('active');
+
+                        if (isReorderMode) {
+                            button.innerHTML = '<i class="fa fa-check"></i> Selesai';
+                            activeTable = tbody;
+
+                            rows.forEach(row => {
+                                row.setAttribute('draggable', 'true');
+                                row.addEventListener('dragstart', handleDragStart);
+                                row.addEventListener('dragend', handleDragEnd);
+                                row.addEventListener('dragover', handleDragOver);
+                                row.addEventListener('drop', handleDrop);
+                                row.addEventListener('dragleave', handleDragLeave);
+                            });
+                        } else {
+                            button.innerHTML = '<i class="fa fa-spinner fa-spin"></i> Menyimpan...';
+                            button.disabled = true;
+
+                            rows.forEach(row => {
+                                row.setAttribute('draggable', 'false');
+                                row.removeEventListener('dragstart', handleDragStart);
+                                row.removeEventListener('dragend', handleDragEnd);
+                                row.removeEventListener('dragover', handleDragOver);
+                                row.removeEventListener('drop', handleDrop);
+                                row.removeEventListener('dragleave', handleDragLeave);
+                            });
+
+                            updateRowNumbers(tbody);
+
+                            // Simpan urutan ke database
+                            saveOrder(tbody, button);
+
+                            activeTable = null;
+                        }
+                    }
+
+                    function saveOrder(tbody, button) {
+                        const rows = tbody.querySelectorAll('.draggable-row');
+                        const orders = {};
+
+                        rows.forEach((row, index) => {
+                            const id = row.getAttribute('data-id');
+                            orders[id] = index + 1;
+                        });
+
+                        // Kirim ke server via AJAX
+                        fetch('{{ route("evaluasiMr.updateOrder") }}', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({ orders: orders })
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    button.innerHTML = '<i class="fa fa-check-circle"></i> Tersimpan!';
+                                    setTimeout(() => {
+                                        button.innerHTML = '<i class="fa fa-arrows-alt"></i> Pindah Urutan';
+                                        button.disabled = false;
+                                    }, 1500);
+                                } else {
+                                    alert('Gagal menyimpan urutan!');
+                                    button.innerHTML = '<i class="fa fa-arrows-alt"></i> Pindah Urutan';
+                                    button.disabled = false;
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error:', error);
+                                alert('Terjadi kesalahan saat menyimpan urutan!');
+                                button.innerHTML = '<i class="fa fa-arrows-alt"></i> Pindah Urutan';
+                                button.disabled = false;
+                            });
+                    }
+
+                    function handleDragStart(e) {
+                        draggedElement = this;
+                        this.classList.add('dragging');
+                        e.dataTransfer.effectAllowed = 'move';
+                        e.dataTransfer.setData('text/html', this.innerHTML);
+                    }
+
+                    function handleDragEnd(e) {
+                        this.classList.remove('dragging');
+
+                        const rows = activeTable.querySelectorAll('.draggable-row');
+                        rows.forEach(row => {
+                            row.classList.remove('drag-over');
+                        });
+                    }
+
+                    function handleDragOver(e) {
+                        if (e.preventDefault) {
+                            e.preventDefault();
+                        }
+
+                        e.dataTransfer.dropEffect = 'move';
+
+                        if (this !== draggedElement) {
+                            this.classList.add('drag-over');
+                        }
+
+                        return false;
+                    }
+
+                    function handleDragLeave(e) {
+                        this.classList.remove('drag-over');
+                    }
+
+                    function handleDrop(e) {
+                        if (e.stopPropagation) {
+                            e.stopPropagation();
+                        }
+
+                        if (draggedElement !== this) {
+                            const allRows = [...activeTable.querySelectorAll('.draggable-row')];
+                            const draggedIndex = allRows.indexOf(draggedElement);
+                            const targetIndex = allRows.indexOf(this);
+
+                            if (draggedIndex < targetIndex) {
+                                this.parentNode.insertBefore(draggedElement, this.nextSibling);
+                            } else {
+                                this.parentNode.insertBefore(draggedElement, this);
+                            }
+
+                            updateRowNumbers(activeTable);
+                        }
+
+                        this.classList.remove('drag-over');
+
+                        return false;
+                    }
+
+                    function updateRowNumbers(tbody) {
+                        const rows = tbody.querySelectorAll('.draggable-row');
+                        rows.forEach((row, index) => {
+                            const numberCell = row.querySelector('td:first-child');
+                            const dragHandle = numberCell.querySelector('.drag-handle');
+                            if (dragHandle) {
+                                numberCell.innerHTML = dragHandle.outerHTML + ' ' + (index + 1);
+                            }
+                        });
+                    }
+
                     function filterBagian(bagian) {
                         const groupedTables = document.getElementById('groupedTables');
                         const singleTable = document.getElementById('singleTable');

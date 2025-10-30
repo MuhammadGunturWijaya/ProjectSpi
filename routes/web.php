@@ -715,3 +715,16 @@ Route::delete('/bagian/{id}', [App\Http\Controllers\IdentifikasiRisikoController
     ->name('bagian.destroy');
 Route::put('/bagian/{id}', [App\Http\Controllers\IdentifikasiRisikoController::class, 'updateBagian'])
     ->name('bagian.update');
+
+// Route untuk Evaluasi MR
+Route::get('/evaluasi-mr', [IdentifikasiRisikoController::class, 'evaluasiMr'])->name('evaluasiMr.index');
+Route::get('/evaluasi-mr/create', [IdentifikasiRisikoController::class, 'createEvaluasiMr'])->name('evaluasiMr.create');
+Route::post('/evaluasi-mr', [IdentifikasiRisikoController::class, 'storeEvaluasiMr'])->name('evaluasiMr.store');
+Route::get('/evaluasi-mr/{id}/edit', [IdentifikasiRisikoController::class, 'editEvaluasiMr'])->name('evaluasiMr.edit');
+Route::put('/evaluasi-mr/{id}', [IdentifikasiRisikoController::class, 'updateEvaluasiMr'])->name('evaluasiMr.update');
+Route::delete('/evaluasi-mr/{id}', [IdentifikasiRisikoController::class, 'destroyEvaluasiMr'])->name('evaluasiMr.destroy');
+
+// Route baru untuk update urutan (Drag & Drop)
+Route::post('/evaluasi-mr/update-order', [IdentifikasiRisikoController::class, 'updateOrder'])
+    ->name('evaluasiMr.updateOrder')
+    ->middleware('auth');

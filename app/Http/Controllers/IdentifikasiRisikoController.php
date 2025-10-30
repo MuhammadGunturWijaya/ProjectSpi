@@ -85,7 +85,12 @@ class IdentifikasiRisikoController extends Controller
 
     public function evaluasiMr()
     {
-        $risikos = IdentifikasiRisiko::all();
+        // Query dengan sorting berdasarkan bagian dan urutan
+        $risikos = IdentifikasiRisiko::orderBy('bagian')
+                                     ->orderBy('urutan')
+                                     ->orderBy('id')
+                                     ->get();
+        
         $bagians = IdentifikasiRisiko::whereNotNull('bagian')->distinct()->pluck('bagian');
         return view('identifikasi.evaluasiMr', compact('risikos', 'bagians'));
     }
@@ -189,12 +194,7 @@ class IdentifikasiRisikoController extends Controller
             'akhir_likelihood' => $validated['akhir_likelihood'] ?? null,
             'akhir_impact' => $validated['akhir_impact'] ?? null,
             'akhir_level' => $validated['akhir_level'] ?? null,
-
         ]);
-
-
-
-
 
         return redirect()->route('evaluasiMr.index')->with('success', 'Data risiko berhasil ditambahkan!');
     }
@@ -284,10 +284,44 @@ class IdentifikasiRisikoController extends Controller
             'akhir_likelihood' => $validated['akhir_likelihood'] ?? null,
             'akhir_impact' => $validated['akhir_impact'] ?? null,
             'akhir_level' => $validated['akhir_level'] ?? null,
-
         ]);
 
         return redirect()->route('evaluasiMr.index')->with('success', 'Data risiko berhasil diperbarui!');
+    }
+
+    /**
+     * Method baru untuk update urutan data (Drag & Drop)
+     */
+    public function updateOrder(Request $request)
+    {
+        try {
+            $orders = $request->input('orders');
+            
+            if (!$orders || !is_array($orders)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Data urutan tidak valid'
+                ], 400);
+            }
+            
+            foreach ($orders as $id => $urutan) {
+                IdentifikasiRisiko::where('id', $id)
+                    ->update(['urutan' => $urutan]);
+            }
+            
+            return response()->json([
+                'success' => true,
+                'message' => 'Urutan berhasil disimpan'
+            ]);
+            
+        } catch (\Exception $e) {
+            \Log::error('Error updating order: ' . $e->getMessage());
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menyimpan urutan: ' . $e->getMessage()
+            ], 500);
+        }
     }
 
     public function destroy($id)
@@ -309,8 +343,6 @@ class IdentifikasiRisikoController extends Controller
 
         return response()->json(['success' => true]);
     }
-
-
 
     public function destroyEvaluasiMr($id)
     {

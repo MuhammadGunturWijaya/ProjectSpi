@@ -9,6 +9,7 @@ class IdentifikasiRisiko extends Model
     protected $table = 'identifikasi_risikos';
 
     protected $fillable = [
+        'urutan',
         'tanggal_evaluasi',
         'abjad',
         'tujuan',

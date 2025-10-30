@@ -854,15 +854,21 @@
             </a>
 
             <a href="#PengaduanMasyarakat" class="quick-card">
-                <img src="{{ asset('images/logo/laporan.png') }}" alt="Berita" class="news-img1">
+                <img src="{{ asset('images/logo/megaphone.png') }}" alt="Berita" class="news-img1">
                 <h4 style="color: white;"> Pengaduan </h4>
                 <h4 style="color: white;"> Lapor Di Sini</h4>
+            </a>
+
+            <a href="#PengaduanMasyarakat" class="quick-card">
+                <img src="{{ asset('images/logo/laporan.png') }}" alt="Berita" class="news-img1">
+                <h4 style="color: white;"> Aspirasi / Kritik </h4>
+                <h4 style="color: white;"> Klik Disini</h4>
             </a>
 
             <!-- {{ route('survey.kepuasan') }} -->
             <a href="#PenilaianMasyarakat" class="quick-card">
                 <img src="{{ asset('images/logo/survey2.png') }}" alt="Berita" class="news-img1">
-                <h4 style="color: white;"> Penilaian Layanan</h4>
+                <h4 style="color: white;"> Survey Kepuasan Masyarakat</h4>
                 <h4 style="color: white;"> Klik Disini</h4>
             </a>
         </div>

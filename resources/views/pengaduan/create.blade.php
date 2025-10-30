@@ -577,16 +577,17 @@
                     </div>
 
                     <div class="mt-4">
-                        <label for="uraian" class="form-label">Uraian Singkat <span class="text-danger">*</span></label>
+                        <label for="uraian" class="form-label">Uraian Aduan <span class="text-danger">*</span></label>
                         <textarea id="uraian" name="uraian" class="form-control" rows="5"
-                            placeholder="Tuliskan uraian singkat pengaduan..." required></textarea>
+                            placeholder="Tuliskan uraian aduan secara detail (apa, siapa, kapan, dimana, mengapa, bagaimana kejadian) " required></textarea>
                     </div>
 
                     <div class="mt-4">
-                        <label for="bukti_file" class="form-label">Upload File / Foto / Video (opsional)</label>
+                        <label for="bukti_file" class="form-label">Upload File / Foto / Video (max ...)</label>
                         <input type="file" id="bukti_file" name="bukti_file[]" class="form-control"
                             accept="image/*,video/*,.pdf,.doc,.docx" multiple>
                         <small class="text-muted">Anda dapat mengupload lebih dari satu file</small>
+                        <!-- tambahann input link video -->
                     </div>
 
                     <hr class="my-5">
