@@ -731,6 +731,17 @@ Route::delete('/processes/{process}', [ProcessController::class, 'destroy'])->na
 
 Route::get('/proses-bisnis-spi', [ProcessController::class, 'index'])->name('proses-bisnis-spi');
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+
+Route::get('/program-kerja/{id}', [ProgramKerjaSPIController::class, 'show'])
+    ->name('program-kerja.show');
+
+    Route::get('/KonsideranSPI/{id}', [KonsideranSPIController::class, 'show'])
+    ->name('konsideranspi.show');
+
+Route::get('/pedomanmr/{id}', [PedomanMRController::class, 'show'])->name('pedomanmr.show');
+>>>>>>> 25c17b8 (ppp)
 Route::delete('/instrumen/{id}', [InstrumenController::class, 'destroy'])->name('instrumen.destroy');
 Route::get('/instrumen/{id}/edit', [InstrumenController::class, 'edit'])->name('instrumen.edit');
 Route::resource('instrumen', App\Http\Controllers\Instrumen\InstrumenController::class);
@@ -740,6 +751,7 @@ Route::post('/unit/store', [IdentifikasiRisikoController::class, 'storeUnit'])->
 Route::post('/bagian/store', [BagianController::class, 'store'])->name('bagian.store');
 Route::get('/bagian/list', [BagianController::class, 'list'])->name('bagian.list');
 Route::post('/evaluasi-mr/tambah-bagian', [IdentifikasiRisikoController::class, 'ajaxTambahBagian'])->name('evaluasiMr.ajaxTambahBagian');
+<<<<<<< HEAD
 
 Route::delete('/bagian/{id}', [App\Http\Controllers\IdentifikasiRisikoController::class, 'destroy'])
     ->name('bagian.destroy');
@@ -812,3 +824,5 @@ Route::get('/program-kerja/{id}', [ProgramKerjaSPIController::class, 'show'])
 
 Route::get('/pedomanmr/{id}', [PedomanMRController::class, 'show'])->name('pedomanmr.show');
 >>>>>>> dd86691 (l)
+=======
+>>>>>>> 25c17b8 (ppp)
