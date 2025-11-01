@@ -254,67 +254,246 @@
                 function printLaporan() {
                     const container = document.getElementById('allTablesContainer');
 
-                    const printWindow = window.open('', '', 'height=800,width=1200');
+                    // Clone container untuk manipulasi
+                    const clonedContainer = container.cloneNode(true);
+
+                    // Hapus semua tombol reorder dan kolom Edit & Hapus
+                    clonedContainer.querySelectorAll('.reorder-toggle').forEach(el => el.remove());
+                    clonedContainer.querySelectorAll('.drag-handle').forEach(el => el.remove());
+
+                    // Hapus kolom header "Edit & Hapus"
+                    clonedContainer.querySelectorAll('thead tr:first-child th:last-child').forEach(el => el.remove());
+
+                    // Hapus sel "Edit & Hapus" di body
+                    clonedContainer.querySelectorAll('tbody tr td:last-child').forEach(el => el.remove());
+
+                    const printWindow = window.open('', '', 'height=800,width=1400');
 
                     const style = `
         <style>
             @page {
-                size: landscape;
+                size: A3 landscape;
                 margin: 10mm;
             }
-            body {
-                font-family: 'Poppins', sans-serif;
-                padding: 10px;
+            
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
             }
+            
+            body {
+                font-family: 'Arial', sans-serif;
+                padding: 8px;
+                font-size: 7px;
+                max-width: 100%;
+            }
+            
             h2 {
                 text-align: center;
-                margin-bottom: 20px;
+                margin-bottom: 10px;
+                font-size: 14px;
+                color: #333;
+                page-break-after: avoid;
+                font-weight: bold;
             }
+            
+            .bagian-section {
+                page-break-inside: avoid;
+                margin-bottom: 25px;
+            }
+            
             .bagian-title {
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 color: white;
-                padding: 0.5rem 1rem;
-                margin: 20px 0 10px 0;
+                padding: 5px 10px;
+                margin: 10px 0 5px 0;
                 font-weight: 600;
-                font-size: 14px;
+                font-size: 10px;
+                border-radius: 3px;
+                page-break-after: avoid;
             }
+            
+            .table-responsive {
+                width: 100%;
+                overflow: visible;
+                page-break-inside: avoid;
+            }
+            
             table {
                 width: 100%;
                 border-collapse: collapse;
-                font-size: 10px;
-                table-layout: fixed;
-                word-wrap: break-word;
-                margin-bottom: 30px;
-                page-break-inside: avoid;
+                font-size: 6.5px;
+                table-layout: auto;
+                margin-bottom: 10px;
+                background: white;
             }
+            
             table, th, td {
-                border: 1px solid #000;
+                border: 0.5px solid #000;
             }
-            th, td {
-                padding: 4px;
+            
+            th {
+                background-color: #343a40 !important;
+                color: white !important;
+                padding: 3px 2px;
                 text-align: center;
                 vertical-align: middle;
+                font-weight: 600;
+                font-size: 6.5px;
+                line-height: 1.2;
             }
-            th {
-                background-color: #343a40;
-                color: white;
+            
+            td {
+                padding: 2px 1px;
+                text-align: left;
+                vertical-align: top;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
+                hyphens: auto;
+                line-height: 1.3;
+                max-width: 80px;
             }
+            
+            /* Kolom nomor dan identifikasi */
+            table td:nth-child(1) { 
+                width: 20px;
+                text-align: center;
+                font-weight: bold;
+            }
+            
+            table td:nth-child(2) { 
+                width: 25px;
+                text-align: center;
+                font-weight: bold;
+            }
+            
+            table td:nth-child(3) { 
+                width: 50px;
+                text-align: center;
+                font-size: 6px;
+            }
+            
+            /* Kolom deskriptif - diberi ruang lebih */
+            table td:nth-child(4),
+            table td:nth-child(5),
+            table td:nth-child(6) { 
+                width: 60px;
+                font-size: 6px;
+            }
+            
+            table td:nth-child(7),
+            table td:nth-child(8),
+            table td:nth-child(10) { 
+                width: 70px;
+                font-size: 6px;
+            }
+            
+            table td:nth-child(9),
+            table td:nth-child(11) { 
+                width: 50px;
+                font-size: 6px;
+            }
+            
+            /* Kolom skor - sempit */
+            table td:nth-child(12),
+            table td:nth-child(13),
+            table td:nth-child(14),
+            table td:nth-child(18),
+            table td:nth-child(19),
+            table td:nth-child(20),
+            table td:nth-child(23),
+            table td:nth-child(24),
+            table td:nth-child(25) { 
+                width: 22px;
+                text-align: center;
+                font-weight: bold;
+            }
+            
+            /* Kolom pengendalian intern */
+            table td:nth-child(15),
+            table td:nth-child(16),
+            table td:nth-child(17) { 
+                width: 45px;
+                text-align: center;
+                font-size: 6px;
+            }
+            
+            /* Kolom mitigasi */
+            table td:nth-child(21) { 
+                width: 45px;
+                text-align: center;
+                font-size: 6px;
+            }
+            
+            table td:nth-child(22) { 
+                width: 65px;
+                font-size: 6px;
+            }
+            
             .badge {
                 display: inline-block;
-                padding: 2px 4px;
-                border-radius: 5px;
+                padding: 1px 4px;
+                border-radius: 2px;
                 color: white;
-                font-size: 10px;
+                font-size: 6.5px;
+                font-weight: 700;
+                min-width: 18px;
             }
-            .table-container {
-                width: 100%;
-                overflow-x: auto;
+            
+            /* Styling untuk keterangan tambahan */
+            td > div {
+                margin: 1px 0;
+                line-height: 1.3;
             }
-            .drag-handle {
+            
+            td > div:not(:first-child) {
+                border-top: 0.5px solid #ccc;
+                margin-top: 2px;
+                padding-top: 1px;
+                font-size: 5.5px;
+                color: #555;
+                font-style: italic;
+            }
+            
+            /* Hide elements tidak perlu */
+            .reorder-toggle,
+            .drag-handle,
+            button,
+            .btn,
+            form {
                 display: none !important;
             }
-            .reorder-toggle {
-                display: none !important;
+            
+            /* Print adjustments */
+            @media print {
+                body {
+                    print-color-adjust: exact;
+                    -webkit-print-color-adjust: exact;
+                }
+                
+                .bagian-section {
+                    page-break-inside: avoid;
+                }
+                
+                table {
+                    page-break-inside: auto;
+                }
+                
+                tr {
+                    page-break-inside: avoid;
+                    page-break-after: auto;
+                }
+                
+                thead {
+                    display: table-header-group;
+                }
+                
+                th {
+                    background-color: #343a40 !important;
+                    -webkit-print-color-adjust: exact;
+                    print-color-adjust: exact;
+                }
             }
         </style>
     `;
@@ -322,13 +501,14 @@
                     printWindow.document.write(`
         <html>
         <head>
-            <title>Laporan Evaluasi MR</title>
+            <title>Laporan Evaluasi MR - SPI Polije</title>
             ${style}
         </head>
         <body>
-            <h2>Laporan Evaluasi MR - SPI Polije</h2>
+            <h2>LAPORAN EVALUASI MANAJEMEN RISIKO</h2>
+            <h2>SATUAN PENGAWASAN INTERN - POLITEKNIK NEGERI JEMBER</h2>
             <div class="table-container">
-                ${container.innerHTML}
+                ${clonedContainer.innerHTML}
             </div>
         </body>
         </html>
@@ -336,8 +516,12 @@
 
                     printWindow.document.close();
                     printWindow.focus();
-                    printWindow.print();
-                    printWindow.close();
+
+                    // Delay print untuk memastikan styling sudah dimuat
+                    setTimeout(() => {
+                        printWindow.print();
+                        printWindow.close();
+                    }, 250);
                 }
             </script>
 
