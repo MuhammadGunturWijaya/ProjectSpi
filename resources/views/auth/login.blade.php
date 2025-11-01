@@ -2,8 +2,8 @@
 <html lang="id">
 <style>
     body {
-                   overflow-x: hidden;
-        }
+        overflow-x: hidden;
+    }
 </style>
 <head>
     <meta charset="UTF-8">
@@ -75,16 +75,12 @@
         }
 
         @keyframes float {
-
-            0%,
-            100% {
+            0%, 100% {
                 transform: translate(0, 0) rotate(0deg);
             }
-
             33% {
                 transform: translate(40px, -40px) rotate(120deg);
             }
-
             66% {
                 transform: translate(-30px, 30px) rotate(240deg);
             }
@@ -116,7 +112,6 @@
                 opacity: 0;
                 transform: translateY(50px) rotateX(10deg);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0) rotateX(0deg);
@@ -147,13 +142,10 @@
         }
 
         @keyframes pulse {
-
-            0%,
-            100% {
+            0%, 100% {
                 transform: translate(-50%, -50%) scale(1);
                 opacity: 0.5;
             }
-
             50% {
                 transform: translate(-50%, -50%) scale(1.5);
                 opacity: 0.2;
@@ -181,12 +173,9 @@
         }
 
         @keyframes logoFloat {
-
-            0%,
-            100% {
+            0%, 100% {
                 transform: translateY(0) translateZ(20px) rotate(0deg);
             }
-
             50% {
                 transform: translateY(-15px) translateZ(30px) rotate(5deg);
             }
@@ -350,57 +339,6 @@
                 0 4px 8px rgba(0, 0, 0, 0.15);
         }
 
-        /* Alert with 3D */
-        .alert {
-            border-radius: 12px;
-            border: none;
-            padding: 14px 18px;
-            margin-bottom: 20px;
-            font-size: 13px;
-            animation: slideIn 0.3s ease-out;
-            list-style: none;
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .alert-danger {
-            background: linear-gradient(145deg, #fff5f5 0%, #ffebee 100%);
-            color: #c62828;
-            border: 2px solid #ef5350;
-            box-shadow:
-                0 6px 12px rgba(198, 40, 40, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.5);
-        }
-
-        .alert-success {
-            background: linear-gradient(145deg, #f1f8f4 0%, #e8f5e9 100%);
-            color: #2e7d32;
-            border: 2px solid #66bb6a;
-            box-shadow:
-                0 6px 12px rgba(46, 125, 50, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.5);
-        }
-
-        .alert ul {
-            margin: 0;
-            padding: 0;
-            list-style: none;
-        }
-
-        .alert li {
-            padding: 4px 0;
-        }
-
         /* Footer Links */
         .form-footer {
             text-align: center;
@@ -448,6 +386,16 @@
 
         .divider span {
             padding: 0 15px;
+        }
+
+        /* Custom SweetAlert2 Styling */
+        .swal2-popup {
+            font-family: 'Poppins', sans-serif;
+            border-radius: 20px;
+        }
+
+        .swal2-title {
+            font-weight: 700;
         }
 
         /* Responsive */
@@ -498,7 +446,6 @@
         <div class="brand-panel">
             <div class="logo-wrapper">
                 <div class="logo">
-                    <!-- Logo SVG Placeholder -->
                     <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
                         <circle cx="50" cy="50" r="45" fill="#c62828" />
                         <text x="50" y="65" font-size="40" font-weight="bold" fill="#ffeb3b"
@@ -525,25 +472,21 @@
                 <p>Masuk ke akun Anda</p>
             </div>
 
-            <!-- Alert Messages -->
-            <div id="alertContainer"></div>
-
             <!-- Form Login -->
-            <form method="POST" action="{{ route('login') }}">
+            <form method="POST" action="{{ route('login') }}" id="loginForm">
                 @csrf
                 <div class="input-wrapper">
                     <label class="input-label">Email</label>
-                    <input type="email" name="email" class="form-control" required autofocus>
+                    <input type="email" name="email" class="form-control" placeholder="masukkan email anda" required autofocus value="{{ old('email') }}">
                 </div>
 
                 <div class="input-wrapper">
                     <label class="input-label">Password</label>
-                    <input type="password" name="password" class="form-control" required>
+                    <input type="password" name="password" class="form-control" placeholder="masukkan password anda" required>
                 </div>
 
                 <button type="submit" class="btn-login">Login Sekarang</button>
             </form>
-
 
             <div class="form-footer">
                 <p><a href="{{ route('password.request') }}">Lupa Password?</a></p>
@@ -555,59 +498,178 @@
         </div>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
     <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Form submission handler
-            document.getElementById('loginForm').addEventListener('submit', function (e) {
-                e.preventDefault();
+        // Handle Laravel validation errors - GAGAL LOGIN
+        @if($errors->any())
+            document.addEventListener("DOMContentLoaded", function () {
+                let errorMessages = '';
+                @foreach($errors->all() as $error)
+                    errorMessages += '<div style="text-align: left; padding: 10px 15px; margin: 5px 0; background: #ffebee; border-left: 4px solid #c62828; border-radius: 8px;"><i style="color: #c62828;">✖</i> {{ $error }}</div>';
+                @endforeach
 
-                const email = this.querySelector('input[name="email"]').value;
-                const password = this.querySelector('input[name="password"]').value;
+                Swal.fire({
+                    icon: 'error',
+                    title: '❌ Login Gagal!',
+                    html: `
+                        <div style="padding: 10px;">
+                            <p style="font-size: 15px; color: #666; margin-bottom: 15px;">Terjadi kesalahan saat login:</p>
+                            ${errorMessages}
+                        </div>
+                    `,
+                    confirmButtonText: 'Coba Lagi',
+                    confirmButtonColor: '#c62828',
+                    customClass: {
+                        popup: 'animate__animated animate__shakeX'
+                    },
+                    showClass: {
+                        popup: 'animate__animated animate__headShake'
+                    }
+                });
+            });
+        @endif
 
-                // Demo validation
-                if (email && password) {
-                    showAlert('Login berhasil! Mengalihkan...', 'success');
-                    setTimeout(() => {
-                        window.location.href = "{{ route('landing') }}";
-                    }, 1500);
-                } else {
-                    showAlert('Email dan password harus diisi!', 'danger');
+        // Handle success message - BERHASIL LOGIN
+        @if(session('success'))
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    icon: 'success',
+                    title: '🎉 Selamat Datang!',
+                    html: '<p style="font-size: 16px;">Di <strong style="color: #2e7d32;">Sistem Informasi SPI</strong></p><p style="font-size: 14px; color: #666;">Politeknik Negeri Jember</p><p style="font-size: 13px; color: #999; margin-top: 10px;">{{ session('success') }}</p>',
+                    confirmButtonText: 'Lanjutkan',
+                    confirmButtonColor: '#2e7d32',
+                    timer: 3000,
+                    timerProgressBar: true,
+                    showClass: {
+                        popup: 'animate__animated animate__bounceIn'
+                    },
+                    willClose: () => {
+                        // Redirect otomatis jika ada
+                        @if(session('redirect'))
+                            window.location.href = "{{ session('redirect') }}";
+                        @endif
+                    }
+                });
+            });
+        @endif
+
+        // Handle status message (seperti email verification)
+        @if(session('status'))
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'ℹ️ Informasi',
+                    text: '{{ session('status') }}',
+                    confirmButtonText: 'Mengerti',
+                    confirmButtonColor: '#0288d1',
+                    timer: 5000,
+                    timerProgressBar: true
+                });
+            });
+        @endif
+
+        // Handle error message - UMUM
+        @if(session('error'))
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    icon: 'error',
+                    title: '⚠️ Terjadi Kesalahan!',
+                    text: '{{ session('error') }}',
+                    confirmButtonText: 'OK',
+                    confirmButtonColor: '#c62828',
+                    showClass: {
+                        popup: 'animate__animated animate__shakeX'
+                    }
+                });
+            });
+        @endif
+
+        // Handle pegawai code
+        @if(session('pegawai_code'))
+            document.addEventListener("DOMContentLoaded", function () {
+                Swal.fire({
+                    title: '🔐 Kode Verifikasi Pegawai',
+                    html: `
+                        <div style="padding: 20px;">
+                            <p style="font-size: 15px; margin-bottom: 20px;">Silakan kirim kode berikut ke <strong style="color: #c62828;">Admin</strong> untuk verifikasi</p>
+                            <div style="background: linear-gradient(135deg, #fff5f5 0%, #ffebee 100%); padding: 25px; border-radius: 15px; border: 2px dashed #c62828; margin: 20px 0;">
+                                <h2 style="color: #c62828; font-weight: bold; font-size: 32px; letter-spacing: 3px; margin: 0;">{{ session('pegawai_code') }}</h2>
+                            </div>
+                            <p style="font-size: 13px; color: #666; margin-top: 15px;">
+                                💡 Anda dapat melihat kode ini di halaman Profile Anda
+                            </p>
+                        </div>
+                    `,
+                    icon: 'info',
+                    iconColor: '#c62828',
+                    confirmButtonText: '📋 Salin Kode',
+                    confirmButtonColor: '#c62828',
+                    showCancelButton: true,
+                    cancelButtonText: 'Tutup',
+                    cancelButtonColor: '#666',
+                    allowOutsideClick: false,
+                    showClass: {
+                        popup: 'animate__animated animate__zoomIn'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        navigator.clipboard.writeText("{{ session('pegawai_code') }}").then(() => {
+                            Swal.fire({
+                                icon: 'success',
+                                title: '✅ Berhasil!',
+                                text: 'Kode berhasil disalin ke clipboard',
+                                timer: 2000,
+                                timerProgressBar: true,
+                                showConfirmButton: false,
+                                toast: true,
+                                position: 'top-end',
+                                background: '#d4edda',
+                                color: '#155724'
+                            });
+                        }).catch(() => {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal menyalin',
+                                text: 'Silakan salin kode secara manual',
+                                toast: true,
+                                position: 'top-end',
+                                timer: 2000,
+                                showConfirmButton: false
+                            });
+                        });
+                    }
+                });
+            });
+        @endif
+
+        // Form submission with loading
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            // Tampilkan loading saat form disubmit
+            const submitButton = this.querySelector('.btn-login');
+            submitButton.disabled = true;
+            submitButton.innerHTML = '<span style="display: inline-block; animation: spin 1s linear infinite;">⏳</span> Memproses...';
+            
+            // Tampilkan SweetAlert loading
+            Swal.fire({
+                title: 'Memproses Login...',
+                html: 'Sedang memverifikasi data Anda, mohon tunggu',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                allowEnterKey: false,
+                showConfirmButton: false,
+                didOpen: () => {
+                    Swal.showLoading();
                 }
             });
-
-            function showAlert(message, type) {
-                const alertContainer = document.getElementById('alertContainer');
-                const alertDiv = document.createElement('div');
-                alertDiv.className = `alert alert-${type}`;
-                alertDiv.innerHTML = `<ul><li>${message}</li></ul>`;
-                alertContainer.innerHTML = '';
-                alertContainer.appendChild(alertDiv);
-
-                // Auto remove after 5 seconds
-                setTimeout(() => {
-                    alertDiv.style.animation = 'slideIn 0.3s ease-out reverse';
-                    setTimeout(() => alertDiv.remove(), 300);
-                }, 5000);
-            }
         });
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    @if(session('pegawai_code'))
-        <script>
-            Swal.fire({
-                title: 'Kode Verifikasi Pegawai',
-                html: `<p>Silakan kirim kode berikut ke Admin untuk verifikasi dan Anda Bisa Melihat Di Dalam Profile:</p>
-                   <h2 style="color:#0d6efd; font-weight:bold;">{{ session('pegawai_code') }}</h2>`,
-                icon: 'info',
-                confirmButtonText: 'Salin Kode',
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    navigator.clipboard.writeText("{{ session('pegawai_code') }}");
-                }
-            });
-        </script>
-    @endif
+    <style>
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
 </body>
-
 </html>

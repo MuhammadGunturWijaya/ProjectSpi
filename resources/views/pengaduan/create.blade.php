@@ -949,7 +949,7 @@
                         <thead class="table-light">
                             <tr>
                                 <th style="width: 50px;">No</th>
-                                <th>Nama</th>
+                                <th>Unit</th>
                                 <th>NIP</th>
                                 <th>Satuan Kerja</th>
                                 <th>Jabatan</th>

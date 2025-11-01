@@ -53,7 +53,7 @@
         @auth
             @if(Auth::user()->role === 'admin')
                 <div class="text-end mb-3">
-                    <a href="{{ route('berita.create') }}" class="btn btn-outline-primary rounded-pill shadow-sm">
+                    <a href="{{ route('admin.berita.create') }}" class="btn btn-outline-primary rounded-pill shadow-sm">
                         + Tambah Berita
                     </a>
                 </div>

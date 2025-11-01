@@ -106,7 +106,7 @@
             </div>
 
             <!-- Bagian Tombol Share (Floating di kiri) -->
-            <div class="col-lg-1 d-none d-lg-block">
+            <!-- <div class="col-lg-1 d-none d-lg-block">
                 <div class="position-sticky" style="top: 100px;">
                     <ul class="list-unstyled">
                         <li class="mb-2">
@@ -129,7 +129,7 @@
                         </li>
                     </ul>
                 </div>
-            </div>
+            </div> -->
 
         </div>
     </div>
