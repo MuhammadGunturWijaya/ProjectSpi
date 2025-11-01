@@ -106,11 +106,18 @@ class IdentifikasiRisikoController extends Controller
     /**
      * Hapus data identifikasi risiko
      */
+
+
     public function destroy($id)
     {
-        $risiko = IdentifikasiRisiko::findOrFail($id);
-        $risiko->delete();
-        return redirect()->route('identifikasi.risiko.index')->with('success', 'Data risiko berhasil dihapus!');
+        try {
+            $bagian = Bagian::findOrFail($id);
+            $bagian->delete();
+
+            return response()->json(['success' => true, 'message' => 'Unit berhasil dihapus.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Unit tidak dapat dihapus.']);
+        }
     }
 
     // ========== EVALUASI MR METHODS ==========
@@ -118,10 +125,10 @@ class IdentifikasiRisikoController extends Controller
     public function evaluasiMr()
     {
         $risikos = IdentifikasiRisiko::orderBy('bagian')
-                                     ->orderBy('urutan')
-                                     ->orderBy('id')
-                                     ->get();
-        
+            ->orderBy('urutan')
+            ->orderBy('id')
+            ->get();
+
         $bagians = IdentifikasiRisiko::whereNotNull('bagian')->distinct()->pluck('bagian');
         return view('identifikasi.evaluasiMr', compact('risikos', 'bagians'));
     }
@@ -312,27 +319,27 @@ class IdentifikasiRisikoController extends Controller
     {
         try {
             $orders = $request->input('orders');
-            
+
             if (!$orders || !is_array($orders)) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Data urutan tidak valid'
                 ], 400);
             }
-            
+
             foreach ($orders as $id => $urutan) {
                 IdentifikasiRisiko::where('id', $id)
                     ->update(['urutan' => $urutan]);
             }
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Urutan berhasil disimpan'
             ]);
-            
+
         } catch (\Exception $e) {
             \Log::error('Error updating order: ' . $e->getMessage());
-            
+
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal menyimpan urutan: ' . $e->getMessage()

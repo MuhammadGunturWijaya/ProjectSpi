@@ -1,662 +1,989 @@
 <!DOCTYPE html>
 <html lang="id">
-<style>
-    body {
-        overflow-x: hidden;
-    }
-</style>
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Survey Kepuasan - SPI Polije</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
     <style>
         :root {
-            --primary-color: #0d6efd;
-            --secondary-color: #6c757d;
-            --success-color: #198754;
-            --warning-color: #ffc107;
-            --danger-color: #dc3545;
-            --dark-blue: #0a58ca;
-            --light-bg: #f8f9fa;
-            --white: #ffffff;
-            --shadow-soft: 0 6px 20px rgba(0, 0, 0, 0.1);
-            --shadow-hover: 0 10px 30px rgba(0, 0, 0, 0.15);
-            --border-radius: 16px;
-            --gradient-blue: linear-gradient(135deg, var(--primary-color) 0%, var(--dark-blue) 100%);
-            --accent-color: #6f42c1;
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --warning-gradient: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+            --dark-bg: #0f1419;
+            --card-bg: #ffffff;
+            --text-primary: #1a1a2e;
+            --text-secondary: #6c757d;
+            --shadow-lg: 0 20px 60px rgba(0, 0, 0, 0.15);
+            --shadow-hover: 0 25px 70px rgba(0, 0, 0, 0.25);
+            --border-radius-lg: 24px;
+            --border-radius-md: 16px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
             font-family: 'Poppins', sans-serif;
-            background: linear-gradient(135deg, #eef1f5 0%, #d8dbe2 100%);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
             min-height: 100vh;
-            color: #212529;
+            color: var(--text-primary);
             padding-bottom: 50px;
-            transition: background 0.3s, color 0.3s;
+            overflow-x: hidden;
+            position: relative;
         }
 
-        body.dark-mode {
-            background: #121212;
-            color: #e0e0e0;
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+            animation: rotate 30s linear infinite;
+            z-index: 0;
         }
 
-        /* Header */
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .content-wrapper {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Enhanced Header */
         .survey-header {
-            background: var(--gradient-blue);
-            color: white;
-            padding: 50px 0;
-            margin-bottom: 40px;
-            border-radius: 0 0 var(--border-radius) var(--border-radius);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            background: var(--primary-gradient);
+            padding: 80px 0 100px;
             position: relative;
             overflow: hidden;
+            margin-bottom: -40px;
         }
 
         .survey-header::before {
             content: '';
             position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle at 100%, rgba(255, 255, 255, 0.15) 10%, transparent 70%);
-            opacity: 0.5;
-            transform: rotate(15deg);
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="rgba(255,255,255,0.1)" d="M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,144C960,149,1056,139,1152,122.7C1248,107,1344,85,1392,74.7L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path></svg>');
+            background-size: cover;
+            animation: wave 15s ease-in-out infinite;
         }
 
-        .survey-header::after {
-            content: '';
-            position: absolute;
-            bottom: -20px;
-            left: 0;
-            width: 100%;
-            height: 80px;
-            background: url('data:image/svg+xml;utf8,<svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,100 C50,0 50,0 100,100 Z" fill="white" opacity="0.2"/></svg>') no-repeat bottom;
-            background-size: cover;
+        @keyframes wave {
+            0%, 100% { transform: translateX(0); }
+            50% { transform: translateX(-50px); }
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 2;
         }
 
         .survey-title {
-            font-weight: 700;
-            font-size: 2.8rem;
+            font-weight: 800;
+            font-size: 3.5rem;
+            color: white;
             text-align: center;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            margin-bottom: 15px;
+            animation: fadeInDown 0.8s ease;
         }
 
         .survey-subtitle {
-            font-size: 1.2rem;
+            font-size: 1.3rem;
+            color: rgba(255, 255, 255, 0.95);
             text-align: center;
             font-weight: 300;
+            animation: fadeInUp 0.8s ease;
         }
 
-        /* Card */
-        .stat-card-enhanced {
-            background: var(--white);
-            padding: 25px 20px;
-            border-radius: var(--border-radius);
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Modern Stats Cards */
+        .stats-container {
+            margin-top: -60px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .stat-card-modern {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-lg);
+            padding: 35px 25px;
             text-align: center;
-            flex: 1;
-            min-width: 200px;
-            margin: 10px;
-            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.1), -5px -5px 10px rgba(255, 255, 255, 0.8);
-            border: 1px solid rgba(0, 0, 0, 0.05);
+            box-shadow: var(--shadow-lg);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .stat-card-modern::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: var(--primary-gradient);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .stat-card-modern:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .stat-card-modern:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-icon {
+            width: 70px;
+            height: 70px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 2rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-icon.primary {
+            background: var(--primary-gradient);
+        }
+
+        .stat-icon.warning {
+            background: var(--warning-gradient);
+        }
+
+        .stat-icon.success {
+            background: var(--success-gradient);
+        }
+
+        .stat-icon::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(-100%);
+            transition: transform 0.6s ease;
+        }
+
+        .stat-card-modern:hover .stat-icon::after {
+            transform: translateX(100%);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .stat-number.warning-gradient {
+            background: var(--warning-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-number.success-gradient {
+            background: var(--success-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Modern Chart Cards */
+        .chart-card-modern {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-lg);
+            padding: 30px;
+            box-shadow: var(--shadow-lg);
             transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            height: 100%;
+        }
+
+        .chart-card-modern:hover {
+            box-shadow: var(--shadow-hover);
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .chart-title i {
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .chart-container {
+            height: 300px;
             position: relative;
         }
 
-        .stat-card-enhanced:hover {
-            transform: translateY(-5px);
-            box-shadow: 8px 8px 15px rgba(0, 0, 0, 0.15), -8px -8px 15px rgba(255, 255, 255, 0.8);
+        /* Modern Table */
+        .table-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-lg);
+            padding: 30px;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.5);
         }
 
-        .stat-number-enhanced {
-            font-size: 2.5rem;
-            font-weight: 800;
-            display: block;
-            margin-bottom: 5px;
-            color: #333;
+        .table-responsive {
+            border-radius: var(--border-radius-md);
+            overflow: auto;
         }
 
-        .stat-number-enhanced.text-accent {
-            color: var(--accent-color) !important;
-            animation: pulse 1.5s infinite;
+        .table {
+            margin-bottom: 0;
+            white-space: nowrap;
         }
 
-        .stat-number-enhanced.text-primary {
-            color: var(--primary-color) !important;
-        }
-
-        .stat-number-enhanced.text-success {
-            color: var(--success-color) !important;
-        }
-
-        .stat-number-enhanced.text-warning {
-            color: var(--warning-color) !important;
-        }
-
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-                opacity: 1;
-            }
-
-            50% {
-                transform: scale(1.1);
-                opacity: 0.8;
-            }
-
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        .stat-label-enhanced {
-            font-size: 1rem;
-            font-weight: 500;
-            color: var(--secondary-color);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .chart-card {
-            height: 300px;
-            padding: 20px !important;
-        }
-
-        /* Table */
-        .table-primary-header {
-            background: var(--gradient-blue);
+        .table thead {
+            background: var(--primary-gradient);
             color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .table thead th {
+            border: none;
+            padding: 18px 15px;
             font-weight: 600;
             text-transform: uppercase;
-            letter-spacing: 1px;
-            font-size: 0.8rem;
-            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            letter-spacing: 0.5px;
+            font-size: 0.85rem;
+            white-space: nowrap;
         }
 
-        .table th,
+        .table tbody tr {
+            transition: all 0.3s ease;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .table tbody tr:hover {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.05) 0%, transparent 100%);
+        }
+
         .table td {
+            padding: 18px 15px;
             vertical-align: middle;
             font-size: 0.9rem;
-            padding: 15px 12px;
-            border-color: rgba(0, 0, 0, 0.08);
-            transition: all 0.3s;
         }
 
-        .table-hover tbody tr:hover {
-            transform: translateY(-3px);
-            box-shadow: var(--shadow-hover);
-            transition: all 0.3s;
+        /* Badge dengan warna sesuai permintaan */
+        .badge-modern {
+            padding: 8px 16px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            border: none;
+            transition: all 0.3s ease;
+            display: inline-block;
+            white-space: nowrap;
         }
 
-        .badge-score {
-            font-size: 0.85rem;
-            padding: 8px 14px;
-            border-radius: 25px;
-            font-weight: 700;
-            min-width: 50px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            cursor: help;
-            transition: all 0.3s;
+        .badge-modern.sangat-puas {
+            background: linear-gradient(135deg, #198754 0%, #157347 100%);
+            color: white;
         }
 
-        .badge-score.text-bg-success {
-            background: linear-gradient(135deg, #198754, #157347);
-            color: #fff;
+        .badge-modern.puas {
+            background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
+            color: white;
         }
 
-        .badge-score.text-bg-warning {
-            background: linear-gradient(135deg, #ffc107, #e0a800);
+        .badge-modern.cukup-puas {
+            background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
             color: #212529;
         }
 
-        .badge-score.text-bg-danger {
-            background: linear-gradient(135deg, #dc3545, #a71d2a);
-            color: #fff;
+        .badge-modern.kurang-puas {
+            background: linear-gradient(135deg, #dc3545 0%, #a71d2a 100%);
+            color: white;
         }
 
+        .badge-modern:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Modern Buttons */
+        .btn-modern {
+            padding: 14px 32px;
+            border-radius: 50px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+            border: none;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-modern.primary {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .btn-modern:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+        }
+
+        .btn-delete {
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            background: linear-gradient(135deg, #dc3545 0%, #a71d2a 100%);
+            color: white;
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-delete:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(220, 53, 69, 0.4);
+        }
+
+        /* Dark Mode Toggle */
+        .dark-mode-toggle {
+            position: fixed;
+            top: 25px;
+            right: 25px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 1000;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .dark-mode-toggle:hover {
+            transform: scale(1.1) rotate(15deg);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Animations */
+        .fade-in {
+            animation: fadeIn 0.6s ease forwards;
+            opacity: 0;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .survey-title {
+                font-size: 2.5rem;
+            }
+            
+            .survey-subtitle {
+                font-size: 1rem;
+            }
+            
+            .stat-number {
+                font-size: 2.5rem;
+            }
+        }
+
+        /* Email Link */
+        .email-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .email-link:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        /* Long Text Cell */
         .long-text-cell {
             max-width: 250px;
             word-wrap: break-word;
+            white-space: normal;
         }
 
-        .btn-export-data {
-            font-weight: 600;
-            letter-spacing: 0.5px;
-            padding: 10px 20px;
-            border-radius: 10px;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        /* Footer Stats */
+        .footer-stats {
+            background: var(--card-bg);
+            border-radius: var(--border-radius-lg);
+            padding: 20px 30px;
+            box-shadow: var(--shadow-lg);
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
-        .btn-export-data:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Fade-in animation */
-        .fade-in {
-            opacity: 0;
-            transform: translateY(20px);
-        }
-
-        /* Dark mode toggle */
-        .dark-mode-toggle {
+        .scroll-indicator {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 999;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary-gradient);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
-            font-size: 1.5rem;
+            z-index: 999;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .scroll-indicator.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .scroll-indicator:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
         }
     </style>
 </head>
 
 <body>
+    <div class="content-wrapper">
+        <!-- Dark Mode Toggle -->
+        <button class="dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode">
+            <i class="fas fa-moon"></i>
+        </button>
 
-    <i class="fas fa-moon dark-mode-toggle" id="darkModeToggle" title="Toggle Dark Mode"></i>
-
-    @include('layouts.navbar')
-
-    <div class="survey-header">
-        <div class="container">
-            <h1 class="survey-title fade-in">
-                <i class="fas fa-chart-bar me-3"></i>Dashboard Analisis Kepuasan
-            </h1>
-            <p class="survey-subtitle mb-0 fade-in" style="animation-delay: 0.2s;">
-                <i class="fas fa-lightbulb me-2"></i>Wawasan Kunci untuk Peningkatan Kualitas Layanan SPI Polije
-            </p>
+        <!-- Scroll to Top -->
+        <div class="scroll-indicator" id="scrollTop">
+            <i class="fas fa-arrow-up"></i>
         </div>
-    </div>
 
-    <div class="container py-4">
+        @include('layouts.navbar')
 
-        <hr class="mb-4">
+        <!-- Header -->
+        <div class="survey-header">
+            <div class="container header-content">
+                <h1 class="survey-title">
+                    <i class="fas fa-chart-line me-3"></i>Dashboard Analisis Kepuasan
+                </h1>
+                <p class="survey-subtitle">
+                    <i class="fas fa-lightbulb me-2"></i>Wawasan Kunci untuk Peningkatan Kualitas Layanan SPI Polije
+                </p>
+            </div>
+        </div>
 
+        <div class="container py-5">
+            @php
+                // Mapping teks ke skor 1–5
+                $scoreMap = [
+                    'Sangat Puas' => 5,
+                    'Puas' => 4,
+                    'Cukup Puas' => 3,
+                    'Kurang Puas' => 1,
+                ];
 
+                // Total responden
+                $totalRespondents = count($surveys);
 
-        @php
-            // Mapping teks ke skor 1–5
-            $scoreMap = [
-                'Sangat Puas' => 5,
-                'Puas' => 4,
-                'Cukup Puas' => 3,
-                'Kurang Puas' => 1,
-            ];
-
-            // Total responden
-            $totalRespondents = count($surveys);
-
-            // Fungsi kategori berdasarkan skor 0–100
-            function getCategoryByScore($score)
-            {
-                if ($score >= 88.31)
-                    return 'Sangat Puas';
-                if ($score >= 76.61)
-                    return 'Puas';
-                if ($score >= 65.00)
-                    return 'Cukup Puas';
-                if ($score >= 25.00)
+                // Fungsi kategori berdasarkan skor 0–100
+                function getCategoryByScore($score)
+                {
+                    if ($score >= 88.31)
+                        return 'Sangat Puas';
+                    if ($score >= 76.61)
+                        return 'Puas';
+                    if ($score >= 65.00)
+                        return 'Cukup Puas';
+                    if ($score >= 25.00)
+                        return 'Kurang Puas';
                     return 'Kurang Puas';
-                return 'Kurang Puas';
-            }
-
-            // Hitung rata-rata skor per kriteria & total
-            $totalScore = 0;
-            $totalCount = 0;
-            $criteriaScores = [];
-
-            for ($i = 1; $i <= 9; $i++) {
-                $criteriaTotal = 0;
-                $criteriaCount = 0;
-
-                foreach ($surveys as $survey) {
-                    $jawaban = $survey->{'jawaban_' . $i} ?? null;
-
-                    if ($jawaban && isset($scoreMap[$jawaban])) {
-                        $criteriaTotal += $scoreMap[$jawaban];
-                        $criteriaCount++;
-                        $totalScore += $scoreMap[$jawaban];
-                        $totalCount++;
-                    }
                 }
 
-                $criteriaScores[] = $criteriaCount > 0 ? round($criteriaTotal / $criteriaCount, 2) : 0;
-            }
-
-            // Rata-rata keseluruhan
-            $averageScore = $totalCount > 0 ? round($totalScore / $totalCount, 2) : 0;
-
-            // Konversi rata-rata skor ke IKM
-            $ikm = $averageScore * 20;
-            $ikm = round($ikm, 2);
-            $ikmCategory = getCategoryByScore($ikm);
-
-            // Inisialisasi distribusi & survei perlu perhatian
-            $scoreCategories = [
-                'Sangat Puas' => 0,
-                'Puas' => 0,
-                'Cukup Puas' => 0,
-                'Kurang Puas' => 0,
-            ];
-            $attentionCount = 0;
-
-            // Hitung distribusi & survei perlu perhatian berdasarkan IKM individu
-            foreach ($surveys as $survey) {
-                $totalScoreRespondent = 0;
-                $totalCountRespondent = 0;
+                // Hitung rata-rata skor per kriteria & total
+                $totalScore = 0;
+                $totalCount = 0;
+                $criteriaScores = [];
 
                 for ($i = 1; $i <= 9; $i++) {
-                    $jawaban = $survey->{'jawaban_' . $i} ?? null;
-                    if ($jawaban && isset($scoreMap[$jawaban])) {
-                        $totalScoreRespondent += $scoreMap[$jawaban] * 20; // skala 1–5 ke 100
-                        $totalCountRespondent++;
+                    $criteriaTotal = 0;
+                    $criteriaCount = 0;
+
+                    foreach ($surveys as $survey) {
+                        $jawaban = $survey->{'jawaban_' . $i} ?? null;
+
+                        if ($jawaban && isset($scoreMap[$jawaban])) {
+                            $criteriaTotal += $scoreMap[$jawaban];
+                            $criteriaCount++;
+                            $totalScore += $scoreMap[$jawaban];
+                            $totalCount++;
+                        }
+                    }
+
+                    $criteriaScores[] = $criteriaCount > 0 ? round($criteriaTotal / $criteriaCount, 2) : 0;
+                }
+
+                // Rata-rata keseluruhan
+                $averageScore = $totalCount > 0 ? round($totalScore / $totalCount, 2) : 0;
+
+                // Konversi rata-rata skor ke IKM
+                $ikm = $averageScore * 20;
+                $ikm = round($ikm, 2);
+                $ikmCategory = getCategoryByScore($ikm);
+
+                // Inisialisasi distribusi & survei perlu perhatian
+                $scoreCategories = [
+                    'Sangat Puas' => 0,
+                    'Puas' => 0,
+                    'Cukup Puas' => 0,
+                    'Kurang Puas' => 0,
+                ];
+                $attentionCount = 0;
+
+                // Hitung distribusi & survei perlu perhatian berdasarkan IKM individu
+                foreach ($surveys as $survey) {
+                    $totalScoreRespondent = 0;
+                    $totalCountRespondent = 0;
+
+                    for ($i = 1; $i <= 9; $i++) {
+                        $jawaban = $survey->{'jawaban_' . $i} ?? null;
+                        if ($jawaban && isset($scoreMap[$jawaban])) {
+                            $totalScoreRespondent += $scoreMap[$jawaban] * 20;
+                            $totalCountRespondent++;
+                        }
+                    }
+
+                    $avgScoreRespondent = $totalCountRespondent > 0 ? $totalScoreRespondent / $totalCountRespondent : 0;
+                    $category = getCategoryByScore($avgScoreRespondent);
+
+                    $scoreCategories[$category]++;
+
+                    if ($category === 'Kurang Puas') {
+                        $attentionCount++;
                     }
                 }
 
-                $avgScoreRespondent = $totalCountRespondent > 0 ? $totalScoreRespondent / $totalCountRespondent : 0;
-                $category = getCategoryByScore($avgScoreRespondent);
+                $distributionLabels = array_keys($scoreCategories);
+                $distributionData = array_values($scoreCategories);
+            @endphp
 
-                // Distribusi kepuasan
-                $scoreCategories[$category]++;
+            <!-- Stats Cards -->
+            <div class="row stats-container g-4 mb-5">
+                <div class="col-lg-4 col-md-6 fade-in" style="animation-delay: 0.1s;">
+                    <div class="stat-card-modern">
+                        <div class="stat-icon primary">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <span class="stat-number">{{ $totalRespondents }}</span>
+                        <div class="stat-label">Total Responden</div>
+                    </div>
+                </div>
 
-                // Survei perlu perhatian (kategori Kurang Puas)
-                if ($category === 'Kurang Puas') {
-                    $attentionCount++;
-                }
-            }
+                <div class="col-lg-4 col-md-6 fade-in" style="animation-delay: 0.2s;">
+                    <div class="stat-card-modern">
+                        <div class="stat-icon warning">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        <span class="stat-number warning-gradient">{{ $ikm }}</span>
+                        <div class="stat-label">Nilai IKM ({{ $ikmCategory }})</div>
+                    </div>
+                </div>
 
-            // Buat variabel untuk chart
-            $distributionLabels = array_keys($scoreCategories);
-            $distributionData = array_values($scoreCategories);
-        @endphp
-
-
-
-        <div class="row justify-content-center">
-            <!-- Total Responden -->
-            <div class="col-lg-4 col-md-6 mb-3 fade-in" style="animation-delay: 0.4s;">
-                <div class="stat-card-enhanced">
-                    <i class="fas fa-users fa-2x mb-2 text-primary"></i>
-                    <span class="stat-number-enhanced text-primary">{{ $totalRespondents }}</span>
-                    <div class="stat-label-enhanced">Total Responden</div>
+                <div class="col-lg-4 col-md-12 fade-in" style="animation-delay: 0.3s;">
+                    <div class="stat-card-modern">
+                        <div class="stat-icon success">
+                            <i class="fas fa-bell"></i>
+                        </div>
+                        <span class="stat-number success-gradient">{{ $attentionCount }}</span>
+                        <div class="stat-label">Survei Perlu Perhatian</div>
+                    </div>
                 </div>
             </div>
 
-            <!-- Nilai IKM -->
-            <div class="col-lg-4 col-md-6 mb-3 fade-in" style="animation-delay: 0.7s;">
-                <div class="stat-card-enhanced">
-                    <i class="fas fa-chart-pie fa-2x mb-2 text-warning"></i>
-                    <span class="stat-number-enhanced text-warning">{{ $ikm }}</span>
-                    <div class="stat-label-enhanced">Nilai IKM ({{ $ikmCategory }})</div>
+            <!-- Charts -->
+            <div class="row g-4 mb-5">
+                <div class="col-lg-5 fade-in" style="animation-delay: 0.4s;">
+                    <div class="chart-card-modern">
+                        <h5 class="chart-title">
+                            <i class="fas fa-chart-pie"></i>
+                            Distribusi Kepuasan
+                        </h5>
+                        <div class="chart-container">
+                            <canvas id="scoreDistributionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-7 fade-in" style="animation-delay: 0.5s;">
+                    <div class="chart-card-modern">
+                        <h5 class="chart-title">
+                            <i class="fas fa-chart-bar"></i>
+                            Performa Per Kriteria (Rata-rata Skor)
+                        </h5>
+                        <div class="chart-container">
+                            <canvas id="criteriaPerformanceChart"></canvas>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-
-            <!-- Survei Perlu Perhatian -->
-            <div class="col-lg-4 col-md-12 mb-3 fade-in" style="animation-delay: 0.9s;">
-                <div class="stat-card-enhanced">
-                    <i class="fas fa-bell fa-2x mb-2" style="color: var(--accent-color);"></i>
-                    <span class="stat-number-enhanced text-accent">{{ $attentionCount }}</span>
-                    <div class="stat-label-enhanced">Survei Perlu Perhatian</div>
-                </div>
-            </div>
-
-        </div>
-
-        <div class="row mt-4">
-            <!-- Distribusi Kepuasan -->
-            <div class="col-lg-4 mb-4 fade-in" style="animation-delay: 1.0s;">
-                <h5 class="text-center text-muted mb-3"><i class="fas fa-circle-notch me-2"></i>Distribusi Kepuasan</h5>
-                <div class="survey-card chart-card">
-                    <canvas id="scoreDistributionChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Performa Per Kriteria -->
-            <div class="col-lg-8 mb-4 fade-in" style="animation-delay: 1.2s;">
-                <h5 class="text-center text-muted mb-3"><i class="fas fa-chart-line me-2"></i>Performa Per Kriteria
-                    (Rata-rata Skor)</h5>
-                <div class="survey-card chart-card">
-                    <canvas id="criteriaPerformanceChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                // Doughnut Chart - Distribusi Kepuasan
-                const ctxDistribution = document.getElementById('scoreDistributionChart');
-                new Chart(ctxDistribution, {
-                    type: 'doughnut',
-                    data: {
-                        labels: @json($distributionLabels),
-                        datasets: [{
-                            data: @json($distributionData),
-                            backgroundColor: ['#198754', '#0d6efd', '#ffc107', '#dc3545'],
-                            hoverOffset: 6
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { position: 'bottom' } }
-                    }
-                });
-
-
-                // Bar Chart - Performa Per Kriteria
-                const ctxCriteria = document.getElementById('criteriaPerformanceChart');
-                new Chart(ctxCriteria, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'Q8', 'Q9'],
-                        datasets: [{
-                            label: 'Rata-rata Skor (Skala 5)',
-                            data: @json($criteriaScores),
-                            backgroundColor: context => {
-                                const value = context.parsed.y;
-                                if (value >= 4.5) return '#198754';
-                                if (value >= 4.0) return '#0d6efd';
-                                if (value >= 3.5) return '#ffc107';
-                                return '#dc3545';
-                            },
-                            borderRadius: 5,
-                            borderSkipped: false,
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        scales: {
-                            y: { beginAtZero: true, max: 5, title: { display: true, text: 'Rata-rata Skor' } }
-                        },
-                        plugins: { legend: { display: false }, tooltip: { callbacks: { label: context => `Skor: ${context.parsed.y.toFixed(2)}` } } }
-                    }
-                });
-            });
-        </script>
-
-
-        <hr class="mb-4">
-
-        <div class="survey-card fade-in" style="animation-delay: 1.4s;">
-            <div class="table-responsive" style="max-height: 800px; overflow-y: auto;">
-                <table class="table table-hover table-striped">
-                    <thead class="table-primary-header">
-                        <tr>
-                            <th scope="col" style="width: 15%;"><i class="fas fa-at me-2"></i>Email Responden</th>
-                            <th scope="col" style="width: 10%;"><i class="fas fa-venus-mars me-2"></i>Jenis Kelamin</th>
-                            <th scope="col" style="width: 15%;"><i class="fas fa-graduation-cap me-2"></i>Pendidikan
-                            </th>
-                            <th scope="col" style="width: 15%;"><i class="fas fa-briefcase me-2"></i>Pekerjaan</th>
-
-                            @for($i = 1; $i <= 9; $i++)
-                                <th scope="col" class="answer-column">Q{{ $i }}</th>
-                            @endfor
-                            <th scope="col" class="long-text-cell" style="width: 15%;"><i
-                                    class="fas fa-exclamation-circle me-2"></i>Kendala</th>
-                            <th scope="col" class="long-text-cell" style="width: 15%;"><i
-                                    class="fas fa-comment-dots me-2"></i>Saran</th>
-                            <th scope="col" style="width: 10%;"><i class="fas fa-calendar-alt me-2"></i>Tanggal</th>
-                            <th scope="col" style="width: 10%;"><i class="fas fa-clock me-2"></i>Waktu Submit</th>
-                            <th scope="col" style="width: 10%;"><i class="fas fa-trash me-2"></i>Aksi</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        @foreach($surveys as $survey)
-                            <tr class="fade-in" style="animation-delay: {{ 1.5 + $loop->index * 0.05 }}s;">
-                                <!-- Email Responden -->
-                                <td class="email-cell">
-                                    <a href="mailto:{{ $survey->email }}" class="email-cell">{{ $survey->email }}</a>
-                                </td>
-                                <!-- Data Diri -->
-                                <td>{{ $survey->jenis_kelamin ?? '-' }}</td>
-                                <td>{{ $survey->pendidikan ?? '-' }}</td>
-                                <td>{{ $survey->pekerjaan ?? '-' }}</td>
-
-                                <!-- Jawaban Q1–Q9 -->
+            <!-- Data Table -->
+            <div class="table-card fade-in" style="animation-delay: 0.6s;">
+                <div class="table-responsive" style="max-height: 800px;">
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-at me-2"></i>Email</th>
+                                <th><i class="fas fa-venus-mars me-2"></i>Gender</th>
+                                <th><i class="fas fa-graduation-cap me-2"></i>Pendidikan</th>
+                                <th><i class="fas fa-briefcase me-2"></i>Pekerjaan</th>
                                 @for($i = 1; $i <= 9; $i++)
-                                    @php
-                                        $jawaban = $survey->{'jawaban_' . $i} ?? '-';
-                                        $scoreValue = isset($scoreMap[$jawaban]) ? $scoreMap[$jawaban] * 20 : 0;
-                                        $category = getCategoryByScore($scoreValue);
-
-                                        $badgeClass = match ($jawaban) {
-                                            'Sangat Puas' => 'text-bg-success',
-                                            'Puas' => 'text-bg-primary',
-                                            'Cukup Puas' => 'text-bg-warning',
-                                            'Kurang Puas' => 'text-bg-danger',
-                                            default => 'text-bg-secondary',
-                                        };
-
-                                    @endphp
-                                    <td class="answer-column">
-                                        <span class="badge badge-score {{ $badgeClass }}" data-bs-toggle="tooltip"
-                                            data-bs-placement="top" title="{{ $jawaban }}">
-                                            {{ $jawaban }}
-                                        </span>
-                                    </td>
+                                    <th>Q{{ $i }}</th>
                                 @endfor
-
-                                <!-- Kendala & Saran -->
-                                <td class="long-text-cell">{{ $survey->kendala ?? '-' }}</td>
-                                <td class="long-text-cell">{{ $survey->saran ?? '-' }}</td>
-
-                                <!-- Tanggal Mengisi -->
-                                <td>{{ $survey->tanggal ? \Carbon\Carbon::parse($survey->tanggal)->format('d M Y') : '-' }}
-                                </td>
-
-                                <!-- Waktu Submit -->
-                                <td class="timestamp">{{ $survey->created_at->format('d/M H:i') }}</td>
-
-                                <!-- Aksi Hapus -->
-                                <td>
-                                    <form action="{{ route('surveys.destroy', $survey->id) }}" method="POST"
-                                        onsubmit="return confirm('Yakin ingin menghapus data ini?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">
-                                            <i class="fas fa-trash"></i> Hapus
-                                        </button>
-                                    </form>
-                                </td>
+                                <th><i class="fas fa-exclamation-circle me-2"></i>Kendala</th>
+                                <th><i class="fas fa-comment-dots me-2"></i>Saran</th>
+                                <th><i class="fas fa-calendar-alt me-2"></i>Tanggal</th>
+                                <th><i class="fas fa-clock me-2"></i>Waktu</th>
+                                <th><i class="fas fa-trash me-2"></i>Aksi</th>
                             </tr>
-                        @endforeach
-                    </tbody>
+                        </thead>
+                        <tbody>
+                            @foreach($surveys as $survey)
+                                <tr>
+                                    <td><a href="mailto:{{ $survey->email }}" class="email-link">{{ $survey->email }}</a></td>
+                                    <td>{{ $survey->jenis_kelamin ?? '-' }}</td>
+                                    <td>{{ $survey->pendidikan ?? '-' }}</td>
+                                    <td>{{ $survey->pekerjaan ?? '-' }}</td>
 
+                                    @for($i = 1; $i <= 9; $i++)
+                                        @php
+                                            $jawaban = $survey->{'jawaban_' . $i} ?? '-';
+                                            $badgeClass = match ($jawaban) {
+                                                'Sangat Puas' => 'sangat-puas',
+                                                'Puas' => 'puas',
+                                                'Cukup Puas' => 'cukup-puas',
+                                                'Kurang Puas' => 'kurang-puas',
+                                                default => 'secondary',
+                                            };
+                                        @endphp
+                                        <td>
+                                            <span class="badge-modern {{ $badgeClass }}" data-bs-toggle="tooltip" title="{{ $jawaban }}">
+                                                {{ $jawaban }}
+                                            </span>
+                                        </td>
+                                    @endfor
 
-                </table>
-            </div>
+                                    <td class="long-text-cell">{{ $survey->kendala ?? '-' }}</td>
+                                    <td class="long-text-cell">{{ $survey->saran ?? '-' }}</td>
+                                    <td>{{ $survey->tanggal ? \Carbon\Carbon::parse($survey->tanggal)->format('d M Y') : '-' }}</td>
+                                    <td>{{ $survey->created_at->format('d/M H:i') }}</td>
+                                    <td>
+                                        <form action="{{ route('surveys.destroy', $survey->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="btn-delete">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
 
-            <div class="d-flex justify-content-between align-items-center mt-4">
-                <small class="text-muted">Menampilkan **{{ count($surveys) }}** entri</small>
-                <a href="{{ route('surveys.download') }}" class="btn btn-primary btn-lg">
-                    <i class="fas fa-file-download me-2"></i>Download Laporan Lengkap (CSV)
-                </a>
-
+                <div class="footer-stats">
+                    <small class="text-muted"><strong>{{ count($surveys) }}</strong> entri ditampilkan</small>
+                    <a href="{{ route('surveys.download') }}" class="btn-modern primary">
+                        <i class="fas fa-download me-2"></i>Download Laporan CSV
+                    </a>
+                </div>
             </div>
         </div>
+
+        @include('layouts.NavbarBawah')
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
     <script>
-        const mockData = {
-            distribution: {
-                labels: ['Sangat Puas (5)', 'Puas (4)', 'Cukup (3)', 'Kurang (1-2)'],
-                data: [45, 30, 15, 10],
-                colors: ['#198754', '#0d6efd', '#ffc107', '#dc3545']
-            },
-            criteria: {
-                labels: ['Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'Q8', 'Q9'],
-                scores: [4.5, 3.8, 4.2, 4.0, 4.7, 3.5, 4.1, 4.4, 3.9]
-            }
-        };
-
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize tooltips
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.map(function (tooltipTriggerEl) { return new bootstrap.Tooltip(tooltipTriggerEl) });
-
-            const elementsToAnimate = document.querySelectorAll('.fade-in');
-            elementsToAnimate.forEach((el, index) => {
-                const delay = parseFloat(el.style.animationDelay) || index * 0.1;
-                setTimeout(() => {
-                    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
-                    el.style.opacity = '1';
-                    el.style.transform = 'translateY(0)';
-                }, delay * 1000);
+            tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
             });
 
-            // Doughnut Chart
+            // Doughnut Chart dengan warna yang benar
             const ctxDistribution = document.getElementById('scoreDistributionChart');
             new Chart(ctxDistribution, {
                 type: 'doughnut',
-                data: { labels: mockData.distribution.labels, datasets: [{ data: mockData.distribution.data, backgroundColor: mockData.distribution.colors, hoverOffset: 6 }] },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+                data: {
+                    labels: @json($distributionLabels),
+                    datasets: [{
+                        data: @json($distributionData),
+                        backgroundColor: [
+                            '#198754', // Sangat Puas - Hijau
+                            '#0d6efd', // Puas - Biru
+                            '#ffc107', // Cukup Puas - Kuning
+                            '#dc3545'  // Kurang Puas - Merah
+                        ],
+                        borderWidth: 0,
+                        hoverOffset: 10
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                font: {
+                                    size: 12,
+                                    family: 'Poppins'
+                                }
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            titleFont: {
+                                size: 14,
+                                family: 'Poppins'
+                            },
+                            bodyFont: {
+                                size: 13,
+                                family: 'Poppins'
+                            }
+                        }
+                    }
+                }
             });
 
-            // Bar Chart
+            // Bar Chart dengan warna yang benar
             const ctxCriteria = document.getElementById('criteriaPerformanceChart');
             new Chart(ctxCriteria, {
                 type: 'bar',
                 data: {
-                    labels: mockData.criteria.labels,
+                    labels: ['Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'Q8', 'Q9'],
                     datasets: [{
                         label: 'Rata-rata Skor (Skala 5)',
-                        data: mockData.criteria.scores,
+                        data: @json($criteriaScores),
                         backgroundColor: context => {
                             const value = context.parsed.y;
-                            if (value >= 4.5) return '#198754';
-                            if (value >= 4.0) return '#0d6efd';
-                            if (value >= 3.5) return '#ffc107';
-                            return '#dc3545';
+                            if (value >= 4.5) return '#198754'; // Hijau - Sangat Puas
+                            if (value >= 4.0) return '#0d6efd'; // Biru - Puas
+                            if (value >= 3.5) return '#ffc107'; // Kuning - Cukup Puas
+                            return '#dc3545'; // Merah - Kurang Puas
                         },
-                        borderRadius: 5,
+                        borderRadius: 10,
                         borderSkipped: false,
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    scales: { y: { beginAtZero: true, max: 5, title: { display: true, text: 'Rata-rata Skor' } } },
-                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: context => `Skor: ${context.parsed.y.toFixed(2)}` } } }
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 5,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            },
+                            ticks: {
+                                font: {
+                                    family: 'Poppins'
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Rata-rata Skor',
+                                font: {
+                                    size: 13,
+                                    family: 'Poppins',
+                                    weight: '600'
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            },
+                            ticks: {
+                                font: {
+                                    family: 'Poppins'
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            titleFont: {
+                                size: 14,
+                                family: 'Poppins'
+                            },
+                            bodyFont: {
+                                size: 13,
+                                family: 'Poppins'
+                            },
+                            callbacks: {
+                                label: context => `Skor: ${context.parsed.y.toFixed(2)}`
+                            }
+                        }
+                    }
                 }
             });
 
             // Dark Mode Toggle
-            const toggle = document.getElementById('darkModeToggle');
-            toggle.addEventListener('click', () => { document.body.classList.toggle('dark-mode'); });
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const body = document.body;
+            const icon = darkModeToggle.querySelector('i');
+
+            // Check for saved dark mode preference
+            if (localStorage.getItem('darkMode') === 'enabled') {
+                body.classList.add('dark-mode');
+                icon.classList.remove('fa-moon');
+                icon.classList.add('fa-sun');
+            }
+
+            darkModeToggle.addEventListener('click', () => {
+                body.classList.toggle('dark-mode');
+                
+                if (body.classList.contains('dark-mode')) {
+                    icon.classList.remove('fa-moon');
+                    icon.classList.add('fa-sun');
+                    localStorage.setItem('darkMode', 'enabled');
+                } else {
+                    icon.classList.remove('fa-sun');
+                    icon.classList.add('fa-moon');
+                    localStorage.setItem('darkMode', null);
+                }
+            });
+
+            // Scroll to Top Button
+            const scrollTop = document.getElementById('scrollTop');
+            
+            window.addEventListener('scroll', () => {
+                if (window.pageYOffset > 300) {
+                    scrollTop.classList.add('visible');
+                } else {
+                    scrollTop.classList.remove('visible');
+                }
+            });
+
+            scrollTop.addEventListener('click', () => {
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth'
+                });
+            });
+
+            // Fade in animations on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.fade-in').forEach(el => {
+                observer.observe(el);
+            });
         });
     </script>
-    @include('layouts.NavbarBawah')
 </body>
-
 </html>
