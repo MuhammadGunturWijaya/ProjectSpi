@@ -1,10 +1,5 @@
 <!DOCTYPE html>
 <html lang="id">
-<style>
-    body {
-                   overflow-x: hidden;
-        }
-</style>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,7 +17,6 @@
             color: #1a202c;
             line-height: 1.6;
             overflow-x: hidden;
-
         }
 
         h2,
@@ -152,7 +146,7 @@
             font-weight: 600;
             color: white;
             transition: 0.3s;
-            box-shadow: 0 4px 15px rgba(30, 58, 138, 0.2);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2);
         }
 
         .btn-gradient:hover {
@@ -161,17 +155,51 @@
         }
 
         .btn-edit {
-            background-color: #4a71b1;
+            background-color: #10b981;
             color: white;
             border: none;
-            border-radius: 30px;
-            padding: 8px 18px;
+            border-radius: 8px;
+            padding: 8px 16px;
             font-weight: 500;
-            transition: background-color 0.3s ease;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
         }
 
         .btn-edit:hover {
-            background-color: #385989;
+            background-color: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-delete {
+            background-color: #ef4444;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+        }
+
+        .btn-delete:hover {
+            background-color: #dc2626;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+        }
+
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
         }
 
         /* Modal */
@@ -274,8 +302,8 @@
 
         @if(Auth::check() && Auth::user()->role == 'admin')
             <div class="text-center mb-5">
-                <a href="{{ route('sdm.create') }}" class="btn btn-gradient">
-                    <i class="bi bi-person-plus-fill me-2"></i> Tambah SDM
+                <a href="{{ route('sdm.create') }}" class="btn btn-gradient" style="color: white;">
+                    <i class="bi bi-person-plus-fill me-2" style="color: white;"></i> Tambah SDM
                 </a>
             </div>
         @endif
@@ -286,7 +314,8 @@
                     <div class="card person-card" style="cursor: pointer;" data-bs-toggle="modal"
                         data-bs-target="#personModal" data-nama="{{ $person->nama }}" data-jabatan="{{ $person->jabatan }}"
                         data-bidang="{{ $person->bidang }}" data-biodata="{{ $person->biodata }}"
-                        data-pengalaman="{{ $person->pengalaman }}" data-tanggal_lahir="{{ $person->tanggal_lahir }}"
+                        data-pengalaman="{{ $person->pengalaman }}" 
+                        data-tanggal_lahir="{{ $person->tanggal_lahir ? \Carbon\Carbon::parse($person->tanggal_lahir)->format('d-m-Y') : '' }}"
                         data-foto="{{ $person->foto ? asset('images/' . $person->foto) : asset('images/default.jpg') }}">
 
                         <img src="{{ $person->foto ? asset('images/' . $person->foto) : asset('images/default.jpg') }}"
@@ -295,28 +324,23 @@
                             <h5 class="card-title">{{ $person->nama }}</h5>
                             <p class="card-text">{{ $person->jabatan }}</p>
 
-
                             @if(Auth::check() && Auth::user()->role == 'admin')
-                                <div class="d-flex justify-content-center gap-2 mt-3">
-                                    <a href="{{ route('sdm.edit', $person) }}" class="btn btn-edit mt-3"
+                                <div class="action-buttons">
+                                    <a href="{{ route('sdm.edit', $person) }}" class="btn-edit"
                                         onclick="event.stopPropagation();">
-                                        <i class="bi bi-pencil-fill me-1"></i> Edit
+                                        <i class="bi bi-pencil-fill"></i> Edit
                                     </a>
 
-
-                                    <!-- Tombol Hapus -->
                                     <form action="{{ route('sdm.destroy', $person) }}" method="POST"
                                         onsubmit="return confirm('Yakin ingin menghapus SDM ini?');" style="display:inline;">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-danger">
-                                            <i class="bi bi-trash-fill me-1"></i> Hapus
+                                        <button type="submit" class="btn-delete" onclick="event.stopPropagation();">
+                                            <i class="bi bi-trash-fill"></i> Hapus
                                         </button>
                                     </form>
-
                                 </div>
                             @endif
-
                         </div>
                     </div>
                 </div>

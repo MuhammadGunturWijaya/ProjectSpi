@@ -98,13 +98,14 @@
                         <a href="{{ route('identifikasi.risiko.create') }}" class="btn btn-success">
                             <i class="fa fa-plus"></i> Tambah Risiko
                         </a>
-                    @endif
+                    
                     <button onclick="printLaporan()" class="btn btn-primary">
                         <i class="fa fa-print"></i> Cetak Laporan
                     </button>
                     <button onclick="exportToExcel()" class="btn btn-success">
                         <i class="fa fa-file-excel"></i> Export Excel
                     </button>
+                    @endif
                 </div>
             </div>
 
