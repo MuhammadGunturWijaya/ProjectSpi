@@ -1126,7 +1126,7 @@
 
 
             @if(Auth::user()?->role === 'admin')
-                <a href="#" class="btn-report btn-admin">
+                <a href="{{ route('aspirasi.admin') }}" class="btn-report btn-admin">
                     <i class="bi bi-list-check me-2"></i>Lihat Aspirasi
                 </a>
             @endif

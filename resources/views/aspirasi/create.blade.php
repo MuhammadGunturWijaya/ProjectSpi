@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aspirasi - Elegant Design</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <style>
         * {
             font-family: 'Plus Jakarta Sans', sans-serif;
@@ -69,12 +71,16 @@
         }
 
         @keyframes floatSlow {
-            0%, 100% {
+
+            0%,
+            100% {
                 transform: translate(0, 0) scale(1);
             }
+
             33% {
                 transform: translate(30px, -30px) scale(1.05);
             }
+
             66% {
                 transform: translate(-20px, 20px) scale(0.95);
             }
@@ -88,7 +94,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: 
+            background-image:
                 linear-gradient(rgba(102, 126, 234, 0.03) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(102, 126, 234, 0.03) 1px, transparent 1px);
             background-size: 50px 50px;
@@ -107,7 +113,7 @@
             background: #ffffff;
             border-radius: 24px;
             overflow: hidden;
-            box-shadow: 
+            box-shadow:
                 0 10px 40px rgba(0, 0, 0, 0.06),
                 0 2px 8px rgba(0, 0, 0, 0.04);
             border: 1px solid rgba(102, 126, 234, 0.08);
@@ -115,7 +121,7 @@
         }
 
         .form-card:hover {
-            box-shadow: 
+            box-shadow:
                 0 15px 50px rgba(0, 0, 0, 0.08),
                 0 5px 15px rgba(0, 0, 0, 0.05);
         }
@@ -178,6 +184,31 @@
             line-height: 1.6;
         }
 
+        .btn-view-aspirasi {
+            position: relative;
+            z-index: 2;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 12px;
+            padding: 12px 30px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: white;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .btn-view-aspirasi:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.6);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
         .form-body {
             padding: 45px 40px;
         }
@@ -209,7 +240,8 @@
             color: white;
         }
 
-        .form-control, .form-select {
+        .form-control,
+        .form-select {
             background: #f8f9fa;
             border: 2px solid #e2e8f0;
             border-radius: 12px;
@@ -225,7 +257,8 @@
             font-weight: 400;
         }
 
-        .form-control:focus, .form-select:focus {
+        .form-control:focus,
+        .form-select:focus {
             background: #ffffff;
             border-color: #667eea;
             box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
@@ -233,7 +266,8 @@
             color: #2d3748;
         }
 
-        .form-control:hover, .form-select:hover {
+        .form-control:hover,
+        .form-select:hover {
             border-color: #cbd5e0;
             background: #ffffff;
         }
@@ -404,7 +438,8 @@
                 gap: 10px;
             }
 
-            .btn-submit, .btn-back {
+            .btn-submit,
+            .btn-back {
                 width: 100%;
             }
         }
@@ -428,11 +463,16 @@
         }
 
         /* Smooth transitions */
-        .form-control, .form-select, .btn-submit, .btn-back, .file-upload-wrapper {
+        .form-control,
+        .form-select,
+        .btn-submit,
+        .btn-back,
+        .file-upload-wrapper {
             will-change: transform;
         }
     </style>
 </head>
+
 <body>
     <!-- Animated Background Decoration -->
     <div class="bg-decoration">
@@ -454,6 +494,9 @@
                             </div>
                             <h3>Formulir Aspirasi & Kritik</h3>
                             <p>Sampaikan aspirasi, kritik, dan saran Anda untuk kemajuan bersama</p>
+                            <a href="{{ route('aspirasi.index') }}" class="btn-view-aspirasi">
+                                <i class="bi bi-list-ul me-2"></i>Lihat Aspirasi Saya
+                            </a>
                         </div>
 
                         <div class="form-body">
@@ -481,7 +524,8 @@
                                         Keterangan Detail
                                     </label>
                                     <textarea name="keterangan" id="keterangan" class="form-control" rows="5"
-                                        placeholder="Jelaskan aspirasi atau kritik Anda secara detail..." required></textarea>
+                                        placeholder="Jelaskan aspirasi atau kritik Anda secara detail..."
+                                        required></textarea>
                                 </div>
 
                                 <div class="section-title mt-4">
@@ -495,8 +539,8 @@
                                                 <i class="bi bi-person-fill"></i>
                                                 Asal Pelapor
                                             </label>
-                                            <input type="text" name="asal_pelapor" id="asal_pelapor" class="form-control"
-                                                placeholder="Nama lengkap Anda" required>
+                                            <input type="text" name="asal_pelapor" id="asal_pelapor"
+                                                class="form-control" placeholder="Nama lengkap Anda" required>
                                         </div>
                                     </div>
 
@@ -523,7 +567,8 @@
                                                 <i class="bi bi-calendar-event"></i>
                                                 Tanggal Laporan
                                             </label>
-                                            <input type="date" name="tanggal" id="tanggal" class="form-control" required>
+                                            <input type="date" name="tanggal" id="tanggal" class="form-control"
+                                                required>
                                         </div>
                                     </div>
 
@@ -535,15 +580,25 @@
                                             </label>
                                             <select name="kategori" id="kategori" class="form-select" required>
                                                 <option value="">-- Pilih Kategori --</option>
-                                                <option value="agama">🕌 Agama</option>
-                                                <option value="kesehatan">⚕️ Kesehatan</option>
-                                                <option value="keuangan">💰 Keuangan</option>
-                                                <option value="pendidikan">📚 Pendidikan</option>
-                                                <option value="infrastruktur">🏗️ Infrastruktur</option>
-                                                <option value="lainnya">📋 Lainnya</option>
+                                                <option value="agama">Agama</option>
+                                                <option value="kesehatan">Kesehatan</option>
+                                                <option value="keuangan">Keuangan</option>
+                                                <option value="pendidikan">Pendidikan</option>
+                                                <option value="infrastruktur">Infrastruktur</option>
+                                                <option value="lainnya">Lainnya</option>
                                             </select>
                                         </div>
                                     </div>
+                                </div>
+
+                                <!-- Field tambahan untuk kategori "lainnya" -->
+                                <div class="form-group" id="kategoriLainnyaWrapper" style="display: none;">
+                                    <label for="kategori_lainnya" class="form-label">
+                                        <i class="bi bi-pencil-fill"></i>
+                                        Sebutkan Kategori Lainnya
+                                    </label>
+                                    <input type="text" name="kategori_lainnya" id="kategori_lainnya"
+                                        class="form-control" placeholder="Masukkan kategori lainnya...">
                                 </div>
 
                                 <div class="form-group">
@@ -563,10 +618,31 @@
                                 </div>
 
                                 <div class="btn-group-custom">
-                                    <button type="submit" class="btn-submit">
-                                        <i class="bi bi-send-fill me-2"></i>Kirim Aspirasi
+                                    <button type="submit" class="btn-submit" id="btnKirim">
+                                        <span class="spinner-border spinner-border-sm me-2 d-none" id="loadingSpinner"
+                                            role="status" aria-hidden="true"></span>
+                                        <i class="bi bi-send-fill me-2" id="btnIcon"></i>
+                                        <span id="btnText">Kirim Aspirasi</span>
                                     </button>
-                                    <a href="{{ url()->previous() }}" class="btn-back">
+                                    <script>
+                                        document.addEventListener('DOMContentLoaded', function () {
+                                            const form = document.querySelector('form'); // ganti jika form kamu punya ID tertentu
+                                            const btnKirim = document.getElementById('btnKirim');
+                                            const spinner = document.getElementById('loadingSpinner');
+                                            const btnText = document.getElementById('btnText');
+                                            const btnIcon = document.getElementById('btnIcon');
+
+                                            form.addEventListener('submit', function () {
+                                                // Tampilkan spinner dan ubah teks tombol
+                                                spinner.classList.remove('d-none');
+                                                btnText.textContent = 'Mengirim...';
+                                                btnIcon.classList.add('d-none');
+                                                btnKirim.disabled = true; // nonaktifkan tombol agar tidak diklik dua kali
+                                            });
+                                        });
+                                    </script>
+
+                                    <a href="{{route('landingpage')}}" class="btn-back">
                                         <i class="bi bi-arrow-left me-2"></i>Kembali
                                     </a>
                                 </div>
@@ -582,11 +658,11 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // File upload handling with smooth feedback
+        // File upload handling
         const fileInput = document.getElementById('lampiran');
         const fileWrapper = document.getElementById('fileUploadWrapper');
 
-        fileInput.addEventListener('change', function(e) {
+        fileInput.addEventListener('change', function (e) {
             const file = e.target.files[0];
             if (file) {
                 fileWrapper.style.borderColor = '#667eea';
@@ -596,16 +672,33 @@
             }
         });
 
+        // Tampilkan field kategori lainnya jika dipilih
+        const kategoriSelect = document.getElementById('kategori');
+        const kategoriLainnyaWrapper = document.getElementById('kategoriLainnyaWrapper');
+        const kategoriLainnyaInput = document.getElementById('kategori_lainnya');
+
+        kategoriSelect.addEventListener('change', function () {
+            if (this.value === 'lainnya') {
+                kategoriLainnyaWrapper.style.display = 'block';
+                kategoriLainnyaInput.setAttribute('required', 'required');
+            } else {
+                kategoriLainnyaWrapper.style.display = 'none';
+                kategoriLainnyaInput.removeAttribute('required');
+                kategoriLainnyaInput.value = '';
+            }
+        });
+
         // Set today's date as default
         document.getElementById('tanggal').valueAsDate = new Date();
 
         // Smooth scroll to top on form errors
         const form = document.querySelector('form');
         if (form) {
-            form.addEventListener('invalid', function() {
+            form.addEventListener('invalid', function () {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             }, true);
         }
     </script>
 </body>
+
 </html>

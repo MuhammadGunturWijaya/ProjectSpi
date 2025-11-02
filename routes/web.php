@@ -730,6 +730,14 @@ Route::post('/evaluasi-mr/update-order', [IdentifikasiRisikoController::class, '
     ->name('evaluasiMr.updateOrder')
     ->middleware('auth');
 
+Route::get('/aspirasi', [AspirasiController::class, 'index'])->name('aspirasi.index');
 Route::get('/aspirasi/create', [AspirasiController::class, 'create'])->name('aspirasi.create');
-Route::post('/aspirasi/store', [AspirasiController::class, 'store'])->name('aspirasi.store');
+Route::post('/aspirasi', [AspirasiController::class, 'store'])->name('aspirasi.store');
+Route::get('/aspirasi/{aspirasi}', [AspirasiController::class, 'show'])->name('aspirasi.show');
+Route::delete('/aspirasi/{aspirasi}', [AspirasiController::class, 'destroy'])->name('aspirasi.destroy');
 
+// Routes untuk admin
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/aspirasi', [AspirasiController::class, 'adminIndex'])->name('aspirasi.admin');
+    Route::get('/admin/aspirasi/{aspirasi}', [AspirasiController::class, 'adminShow'])->name('aspirasi.admin.show');
+});
