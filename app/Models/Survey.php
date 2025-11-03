@@ -9,24 +9,18 @@ class Survey extends Model
 {
     use HasFactory;
 
-    // Izinkan mass assignment untuk field ini
     protected $fillable = [
         'email',
-        'jenis_kelamin', // ✅ tambah ini
-        'pendidikan',    // ✅ tambah ini
-        'pekerjaan',     // ✅ tambah ini
+        'jenis_kelamin',
+        'pendidikan',
+        'pekerjaan',
         'tanggal',
-        'jawaban_1',
-        'jawaban_2',
-        'jawaban_3',
-        'jawaban_4',
-        'jawaban_5',
-        'jawaban_6',
-        'jawaban_7',
-        'jawaban_8',
-        'jawaban_9',
+        'jawaban',      // kolom baru
         'kendala',
         'saran',
     ];
 
+    protected $casts = [
+        'jawaban' => 'array',   // otomatis decode JSON ke array
+    ];
 }

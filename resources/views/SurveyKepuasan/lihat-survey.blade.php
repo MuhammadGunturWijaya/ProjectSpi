@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="id">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Survey Kepuasan - SPI Polije</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
     <style>
@@ -54,8 +56,13 @@
         }
 
         @keyframes rotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         .content-wrapper {
@@ -85,8 +92,15 @@
         }
 
         @keyframes wave {
-            0%, 100% { transform: translateX(0); }
-            50% { transform: translateX(-50px); }
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            50% {
+                transform: translateX(-50px);
+            }
         }
 
         .header-content {
@@ -117,6 +131,7 @@
                 opacity: 0;
                 transform: translateY(-30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -128,6 +143,7 @@
                 opacity: 0;
                 transform: translateY(30px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -451,11 +467,11 @@
             .survey-title {
                 font-size: 2.5rem;
             }
-            
+
             .survey-subtitle {
                 font-size: 1rem;
             }
-            
+
             .stat-number {
                 font-size: 2.5rem;
             }
@@ -718,9 +734,9 @@
                                 <th><i class="fas fa-venus-mars me-2"></i>Gender</th>
                                 <th><i class="fas fa-graduation-cap me-2"></i>Pendidikan</th>
                                 <th><i class="fas fa-briefcase me-2"></i>Pekerjaan</th>
-                                @for($i = 1; $i <= 9; $i++)
-                                    <th>Q{{ $i }}</th>
-                                @endfor
+                                @foreach($questions as $index => $question)
+                                    <th>Q{{ $index + 1 }}</th>
+                                @endforeach
                                 <th><i class="fas fa-exclamation-circle me-2"></i>Kendala</th>
                                 <th><i class="fas fa-comment-dots me-2"></i>Saran</th>
                                 <th><i class="fas fa-calendar-alt me-2"></i>Tanggal</th>
@@ -731,14 +747,20 @@
                         <tbody>
                             @foreach($surveys as $survey)
                                 <tr>
-                                    <td><a href="mailto:{{ $survey->email }}" class="email-link">{{ $survey->email }}</a></td>
+                                    <td><a href="mailto:{{ $survey->email }}" class="email-link">{{ $survey->email }}</a>
+                                    </td>
                                     <td>{{ $survey->jenis_kelamin ?? '-' }}</td>
                                     <td>{{ $survey->pendidikan ?? '-' }}</td>
                                     <td>{{ $survey->pekerjaan ?? '-' }}</td>
 
-                                    @for($i = 1; $i <= 9; $i++)
+                                    @php
+                                        // Decode JSON menjadi array asosiatif
+                                        $answers = json_decode($survey->jawaban, true) ?? [];
+                                    @endphp
+
+                                    @foreach($answers as $answer)
                                         @php
-                                            $jawaban = $survey->{'jawaban_' . $i} ?? '-';
+                                            $jawaban = $answer['jawaban'] ?? '-';
                                             $badgeClass = match ($jawaban) {
                                                 'Sangat Puas' => 'sangat-puas',
                                                 'Puas' => 'puas',
@@ -747,19 +769,19 @@
                                                 default => 'secondary',
                                             };
                                         @endphp
-                                        <td>
-                                            <span class="badge-modern {{ $badgeClass }}" data-bs-toggle="tooltip" title="{{ $jawaban }}">
-                                                {{ $jawaban }}
-                                            </span>
-                                        </td>
-                                    @endfor
+                                        <td><span class="badge-modern {{ $badgeClass }}">{{ $jawaban }}</span></td>
+                                    @endforeach
+
+
 
                                     <td class="long-text-cell">{{ $survey->kendala ?? '-' }}</td>
                                     <td class="long-text-cell">{{ $survey->saran ?? '-' }}</td>
-                                    <td>{{ $survey->tanggal ? \Carbon\Carbon::parse($survey->tanggal)->format('d M Y') : '-' }}</td>
+                                    <td>{{ $survey->tanggal ? \Carbon\Carbon::parse($survey->tanggal)->format('d M Y') : '-' }}
+                                    </td>
                                     <td>{{ $survey->created_at->format('d/M H:i') }}</td>
                                     <td>
-                                        <form action="{{ route('surveys.destroy', $survey->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus data ini?');">
+                                        <form action="{{ route('surveys.destroy', $survey->id) }}" method="POST"
+                                            onsubmit="return confirm('Yakin ingin menghapus data ini?');">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" class="btn-delete">
@@ -782,60 +804,52 @@
             </div>
         </div>
 
-        @include('layouts.NavbarBawah')
+
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             // Initialize tooltips
             var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.map(function(tooltipTriggerEl) {
+            tooltipTriggerList.map(function (tooltipTriggerEl) {
                 return new bootstrap.Tooltip(tooltipTriggerEl);
             });
 
             // Doughnut Chart dengan warna yang benar
             const ctxDistribution = document.getElementById('scoreDistributionChart');
-            new Chart(ctxDistribution, {
-                type: 'doughnut',
+            new Chart(ctxCriteria, {
+                type: 'bar',
                 data: {
-                    labels: @json($distributionLabels),
+                    labels: @json($questionLabels), // ← pakai label dari controller
                     datasets: [{
-                        data: @json($distributionData),
-                        backgroundColor: [
-                            '#198754', // Sangat Puas - Hijau
-                            '#0d6efd', // Puas - Biru
-                            '#ffc107', // Cukup Puas - Kuning
-                            '#dc3545'  // Kurang Puas - Merah
-                        ],
-                        borderWidth: 0,
-                        hoverOffset: 10
+                        label: 'Rata-rata Skor (Skala 5)',
+                        data: @json($criteriaScores),
+                        backgroundColor: context => {
+                            const value = context.parsed.y;
+                            if (value >= 4.5) return '#198754'; // Hijau - Sangat Puas
+                            if (value >= 4.0) return '#0d6efd'; // Biru - Puas
+                            if (value >= 3.5) return '#ffc107'; // Kuning - Cukup Puas
+                            return '#dc3545'; // Merah - Kurang Puas
+                        },
+                        borderRadius: 10,
+                        borderSkipped: false,
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 5,
+                        }
+                    },
                     plugins: {
-                        legend: {
-                            position: 'bottom',
-                            labels: {
-                                padding: 20,
-                                font: {
-                                    size: 12,
-                                    family: 'Poppins'
-                                }
-                            }
-                        },
+                        legend: { display: false },
                         tooltip: {
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            padding: 12,
-                            titleFont: {
-                                size: 14,
-                                family: 'Poppins'
-                            },
-                            bodyFont: {
-                                size: 13,
-                                family: 'Poppins'
+                            callbacks: {
+                                label: context => `Skor: ${context.parsed.y.toFixed(2)}`
                             }
                         }
                     }
@@ -847,10 +861,10 @@
             new Chart(ctxCriteria, {
                 type: 'bar',
                 data: {
-                    labels: ['Q1', 'Q2', 'Q3', 'Q4', 'Q5', 'Q6', 'Q7', 'Q8', 'Q9'],
+                    labels: @json($questionLabels), // ✅ Otomatis menyesuaikan jumlah pertanyaan
                     datasets: [{
                         label: 'Rata-rata Skor (Skala 5)',
-                        data: @json($criteriaScores),
+                        data: @json($criteriaScores), // ✅ Rata-rata dari controller
                         backgroundColor: context => {
                             const value = context.parsed.y;
                             if (value >= 4.5) return '#198754'; // Hijau - Sangat Puas
@@ -920,7 +934,6 @@
                     }
                 }
             });
-
             // Dark Mode Toggle
             const darkModeToggle = document.getElementById('darkModeToggle');
             const body = document.body;
@@ -935,7 +948,7 @@
 
             darkModeToggle.addEventListener('click', () => {
                 body.classList.toggle('dark-mode');
-                
+
                 if (body.classList.contains('dark-mode')) {
                     icon.classList.remove('fa-moon');
                     icon.classList.add('fa-sun');
@@ -949,7 +962,7 @@
 
             // Scroll to Top Button
             const scrollTop = document.getElementById('scrollTop');
-            
+
             window.addEventListener('scroll', () => {
                 if (window.pageYOffset > 300) {
                     scrollTop.classList.add('visible');
@@ -985,5 +998,7 @@
             });
         });
     </script>
+    @include('layouts.NavbarBawah')
 </body>
+
 </html>

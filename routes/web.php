@@ -466,6 +466,19 @@ Route::post('/survey-kepuasan', [SurveyController::class, 'store'])
 
 Route::get('/survey-kepuasan/data', [SurveyController::class, 'showAll'])
     ->name('survey.kepuasan.data');
+Route::delete('/survey/{survey}', [SurveyController::class, 'destroy'])->name('survey.destroy');
+Route::get('/survey', [SurveyController::class, 'index'])->name('survey.index');
+// Routes Baru untuk Kelola Pertanyaan Custom (hanya admin)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/survey/questions/manage', [SurveyController::class, 'manageQuestions'])
+        ->name('survey.questions.manage');
+    Route::post('/survey/questions', [SurveyController::class, 'storeQuestion'])
+        ->name('survey.question.store');
+    Route::put('/survey/questions/{question}', [SurveyController::class, 'updateQuestion'])
+        ->name('survey.question.update');
+    Route::delete('/survey/questions/{question}', [SurveyController::class, 'deleteQuestion'])
+        ->name('survey.question.delete');
+});
 
 Route::get('/surveys/download', [SurveyController::class, 'download'])->name('surveys.download');
 

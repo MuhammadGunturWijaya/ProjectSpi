@@ -2,8 +2,8 @@
 <html lang="id">
 <style>
     body {
-                   overflow-x: hidden;
-        }
+        overflow-x: hidden;
+    }
 </style>
 <head>
     <meta charset="UTF-8">
@@ -43,10 +43,13 @@
                                     class="btn btn-primary rounded-pill px-4 py-2 shadow-sm">
                                     <i class="fas fa-eye me-2"></i> Lihat Semua Survey
                                 </a>
+                                <a href="{{ route('survey.questions.manage') }}"
+                                    class="btn btn-warning rounded-pill px-4 py-2 shadow-sm ms-2">
+                                    <i class="fas fa-cog me-2"></i> Kelola Pertanyaan
+                                </a>
                             </div>
                         @endif
                     @endauth
-
 
                     <!-- Toast Notifikasi -->
                     <div id="toast"
@@ -64,7 +67,6 @@
                     const waBtn = document.getElementById('waShareBtn');
                     const pageUrl = window.location.href;
 
-                    // Fungsi untuk copy link
                     copyBtn.addEventListener('click', function () {
                         navigator.clipboard.writeText(pageUrl).then(() => {
                             alert('Link survey berhasil disalin ke clipboard!');
@@ -73,15 +75,12 @@
                         });
                     });
 
-                    // Fungsi share ke WhatsApp
                     waBtn.addEventListener('click', function () {
                         const waUrl = `https://wa.me/?text=${encodeURIComponent("Silahkan Mengisi Survey Berikut: " + pageUrl)}`;
                         window.open(waUrl, '_blank');
                     });
                 });
             </script>
-
-
 
             <div class="row justify-content-center">
                 <div class="col-lg-9 col-md-10">
@@ -101,14 +100,13 @@
                             @endguest
 
                             @auth
-                                <form method="POST" action="{{ route('survey.store') }}" method="POST" class="animate-fade">
+                                <form method="POST" action="{{ route('survey.store') }}" class="animate-fade">
                                     @csrf
 
                                     {{-- Pertanyaan Demografis --}}
                                     <div class="mb-5 question-block" data-step="0">
                                         <h4 class="fw-bold mb-3">Data Diri</h4>
 
-                                        {{-- Jenis Kelamin --}}
                                         <label class="form-label fw-semibold fs-5 mb-2">Jenis Kelamin</label>
                                         <select name="jenis_kelamin" class="form-select mb-3" required>
                                             <option value="" disabled selected>Pilih Jenis Kelamin</option>
@@ -117,7 +115,6 @@
                                             <option value="Lainnya">Lainnya</option>
                                         </select>
 
-                                        {{-- Pendidikan --}}
                                         <label class="form-label fw-semibold fs-5 mb-2">Pendidikan Terakhir</label>
                                         <select name="pendidikan" class="form-select mb-3" required>
                                             <option value="" disabled selected>Pilih Pendidikan Terakhir</option>
@@ -130,15 +127,11 @@
                                             <option value="Doktor">Doktor</option>
                                         </select>
 
-                                        {{-- Pekerjaan --}}
                                         <label class="form-label fw-semibold fs-5 mb-2">Pekerjaan</label>
                                         <input type="text" name="pekerjaan" class="form-control mb-3"
                                             placeholder="Isi Pekerjaan Anda" required>
-                                    </div>
 
-                                    {{-- Field tanggal yang bisa diisi user --}}
-                                    <div class="mb-4">
-                                        <label for="tanggal" class="form-label fw-bold fs-5 mb-2">
+                                        <label for="tanggal" class="form-label fw-bold fs-5 mb-2 mt-3">
                                             <i class="fas fa-calendar-alt text-primary me-2"></i> Tanggal Mengisi
                                         </label>
                                         <div class="input-group shadow-sm">
@@ -153,63 +146,34 @@
                                         </small>
                                     </div>
 
-                                    <style>
-                                        .input-group-text {
-                                            background: linear-gradient(90deg, #007bff, #28a745);
-                                            font-size: 1.2rem;
-                                            padding: 0.75rem 1rem;
-                                        }
-
-                                        input[type="date"] {
-                                            font-size: 1rem;
-                                            background-color: #f9fafb;
-                                            transition: all 0.2s ease;
-                                        }
-
-                                        input[type="date"]:hover {
-                                            background-color: #eef5ff;
-                                        }
-
-                                        input[type="date"]:focus {
-                                            background-color: #fff;
-                                            box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
-                                        }
-                                    </style>
                                     <div id="survey-form-content">
                                         @php
-                                            $pertanyaan = [
-                                                "Saya mendapatkan kemudahan informasi tentang persyaratan pelayanan yang harus dipenuhi",
-                                                "Pegawai Polije memberitahukan kemudahan alur/cara untuk mendapatkan layanan yang saya butuhkan",
-                                                "Pegawai Polije memberikan informasi tentang waktu penyelesaian pelayanan dengan baik",
-                                                "Pegawai Polije tidak pernah meminta/menerima imbalan atas layanan yang diberikan kecuali ada tarif yang diberlakukan Polije",
-                                                "Saya mendapatkan layanan yang sesuai dengan yang saya butuhkan",
-                                                "Pegawai Polije telah melayani dengan sigap, cepat dan terampil",
-                                                "Pegawai Polije telah melayani dengan sopan santun dan ramah",
-                                                "Pegawai polije memberikan kesempatan dan kemudahan dalam menyampaikan keluhan untuk mendapatkan solusi",
-                                                "Saya merasa nyaman dengan tempat dan fasilitas layanan di Polije"
-                                            ];
+                                            // Ambil semua pertanyaan dari database berdasarkan order
+                                            $allQuestions = \App\Models\SurveyQuestion::orderBy('order')->get();
+                                            $totalQuestions = $allQuestions->count();
+                                            
+                                            // Pisahkan 9 pertanyaan pertama sebagai default
+                                            $defaultQuestions = $allQuestions->take(9);
+                                            $customQuestions = $allQuestions->skip(9);
                                         @endphp
 
-                                        @foreach($pertanyaan as $index => $tanya)
-                                            <div class="mb-5 question-block" data-step="{{ $index + 1 }}" @if($index > 0)
-                                            style="display:none;" @endif>
+                                        {{-- 9 Pertanyaan Default (dari database) --}}
+                                        @foreach($defaultQuestions as $index => $question)
+                                            <div class="mb-5 question-block" data-step="{{ $index + 1 }}" @if($index > 0) style="display:none;" @endif>
                                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                                    <h4 class="fw-bold mb-0">Pertanyaan {{ $index + 1 }} dari
-                                                        {{ count($pertanyaan) }}
-                                                    </h4>
+                                                    <h4 class="fw-bold mb-0">Pertanyaan {{ $index + 1 }} dari {{ $totalQuestions }}</h4>
                                                     <div class="progress" style="width: 50%;">
                                                         <div class="progress-bar" role="progressbar"
-                                                            style="width: {{ (($index + 1) / count($pertanyaan)) * 100 }}%;"
-                                                            aria-valuenow="{{ (($index + 1) / count($pertanyaan)) * 100 }}"
+                                                            style="width: {{ (($index + 1) / $totalQuestions) * 100 }}%;"
+                                                            aria-valuenow="{{ (($index + 1) / $totalQuestions) * 100 }}"
                                                             aria-valuemin="0" aria-valuemax="100"></div>
                                                     </div>
                                                 </div>
 
-                                                <label class="form-label fw-semibold fs-5 mb-3">{{ $tanya }}</label>
+                                                <label class="form-label fw-semibold fs-5 mb-3">{{ $question->question_text }}</label>
                                                 <div class="d-flex justify-content-around rating-options">
                                                     <label class="rating-item text-center cursor-pointer">
-                                                        <input type="radio" name="jawaban[{{ $index }}]" value="Sangat Puas"
-                                                            required>
+                                                        <input type="radio" name="jawaban[{{ $index }}]" value="Sangat Puas" required>
                                                         <span class="emoji">🌟</span>
                                                         <span class="d-block mt-2">Sangat Puas</span>
                                                     </label>
@@ -219,14 +183,12 @@
                                                         <span class="d-block mt-2">Puas</span>
                                                     </label>
                                                     <label class="rating-item text-center cursor-pointer">
-                                                        <input type="radio" name="jawaban[{{ $index }}]" value="Cukup Puas"
-                                                            required>
+                                                        <input type="radio" name="jawaban[{{ $index }}]" value="Cukup Puas" required>
                                                         <span class="emoji">😐</span>
                                                         <span class="d-block mt-2">Cukup Puas</span>
                                                     </label>
                                                     <label class="rating-item text-center cursor-pointer">
-                                                        <input type="radio" name="jawaban[{{ $index }}]" value="Kurang Puas"
-                                                            required>
+                                                        <input type="radio" name="jawaban[{{ $index }}]" value="Kurang Puas" required>
                                                         <span class="emoji">🙁</span>
                                                         <span class="d-block mt-2">Kurang Puas</span>
                                                     </label>
@@ -234,8 +196,52 @@
                                             </div>
                                         @endforeach
 
-                                        <div class="mb-5 question-block" data-step="{{ count($pertanyaan) + 1 }}"
-                                            style="display:none;">
+                                        {{-- Pertanyaan Custom (dari database, setelah 9 pertanyaan pertama) --}}
+                                        @foreach($customQuestions as $customIndex => $customQ)
+                                            @php
+                                                $currentStep = 9 + $customIndex + 1;
+                                            @endphp
+                                            <div class="mb-5 question-block" data-step="{{ $currentStep }}" style="display:none;">
+                                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                                    <h4 class="fw-bold mb-0">
+                                                        Pertanyaan {{ $currentStep }} dari {{ $totalQuestions }}
+                                                        <span class="badge bg-info ms-2">Custom</span>
+                                                    </h4>
+                                                    <div class="progress" style="width: 50%;">
+                                                        <div class="progress-bar" role="progressbar"
+                                                            style="width: {{ ($currentStep / $totalQuestions) * 100 }}%;"
+                                                            aria-valuenow="{{ ($currentStep / $totalQuestions) * 100 }}"
+                                                            aria-valuemin="0" aria-valuemax="100"></div>
+                                                    </div>
+                                                </div>
+
+                                                <label class="form-label fw-semibold fs-5 mb-3">{{ $customQ->question_text }}</label>
+                                                <div class="d-flex justify-content-around rating-options">
+                                                    <label class="rating-item text-center cursor-pointer">
+                                                        <input type="radio" name="jawaban_custom[{{ $customQ->id }}]" value="Sangat Puas" required>
+                                                        <span class="emoji">🌟</span>
+                                                        <span class="d-block mt-2">Sangat Puas</span>
+                                                    </label>
+                                                    <label class="rating-item text-center cursor-pointer">
+                                                        <input type="radio" name="jawaban_custom[{{ $customQ->id }}]" value="Puas" required>
+                                                        <span class="emoji">😊</span>
+                                                        <span class="d-block mt-2">Puas</span>
+                                                    </label>
+                                                    <label class="rating-item text-center cursor-pointer">
+                                                        <input type="radio" name="jawaban_custom[{{ $customQ->id }}]" value="Cukup Puas" required>
+                                                        <span class="emoji">😐</span>
+                                                        <span class="d-block mt-2">Cukup Puas</span>
+                                                    </label>
+                                                    <label class="rating-item text-center cursor-pointer">
+                                                        <input type="radio" name="jawaban_custom[{{ $customQ->id }}]" value="Kurang Puas" required>
+                                                        <span class="emoji">🙁</span>
+                                                        <span class="d-block mt-2">Kurang Puas</span>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        @endforeach
+
+                                        <div class="mb-5 question-block" data-step="{{ $totalQuestions + 1 }}" style="display:none;">
                                             <h4 class="fw-bold mb-3">Masukan & Saran</h4>
                                             <div class="form-floating mb-4">
                                                 <textarea name="kendala" id="kendala" rows="4"
@@ -280,8 +286,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            let currentStep = 0; // mulai dari Data Diri
-            const totalSteps = @json(($jumlahPertanyaan ?? 9) + 2); // +1 step data diri + 1 step masukan
+            let currentStep = 0;
+            const totalSteps = {{ $totalQuestions + 2 }};
             const prevBtn = document.getElementById('prev-btn');
             const nextBtn = document.getElementById('next-btn');
             const submitBtn = document.getElementById('submit-btn');
@@ -300,12 +306,10 @@
                 const currentQuestion = document.querySelector(`[data-step="${currentStep}"]`);
                 let isValid = false;
 
-                // Cek jika ada input radio (emoji rating)
                 const radios = currentQuestion.querySelectorAll('input[type="radio"]');
                 if (radios.length > 0) {
                     isValid = Array.from(radios).some(r => r.checked);
                 } else {
-                    // Cek input/textarea/select lain yang wajib diisi
                     const inputs = currentQuestion.querySelectorAll('input:required, select:required, textarea:required');
                     isValid = Array.from(inputs).every(input => input.value.trim() !== '');
                 }
@@ -316,13 +320,10 @@
                 } else {
                     const warningModalEl = document.getElementById('warningModal');
                     const warningModal = new bootstrap.Modal(warningModalEl);
-
-                    // Tambahkan efek shake saat modal muncul
                     warningModalEl.querySelector('.modal-content').classList.add('shake');
                     warningModalEl.addEventListener('animationend', function () {
                         warningModalEl.querySelector('.modal-content').classList.remove('shake');
                     }, { once: true });
-
                     warningModal.show();
                 }
             });
@@ -334,10 +335,9 @@
                 }
             });
 
-            showStep(currentStep); // tampilkan step awal
+            showStep(currentStep);
         });
     </script>
-
 
     <style>
         body {
@@ -462,53 +462,36 @@
         }
 
         @keyframes shake {
-            0% {
-                transform: translateX(0);
-            }
-
-            25% {
-                transform: translateX(-10px);
-            }
-
-            50% {
-                transform: translateX(10px);
-            }
-
-            75% {
-                transform: translateX(-10px);
-            }
-
-            100% {
-                transform: translateX(0);
-            }
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            50% { transform: translateX(10px); }
+            75% { transform: translateX(-10px); }
+            100% { transform: translateX(0); }
         }
 
         .modal-content.shake {
             animation: shake 0.5s;
         }
 
-        .toast-notification {
-            min-width: 250px;
-            max-width: 350px;
+        .input-group-text {
+            background: linear-gradient(90deg, #007bff, #28a745);
+            font-size: 1.2rem;
+            padding: 0.75rem 1rem;
+        }
+
+        input[type="date"] {
             font-size: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: start;
-            gap: 0.5rem;
-            opacity: 0;
-            transition: opacity 0.5s ease, transform 0.5s ease;
-            transform: translateY(20px);
+            background-color: #f9fafb;
+            transition: all 0.2s ease;
         }
 
-        .toast-notification.show {
-            display: flex;
-            opacity: 1;
-            transform: translateY(0);
+        input[type="date"]:hover {
+            background-color: #eef5ff;
         }
 
-        .toast-notification.hide {
-            opacity: 0;
-            transform: translateY(20px);
+        input[type="date"]:focus {
+            background-color: #fff;
+            box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
         }
     </style>
 
@@ -519,8 +502,7 @@
                 <div class="modal-body text-center p-5">
                     <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
                     <h4 class="fw-bold mb-3">Terima Kasih!</h4>
-                    <p class="mb-4">Terima kasih telah mengisi survey kepuasan. Masukan Anda sangat berharga untuk kami.
-                    </p>
+                    <p class="mb-4">Terima kasih telah mengisi survey kepuasan. Masukan Anda sangat berharga untuk kami.</p>
                     <button type="button" class="btn btn-gradient px-4 py-2 rounded-pill" data-bs-dismiss="modal">
                         Tutup
                     </button>
@@ -554,48 +536,6 @@
         </div>
     </div>
 
-    <script>
-        nextBtn.addEventListener('click', function () {
-            const currentQuestion = document.querySelector(`[data-step="${currentStep}"]`);
-            let isValid = true;
-
-            // Cek apakah ada emoji-rating di step ini
-            const emojiContainer = currentQuestion.querySelector('.emoji-rating');
-            if (emojiContainer) {
-                // Pastikan ada radio yang dipilih
-                const selected = emojiContainer.querySelector('input[type="radio"]:checked');
-                if (!selected) {
-                    isValid = false;
-                }
-            } else {
-                // Validasi untuk input biasa (required)
-                const inputs = currentQuestion.querySelectorAll('input:required, select:required, textarea:required');
-                isValid = Array.from(inputs).every(input => input.value.trim() !== '');
-            }
-
-            if (isValid) {
-                currentStep++;
-                showStep(currentStep);
-            } else {
-                // Tampilkan modal warning
-                const warningModalEl = document.getElementById('warningModal');
-                const warningModal = new bootstrap.Modal(warningModalEl);
-
-                // Tambahkan kelas shake saat modal muncul
-                warningModalEl.querySelector('.modal-content').classList.add('shake');
-
-                // Hapus kelas shake setelah animasi selesai
-                warningModalEl.addEventListener('animationend', function () {
-                    warningModalEl.querySelector('.modal-content').classList.remove('shake');
-                }, { once: true });
-
-                warningModal.show();
-            }
-        });
-    </script>
-
-
     @include('layouts.NavbarBawah')
 </body>
-
 </html>
