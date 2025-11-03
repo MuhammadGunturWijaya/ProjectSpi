@@ -114,7 +114,13 @@ Route::get('/pengaduan', [PengaduanController::class, 'create'])->name('pengadua
 // Hanya user login yang boleh kirim
 Route::middleware(['auth'])->group(function () {
     Route::post('/pengaduan', [PengaduanController::class, 'store'])->name('pengaduan.store');
+    Route::get('/pengaduan/{id}/verify', [PengaduanController::class, 'verify'])->name('pengaduan.verify');
+    Route::post('/pengaduan/{id}/verify', [PengaduanController::class, 'processVerification'])->name('pengaduan.processVerification');
+    Route::post('/pengaduan/{id}/auto-save-verification', [PengaduanController::class, 'autoSaveVerification'])
+        ->name('pengaduan.autoSaveVerification');
 });
+
+
 
 // Visi Misi
 // Halaman publik

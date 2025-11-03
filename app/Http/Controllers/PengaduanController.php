@@ -156,4 +156,111 @@ class PengaduanController extends Controller
 
         return redirect()->route('pengaduan.create');
     }
+
+    public function verify($id)
+    {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Akses ditolak.');
+        }
+
+        $pengaduan = Pengaduan::findOrFail($id);
+
+        // Hanya bisa verifikasi jika status diverifikasi
+        if ($pengaduan->status !== 'diverifikasi') {
+            return redirect()->back()->with('error', 'Hanya laporan dengan status "Diverifikasi" yang dapat diverifikasi.');
+        }
+
+        return view('admin.pengaduanVerify', compact('pengaduan'));
+    }
+
+    public function autoSaveVerification(Request $request, $id)
+    {
+        if (auth()->user()->role !== 'admin') {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $pengaduan = Pengaduan::findOrFail($id);
+
+        // Hanya bisa auto-save jika status diverifikasi
+        if ($pengaduan->status !== 'diverifikasi') {
+            return response()->json(['success' => false, 'message' => 'Status tidak valid'], 400);
+        }
+
+        try {
+            // Decode verification_checks jika berupa string
+            $verificationChecks = $request->verification_checks;
+            if (is_string($verificationChecks)) {
+                $verificationChecks = json_decode($verificationChecks, true);
+            }
+
+            // Update data
+            $pengaduan->verification_checks = json_encode($verificationChecks);
+            $pengaduan->verification_notes = $request->verification_notes;
+            $pengaduan->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Verifikasi berhasil disimpan',
+                'data' => [
+                    'verification_checks' => $verificationChecks,
+                    'verification_notes' => $request->verification_notes
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal menyimpan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Process final verification (existing method - updated)
+     */
+    public function processVerification(Request $request, $id)
+    {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Akses ditolak.');
+        }
+
+        $pengaduan = Pengaduan::findOrFail($id);
+
+        $validated = $request->validate([
+            'verification_checks' => 'required|string',
+            'verification_notes' => 'nullable|string',
+            'action' => 'required|in:approve,reject'
+        ]);
+
+        // Decode verification_checks jika masih string
+        $verificationChecks = $request->verification_checks;
+        if (is_string($verificationChecks)) {
+            $verificationChecks = json_decode($verificationChecks, true);
+        }
+
+        // Validasi: minimal ada satu field yang diverifikasi
+        if (empty($verificationChecks) || count($verificationChecks) === 0) {
+            return redirect()->back()->with('error', 'Harap verifikasi minimal satu field sebelum melanjutkan.');
+        }
+
+        // Simpan hasil verifikasi final
+        $pengaduan->verification_checks = json_encode($verificationChecks);
+        $pengaduan->verification_notes = $request->verification_notes;
+        $pengaduan->verified_by = auth()->id();
+        $pengaduan->verified_at = now();
+
+        if ($request->action === 'approve') {
+            // Lanjutkan ke tindak lanjut
+            $pengaduan->status = 'tindak_lanjut';
+            $message = 'Verifikasi berhasil! Laporan dilanjutkan ke tahap Tindak Lanjut.';
+        } else {
+            // Kembalikan ke pelapor
+            $pengaduan->status = 'tanggapan_pelapor';
+            $message = 'Laporan dikembalikan ke pelapor untuk perbaikan.';
+        }
+
+        $pengaduan->save();
+
+        return redirect()->route('pengaduan.index')->with('success', $message);
+    }
+
 }
