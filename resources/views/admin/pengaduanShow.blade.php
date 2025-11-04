@@ -14,6 +14,35 @@
             position: relative;
         }
 
+        .custom-alert {
+            padding: 15px 25px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .alert-success {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            border: 2px solid #28a745;
+            color: #155724;
+        }
+
+        .alert-warning {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            border: 2px solid #ffc107;
+            color: #856404;
+        }
+
+        .alert-error {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            border: 2px solid #dc3545;
+            color: #721c24;
+        }
+
         /* Floating shapes background */
         .floating-bg {
             position: fixed;
@@ -847,6 +876,32 @@
     </div>
 
     <div class="container py-5">
+        @if(session('success'))
+            <div class="custom-alert alert-success mx-auto" style="max-width: 900px;">
+                <i class="bi bi-check-circle-fill" style="font-size: 1.5rem;"></i>
+                <div>
+                    {!! session('success') !!}
+                </div>
+            </div>
+        @endif
+
+        @if(session('warning'))
+            <div class="custom-alert alert-warning mx-auto" style="max-width: 900px;">
+                <i class="bi bi-exclamation-triangle-fill" style="font-size: 1.5rem;"></i>
+                <div>
+                    {!! session('warning') !!}
+                </div>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="custom-alert alert-error mx-auto" style="max-width: 900px;">
+                <i class="bi bi-x-octagon-fill" style="font-size: 1.5rem;"></i>
+                <div>
+                    {!! session('error') !!}
+                </div>
+            </div>
+        @endif
         <!-- Page Header -->
         <div class="page-header">
             <h1><i class="bi bi-file-text-fill"></i> Detail Pengaduan</h1>
@@ -893,10 +948,12 @@
 
                 @if($pengaduan->status === 'diverifikasi' && auth()->user()->role === 'admin')
                     <div class="verification-buttons">
-                        <button type="button" class="verify-btn verify-yes" data-field="tanggal_pengaduan" data-value="yes">
+                        <button type="button" class="verify-btn verify-yes" data-field="tanggal_pengaduan" data-value="yes"
+                            onclick="toggleVerificationStatus(this)">
                             <i class="bi bi-check-lg"></i>
                         </button>
-                        <button type="button" class="verify-btn verify-no" data-field="tanggal_pengaduan" data-value="no">
+                        <button type="button" class="verify-btn verify-no" data-field="tanggal_pengaduan" data-value="no"
+                            onclick="toggleVerificationStatus(this)">
                             <i class="bi bi-x-lg"></i>
                         </button>
                     </div>
@@ -909,10 +966,12 @@
 
                 @if($pengaduan->status === 'diverifikasi' && auth()->user()->role === 'admin')
                     <div class="verification-buttons">
-                        <button type="button" class="verify-btn verify-yes" data-field="perihal" data-value="yes">
+                        <button type="button" class="verify-btn verify-yes" data-field="perihal" data-value="yes"
+                            onclick="toggleVerificationStatus(this)">
                             <i class="bi bi-check-lg"></i>
                         </button>
-                        <button type="button" class="verify-btn verify-no" data-field="perihal" data-value="no">
+                        <button type="button" class="verify-btn verify-no" data-field="perihal" data-value="no"
+                            onclick="toggleVerificationStatus(this)">
                             <i class="bi bi-x-lg"></i>
                         </button>
                     </div>
@@ -926,10 +985,12 @@
 
                     @if($pengaduan->status === 'diverifikasi' && auth()->user()->role === 'admin')
                         <div class="verification-buttons">
-                            <button type="button" class="verify-btn verify-yes" data-field="uraian" data-value="yes">
+                            <button type="button" class="verify-btn verify-yes" data-field="uraian" data-value="yes"
+                                onclick="toggleVerificationStatus(this)">
                                 <i class="bi bi-check-lg"></i>
                             </button>
-                            <button type="button" class="verify-btn verify-no" data-field="uraian" data-value="no">
+                            <button type="button" class="verify-btn verify-no" data-field="uraian" data-value="no"
+                                onclick="toggleVerificationStatus(this)">
                                 <i class="bi bi-x-lg"></i>
                             </button>
                         </div>
@@ -949,10 +1010,12 @@
                 <div class="info-item" data-field="usia">
                     @if($pengaduan->status === 'diverifikasi' && auth()->user()->role === 'admin')
                         <div class="verification-buttons">
-                            <button type="button" class="verify-btn verify-yes" data-field="usia" data-value="yes">
+                            <button type="button" class="verify-btn verify-yes" data-field="usia" data-value="yes"
+                                onclick="toggleVerificationStatus(this)">
                                 <i class="bi bi-check-lg"></i>
                             </button>
-                            <button type="button" class="verify-btn verify-no" data-field="usia" data-value="no">
+                            <button type="button" class="verify-btn verify-no" data-field="usia" data-value="no"
+                                onclick="toggleVerificationStatus(this)">
                                 <i class="bi bi-x-lg"></i>
                             </button>
                         </div>
@@ -964,10 +1027,12 @@
                 <div class="info-item" data-field="pendidikan">
                     @if($pengaduan->status === 'diverifikasi' && auth()->user()->role === 'admin')
                         <div class="verification-buttons">
-                            <button type="button" class="verify-btn verify-yes" data-field="pendidikan" data-value="yes">
+                            <button type="button" class="verify-btn verify-yes" data-field="pendidikan" data-value="yes"
+                                onclick="toggleVerificationStatus(this)">
                                 <i class="bi bi-check-lg"></i>
                             </button>
-                            <button type="button" class="verify-btn verify-no" data-field="pendidikan" data-value="no">
+                            <button type="button" class="verify-btn verify-no" data-field="pendidikan" data-value="no"
+                                onclick="toggleVerificationStatus(this)">
                                 <i class="bi bi-x-lg"></i>
                             </button>
                         </div>
@@ -979,10 +1044,12 @@
                 <div class="info-item" data-field="pekerjaan">
                     @if($pengaduan->status === 'diverifikasi' && auth()->user()->role === 'admin')
                         <div class="verification-buttons">
-                            <button type="button" class="verify-btn verify-yes" data-field="pekerjaan" data-value="yes">
+                            <button type="button" class="verify-btn verify-yes" data-field="pekerjaan" data-value="yes"
+                                onclick="toggleVerificationStatus(this)">
                                 <i class="bi bi-check-lg"></i>
                             </button>
-                            <button type="button" class="verify-btn verify-no" data-field="pekerjaan" data-value="no">
+                            <button type="button" class="verify-btn verify-no" data-field="pekerjaan" data-value="no"
+                                onclick="toggleVerificationStatus(this)">
                                 <i class="bi bi-x-lg"></i>
                             </button>
                         </div>
@@ -999,10 +1066,12 @@
                 <div class="info-item" data-field="waktu_hubung">
                     @if($pengaduan->status === 'diverifikasi' && auth()->user()->role === 'admin')
                         <div class="verification-buttons">
-                            <button type="button" class="verify-btn verify-yes" data-field="waktu_hubung" data-value="yes">
+                            <button type="button" class="verify-btn verify-yes" data-field="waktu_hubung" data-value="yes"
+                                onclick="toggleVerificationStatus(this)">
                                 <i class="bi bi-check-lg"></i>
                             </button>
-                            <button type="button" class="verify-btn verify-no" data-field="waktu_hubung" data-value="no">
+                            <button type="button" class="verify-btn verify-no" data-field="waktu_hubung" data-value="no"
+                                onclick="toggleVerificationStatus(this)">
                                 <i class="bi bi-x-lg"></i>
                             </button>
                         </div>
@@ -1018,54 +1087,87 @@
             </div>
 
             <!-- Pelanggaran -->
-            <div class="section-header">
-                <div class="icon-box">
-                    <i class="bi bi-exclamation-triangle"></i>
-                </div>
-                <h5>Jenis Pelanggaran</h5>
-            </div>
+<div class="section-header">
+    <div class="icon-box">
+        <i class="bi bi-exclamation-triangle"></i>
+    </div>
+    <h5>Jenis Pelanggaran</h5>
+</div>
 
-            @if($pengaduan->pelanggaran || $pengaduan->pelanggaran_lain)
-                <ul class="custom-list">
-                    @foreach($pengaduan->pelanggaran ?? [] as $index => $p)
-                        <li data-field="pelanggaran_{{ $index }}" class="pelanggaran-item"> <span
-                                class="pelanggaran-text">{{ $p }}</span>
-                            @if($pengaduan->status === 'diverifikasi' && auth()->user()->role === 'admin')
-                                <div class="verification-buttons">
-                                    <button type="button" class="verify-btn verify-yes" data-field="pelanggaran_{{ $index }}"
-                                        data-value="yes">
-                                        <i class="bi bi-check-lg"></i>
-                                    </button>
-                                    <button type="button" class="verify-btn verify-no" data-field="pelanggaran_{{ $index }}"
-                                        data-value="no">
-                                        <i class="bi bi-x-lg"></i>
-                                    </button>
-                                </div>
-                            @endif
-                        </li>
-                    @endforeach
-                    @if($pengaduan->pelanggaran_lain)
-                        <li data-field="pelanggaran_lain" class="pelanggaran-item"> <span
-                                class="pelanggaran-text">{{ $pengaduan->pelanggaran_lain }}</span>
-                            @if($pengaduan->status === 'diverifikasi' && auth()->user()->role === 'admin')
-                                <div class="verification-buttons">
-                                    <button type="button" class="verify-btn verify-yes" data-field="pelanggaran_lain" data-value="yes">
-                                        <i class="bi bi-check-lg"></i>
-                                    </button>
-                                    <button type="button" class="verify-btn verify-no" data-field="pelanggaran_lain" data-value="no">
-                                        <i class="bi bi-x-lg"></i>
-                                    </button>
-                                </div>
-                            @endif
-                        </li>
+@php
+    $rawPelanggaran = $pengaduan->getAttributes()['pelanggaran'] ?? null;
+
+    if (is_array($pengaduan->pelanggaran) && count($pengaduan->pelanggaran) > 0) {
+        $pelanggaranArray = $pengaduan->pelanggaran;
+    } elseif (is_string($rawPelanggaran)) {
+        // Bersihkan escape ganda & tanda kutip luar
+        $clean = trim($rawPelanggaran, '"');
+        $clean = stripslashes($clean);
+        $decoded = json_decode($clean, true);
+        $pelanggaranArray = is_array($decoded) ? $decoded : [];
+    } else {
+        $pelanggaranArray = [];
+    }
+
+    // Filter "Lainnya"
+    $filteredPelanggaran = collect($pelanggaranArray)
+        ->reject(fn($p) => strtolower(trim($p)) === 'lainnya')
+        ->all();
+@endphp
+
+@if(count($filteredPelanggaran) || $pengaduan->pelanggaran_lain)
+    <ul class="custom-list">
+        @foreach($filteredPelanggaran as $key => $value)
+            @if($value)
+                <li data-field="pelanggaran_{{ $key }}">
+                    @if(is_string($key))
+                        <strong>{{ ucfirst($key) }}:</strong>
                     @endif
-                </ul>
-            @else
-                <div class="empty-state">
-                    <i class="bi bi-inbox"></i>
-                    <p>Tidak ada data pelanggaran</p>
-                </div>
+                    {{ $value }}
+                    @if($pengaduan->status === 'diverifikasi' && auth()->user()->role === 'admin')
+                        <div class="verification-buttons">
+                            <button type="button" class="verify-btn verify-yes" data-field="pelanggaran_{{ $key }}" data-value="yes"
+                                onclick="toggleVerificationStatus(this)">
+                                <i class="bi bi-check-lg"></i>
+                            </button>
+                            <button type="button" class="verify-btn verify-no" data-field="pelanggaran_{{ $key }}" data-value="no"
+                                onclick="toggleVerificationStatus(this)">
+                                <i class="bi bi-x-lg"></i>
+                            </button>
+                        </div>
+                    @endif
+                </li>
             @endif
+        @endforeach
+
+        @if($pengaduan->pelanggaran_lain)
+            <li data-field="pelanggaran_lain">
+                {{ $pengaduan->pelanggaran_lain }}
+                @if($pengaduan->status === 'diverifikasi' && auth()->user()->role === 'admin')
+                    <div class="verification-buttons">
+                        <button type="button" class="verify-btn verify-yes" data-field="pelanggaran_lain" data-value="yes"
+                            onclick="toggleVerificationStatus(this)">
+                            <i class="bi bi-check-lg"></i>
+                        </button>
+                        <button type="button" class="verify-btn verify-no" data-field="pelanggaran_lain" data-value="no"
+                            onclick="toggleVerificationStatus(this)">
+                            <i class="bi bi-x-lg"></i>
+                        </button>
+                    </div>
+                @endif
+            </li>
+        @endif
+    </ul>
+@else
+    <div class="empty-state">
+        <i class="bi bi-inbox"></i>
+        <p>Tidak ada data pelanggaran</p>
+    </div>
+@endif
+
+
+
+
 
             <!-- Kontak -->
             <div class="section-header">
@@ -1076,25 +1178,38 @@
             </div>
 
             @php
-                $kontak = $pengaduan->kontak;
-                if (is_string($kontak)) {
-                    $kontak = json_decode($kontak, true);
+                $rawKontak = $pengaduan->getAttributes()['kontak'] ?? null;
+
+                if (is_array($pengaduan->kontak) && count($pengaduan->kontak) > 0) {
+                    $kontakArray = $pengaduan->kontak;
+                } elseif (is_string($rawKontak)) {
+                    // Bersihkan escape ganda & tanda kutip luar
+                    $clean = trim($rawKontak, '"');
+                    $clean = stripslashes($clean);
+                    $decoded = json_decode($clean, true);
+                    $kontakArray = is_array($decoded) ? $decoded : [];
+                } else {
+                    $kontakArray = [];
                 }
-                $kontak = is_array($kontak) ? $kontak : [];
             @endphp
 
-            @if(!empty($kontak))
+            @if(count($kontakArray))
                 <ul class="custom-list">
-                    @foreach($kontak as $key => $value)
+                    @foreach($kontakArray as $key => $value)
                         @if($value)
                             <li data-field="kontak_{{ $key }}">
-                                <strong>{{ ucfirst($key) }}:</strong> {{ $value }}
+                                @if(is_string($key))
+                                    <strong>{{ ucfirst($key) }}:</strong>
+                                @endif
+                                {{ $value }}
                                 @if($pengaduan->status === 'diverifikasi' && auth()->user()->role === 'admin')
                                     <div class="verification-buttons">
-                                        <button type="button" class="verify-btn verify-yes" data-field="kontak_{{ $key }}" data-value="yes">
+                                        <button type="button" class="verify-btn verify-yes" data-field="kontak_{{ $key }}" data-value="yes"
+                                            onclick="toggleVerificationStatus(this)">
                                             <i class="bi bi-check-lg"></i>
                                         </button>
-                                        <button type="button" class="verify-btn verify-no" data-field="kontak_{{ $key }}" data-value="no">
+                                        <button type="button" class="verify-btn verify-no" data-field="kontak_{{ $key }}" data-value="no"
+                                            onclick="toggleVerificationStatus(this)">
                                             <i class="bi bi-x-lg"></i>
                                         </button>
                                     </div>
@@ -1102,6 +1217,7 @@
                             </li>
                         @endif
                     @endforeach
+
                 </ul>
             @else
                 <div class="empty-state">
@@ -1109,6 +1225,7 @@
                     <p>Tidak ada data kontak</p>
                 </div>
             @endif
+
 
             <!-- Detail Kejadian -->
             <div class="section-header">
@@ -1122,10 +1239,12 @@
                 <div class="info-item" data-field="tanggal_kejadian">
                     @if($pengaduan->status === 'diverifikasi' && auth()->user()->role === 'admin')
                         <div class="verification-buttons">
-                            <button type="button" class="verify-btn verify-yes" data-field="tanggal_kejadian" data-value="yes">
+                            <button type="button" class="verify-btn verify-yes" data-field="tanggal_kejadian" data-value="yes"
+                                onclick="toggleVerificationStatus(this)">
                                 <i class="bi bi-check-lg"></i>
                             </button>
-                            <button type="button" class="verify-btn verify-no" data-field="tanggal_kejadian" data-value="no">
+                            <button type="button" class="verify-btn verify-no" data-field="tanggal_kejadian" data-value="no"
+                                onclick="toggleVerificationStatus(this)">
                                 <i class="bi bi-x-lg"></i>
                             </button>
                         </div>
@@ -1137,10 +1256,12 @@
                 <div class="info-item" data-field="jam_kejadian">
                     @if($pengaduan->status === 'diverifikasi' && auth()->user()->role === 'admin')
                         <div class="verification-buttons">
-                            <button type="button" class="verify-btn verify-yes" data-field="jam_kejadian" data-value="yes">
+                            <button type="button" class="verify-btn verify-yes" data-field="jam_kejadian" data-value="yes"
+                                onclick="toggleVerificationStatus(this)">
                                 <i class="bi bi-check-lg"></i>
                             </button>
-                            <button type="button" class="verify-btn verify-no" data-field="jam_kejadian" data-value="no">
+                            <button type="button" class="verify-btn verify-no" data-field="jam_kejadian" data-value="no"
+                                onclick="toggleVerificationStatus(this)">
                                 <i class="bi bi-x-lg"></i>
                             </button>
                         </div>
@@ -1152,10 +1273,12 @@
                 <div class="info-item" data-field="tempat_kejadian" style="grid-column: 1 / -1;">
                     @if($pengaduan->status === 'diverifikasi' && auth()->user()->role === 'admin')
                         <div class="verification-buttons">
-                            <button type="button" class="verify-btn verify-yes" data-field="tempat_kejadian" data-value="yes">
+                            <button type="button" class="verify-btn verify-yes" data-field="tempat_kejadian" data-value="yes"
+                                onclick="toggleVerificationStatus(this)">
                                 <i class="bi bi-check-lg"></i>
                             </button>
-                            <button type="button" class="verify-btn verify-no" data-field="tempat_kejadian" data-value="no">
+                            <button type="button" class="verify-btn verify-no" data-field="tempat_kejadian" data-value="no"
+                                onclick="toggleVerificationStatus(this)">
                                 <i class="bi bi-x-lg"></i>
                             </button>
                         </div>
@@ -1178,14 +1301,22 @@
                 <h5>Data Terlapor</h5>
             </div>
 
-            @if($pengaduan->terlapor)
-                @php
-                    $terlapors = $pengaduan->terlapor ?? [];
-                    if (is_string($terlapors)) {
-                        $decoded = json_decode($terlapors, true);
-                        $terlapors = is_array($decoded) ? $decoded : [];
-                    }
-                @endphp
+            @php
+                $rawTerlapor = $pengaduan->getAttributes()['terlapor'] ?? null;
+
+                if (is_array($pengaduan->terlapor) && count($pengaduan->terlapor) > 0) {
+                    $terlapors = array_values($pengaduan->terlapor);
+                } elseif (is_string($rawTerlapor)) {
+                    $clean = trim($rawTerlapor, '"');
+                    $clean = stripslashes($clean);
+                    $decoded = json_decode($clean, true);
+                    $terlapors = is_array($decoded) ? array_values($decoded) : [];
+                } else {
+                    $terlapors = [];
+                }
+            @endphp
+
+            @if(count($terlapors))
                 <div style="overflow-x: auto;">
                     <table class="modern-table">
                         <thead>
@@ -1201,33 +1332,28 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @forelse($terlapors as $tIndex => $t)
-                                <tr data-field="terlapor_{{ $tIndex }}">
+                            @foreach($terlapors as $tIndex => $t)
+                                <tr>
                                     <td>{{ $t['nama'] ?? '-' }}</td>
                                     <td>{{ $t['nip'] ?? '-' }}</td>
                                     <td>{{ $t['satuan_kerja'] ?? '-' }}</td>
                                     <td>{{ $t['jabatan'] ?? '-' }}</td>
                                     <td>{{ $t['jenis_kelamin'] ?? '-' }}</td>
                                     @if($pengaduan->status === 'diverifikasi' && auth()->user()->role === 'admin')
-                                        <td>
-                                            <div style="display: flex; gap: 8px; justify-content: center;">
-                                                <button type="button" class="verify-btn verify-yes" data-field="terlapor_{{ $tIndex }}"
-                                                    data-value="yes">
-                                                    <i class="bi bi-check-lg"></i>
-                                                </button>
-                                                <button type="button" class="verify-btn verify-no" data-field="terlapor_{{ $tIndex }}"
-                                                    data-value="no">
-                                                    <i class="bi bi-x-lg"></i>
-                                                </button>
-                                            </div>
+                                        <td style="text-align: center;">
+                                            {{-- Tombol verifikasi, bisa disesuaikan --}}
+                                            <button type="button" class="verify-btn verify-yes" data-field="terlapor_{{ $tIndex }}"
+                                                data-value="yes" onclick="toggleVerificationStatus(this)">
+                                                <i class="bi bi-check-lg"></i>
+                                            </button>
+                                            <button type="button" class="verify-btn verify-no" data-field="terlapor_{{ $tIndex }}"
+                                                data-value="no" onclick="toggleVerificationStatus(this)">
+                                                <i class="bi bi-x-lg"></i>
+                                            </button>
                                         </td>
                                     @endif
                                 </tr>
-                            @empty
-                                <tr>
-                                    <td colspan="6" class="text-center text-muted">Tidak ada data terlapor</td>
-                                </tr>
-                            @endforelse
+                            @endforeach
                         </tbody>
                     </table>
                 </div>
@@ -1237,6 +1363,7 @@
                     <p>Tidak ada data terlapor</p>
                 </div>
             @endif
+
 
             <!-- Pernyataan -->
             <div class="section-header">
@@ -1251,10 +1378,12 @@
                 <div class="value">{{ $pengaduan->identitas_diketahui }}</div>
                 @if($pengaduan->status === 'diverifikasi' && auth()->user()->role === 'admin')
                     <div class="verification-buttons">
-                        <button type="button" class="verify-btn verify-yes" data-field="identitas_diketahui" data-value="yes">
+                        <button type="button" class="verify-btn verify-yes" data-field="identitas_diketahui" data-value="yes"
+                            onclick="toggleVerificationStatus(this)">
                             <i class="bi bi-check-lg"></i>
                         </button>
-                        <button type="button" class="verify-btn verify-no" data-field="identitas_diketahui" data-value="no">
+                        <button type="button" class="verify-btn verify-no" data-field="identitas_diketahui" data-value="no"
+                            onclick="toggleVerificationStatus(this)">
                             <i class="bi bi-x-lg"></i>
                         </button>
                     </div>
@@ -1266,10 +1395,12 @@
                 <div class="value">{{ $pengaduan->pihak_terkait ?? 'Tidak ada' }}</div>
                 @if($pengaduan->status === 'diverifikasi' && auth()->user()->role === 'admin')
                     <div class="verification-buttons">
-                        <button type="button" class="verify-btn verify-yes" data-field="pihak_terkait" data-value="yes">
+                        <button type="button" class="verify-btn verify-yes" data-field="pihak_terkait" data-value="yes"
+                            onclick="toggleVerificationStatus(this)">
                             <i class="bi bi-check-lg"></i>
                         </button>
-                        <button type="button" class="verify-btn verify-no" data-field="pihak_terkait" data-value="no">
+                        <button type="button" class="verify-btn verify-no" data-field="pihak_terkait" data-value="no"
+                            onclick="toggleVerificationStatus(this)">
                             <i class="bi bi-x-lg"></i>
                         </button>
                     </div>
@@ -1279,14 +1410,26 @@
             <!-- Bukti -->
             @if($pengaduan->bukti_file || $pengaduan->link_video)
                 <div class="section-header">
-                    <div class="icon-box">
-                        <i class="bi bi-paperclip"></i>
-                    </div>
+                    <div class="icon-box"><i class="bi bi-paperclip"></i></div>
                     <h5>Bukti Pendukung</h5>
                 </div>
 
-                @if($pengaduan->bukti_file)
-                    @php $files = json_decode($pengaduan->bukti_file, true); @endphp
+                @php
+                    // BUKTI FILE
+                    $rawFiles = $pengaduan->getAttributes()['bukti_file'] ?? null;
+                    if (is_array($pengaduan->bukti_file) && count($pengaduan->bukti_file) > 0) {
+                        $files = $pengaduan->bukti_file;
+                    } elseif (is_string($rawFiles)) {
+                        $clean = trim($rawFiles, '"');
+                        $clean = stripslashes($clean);
+                        $decoded = json_decode($clean, true);
+                        $files = is_array($decoded) ? $decoded : [];
+                    } else {
+                        $files = [];
+                    }
+                @endphp
+
+                @if(count($files))
                     <div class="file-list mb-2">
                         @foreach($files as $fIndex => $file)
                             <a href="{{ asset('storage/' . $file) }}" target="_blank" class="file-link"
@@ -1294,13 +1437,13 @@
                                 <i class="bi bi-file-earmark-arrow-down"></i>
                                 <span>{{ basename($file) }}</span>
                                 @if($pengaduan->status === 'diverifikasi' && auth()->user()->role === 'admin')
-                                    <div class="verification-buttons" style="right: 15px;">
+                                    <div class="verification-buttons" style="right:15px;">
                                         <button type="button" class="verify-btn verify-yes" data-field="bukti_file_{{ $fIndex }}"
-                                            data-value="yes" onclick="event.preventDefault();">
+                                            data-value="yes" onclick="toggleVerificationStatus(this)">
                                             <i class="bi bi-check-lg"></i>
                                         </button>
                                         <button type="button" class="verify-btn verify-no" data-field="bukti_file_{{ $fIndex }}"
-                                            data-value="no" onclick="event.preventDefault();">
+                                            data-value="no" onclick="toggleVerificationStatus(this)">
                                             <i class="bi bi-x-lg"></i>
                                         </button>
                                     </div>
@@ -1316,13 +1459,13 @@
                             <i class="bi bi-play-circle"></i>
                             <span>Video Link</span>
                             @if($pengaduan->status === 'diverifikasi' && auth()->user()->role === 'admin')
-                                <div class="verification-buttons" style="right: 15px;">
+                                <div class="verification-buttons" style="right:15px;">
                                     <button type="button" class="verify-btn verify-yes" data-field="link_video" data-value="yes"
-                                        onclick="event.preventDefault();">
+                                        onclick="toggleVerificationStatus(this)">
                                         <i class="bi bi-check-lg"></i>
                                     </button>
                                     <button type="button" class="verify-btn verify-no" data-field="link_video" data-value="no"
-                                        onclick="event.preventDefault();">
+                                        onclick="toggleVerificationStatus(this)">
                                         <i class="bi bi-x-lg"></i>
                                     </button>
                                 </div>
@@ -1342,12 +1485,12 @@
 
             <div style="text-align: center; padding: 20px;">
                 <span class="status-badge 
-                        @if($pengaduan->status == 'selesai') status-selesai
-                        @elseif($pengaduan->status == 'tindak_lanjut') status-tindak
-                        @elseif($pengaduan->status == 'diverifikasi') status-verifikasi
-                        @elseif($pengaduan->status == 'tanggapan_pelapor') status-tanggapan
-                        @else status-laporan
-                        @endif">
+                                                                                            @if($pengaduan->status == 'selesai') status-selesai
+                                                                                            @elseif($pengaduan->status == 'tindak_lanjut') status-tindak
+                                                                                            @elseif($pengaduan->status == 'diverifikasi') status-verifikasi
+                                                                                            @elseif($pengaduan->status == 'tanggapan_pelapor') status-tanggapan
+                                                                                            @else status-laporan
+                                                                                            @endif">
                     <i class="bi bi-circle-fill" style="font-size: 0.6rem;"></i>
                     {{ str_replace('_', ' ', $pengaduan->status) }}
                 </span>
@@ -1541,46 +1684,113 @@
             }
 
             // Submit final verification
+            // Lokasi: di dalam <script> tag Anda
             function submitVerification(action) {
-                if (Object.keys(verificationData).length === 0) {
-                    alert('Harap verifikasi minimal satu field sebelum melanjutkan.');
+                // 1. Ambil Catatan
+                const verificationNotes = document.getElementById('verificationNotes').value;
+
+                // 2. Kumpulkan Data Verifikasi dari tombol yang dipilih
+                const verificationData = {};
+                let selectedFieldCount = 0;
+
+                // KRITIS: Menggunakan selector yang benar (.verification-buttons)
+                document.querySelectorAll('.verification-buttons').forEach(container => {
+                    // KRITIS: Mencari tombol yang memiliki class 'selected' di dalamnya
+                    const selectedButton = container.querySelector('.verify-btn.selected');
+
+                    if (selectedButton) {
+                        // Menggunakan data-field dan data-value sesuai struktur HTML Anda
+                        const key = selectedButton.getAttribute('data-field');  // e.g., 'perihal'
+                        const status = selectedButton.getAttribute('data-value'); // 'yes' atau 'no'
+
+                        verificationData[key] = status;
+                        selectedFieldCount++;
+                    }
+                });
+
+                // Validasi Utama: Cek apakah ada data yang berhasil dikumpulkan
+                if (selectedFieldCount === 0) {
+                    alert('Harap verifikasi minimal satu field (Setujui atau Kembalikan) sebelum melanjutkan.');
                     return;
                 }
 
-                if (!confirm(`Apakah Anda yakin ingin ${action === 'approve' ? 'menyetujui' : 'mengembalikan'} laporan ini?`)) {
+                // Validasi Tambahan: Jika action adalah REJECT (Kembalikan), Catatan harus diisi
+                if (action === 'reject' && verificationNotes.trim() === '') {
+                    alert('Jika Anda memilih untuk MENGEMBALIKAN laporan, Catatan Verifikasi wajib diisi untuk menjelaskan alasan penolakan.');
+                    document.getElementById('verificationNotes').focus();
                     return;
                 }
 
+                // 3. Konfirmasi
+                let confirmationMessage = '';
+                if (action === 'approve') {
+                    confirmationMessage = 'Anda yakin ingin MENYETUJUI verifikasi dan melanjutkan laporan ke Tindak Lanjut?';
+                } else { // reject
+                    confirmationMessage = 'Anda yakin ingin MENGEMBALIKAN laporan ini ke Pelapor untuk perbaikan? Catatan Verifikasi akan dikirimkan.';
+                }
+
+                if (!confirm(confirmationMessage)) {
+                    return;
+                }
+
+                // 4. Buat dan Kirim Form
                 const form = document.createElement('form');
                 form.method = 'POST';
-                form.action = '{{ route("pengaduan.processVerification", $pengaduan->id) }}';
+                form.action = "{{ route('pengaduan.processVerification', $pengaduan->id) }}";
 
+                // Token CSRF
                 const csrfInput = document.createElement('input');
                 csrfInput.type = 'hidden';
                 csrfInput.name = '_token';
                 csrfInput.value = '{{ csrf_token() }}';
                 form.appendChild(csrfInput);
 
+                // Data Verifikasi JSON
+                const checksInput = document.createElement('input');
+                checksInput.type = 'hidden';
+                checksInput.name = 'verification_checks';
+                checksInput.value = JSON.stringify(verificationData); // Sekarang data terisi
+                form.appendChild(checksInput);
+
+                // Catatan
+                const notesInput = document.createElement('input');
+                notesInput.type = 'hidden';
+                notesInput.name = 'verification_notes';
+                notesInput.value = verificationNotes;
+                form.appendChild(notesInput);
+
+                // Aksi
                 const actionInput = document.createElement('input');
                 actionInput.type = 'hidden';
                 actionInput.name = 'action';
                 actionInput.value = action;
                 form.appendChild(actionInput);
 
-                const checksInput = document.createElement('input');
-                checksInput.type = 'hidden';
-                checksInput.name = 'verification_checks';
-                checksInput.value = JSON.stringify(verificationData);
-                form.appendChild(checksInput);
-
-                const notesInput = document.createElement('input');
-                notesInput.type = 'hidden';
-                notesInput.name = 'verification_notes';
-                notesInput.value = document.getElementById('verificationNotes')?.value || '';
-                form.appendChild(notesInput);
-
+                // Submit
                 document.body.appendChild(form);
                 form.submit();
+            }
+        </script>
+
+        <script>
+            // --- BAGIAN BARU: Fungsi untuk mengelola status tombol verifikasi ---
+            function toggleVerificationStatus(clickedButton) {
+                // 1. Dapatkan wadah tombol verifikasi (div.verification-buttons)
+                const container = clickedButton.closest('.verification-buttons');
+
+                // 2. Hapus class 'selected' dari semua tombol di dalam wadah ini
+                container.querySelectorAll('.verify-btn').forEach(btn => {
+                    btn.classList.remove('selected');
+                });
+
+                // 3. Tambahkan class 'selected' ke tombol yang baru diklik
+                clickedButton.classList.add('selected');
+
+                // Opsional: Cek apakah tombol No diklik dan tampilkan catatan verifikasi
+                // Jika tombol No diklik, pastikan admin mengisi catatan verifikasi.
+                if (clickedButton.getAttribute('data-value') === 'no') {
+                    // Tampilkan/highlight area catatan jika ada
+                }
             }
         </script>
     @endif

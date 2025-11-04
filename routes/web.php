@@ -90,6 +90,31 @@ Route::get('/search-pedoman', [SearchPedomanController::class, 'index'])->name('
 
 Route::get('/search-pedoman', [SearchPedomanController::class, 'index'])->name('search.searchPedomanPengawasan');
 
+// Routes untuk semua user (guest & authenticated)
+Route::get('/pengaduan/create', [PengaduanController::class, 'create'])->name('pengaduan.create');
+Route::get('/pengaduan/{id}', [PengaduanController::class, 'show'])->name('pengaduan.show');
+
+// Routes untuk authenticated users
+Route::middleware(['auth'])->group(function () {
+    // Store pengaduan
+    Route::post('/pengaduan', [PengaduanController::class, 'store'])->name('pengaduan.store');
+
+    // Feedback & Edit untuk pelapor
+    Route::get('/pengaduan/{id}/feedback', [PengaduanController::class, 'viewFeedback'])->name('pengaduan.feedback');
+    Route::get('/pengaduan/{id}/edit', [PengaduanController::class, 'edit'])->name('pengaduan.edit');
+    Route::put('/pengaduan/{id}', [PengaduanController::class, 'update'])->name('pengaduan.update');
+
+    // Delete (user bisa hapus laporan sendiri jika masih status laporan_dikirim)
+    Route::delete('/pengaduan/{id}', [PengaduanController::class, 'destroy'])->name('pengaduan.destroy');
+
+    // Admin only routes
+    Route::middleware([IsAdmin::class])->prefix('admin')->group(function () {
+        Route::get('/pengaduan', [PengaduanController::class, 'index'])->name('pengaduan.index');
+        Route::patch('/pengaduan/{id}/update-status', [PengaduanController::class, 'updateStatus'])->name('pengaduan.updateStatus');
+        Route::post('/pengaduan/{id}/auto-save-verification', [PengaduanController::class, 'autoSaveVerification'])->name('pengaduan.autoSaveVerification');
+        Route::post('/pengaduan/{id}/process-verification', [PengaduanController::class, 'processVerification'])->name('pengaduan.processVerification');
+    });
+});
 // Route umum (user biasa)
 Route::post('/pengaduan', [PengaduanController::class, 'store'])->name('pengaduan.store'); // semua user
 Route::get('/pengaduan/{id}', [PengaduanController::class, 'show'])->name('pengaduan.show'); // semua user

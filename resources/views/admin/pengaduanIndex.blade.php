@@ -678,9 +678,30 @@
                         <div class="col-md-6 col-lg-4">
                             <div class="pengaduan-card">
                                 <div class="card-header-custom">
-                                    <h5 class="card-title-custom">{{ $p->perihal }}</h5>
-                                    <span class="badge-status badge-verifikasi">Verifikasi</span>
-                                </div>
+    <h5 class="card-title-custom">{{ $p->perihal }}</h5>
+    <span class="badge-status {{ 
+        $p->status === 'selesai' ? 'badge-selesai' : 
+        ($p->status === 'tindak_lanjut' ? 'badge-tindak' : 
+        ($p->status === 'diverifikasi' ? 'badge-verifikasi' :
+        ($p->status === 'tanggapan_pelapor' ? 'badge-tanggapan' : 'badge-laporan')))
+    }}">
+        @if($p->status === 'tanggapan_pelapor' && $p->rejected_at)
+            <i class="bi bi-arrow-return-left"></i> Dikembalikan
+        @else
+            {{ str_replace('_', ' ', ucfirst($p->status)) }}
+        @endif
+    </span>
+</div>
+
+@if($p->status === 'tanggapan_pelapor' && $p->rejected_at)
+    <div class="alert alert-warning alert-sm mt-2 mb-2">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <small>
+            <strong>Perlu Perbaikan:</strong> 
+            {{ $p->rejected_fields_count ?? 0 }} field perlu dikoreksi
+        </small>
+    </div>
+@endif
 
                                 <div class="info-grid">
                                     <div class="info-item">
