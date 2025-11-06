@@ -790,3 +790,11 @@ Route::prefix('admin')->group(function () {
         Route::patch('/{id}/toggle', [RoleBidangController::class, 'toggleStatus'])->name('admin.roleBidang.toggleStatus');
     });
 });
+
+// Route untuk tanggapan
+Route::post('/pengaduan/{id}/tanggapan-admin', [PengaduanController::class, 'submitTanggapanAdmin'])
+    ->name('pengaduan.tanggapanAdmin');
+Route::post('/pengaduan/{id}/tanggapan-pelapor', [PengaduanController::class, 'submitTanggapanPelapor'])
+    ->name('pengaduan.tanggapanPelapor');
+Route::get('/pengaduan/{id}/tanggapan', [PengaduanController::class, 'viewTanggapan'])
+    ->name('pengaduan.tanggapan');

@@ -31,6 +31,8 @@ class User extends Authenticatable
         'disability_type',
         'email_verified_at',
         'pegawai_code',
+        'role', // 'admin' atau 'user'
+        'role_bidang_id', // untuk user yang berwenang menangani pengaduan
     ];
 
     /**
@@ -55,5 +57,10 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
-    
+
+    public function roleBidang()
+    {
+        return $this->belongsTo(RoleBidang::class, 'role_bidang_id');
+    }
+
 }

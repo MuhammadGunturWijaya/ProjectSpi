@@ -629,7 +629,7 @@
                 <button type="submit" class="btn btn-primary btn-lg">
                     <i class="bi bi-check-circle"></i> Kirim Perbaikan
                 </button>
-                <a href="{{ route('pengaduan.index') }}" class="btn btn-secondary btn-lg">
+                <a href="{{ route('pengaduan.create') }}" class="btn btn-secondary btn-lg">
                     <i class="bi bi-x-circle"></i> Batal
                 </a>
             </div>

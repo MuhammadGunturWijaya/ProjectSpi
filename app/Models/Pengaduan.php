@@ -31,6 +31,18 @@ class Pengaduan extends Model
         'updated_fields' => 'array',
         'revision_count',
 
+        //baru yang ini 
+        'tanggapan_admin',
+        'tanggapan_admin_at',
+        'tanggapan_admin_by',
+        'tanggapan_pelapor',
+        'tanggapan_pelapor_at',
+        'status_kepuasan',
+        'history_tanggapan',
+        'history_tanggapan' => 'array',
+        'tanggapan_admin_at' => 'datetime',
+        'tanggapan_pelapor_at' => 'datetime',
+
 
         // Date/Time Fields
         'tanggal_pengaduan' => 'date',
@@ -164,7 +176,7 @@ class Pengaduan extends Model
         return $query->where('user_id', $userId);
     }
 
-    public function bidang()
+    public function bidangPengaduan()
     {
         return $this->belongsTo(BidangPengaduan::class, 'bidang_id');
     }
@@ -172,5 +184,25 @@ class Pengaduan extends Model
     public function roleBidang()
     {
         return $this->belongsTo(RoleBidang::class, 'role_bidang_id');
+    }
+
+    public function tanggapanAdminBy()
+    {
+        return $this->belongsTo(User::class, 'tanggapan_admin_by');
+    }
+
+    // Method untuk menambah history tanggapan
+    public function addTanggapanHistory($type, $content, $userId = null)
+    {
+        $history = $this->history_tanggapan ?? [];
+
+        $history[] = [
+            'type' => $type, // 'admin' atau 'pelapor'
+            'content' => $content,
+            'user_id' => $userId ?? auth()->id(),
+            'created_at' => now()->toDateTimeString()
+        ];
+
+        $this->history_tanggapan = $history;
     }
 }

@@ -15,10 +15,26 @@ class PengaduanController extends Controller
 
     public function index()
     {
+        $user = auth()->user();
         // Ambil semua data pengaduan (misalnya urutkan terbaru dulu)
         $pengaduans = Pengaduan::latest()->get();
+        if ($user->role === 'admin') {
+            // Admin melihat semua
+            $pengaduans = Pengaduan::with(['bidangPengaduan', 'roleBidang'])
+                ->latest()
+                ->get();
+        } else {
+            // User biasa hanya melihat yang sesuai role_bidang_id mereka
+            // Asumsikan user memiliki kolom role_bidang_id
+            $pengaduans = Pengaduan::with(['bidangPengaduan', 'roleBidang'])
+                ->where(function ($query) use ($user) {
+                    $query->where('user_id', $user->id)
+                        ->orWhere('role_bidang_id', $user->role_bidang_id);
+                })
+                ->latest()
+                ->get();
+        }
 
-        // Kirim ke view admin.pengaduanIndex
         return view('admin.pengaduanIndex', compact('pengaduans'));
     }
 
@@ -617,16 +633,25 @@ class PengaduanController extends Controller
 
     public function show($id)
     {
-        $pengaduan = Pengaduan::with(['user'])->findOrFail($id);
+        $pengaduan = Pengaduan::with([
+            'user',
+            'bidangPengaduan',
+            'roleBidang',
+            'tanggapanAdminBy'
+        ])->findOrFail($id);
 
-        // Batasi akses hanya untuk admin
-        if (auth()->user()->role !== 'admin') {
+        // Cek akses
+        $user = auth()->user();
+        if (
+            $user->role !== 'admin' &&
+            $user->id !== $pengaduan->user_id &&
+            $user->role_bidang_id !== $pengaduan->role_bidang_id
+        ) {
             abort(403, 'Akses ditolak.');
         }
 
-        // Ambil semua bidang pengaduan aktif (atau semua kalau mau)
-        $bidangPengaduans = BidangPengaduan::where('is_active', true)->get();
-        $roles = RoleBidang::active()->get();
+        $bidangPengaduans = \App\Models\BidangPengaduan::where('is_active', true)->get();
+        $roles = \App\Models\RoleBidang::where('is_active', true)->get();
 
         return view('admin.pengaduanShow', compact('pengaduan', 'bidangPengaduans', 'roles'));
     }
@@ -645,5 +670,105 @@ class PengaduanController extends Controller
         return redirect()->route('pengaduan.index')->with('success', 'Pengaduan berhasil diverifikasi dan diteruskan ke bidang terkait.');
     }
 
+    public function submitTanggapanAdmin(Request $request, $id)
+    {
+        $pengaduan = Pengaduan::findOrFail($id);
+        $user = auth()->user();
+
+        // Validasi akses: hanya yang memiliki role_bidang_id yang sama
+        if ($user->role !== 'admin' && $user->role_bidang_id !== $pengaduan->role_bidang_id) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki akses untuk memberikan tanggapan pada pengaduan ini.');
+        }
+
+        $request->validate([
+            'tanggapan_admin' => 'required|string|min:10'
+        ], [
+            'tanggapan_admin.required' => 'Tanggapan tidak boleh kosong.',
+            'tanggapan_admin.min' => 'Tanggapan minimal 10 karakter.'
+        ]);
+
+        // Simpan tanggapan
+        $pengaduan->tanggapan_admin = $request->tanggapan_admin;
+        $pengaduan->tanggapan_admin_at = now();
+        $pengaduan->tanggapan_admin_by = $user->id;
+        $pengaduan->status = 'tanggapan_pelapor'; // Menunggu tanggapan pelapor
+
+        // Tambah ke history
+        $pengaduan->addTanggapanHistory('admin', $request->tanggapan_admin, $user->id);
+
+        $pengaduan->save();
+
+        return redirect()->back()->with(
+            'success',
+            '✅ Tanggapan berhasil dikirim ke pelapor. Status pengaduan diubah menjadi **Tanggapan Pelapor**.'
+        );
+    }
+
+    /**
+     * ✅ SUBMIT TANGGAPAN PELAPOR (User)
+     */
+    public function submitTanggapanPelapor(Request $request, $id)
+    {
+        $pengaduan = Pengaduan::findOrFail($id);
+        $user = auth()->user();
+
+        // Validasi: hanya pelapor yang bisa menanggapi
+        if ($user->id !== $pengaduan->user_id) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki akses untuk memberikan tanggapan pada pengaduan ini.');
+        }
+
+        $request->validate([
+            'status_kepuasan' => 'required|in:puas,tidak_puas',
+            'tanggapan_pelapor' => 'required_if:status_kepuasan,tidak_puas|nullable|string|min:10'
+        ], [
+            'status_kepuasan.required' => 'Silakan pilih status kepuasan Anda.',
+            'tanggapan_pelapor.required_if' => 'Jika tidak puas, harap berikan tanggapan atau masukan.',
+            'tanggapan_pelapor.min' => 'Tanggapan minimal 10 karakter.'
+        ]);
+
+        $pengaduan->status_kepuasan = $request->status_kepuasan;
+        $pengaduan->tanggapan_pelapor = $request->tanggapan_pelapor;
+        $pengaduan->tanggapan_pelapor_at = now();
+
+        if ($request->status_kepuasan === 'puas') {
+            // Jika puas, pengaduan selesai
+            $pengaduan->status = 'selesai';
+            $message = '✅ Terima kasih atas tanggapan Anda! Pengaduan ini telah **diselesaikan**.';
+        } else {
+            // Jika tidak puas, kembali ke tindak lanjut
+            $pengaduan->status = 'tindak_lanjut';
+            $pengaduan->tanggapan_admin = null; // Reset tanggapan admin
+            $pengaduan->tanggapan_admin_at = null;
+
+            // Tambah ke history
+            $pengaduan->addTanggapanHistory('pelapor', $request->tanggapan_pelapor, $user->id);
+
+            $message = '⚠️ Tanggapan Anda telah dikirim. Pengaduan akan **ditindaklanjuti kembali** oleh pihak berwenang.';
+        }
+
+        $pengaduan->save();
+
+        return redirect()->route('pengaduan.create')->with('success', $message);
+    }
+
+    /**
+     * ✅ VIEW DETAIL TANGGAPAN (untuk user melihat tanggapan yang diberikan)
+     */
+    public function viewTanggapan($id)
+    {
+        $pengaduan = Pengaduan::with([
+            'user',
+            'bidangPengaduan',
+            'roleBidang',
+            'tanggapanAdminBy'
+        ])->findOrFail($id);
+
+        // Cek akses
+        if (auth()->id() !== $pengaduan->user_id && auth()->user()->role !== 'admin') {
+            abort(403, 'Akses ditolak.');
+        }
+
+        return view('pengaduan.tanggapan', compact('pengaduan'));
+    }
 
 }

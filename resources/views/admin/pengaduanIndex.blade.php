@@ -622,6 +622,55 @@
                                             {{ $p->pekerjaan }}
                                         </div>
                                     </div>
+                                    @if($p->bidang_id)
+    <div class="info-item">
+        <div class="info-icon"><i class="bi bi-diagram-3"></i></div>
+        <div class="info-content">
+            <strong>Bidang</strong>
+            {{ $p->bidangPengaduan->nama_bidang ?? '-' }}
+        </div>
+    </div>
+@endif
+
+@if($p->role_bidang_id)
+    <div class="info-item">
+        <div class="info-icon"><i class="bi bi-person-badge"></i></div>
+        <div class="info-content">
+            <strong>Ditangani oleh</strong>
+            {{ $p->roleBidang->nama_role ?? '-' }}
+        </div>
+    </div>
+@endif
+
+<!-- Badge untuk menampilkan status tanggapan -->
+@if($p->status === 'tanggapan_pelapor')
+    <div class="col-12">
+        @if($p->tanggapan_admin)
+            <div class="alert alert-info alert-sm">
+                <i class="bi bi-chat-left-text-fill"></i>
+                <small><strong>Tanggapan diberikan</strong> pada {{ $p->tanggapan_admin_at->format('d M Y, H:i') }}</small>
+            </div>
+        @endif
+    </div>
+@endif
+
+@if($p->status === 'tindak_lanjut' && $p->tanggapan_pelapor)
+    <div class="col-12">
+        <div class="alert alert-warning alert-sm">
+            <i class="bi bi-arrow-clockwise"></i>
+            <small><strong>Tindak lanjut ulang</strong> - Pelapor memberikan tanggapan kembali</small>
+        </div>
+    </div>
+@endif
+
+<style>
+.alert-sm {
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+}
+</style>
                                 </div>
 
                                @auth
@@ -645,7 +694,7 @@
                     <option value="diverifikasi" @selected($currentStatus == 'diverifikasi')>Diverifikasi</option>
                     <option value="tindak_lanjut" @selected($currentStatus == 'tindak_lanjut')>Tindak Lanjut</option>
                     <option value="tanggapan_pelapor" @selected($currentStatus == 'tanggapan_pelapor')>Tanggapan Pelapor</option>
-                    <option value="selesai" @selected($currentStatus == 'selesai')>Selesai</option>
+                  
                 </select>
 
                 {{-- Tombol Update --}}
@@ -744,6 +793,55 @@
                                             {{ $p->pekerjaan }}
                                         </div>
                                     </div>
+                                    @if($p->bidang_id)
+    <div class="info-item">
+        <div class="info-icon"><i class="bi bi-diagram-3"></i></div>
+        <div class="info-content">
+            <strong>Bidang</strong>
+            {{ $p->bidangPengaduan->nama_bidang ?? '-' }}
+        </div>
+    </div>
+@endif
+
+@if($p->role_bidang_id)
+    <div class="info-item">
+        <div class="info-icon"><i class="bi bi-person-badge"></i></div>
+        <div class="info-content">
+            <strong>Ditangani oleh</strong>
+            {{ $p->roleBidang->nama_role ?? '-' }}
+        </div>
+    </div>
+@endif
+
+<!-- Badge untuk menampilkan status tanggapan -->
+@if($p->status === 'tanggapan_pelapor')
+    <div class="col-12">
+        @if($p->tanggapan_admin)
+            <div class="alert alert-info alert-sm">
+                <i class="bi bi-chat-left-text-fill"></i>
+                <small><strong>Tanggapan diberikan</strong> pada {{ $p->tanggapan_admin_at->format('d M Y, H:i') }}</small>
+            </div>
+        @endif
+    </div>
+@endif
+
+@if($p->status === 'tindak_lanjut' && $p->tanggapan_pelapor)
+    <div class="col-12">
+        <div class="alert alert-warning alert-sm">
+            <i class="bi bi-arrow-clockwise"></i>
+            <small><strong>Tindak lanjut ulang</strong> - Pelapor memberikan tanggapan kembali</small>
+        </div>
+    </div>
+@endif
+
+<style>
+.alert-sm {
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+}
+</style>
                                 </div>
 
                                 @auth
@@ -844,6 +942,55 @@
                                             {{ $p->pekerjaan }}
                                         </div>
                                     </div>
+                                    @if($p->bidang_id)
+    <div class="info-item">
+        <div class="info-icon"><i class="bi bi-diagram-3"></i></div>
+        <div class="info-content">
+            <strong>Bidang</strong>
+            {{ $p->bidangPengaduan->nama_bidang ?? '-' }}
+        </div>
+    </div>
+@endif
+
+@if($p->role_bidang_id)
+    <div class="info-item">
+        <div class="info-icon"><i class="bi bi-person-badge"></i></div>
+        <div class="info-content">
+            <strong>Ditangani oleh</strong>
+            {{ $p->roleBidang->nama_role ?? '-' }}
+        </div>
+    </div>
+@endif
+
+<!-- Badge untuk menampilkan status tanggapan -->
+@if($p->status === 'tanggapan_pelapor')
+    <div class="col-12">
+        @if($p->tanggapan_admin)
+            <div class="alert alert-info alert-sm">
+                <i class="bi bi-chat-left-text-fill"></i>
+                <small><strong>Tanggapan diberikan</strong> pada {{ $p->tanggapan_admin_at->format('d M Y, H:i') }}</small>
+            </div>
+        @endif
+    </div>
+@endif
+
+@if($p->status === 'tindak_lanjut' && $p->tanggapan_pelapor)
+    <div class="col-12">
+        <div class="alert alert-warning alert-sm">
+            <i class="bi bi-arrow-clockwise"></i>
+            <small><strong>Tindak lanjut ulang</strong> - Pelapor memberikan tanggapan kembali</small>
+        </div>
+    </div>
+@endif
+
+<style>
+.alert-sm {
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+}
+</style>
                                 </div>
 
                                 @auth
@@ -867,7 +1014,7 @@
                     <option value="diverifikasi" @selected($currentStatus == 'diverifikasi')>Diverifikasi</option>
                     <option value="tindak_lanjut" @selected($currentStatus == 'tindak_lanjut')>Tindak Lanjut</option>
                     <option value="tanggapan_pelapor" @selected($currentStatus == 'tanggapan_pelapor')>Tanggapan Pelapor</option>
-                    <option value="selesai" @selected($currentStatus == 'selesai')>Selesai</option>
+                  
                 </select>
 
                 {{-- Tombol Update --}}
@@ -946,6 +1093,55 @@
                                             {{ $p->pekerjaan }}
                                         </div>
                                     </div>
+                                    @if($p->bidang_id)
+    <div class="info-item">
+        <div class="info-icon"><i class="bi bi-diagram-3"></i></div>
+        <div class="info-content">
+            <strong>Bidang</strong>
+            {{ $p->bidangPengaduan->nama_bidang ?? '-' }}
+        </div>
+    </div>
+@endif
+
+@if($p->role_bidang_id)
+    <div class="info-item">
+        <div class="info-icon"><i class="bi bi-person-badge"></i></div>
+        <div class="info-content">
+            <strong>Ditangani oleh</strong>
+            {{ $p->roleBidang->nama_role ?? '-' }}
+        </div>
+    </div>
+@endif
+
+<!-- Badge untuk menampilkan status tanggapan -->
+@if($p->status === 'tanggapan_pelapor')
+    <div class="col-12">
+        @if($p->tanggapan_admin)
+            <div class="alert alert-info alert-sm">
+                <i class="bi bi-chat-left-text-fill"></i>
+                <small><strong>Tanggapan diberikan</strong> pada {{ $p->tanggapan_admin_at->format('d M Y, H:i') }}</small>
+            </div>
+        @endif
+    </div>
+@endif
+
+@if($p->status === 'tindak_lanjut' && $p->tanggapan_pelapor)
+    <div class="col-12">
+        <div class="alert alert-warning alert-sm">
+            <i class="bi bi-arrow-clockwise"></i>
+            <small><strong>Tindak lanjut ulang</strong> - Pelapor memberikan tanggapan kembali</small>
+        </div>
+    </div>
+@endif
+
+<style>
+.alert-sm {
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+}
+</style>
                                 </div>
 
                                 @auth
@@ -969,7 +1165,7 @@
                     <option value="diverifikasi" @selected($currentStatus == 'diverifikasi')>Diverifikasi</option>
                     <option value="tindak_lanjut" @selected($currentStatus == 'tindak_lanjut')>Tindak Lanjut</option>
                     <option value="tanggapan_pelapor" @selected($currentStatus == 'tanggapan_pelapor')>Tanggapan Pelapor</option>
-                    <option value="selesai" @selected($currentStatus == 'selesai')>Selesai</option>
+                  
                 </select>
 
                 {{-- Tombol Update --}}
@@ -1071,7 +1267,7 @@
                     <option value="diverifikasi" @selected($currentStatus == 'diverifikasi')>Diverifikasi</option>
                     <option value="tindak_lanjut" @selected($currentStatus == 'tindak_lanjut')>Tindak Lanjut</option>
                     <option value="tanggapan_pelapor" @selected($currentStatus == 'tanggapan_pelapor')>Tanggapan Pelapor</option>
-                    <option value="selesai" @selected($currentStatus == 'selesai')>Selesai</option>
+                  
                 </select>
 
                 {{-- Tombol Update --}}

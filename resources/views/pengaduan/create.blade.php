@@ -257,380 +257,392 @@
 
     <!-- Button Lihat Laporan Saya -->
     @auth
-            {{-- Tombol Lihat Laporan Saya --}}
-            <div class="text-center mt-4">
-                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#laporanModal">
-                    <i class="bi bi-journal-text me-1"></i> Lihat Laporan Saya
-                </button>
-            </div>
+        {{-- Tombol Lihat Laporan Saya --}}
+        <div class="text-center mt-4">
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#laporanModal">
+                <i class="bi bi-journal-text me-1"></i> Lihat Laporan Saya
+            </button>
+        </div>
+        
 
-            {{-- Modal Daftar Laporan --}}
-            <div class="modal fade" id="laporanModal" tabindex="-1" aria-labelledby="laporanModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-xl modal-dialog-scrollable">
-                    <div class="modal-content">
-                        <div class="modal-header bg-primary text-white p-4">
-                            <h5 class="modal-title fw-bold" id="laporanModalLabel">
-                                <i class="bi bi-journal-text me-3 fs-4"></i>Daftar Laporan Saya
-                            </h5>
-                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
-                                aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body p-4">
-                            @forelse($userLaporans as $laporan)
-                                <div class="card mb-4 shadow-sm border-2 border-light rounded-4">
-                                    <div class="card-body p-4">
-                                        <div class="d-flex justify-content-between align-items-start">
-                                            <div>
-                                               <h5 class="mb-1 fw-bolder text-dark">
-    {{ $laporan->perihal }}
-    <br>
-    <small class="text-muted">Kode Aduan: {{ $laporan->kode_aduan }}</small>
+        {{-- Modal Daftar Laporan --}}
+        <div class="modal fade" id="laporanModal" tabindex="-1" aria-labelledby="laporanModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header bg-primary text-white p-4">
+                        <h5 class="modal-title fw-bold" id="laporanModalLabel">
+                            <i class="bi bi-journal-text me-3 fs-4"></i>Daftar Laporan Saya
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-4">
+                        @forelse($userLaporans as $laporan)
+                            <div class="card mb-4 shadow-sm border-2 border-light rounded-4">
+                                <div class="card-body p-4">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <h5 class="mb-1 fw-bolder text-dark">
+                                                {{ $laporan->perihal }}
+                                                <br>
+                                                <small class="text-muted">Kode Aduan: {{ $laporan->kode_aduan }}</small>
 
-    @if($laporan->rejected_at)
-        <br>
-        <small class="text-danger">
-            <i class="bi bi-exclamation-circle"></i> Perlu Perbaikan
-        </small>
-    @endif
-</h5>
-
-                                                @php
-                                                    $statusColors = [
-                                                        'laporan_dikirim' => 'bg-secondary',
-                                                        'diverifikasi' => 'bg-info text-white',
-                                                        'tindak_lanjut' => 'bg-warning text-dark',
-                                                        'tanggapan_pelapor' => 'bg-primary',
-                                                        'selesai' => 'bg-success',
-                                                    ];
-                                                    $badgeClass = $statusColors[$laporan->status] ?? 'bg-secondary';
-                                                @endphp
-                                                <span class="badge {{ $badgeClass }} text-uppercase">
-                                                    {{ str_replace('_', ' ', $laporan->status) }}
-                                                </span>
-                                                <div class="mt-2 text-muted">
-                                                    <i class="bi bi-calendar me-1"></i>
-                                                    <small>{{ $laporan->tanggal_pengaduan }} |
-                                                        {{ $laporan->created_at->format('d M Y, H:i') }}</small>
-                                                </div>
-                                            </div>
-
-                                            {{-- Tombol Aksi --}}
-                                            <div class="d-flex gap-2 flex-wrap">
-
-                                                {{-- Tombol Feedback dan Perbaiki muncul jika laporan ditolak --}}
                                                 @if($laporan->rejected_at)
-                                                    <a href="{{ route('pengaduan.feedback', $laporan->id) }}" class="btn btn-sm btn-warning"
-                                                        title="Lihat Feedback">
-                                                        <i class="bi bi-chat-left-text"></i> Feedback
-                                                    </a>
+                                                    <br>
+                                                    <small class="text-danger">
+                                                        <i class="bi bi-exclamation-circle"></i> Perlu Perbaikan
+                                                    </small>
                                                 @endif
+                                            </h5>
 
-                                                {{-- Tombol Lihat Detail selalu muncul --}}
-                                                <button class="btn btn-sm btn-outline-primary toggle-detail" type="button"
-                                                    data-bs-toggle="collapse" data-bs-target="#detail-{{ $laporan->id }}"
-                                                    aria-expanded="false" aria-controls="detail-{{ $laporan->id }}">
-                                                    <i class="bi bi-chevron-down me-1"></i>
-                                                    <span class="btn-text">Lihat Detail</span>
-                                                </button>
-
-                                                {{-- Tombol Hapus selalu muncul --}}
-                                                <form action="{{ route('pengaduan.destroy', $laporan->id) }}" method="POST"
-                                                    class="d-inline" onsubmit="return confirm('Yakin ingin menghapus laporan ini?')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus">
-                                                        <i class="bi bi-trash me-1"></i> Hapus
-                                                    </button>
-                                                </form>
+                                            @php
+                                                $statusColors = [
+                                                    'laporan_dikirim' => 'bg-secondary',
+                                                    'diverifikasi' => 'bg-info text-white',
+                                                    'tindak_lanjut' => 'bg-warning text-dark',
+                                                    'tanggapan_pelapor' => 'bg-primary',
+                                                    'selesai' => 'bg-success',
+                                                ];
+                                                $badgeClass = $statusColors[$laporan->status] ?? 'bg-secondary';
+                                            @endphp
+                                            <span class="badge {{ $badgeClass }} text-uppercase">
+                                                {{ str_replace('_', ' ', $laporan->status) }}
+                                            </span>
+                                            <div class="mt-2 text-muted">
+                                                <i class="bi bi-calendar me-1"></i>
+                                                <small>{{ $laporan->tanggal_pengaduan }} |
+                                                    {{ $laporan->created_at->format('d M Y, H:i') }}</small>
                                             </div>
                                         </div>
 
-                                        {{-- Detail Laporan --}}
-                                        <div class="collapse mt-4 pt-3 border-top" id="detail-{{ $laporan->id }}">
-                                            <div class="card card-body bg-light border-0 shadow-sm rounded-3 p-4">
-                                                <h6 class="fw-bold text-primary mb-3">Detail Laporan</h6>
+                                        {{-- Tombol Aksi --}}
+                                        <div class="d-flex gap-2 flex-wrap">
 
-                                                <div class="row">
-                                                    <div class="col-md-6 mb-3">
-                                                        <p class="mb-1 text-secondary">Perihal:</p>
-                                                        <p class="fw-semibold">{{ $laporan->perihal }}</p>
-                                                    </div>
-                                                    <div class="col-md-6 mb-3">
-                                                        <p class="mb-1 text-secondary">Uraian:</p>
-                                                        <p>{{ $laporan->uraian }}</p>
-                                                    </div>
-                                                    <div class="col-md-6 mb-3">
-                                                        <p class="mb-1 text-secondary">Usia:</p>
-                                                        <p>{{ $laporan->usia }}</p>
-                                                    </div>
-                                                    <div class="col-md-6 mb-3">
-                                                        <p class="mb-1 text-secondary">Pendidikan:</p>
-                                                        <p>{{ $laporan->pendidikan }}</p>
-                                                    </div>
-                                                    <div class="col-md-6 mb-3">
-                                                        <p class="mb-1 text-secondary">Pekerjaan:</p>
-                                                        <p>{{ $laporan->pekerjaan }}
-                                                            {{ $laporan->pekerjaan_lain ? '(' . $laporan->pekerjaan_lain . ')' : '' }}
-                                                        </p>
-                                                    </div>
-                                                    <div class="col-md-6 mb-3">
-                                                        <p class="mb-1 text-secondary">Waktu Hubung:</p>
-                                                        <p>{{ $laporan->waktu_hubung }}
-                                                            {{ $laporan->waktu_lain ? '(' . $laporan->waktu_lain . ')' : '' }}
-                                                        </p>
-                                                    </div>
+                                            {{-- Tombol Feedback muncul jika laporan ditolak --}}
+                                            @if($laporan->rejected_at)
+                                                <a href="{{ route('pengaduan.feedback', $laporan->id) }}"
+                                                    class="btn btn-sm btn-warning" title="Lihat Feedback">
+                                                    <i class="bi bi-chat-left-text"></i> Feedback
+                                                </a>
+                                            @endif
+
+                                            {{-- Tombol Lihat Tanggapan muncul hanya jika diverifikasi --}}
+                                            @if($laporan->status === 'tanggapan_pelapor')
+                                                <a href="{{ route('pengaduan.tanggapan', $laporan->id) }}"
+                                                    class="btn btn-sm btn-info" title="Lihat Tanggapan">
+                                                    <i class="bi bi-eye-fill"></i> Lihat Tanggapan
+                                                </a>
+                                            @endif
+
+                                            {{-- Tombol Lihat Detail selalu muncul --}}
+                                            <button class="btn btn-sm btn-outline-primary toggle-detail" type="button"
+                                                data-bs-toggle="collapse" data-bs-target="#detail-{{ $laporan->id }}"
+                                                aria-expanded="false" aria-controls="detail-{{ $laporan->id }}">
+                                                <i class="bi bi-chevron-down me-1"></i>
+                                                <span class="btn-text">Lihat Detail</span>
+                                            </button>
+
+                                            {{-- Tombol Hapus selalu muncul --}}
+                                            <form action="{{ route('pengaduan.destroy', $laporan->id) }}" method="POST"
+                                                class="d-inline"
+                                                onsubmit="return confirm('Yakin ingin menghapus laporan ini?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus">
+                                                    <i class="bi bi-trash me-1"></i> Hapus
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </div>
+
+                                    {{-- Detail Laporan --}}
+                                    <div class="collapse mt-4 pt-3 border-top" id="detail-{{ $laporan->id }}">
+                                        <div class="card card-body bg-light border-0 shadow-sm rounded-3 p-4">
+                                            <h6 class="fw-bold text-primary mb-3">Detail Laporan</h6>
+
+                                            <div class="row">
+                                                <div class="col-md-6 mb-3">
+                                                    <p class="mb-1 text-secondary">Perihal:</p>
+                                                    <p class="fw-semibold">{{ $laporan->perihal }}</p>
                                                 </div>
-
-                                                <div class="mt-3">
-                                                    <p class="mb-1 text-secondary">Pelanggaran:</p>
-                                                    <ul>
-                                                        @php
-                                                            // Parse JSON dengan safety check
-                                                            $pelanggaranList = $laporan->pelanggaran;
-
-                                                            // Jika masih string, decode jadi array
-                                                            if (is_string($pelanggaranList)) {
-                                                                $pelanggaranList = json_decode($pelanggaranList, true) ?? [];
-                                                            }
-
-                                                            // Jika null, jadikan array kosong
-                                                            $pelanggaranList = $pelanggaranList ?? [];
-                                                        @endphp
-
-                                                        @if(count($pelanggaranList) > 0)
-                                                            @foreach($pelanggaranList as $p)
-                                                                <li>{{ $p }}</li>
-                                                            @endforeach
-                                                        @else
-                                                            <li class="text-muted">Tidak ada pelanggaran tercatat</li>
-                                                        @endif
-
-                                                        @if(!empty($laporan->pelanggaran_lain))
-                                                            <li>Lainnya: {{ $laporan->pelanggaran_lain }}</li>
-                                                        @endif
-                                                    </ul>
+                                                <div class="col-md-6 mb-3">
+                                                    <p class="mb-1 text-secondary">Uraian:</p>
+                                                    <p>{{ $laporan->uraian }}</p>
                                                 </div>
-
-
-                                                <div class="mt-3">
-                                                    <p class="mb-1 text-secondary">Kontak yang bisa dihubungi:</p>
-
-                                                    @php
-                                                        $rawKontak = $laporan->getAttributes()['kontak'] ?? null;
-
-                                                        if (is_array($laporan->kontak) && count($laporan->kontak) > 0) {
-                                                            $kontakArray = $laporan->kontak;
-                                                        } elseif (is_string($rawKontak)) {
-                                                            // Bersihkan tanda kutip luar dan escape ganda
-                                                            $clean = trim($rawKontak, '"');
-                                                            $clean = stripslashes($clean);
-
-                                                            // Decode JSON
-                                                            $decoded = json_decode($clean, true);
-
-                                                            $kontakArray = is_array($decoded) ? $decoded : [];
-                                                        } else {
-                                                            $kontakArray = [];
-                                                        }
-                                                    @endphp
-
-                                                    @if(count($kontakArray))
-                                                        <ul class="mb-0">
-                                                            @foreach($kontakArray as $key => $value)
-                                                                @if($value)
-                                                                    <li data-field="kontak_{{ $key }}">
-                                                                        @if(is_string($key))
-                                                                            <strong>{{ ucfirst($key) }}:</strong>
-                                                                        @endif
-                                                                        {{ $value }}
-                                                                    </li>
-                                                                @endif
-                                                            @endforeach
-                                                        </ul>
-                                                    @else
-                                                        <p class="text-muted mb-0">Tidak ada kontak tercatat</p>
-                                                    @endif
+                                                <div class="col-md-6 mb-3">
+                                                    <p class="mb-1 text-secondary">Usia:</p>
+                                                    <p>{{ $laporan->usia }}</p>
                                                 </div>
-
-
-
-                                                <div class="mt-3">
-                                                    <p class="mb-1 text-secondary">Kejadian:</p>
-                                                    <p>{{ $laporan->tanggal_kejadian }} | {{ $laporan->jam_kejadian }}</p>
-                                                    <p>Tempat: {{ $laporan->tempat_kejadian }}
-                                                        {{ $laporan->tempat_lain ? '(' . $laporan->tempat_lain . ')' : '' }}
+                                                <div class="col-md-6 mb-3">
+                                                    <p class="mb-1 text-secondary">Pendidikan:</p>
+                                                    <p>{{ $laporan->pendidikan }}</p>
+                                                </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <p class="mb-1 text-secondary">Pekerjaan:</p>
+                                                    <p>{{ $laporan->pekerjaan }}
+                                                        {{ $laporan->pekerjaan_lain ? '(' . $laporan->pekerjaan_lain . ')' : '' }}
                                                     </p>
                                                 </div>
+                                                <div class="col-md-6 mb-3">
+                                                    <p class="mb-1 text-secondary">Waktu Hubung:</p>
+                                                    <p>{{ $laporan->waktu_hubung }}
+                                                        {{ $laporan->waktu_lain ? '(' . $laporan->waktu_lain . ')' : '' }}
+                                                    </p>
+                                                </div>
+                                            </div>
 
-                                                {{-- Data Terlapor --}}
-                                                <div class="mt-3">
-                                                    <p class="mb-1 text-secondary">Terlapor:</p>
-
+                                            <div class="mt-3">
+                                                <p class="mb-1 text-secondary">Pelanggaran:</p>
+                                                <ul>
                                                     @php
-                                                        $rawTerlapor = $laporan->getAttributes()['terlapor'] ?? null;
+                                                        // Parse JSON dengan safety check
+                                                        $pelanggaranList = $laporan->pelanggaran;
 
-                                                        if (is_array($laporan->terlapor) && count($laporan->terlapor) > 0) {
-                                                            $terlapors = $laporan->terlapor;
-                                                        } elseif (is_string($rawTerlapor)) {
-                                                            // Bersihkan tanda kutip luar & escape ganda
-                                                            $clean = trim($rawTerlapor, '"');
+                                                        // Jika masih string, decode jadi array
+                                                        if (is_string($pelanggaranList)) {
+                                                            $pelanggaranList = json_decode($pelanggaranList, true) ?? [];
+                                                        }
+
+                                                        // Jika null, jadikan array kosong
+                                                        $pelanggaranList = $pelanggaranList ?? [];
+                                                    @endphp
+
+                                                    @if(count($pelanggaranList) > 0)
+                                                        @foreach($pelanggaranList as $p)
+                                                            <li>{{ $p }}</li>
+                                                        @endforeach
+                                                    @else
+                                                        <li class="text-muted">Tidak ada pelanggaran tercatat</li>
+                                                    @endif
+
+                                                    @if(!empty($laporan->pelanggaran_lain))
+                                                        <li>Lainnya: {{ $laporan->pelanggaran_lain }}</li>
+                                                    @endif
+                                                </ul>
+                                            </div>
+
+
+                                            <div class="mt-3">
+                                                <p class="mb-1 text-secondary">Kontak yang bisa dihubungi:</p>
+
+                                                @php
+                                                    $rawKontak = $laporan->getAttributes()['kontak'] ?? null;
+
+                                                    if (is_array($laporan->kontak) && count($laporan->kontak) > 0) {
+                                                        $kontakArray = $laporan->kontak;
+                                                    } elseif (is_string($rawKontak)) {
+                                                        // Bersihkan tanda kutip luar dan escape ganda
+                                                        $clean = trim($rawKontak, '"');
+                                                        $clean = stripslashes($clean);
+
+                                                        // Decode JSON
+                                                        $decoded = json_decode($clean, true);
+
+                                                        $kontakArray = is_array($decoded) ? $decoded : [];
+                                                    } else {
+                                                        $kontakArray = [];
+                                                    }
+                                                @endphp
+
+                                                @if(count($kontakArray))
+                                                    <ul class="mb-0">
+                                                        @foreach($kontakArray as $key => $value)
+                                                            @if($value)
+                                                                <li data-field="kontak_{{ $key }}">
+                                                                    @if(is_string($key))
+                                                                        <strong>{{ ucfirst($key) }}:</strong>
+                                                                    @endif
+                                                                    {{ $value }}
+                                                                </li>
+                                                            @endif
+                                                        @endforeach
+                                                    </ul>
+                                                @else
+                                                    <p class="text-muted mb-0">Tidak ada kontak tercatat</p>
+                                                @endif
+                                            </div>
+
+
+
+                                            <div class="mt-3">
+                                                <p class="mb-1 text-secondary">Kejadian:</p>
+                                                <p>{{ $laporan->tanggal_kejadian }} | {{ $laporan->jam_kejadian }}</p>
+                                                <p>Tempat: {{ $laporan->tempat_kejadian }}
+                                                    {{ $laporan->tempat_lain ? '(' . $laporan->tempat_lain . ')' : '' }}
+                                                </p>
+                                            </div>
+
+                                            {{-- Data Terlapor --}}
+                                            <div class="mt-3">
+                                                <p class="mb-1 text-secondary">Terlapor:</p>
+
+                                                @php
+                                                    $rawTerlapor = $laporan->getAttributes()['terlapor'] ?? null;
+
+                                                    if (is_array($laporan->terlapor) && count($laporan->terlapor) > 0) {
+                                                        $terlapors = $laporan->terlapor;
+                                                    } elseif (is_string($rawTerlapor)) {
+                                                        // Bersihkan tanda kutip luar & escape ganda
+                                                        $clean = trim($rawTerlapor, '"');
+                                                        $clean = stripslashes($clean);
+
+                                                        // Decode JSON
+                                                        $decoded = json_decode($clean, true);
+                                                        $terlapors = is_array($decoded) ? $decoded : [];
+                                                    } else {
+                                                        $terlapors = [];
+                                                    }
+                                                @endphp
+
+                                                @if(count($terlapors) > 0)
+                                                    <table class="table table-bordered table-sm">
+                                                        <thead class="table-light">
+                                                            <tr>
+                                                                <th>Nama</th>
+                                                                <th>NIP</th>
+                                                                <th>Satuan Kerja</th>
+                                                                <th>Jabatan</th>
+                                                                <th>Jenis Kelamin</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @foreach($terlapors as $t)
+                                                                <tr>
+                                                                    <td>{{ $t['nama'] ?? '-' }}</td>
+                                                                    <td>{{ $t['nip'] ?? '-' }}</td>
+                                                                    <td>{{ $t['satuan_kerja'] ?? '-' }}</td>
+                                                                    <td>{{ $t['jabatan'] ?? '-' }}</td>
+                                                                    <td>{{ $t['jenis_kelamin'] ?? '-' }}</td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                @else
+                                                    <p class="text-muted">Tidak ada data terlapor</p>
+                                                @endif
+                                            </div>
+
+
+                                            {{-- Identitas & Pihak Terkait --}}
+                                            <div class="mt-3">
+                                                <p class="mb-1 text-secondary">Identitas Anda ingin diketahui terlapor?</p>
+                                                <p>{{ $laporan->identitas_diketahui }}</p>
+                                            </div>
+
+                                            <div class="mt-3">
+                                                <p class="mb-1 text-secondary">Pihak Terkait:</p>
+                                                <p>{{ $laporan->pihak_terkait ?? '-' }}</p>
+                                            </div>
+
+                                            {{-- Bukti File --}}
+                                            @if($laporan->bukti_file || $laporan->link_video)
+                                                <div class="mt-3">
+                                                    <p class="mb-1 text-secondary">Bukti:</p>
+
+                                                    {{-- File Upload --}}
+                                                    @php
+                                                        $rawFiles = $laporan->getAttributes()['bukti_file'] ?? null;
+
+                                                        if (is_array($laporan->bukti_file) && count($laporan->bukti_file) > 0) {
+                                                            $files = $laporan->bukti_file;
+                                                        } elseif (is_string($rawFiles)) {
+                                                            $clean = trim($rawFiles, '"');
                                                             $clean = stripslashes($clean);
-
-                                                            // Decode JSON
                                                             $decoded = json_decode($clean, true);
-                                                            $terlapors = is_array($decoded) ? $decoded : [];
+                                                            $files = is_array($decoded) ? $decoded : [];
                                                         } else {
-                                                            $terlapors = [];
+                                                            $files = [];
                                                         }
                                                     @endphp
 
-                                                    @if(count($terlapors) > 0)
-                                                        <table class="table table-bordered table-sm">
-                                                            <thead class="table-light">
-                                                                <tr>
-                                                                    <th>Nama</th>
-                                                                    <th>NIP</th>
-                                                                    <th>Satuan Kerja</th>
-                                                                    <th>Jabatan</th>
-                                                                    <th>Jenis Kelamin</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody>
-                                                                @foreach($terlapors as $t)
-                                                                    <tr>
-                                                                        <td>{{ $t['nama'] ?? '-' }}</td>
-                                                                        <td>{{ $t['nip'] ?? '-' }}</td>
-                                                                        <td>{{ $t['satuan_kerja'] ?? '-' }}</td>
-                                                                        <td>{{ $t['jabatan'] ?? '-' }}</td>
-                                                                        <td>{{ $t['jenis_kelamin'] ?? '-' }}</td>
-                                                                    </tr>
-                                                                @endforeach
-                                                            </tbody>
-                                                        </table>
-                                                    @else
-                                                        <p class="text-muted">Tidak ada data terlapor</p>
+                                                    @if(count($files))
+                                                        @foreach($files as $fIndex => $file)
+                                                            <a href="{{ asset('storage/' . $file) }}" target="_blank" class="d-block mb-2"
+                                                                data-field="bukti_file_{{ $fIndex }}">
+                                                                <i class="bi bi-paperclip"></i> {{ basename($file) }}
+                                                            </a>
+                                                        @endforeach
+                                                    @endif
+
+                                                    {{-- Link Video --}}
+                                                    @if($laporan->link_video)
+                                                        <a href="{{ $laporan->link_video }}" target="_blank" class="d-block mb-2"
+                                                            data-field="link_video">
+                                                            <i class="bi bi-play-circle"></i> Video Link
+                                                        </a>
                                                     @endif
                                                 </div>
+                                            @endif
 
+                                            {{-- Status Proses --}}
+                                            @php
+                                                $steps = [
+                                                    'laporan_dikirim' => ['title' => 'Tulis Laporan', 'detail' => 'Laporkan keluhan', 'icon' => 'bi-pencil-square', 'class' => 'step-1', 'color' => '#6c757d'],
+                                                    'diverifikasi' => ['title' => 'Verifikasi', 'detail' => 'Diverifikasi & diteruskan', 'icon' => 'bi-arrow-right-circle', 'class' => 'step-2', 'color' => '#0dcaf0'],
+                                                    'tindak_lanjut' => ['title' => 'Tindak Lanjut', 'detail' => 'Ditindaklanjuti', 'icon' => 'bi-chat-dots', 'class' => 'step-3', 'color' => '#ffc107'],
+                                                    'tanggapan_pelapor' => ['title' => 'Tanggapan Pelapor', 'detail' => 'Beri tanggapan', 'icon' => 'bi-chat-text', 'class' => 'step-4', 'color' => '#0d6efd'],
+                                                    'selesai' => ['title' => 'Selesai', 'detail' => 'Selesai ditindaklanjuti', 'icon' => 'bi-check-circle-fill', 'class' => 'step-5', 'color' => '#198754'],
+                                                ];
+                                                $currentStep = array_search($laporan->status, array_keys($steps));
+                                                $totalSteps = count($steps);
+                                                $progressWidth = ($totalSteps > 1) ? ($currentStep / ($totalSteps - 1) * 100) : 0;
 
-                                                {{-- Identitas & Pihak Terkait --}}
-                                                <div class="mt-3">
-                                                    <p class="mb-1 text-secondary">Identitas Anda ingin diketahui terlapor?</p>
-                                                    <p>{{ $laporan->identitas_diketahui }}</p>
+                                                // Get current step color for progress bar
+                                                $currentStepColor = $steps[array_keys($steps)[$currentStep]]['color'] ?? '#0d6efd';
+                                            @endphp
+
+                                            <h6 class="fw-bold text-primary mb-4 mt-4 pt-3 border-top">Status Proses</h6>
+                                            <div class="position-relative process-row d-flex">
+                                                <div
+                                                    style="position:absolute; top:32px; left:5%; right:5%; height:4px; background:#dee2e6; border-radius:2px; z-index:0;">
+                                                </div>
+                                                <div
+                                                    style="position:absolute; top:32px; left:5%; height:4px; background:{{ $currentStepColor }}; width:{{ $progressWidth }}%; border-radius:2px; z-index:1; transition:width 0.5s, background 0.5s;">
                                                 </div>
 
-                                                <div class="mt-3">
-                                                    <p class="mb-1 text-secondary">Pihak Terkait:</p>
-                                                    <p>{{ $laporan->pihak_terkait ?? '-' }}</p>
-                                                </div>
-
-                                                {{-- Bukti File --}}
-                                                @if($laporan->bukti_file || $laporan->link_video)
-                                                    <div class="mt-3">
-                                                        <p class="mb-1 text-secondary">Bukti:</p>
-
-                                                        {{-- File Upload --}}
-                                                        @php
-                                                            $rawFiles = $laporan->getAttributes()['bukti_file'] ?? null;
-
-                                                            if (is_array($laporan->bukti_file) && count($laporan->bukti_file) > 0) {
-                                                                $files = $laporan->bukti_file;
-                                                            } elseif (is_string($rawFiles)) {
-                                                                $clean = trim($rawFiles, '"');
-                                                                $clean = stripslashes($clean);
-                                                                $decoded = json_decode($clean, true);
-                                                                $files = is_array($decoded) ? $decoded : [];
-                                                            } else {
-                                                                $files = [];
-                                                            }
-                                                        @endphp
-
-                                                        @if(count($files))
-                                                            @foreach($files as $fIndex => $file)
-                                                                <a href="{{ asset('storage/' . $file) }}" target="_blank" class="d-block mb-2"
-                                                                    data-field="bukti_file_{{ $fIndex }}">
-                                                                    <i class="bi bi-paperclip"></i> {{ basename($file) }}
-                                                                </a>
-                                                            @endforeach
-                                                        @endif
-
-                                                        {{-- Link Video --}}
-                                                        @if($laporan->link_video)
-                                                            <a href="{{ $laporan->link_video }}" target="_blank" class="d-block mb-2"
-                                                                data-field="link_video">
-                                                                <i class="bi bi-play-circle"></i> Video Link
-                                                            </a>
-                                                        @endif
-                                                    </div>
-                                                @endif
-
-                                                {{-- Status Proses --}}
-                                                @php
-                                                    $steps = [
-                                                        'laporan_dikirim' => ['title' => 'Tulis Laporan', 'detail' => 'Laporkan keluhan', 'icon' => 'bi-pencil-square', 'class' => 'step-1', 'color' => '#6c757d'],
-                                                        'diverifikasi' => ['title' => 'Verifikasi', 'detail' => 'Diverifikasi & diteruskan', 'icon' => 'bi-arrow-right-circle', 'class' => 'step-2', 'color' => '#0dcaf0'],
-                                                        'tindak_lanjut' => ['title' => 'Tindak Lanjut', 'detail' => 'Ditindaklanjuti', 'icon' => 'bi-chat-dots', 'class' => 'step-3', 'color' => '#ffc107'],
-                                                        'tanggapan_pelapor' => ['title' => 'Tanggapan Pelapor', 'detail' => 'Beri tanggapan', 'icon' => 'bi-chat-text', 'class' => 'step-4', 'color' => '#0d6efd'],
-                                                        'selesai' => ['title' => 'Selesai', 'detail' => 'Selesai ditindaklanjuti', 'icon' => 'bi-check-circle-fill', 'class' => 'step-5', 'color' => '#198754'],
-                                                    ];
-                                                    $currentStep = array_search($laporan->status, array_keys($steps));
-                                                    $totalSteps = count($steps);
-                                                    $progressWidth = ($totalSteps > 1) ? ($currentStep / ($totalSteps - 1) * 100) : 0;
-
-                                                    // Get current step color for progress bar
-                                                    $currentStepColor = $steps[array_keys($steps)[$currentStep]]['color'] ?? '#0d6efd';
-                                                @endphp
-
-                                                <h6 class="fw-bold text-primary mb-4 mt-4 pt-3 border-top">Status Proses</h6>
-                                                <div class="position-relative process-row d-flex">
+                                                @foreach($steps as $key => $step)
+                                                    @php
+                                                        $stepIndex = array_search($key, array_keys($steps));
+                                                        $isActive = $stepIndex <= $currentStep;
+                                                        $isCurrent = $stepIndex == $currentStep;
+                                                    @endphp
                                                     <div
-                                                        style="position:absolute; top:32px; left:5%; right:5%; height:4px; background:#dee2e6; border-radius:2px; z-index:0;">
-                                                    </div>
-                                                    <div
-                                                        style="position:absolute; top:32px; left:5%; height:4px; background:{{ $currentStepColor }}; width:{{ $progressWidth }}%; border-radius:2px; z-index:1; transition:width 0.5s, background 0.5s;">
-                                                    </div>
-
-                                                    @foreach($steps as $key => $step)
-                                                        @php
-                                                            $stepIndex = array_search($key, array_keys($steps));
-                                                            $isActive = $stepIndex <= $currentStep;
-                                                            $isCurrent = $stepIndex == $currentStep;
-                                                        @endphp
-                                                        <div
-                                                            class="process-step {{ $step['class'] }} {{ $isActive ? 'active' : '' }} text-center flex-fill position-relative">
-                                                            <div class="process-icon-container shadow-sm mb-2" 
-                                                                 style="background: {{ $isActive ? $step['color'] : '#fff' }}; 
-                                                                        border: 2px solid {{ $isActive ? $step['color'] : '#dee2e6' }};
-                                                                        width: 60px; height: 60px; border-radius: 50%; 
-                                                                        display: flex; align-items: center; justify-content: center;
-                                                                        margin: 0 auto;
-                                                                        transition: all 0.3s ease;">
-                                                                <i class="bi {{ $step['icon'] }} fs-4" 
-                                                                   style="color: {{ $isActive ? '#fff' : '#dee2e6' }}; transition: color 0.3s;"></i>
-                                                            </div>
-                                                            <p class="process-title fw-bolder mb-1" 
-                                                               style="color: {{ $isActive ? $step['color'] : '#6c757d' }}; transition: color 0.3s;">
-                                                                {{ $step['title'] }}
-                                                                @if($isCurrent)
-                                                                    <i class="bi bi-arrow-left-circle-fill ms-1" style="color: {{ $step['color'] }};"></i>
-                                                                @endif
-                                                            </p>
-                                                            <small style="color: {{ $isActive ? '#495057' : '#adb5bd' }};">{{ $step['detail'] }}</small>
+                                                        class="process-step {{ $step['class'] }} {{ $isActive ? 'active' : '' }} text-center flex-fill position-relative">
+                                                        <div class="process-icon-container shadow-sm mb-2"
+                                                            style="background: {{ $isActive ? $step['color'] : '#fff' }}; 
+                                                                                                                                    border: 2px solid {{ $isActive ? $step['color'] : '#dee2e6' }};
+                                                                                                                                    width: 60px; height: 60px; border-radius: 50%; 
+                                                                                                                                    display: flex; align-items: center; justify-content: center;
+                                                                                                                                    margin: 0 auto;
+                                                                                                                                    transition: all 0.3s ease;">
+                                                            <i class="bi {{ $step['icon'] }} fs-4"
+                                                                style="color: {{ $isActive ? '#fff' : '#dee2e6' }}; transition: color 0.3s;"></i>
                                                         </div>
-                                                    @endforeach
-                                                </div>
+                                                        <p class="process-title fw-bolder mb-1"
+                                                            style="color: {{ $isActive ? $step['color'] : '#6c757d' }}; transition: color 0.3s;">
+                                                            {{ $step['title'] }}
+                                                            @if($isCurrent)
+                                                                <i class="bi bi-arrow-left-circle-fill ms-1"
+                                                                    style="color: {{ $step['color'] }};"></i>
+                                                            @endif
+                                                        </p>
+                                                        <small
+                                                            style="color: {{ $isActive ? '#495057' : '#adb5bd' }};">{{ $step['detail'] }}</small>
+                                                    </div>
+                                                @endforeach
+                                            </div>
 
-                                                <div class="mt-4 pt-3 border-top">
-                                                    <span class="badge fs-6 fw-bold" 
-                                                          style="background-color: {{ $currentStepColor }}; color: #fff;">
-                                                        Status Saat Ini: {{ $steps[array_keys($steps)[$currentStep]]['title'] }}
-                                                    </span>
-                                                </div>
+                                            <div class="mt-4 pt-3 border-top">
+                                                <span class="badge fs-6 fw-bold"
+                                                    style="background-color: {{ $currentStepColor }}; color: #fff;">
+                                                    Status Saat Ini: {{ $steps[array_keys($steps)[$currentStep]]['title'] }}
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                            @empty
+                            </div>
+                        @empty
                             <div class="alert alert-info text-center py-4 rounded-3 shadow-sm">
                                 <i class="bi bi-box-seam fs-3 d-block mb-2"></i>
                                 <p class="mb-0 fw-semibold">Belum ada laporan yang Anda kirimkan.</p>
@@ -798,6 +810,181 @@
             });
         });
     </script>
+
+
+
+    <!-- Notifikasi Menunggu Tanggapan Pelapor -->
+    @php
+        $needsResponse = $userLaporans->where('status', 'tanggapan_pelapor');
+    @endphp
+
+    @if($needsResponse->count() > 0)
+        <div class="container mt-4">
+            <div class="alert alert-info alert-dismissible fade show shadow-sm" role="alert">
+                <div class="d-flex align-items-start">
+                    <i class="bi bi-chat-dots-fill fs-3 me-3 text-info"></i>
+                    <div class="flex-grow-1">
+                        <h5 class="alert-heading mb-2">
+                            <i class="bi bi-bell-fill"></i> Ada Tanggapan untuk Laporan Anda!
+                        </h5>
+                        <p class="mb-2">Anda memiliki <strong>{{ $needsResponse->count() }}</strong> laporan yang telah
+                            mendapat tanggapan dari pihak berwenang.</p>
+                        <hr>
+                        @foreach($needsResponse as $laporan)
+                                    <div class="mb-3 p-3 bg-white rounded border-start border-info border-4">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <div>
+                                                <h6 class="mb-1">
+                                                    <i class="bi bi-file-earmark-text"></i>
+                                                    <strong>{{ $laporan->perihal }}</strong>
+                                                </h6>
+                                                <p class="mb-1 text-muted small">
+                                                    <i class="bi bi-clock"></i> Tanggapan diberikan:
+                                                    {{ $laporan->tanggapan_admin_at
+                            ? \Carbon\Carbon::parse($laporan->tanggapan_admin_at)->format('d M Y, H:i')
+                            : '-' }}
+
+                                                </p>
+                                                <p class="mb-0 text-info small">
+                                                    <i class="bi bi-person-badge"></i>
+                                                    Dari: <strong>{{ $laporan->roleBidang->nama_role ?? 'Pihak Berwenang' }}</strong>
+                                                </p>
+                                            </div>
+                                            <div class="btn-group-vertical" role="group">
+                                                <a href="{{ route('pengaduan.tanggapan', $laporan->id) }}" class="btn btn-sm btn-info">
+                                                    <i class="bi bi-eye-fill"></i> Lihat Tanggapan
+                                                </a>
+                                                <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal"
+                                                    data-bs-target="#tanggapanModal{{ $laporan->id }}">
+                                                    <i class="bi bi-chat-right-text-fill"></i> Beri Tanggapan
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Modal Tanggapan -->
+                                    <div class="modal fade" id="tanggapanModal{{ $laporan->id }}" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header bg-info text-white">
+                                                    <h5 class="modal-title">
+                                                        <i class="bi bi-chat-right-text-fill"></i> Tanggapi Laporan
+                                                    </h5>
+                                                    <button type="button" class="btn-close btn-close-white"
+                                                        data-bs-dismiss="modal"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <!-- Tampilkan Tanggapan Admin -->
+                                                    <div class="alert alert-light border">
+                                                        <h6 class="fw-bold text-primary mb-2">
+                                                            <i class="bi bi-person-badge-fill"></i> Tanggapan dari
+                                                            {{ $laporan->roleBidang->nama_role ?? 'Pihak Berwenang' }}
+                                                        </h6>
+                                                        <p class="mb-0">{{ $laporan->tanggapan_admin }}</p>
+                                                        <small class="text-muted">
+                                                            <i class="bi bi-clock"></i>
+                                                            {{ $laporan->tanggapan_admin_at
+                            ? \Carbon\Carbon::parse($laporan->tanggapan_admin_at)->format('d M Y, H:i')
+                            : '-' }}
+
+                                                        </small>
+                                                    </div>
+
+                                                    <!-- Form Tanggapan Pelapor -->
+                                                    <form action="{{ route('pengaduan.tanggapanPelapor', $laporan->id) }}"
+                                                        method="POST">
+                                                        @csrf
+
+                                                        <div class="form-group mb-3">
+                                                            <label class="form-label fw-bold">
+                                                                <i class="bi bi-question-circle"></i> Apakah Anda puas dengan tanggapan
+                                                                ini?
+                                                            </label>
+                                                            <div class="btn-group w-100" role="group">
+                                                                <input type="radio" class="btn-check" name="status_kepuasan"
+                                                                    id="puas{{ $laporan->id }}" value="puas" required
+                                                                    onchange="toggleTanggapanField({{ $laporan->id }}, false)">
+                                                                <label class="btn btn-outline-success" for="puas{{ $laporan->id }}">
+                                                                    <i class="bi bi-hand-thumbs-up"></i> Puas & Selesai
+                                                                </label>
+
+                                                                <input type="radio" class="btn-check" name="status_kepuasan"
+                                                                    id="tidak_puas{{ $laporan->id }}" value="tidak_puas" required
+                                                                    onchange="toggleTanggapanField({{ $laporan->id }}, true)">
+                                                                <label class="btn btn-outline-danger"
+                                                                    for="tidak_puas{{ $laporan->id }}">
+                                                                    <i class="bi bi-hand-thumbs-down"></i> Tidak Puas
+                                                                </label>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group mb-3" id="tanggapan_wrapper{{ $laporan->id }}"
+                                                            style="display: none;">
+                                                            <label for="tanggapan_pelapor{{ $laporan->id }}" class="form-label fw-bold">
+                                                                <i class="bi bi-chat-text"></i> Tanggapan Anda (Wajib jika tidak puas)
+                                                            </label>
+                                                            <textarea name="tanggapan_pelapor" id="tanggapan_pelapor{{ $laporan->id }}"
+                                                                class="form-control" rows="5"
+                                                                placeholder="Jelaskan mengapa Anda tidak puas atau apa yang perlu ditindaklanjuti..."></textarea>
+                                                        </div>
+
+                                                        <div class="d-flex justify-content-end gap-2">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                data-bs-dismiss="modal">Batal</button>
+                                                            <button type="submit" class="btn btn-primary">
+                                                                <i class="bi bi-send-check-fill"></i> Kirim Tanggapan
+                                                            </button>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                        @endforeach
+                    </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        </div>
+
+        <script>
+            function toggleTanggapanField(laporanId, show) {
+                const wrapper = document.getElementById('tanggapan_wrapper' + laporanId);
+                const textarea = document.getElementById('tanggapan_pelapor' + laporanId);
+
+                if (show) {
+                    wrapper.style.display = 'block';
+                    textarea.setAttribute('required', 'required');
+                } else {
+                    wrapper.style.display = 'none';
+                    textarea.removeAttribute('required');
+                    textarea.value = '';
+                }
+            }
+        </script>
+
+        <style>
+            .border-start.border-info.border-4 {
+                border-left-width: 4px !important;
+            }
+
+            .btn-group label {
+                padding: 12px 20px;
+                font-weight: 600;
+                transition: all 0.3s;
+            }
+
+            .btn-check:checked+.btn-outline-success {
+                background-color: #198754;
+                border-color: #198754;
+            }
+
+            .btn-check:checked+.btn-outline-danger {
+                background-color: #dc3545;
+                border-color: #dc3545;
+            }
+        </style>
+    @endif
 
 
 
@@ -1425,7 +1612,12 @@
         });
     </script>
 
+
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    
     @include('layouts.NavbarBawah')
 </body>
 
