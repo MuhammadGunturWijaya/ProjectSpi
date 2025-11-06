@@ -26,6 +26,9 @@ class Pengaduan extends Model
         'verification_checks' => 'array',
         'verification_history' => 'array',
         'fields_to_fix' => 'array',
+        'updated_fields' => 'array',
+        'revision_count',
+        
 
         // Date/Time Fields
         'tanggal_pengaduan' => 'date',

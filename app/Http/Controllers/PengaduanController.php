@@ -20,6 +20,7 @@ class PengaduanController extends Controller
         // Kirim ke view admin.pengaduanIndex
         return view('admin.pengaduanIndex', compact('pengaduans'));
     }
+
     /**
      * ✅ AUTO-SAVE VERIFICATION - Setiap klik ceklis/silang langsung ke database
      */
@@ -92,38 +93,33 @@ class PengaduanController extends Controller
                 return redirect()->back()->with('error', 'Harap verifikasi minimal satu field sebelum melanjutkan.');
             }
 
-            // 2. Persiapan Data Umum
+            // 🔑 KUNCI UTAMA: Simpan data verifikasi PERMANEN di kolom terpisah
+            // Data ini TIDAK akan dihapus meskipun status berubah
             $pengaduan->verification_checks = json_encode($verificationChecks);
             $pengaduan->verification_notes = $request->verification_notes;
             $pengaduan->verified_by = auth()->id();
             $pengaduan->verified_at = now();
 
             $message = '';
-            $flashType = 'success'; // Default type for success
+            $flashType = 'success';
 
             // 3. Logika Aksi (Approve/Reject)
             if ($request->action === 'approve') {
-                // ✅ APPROVE: Semua data OK, lanjut ke tindak lanjut
                 $pengaduan->status = 'tindak_lanjut';
-
-                // Reset data rejection
                 $pengaduan->rejection_reason = null;
                 $pengaduan->rejected_at = null;
                 $pengaduan->rejected_by = null;
                 $pengaduan->fields_to_fix = null;
+                $pengaduan->updated_fields = null; // 🆕 Clear setelah approve
 
                 $message = 'Verifikasi **BERHASIL** disetujui. Laporan dilanjutkan ke tahap **Tindak Lanjut**.';
 
             } else {
-                // ❌ REJECT: Ada data yang perlu diperbaiki
-                $pengaduan->status = 'tanggapan_pelapor'; // Status khusus untuk koreksi
-
-                // Simpan catatan dan penandaan penolakan
+                $pengaduan->status = 'laporan_dikirim';
                 $pengaduan->rejection_reason = $request->verification_notes;
                 $pengaduan->rejected_at = now();
                 $pengaduan->rejected_by = auth()->id();
 
-                // Kumpulkan field yang disilang ('no')
                 $fieldsToFix = [];
                 foreach ($verificationChecks as $field => $status) {
                     if ($status === 'no') {
@@ -132,28 +128,50 @@ class PengaduanController extends Controller
                 }
 
                 $pengaduan->fields_to_fix = json_encode($fieldsToFix);
+                $pengaduan->updated_fields = null; // 🆕 Clear setelah reject
 
-                // Tipe pesan khusus (warning) karena dikembalikan
                 $flashType = 'warning';
-                $message = 'Laporan **BERHASIL** dikembalikan ke pelapor untuk perbaikan pada **' . count($fieldsToFix) . ' field** yang ditandai. Catatan dikirimkan ke pelapor.';
+                $message = 'Laporan **BERHASIL** dikembalikan ke pelapor (Status: **Laporan Dikirim**). Pelapor perlu memperbaiki **' . count($fieldsToFix) . ' field** yang ditandai. Data verifikasi sebelumnya tetap tersimpan.';
             }
 
-            // 4. Simpan ke Database
             $pengaduan->save();
 
             // 5. Berhasil Kirim
             return redirect()->route('pengaduan.index')->with($flashType, $message);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
-            // Gagal Kirim karena Validasi (misal: action tidak ada)
             return redirect()->back()->withErrors($e->errors())->withInput();
 
         } catch (\Exception $e) {
-            // ❌ Gagal Kirim karena Error Sistem (Database, dll.)
             \Log::error("Error processing verification for pengaduan ID {$id}: " . $e->getMessage());
             return redirect()->back()->with('error', 'Verifikasi **GAGAL** diproses karena kesalahan sistem. Silakan coba lagi. (Detail: ' . $e->getMessage() . ')');
         }
     }
+
+    // 🆕 BONUS: Method untuk reset verification (jika diperlukan)
+    public function resetVerification($id)
+    {
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Akses ditolak.');
+        }
+
+        $pengaduan = Pengaduan::findOrFail($id);
+
+        // Reset semua data verifikasi
+        $pengaduan->verification_checks = null;
+        $pengaduan->verification_notes = null;
+        $pengaduan->verified_by = null;
+        $pengaduan->verified_at = null;
+        $pengaduan->rejection_reason = null;
+        $pengaduan->rejected_at = null;
+        $pengaduan->rejected_by = null;
+        $pengaduan->fields_to_fix = null;
+        $pengaduan->last_verified_at = null;
+        $pengaduan->save();
+
+        return redirect()->back()->with('success', 'Data verifikasi berhasil direset.');
+    }
+
 
     /**
      * ✅ VIEW FEEDBACK - Pelapor lihat field mana yang perlu diperbaiki
@@ -182,6 +200,7 @@ class PengaduanController extends Controller
 
         return view('pengaduan.create', compact('userLaporans'));
     }
+
 
     public function store(Request $request)
     {
@@ -228,11 +247,19 @@ class PengaduanController extends Controller
             'pihak_terkait' => 'nullable|string',
         ]);
 
-        // 2. SIMPAN DATA KE DATABASE
+        // 2. GENERATE KODE UNIK
+        $kodeVerifikasi = 'VRF-' . strtoupper(Str::random(6));
+        $kodeAduan = 'ADN-' . date('Ymd') . '-' . strtoupper(Str::random(4));
+
+        // 3. SIMPAN DATA KE DATABASE
         $pengaduan = new Pengaduan();
 
         // Set User ID (jika login)
         $pengaduan->user_id = auth()->check() ? auth()->id() : null;
+
+        // Tambahkan kode otomatis
+        $pengaduan->kode_verifikasi = $kodeVerifikasi;
+        $pengaduan->kode_aduan = $kodeAduan;
 
         // Uraian Pengaduan
         $pengaduan->tanggal_pengaduan = $request->tanggal_pengaduan;
@@ -286,17 +313,18 @@ class PengaduanController extends Controller
         $pengaduan->identitas_diketahui = $request->identitas_diketahui;
         $pengaduan->pihak_terkait = $request->pihak_terkait;
 
-        // Set Status Awal
+        // ✅ Status Awal & Revision Count
         $pengaduan->status = 'laporan_dikirim';
         $pengaduan->revision_count = 0;
 
-        // 3. SIMPAN KE DATABASE
+        // 4. SIMPAN KE DATABASE
         $pengaduan->save();
 
-        // 4. REDIRECT DENGAN PESAN SUKSES
+        // 5. REDIRECT DENGAN PESAN SUKSES
         return redirect()->route('pengaduan.create')
-            ->with('success', '✅ Pengaduan berhasil dikirim! Data akan diverifikasi oleh admin.');
+            ->with('success', '✅ Pengaduan berhasil dikirim! Kode Aduan: ' . $kodeAduan . ' | Kode Verifikasi: ' . $kodeVerifikasi);
     }
+
 
     public function updateStatus(Request $request, $id)
     {
@@ -342,24 +370,22 @@ class PengaduanController extends Controller
      */
     public function edit($id)
     {
+        // 1. Ambil data pengaduan
         $pengaduan = Pengaduan::findOrFail($id);
 
-        // Cek authorization
-        if (auth()->id() !== $pengaduan->user_id) {
-            abort(403, 'Anda tidak memiliki akses untuk mengedit pengaduan ini.');
-        }
+        // 2. Ambil dan dekode daftar field yang perlu diperbaiki
+        // Kolom 'fields_to_fix' menyimpan daftar field dalam format JSON string (misalnya: '["nama", "alamat"]').
+        // Fungsi json_decode akan mengubahnya menjadi array PHP.
+        $fieldsToFix = json_decode($pengaduan->fields_to_fix ?? '[]', true);
 
-        // Cek apakah pengaduan dalam status yang bisa diedit
-        if ($pengaduan->status !== 'tanggapan_pelapor' || !$pengaduan->rejected_at) {
-            return redirect()->route('pengaduan.create')
-                ->with('error', 'Pengaduan tidak dapat diedit pada status ini.');
-        }
-
-        return view('pengaduan.edit', compact('pengaduan'));
+        // 3. Tampilkan view 'edit' dengan data pengaduan dan fieldsToFix
+        return view('pengaduan.edit', compact('pengaduan', 'fieldsToFix'));
     }
+
 
     /**
      * ✅ UPDATE LAPORAN - Hanya update field yang disilang
+     * 🆕 DITAMBAHKAN: Increment revision_count setiap kali pelapor update
      */
     public function update(Request $request, $id)
     {
@@ -369,8 +395,14 @@ class PengaduanController extends Controller
             abort(403, 'Akses ditolak.');
         }
 
+        // ✅ Simpan status lama untuk tracking
+        $oldStatus = $pengaduan->status;
+
         // ✅ Ambil field yang perlu diperbaiki
         $fieldsToFix = json_decode($pengaduan->fields_to_fix, true) ?? [];
+
+        // 🆕 Array untuk tracking field yang diupdate
+        $updatedFields = [];
 
         // ✅ Validasi hanya field yang perlu diperbaiki
         $rules = [];
@@ -444,10 +476,14 @@ class PengaduanController extends Controller
 
         $validated = $request->validate($rules);
 
-        // ✅ Update hanya field yang diperbaiki
+        // ✅ Update hanya field yang diperbaiki + TRACK perubahan
         foreach ($validated as $key => $value) {
             // Skip nested arrays, handle them separately
             if (!in_array($key, ['kontak', 'pelanggaran', 'terlapor', 'bukti_file'])) {
+                // 🆕 Cek apakah value berubah
+                if ($pengaduan->$key != $value) {
+                    $updatedFields[] = $key;
+                }
                 $pengaduan->$key = $value;
             }
         }
@@ -458,11 +494,17 @@ class PengaduanController extends Controller
             in_array('kontak_telepon', $fieldsToFix) ||
             in_array('kontak_whatsapp', $fieldsToFix)
         ) {
-            $pengaduan->kontak = json_encode([
+            $oldKontak = $pengaduan->kontak;
+            $newKontak = json_encode([
                 'email' => $request->email,
                 'telepon' => $request->telepon,
                 'whatsapp' => $request->whatsapp,
             ]);
+
+            if ($oldKontak != $newKontak) {
+                $updatedFields[] = 'kontak';
+            }
+            $pengaduan->kontak = $newKontak;
         }
 
         // Handle pelanggaran jika perlu diperbaiki
@@ -474,6 +516,13 @@ class PengaduanController extends Controller
             }
         }
         if ($pelanggaranNeedsFix && $request->has('pelanggaran')) {
+            $oldPelanggaran = $pengaduan->pelanggaran;
+            $newPelanggaran = $request->pelanggaran;
+
+            if (json_encode($oldPelanggaran) != json_encode($newPelanggaran)) {
+                $updatedFields[] = 'pelanggaran';
+            }
+
             $pengaduan->pelanggaran = $request->pelanggaran;
             $pengaduan->pelanggaran_lain = $request->pelanggaran_lain;
         }
@@ -487,7 +536,14 @@ class PengaduanController extends Controller
             }
         }
         if ($terlaporNeedsFix && $request->has('terlapor')) {
-            $pengaduan->terlapor = json_encode($request->terlapor);
+            $oldTerlapor = $pengaduan->terlapor;
+            $newTerlapor = json_encode($request->terlapor);
+
+            if ($oldTerlapor != $newTerlapor) {
+                $updatedFields[] = 'terlapor';
+            }
+
+            $pengaduan->terlapor = $newTerlapor;
         }
 
         // Handle file upload jika perlu diperbaiki
@@ -496,11 +552,15 @@ class PengaduanController extends Controller
             foreach ($request->file('bukti_file') as $file) {
                 $files[] = $file->store('bukti', 'public');
             }
+            $updatedFields[] = 'bukti_file';
             $pengaduan->bukti_file = json_encode($files);
         }
 
         // Handle link video jika perlu diperbaiki
         if (in_array('link_video', $fieldsToFix)) {
+            if ($pengaduan->link_video != $request->link_video) {
+                $updatedFields[] = 'link_video';
+            }
             $pengaduan->link_video = $request->link_video;
         }
 
@@ -522,20 +582,27 @@ class PengaduanController extends Controller
         $pengaduan->rejected_by = null;
         $pengaduan->fields_to_fix = null;
 
-        // Tandai bahwa ini adalah revisi
-        $pengaduan->revision_count = ($pengaduan->revision_count ?? 0) + 1;
-        $pengaduan->last_revision_at = now();
+        // 🆕 PENTING: Increment revision_count setiap kali pelapor melakukan perbaikan
+        if ($oldStatus === 'laporan_dikirim') {
+            $pengaduan->revision_count = ($pengaduan->revision_count ?? 0) + 1;
+            $pengaduan->last_revision_at = now();
 
-        // Reset verification checks agar admin bisa verifikasi ulang
-        $pengaduan->verification_checks = null;
-        $pengaduan->verified_at = null;
-        $pengaduan->verified_by = null;
-        $pengaduan->last_verified_at = null;
+            // 🆕 Simpan field yang diupdate untuk ditampilkan ke admin
+            $pengaduan->updated_fields = json_encode($updatedFields);
+        }
+
+        // 🔑 KUNCI: JANGAN reset verification_checks
+        // Data ceklis/silang tetap tersimpan dan akan muncul kembali
+        // $pengaduan->verification_checks = null;  // ❌ JANGAN DI-UNCOMMENT!
+        // $pengaduan->verified_at = null;           // ❌ JANGAN DI-UNCOMMENT!
+        // $pengaduan->verified_by = null;           // ❌ JANGAN DI-UNCOMMENT!
+        // $pengaduan->last_verified_at = null;      // ❌ JANGAN DI-UNCOMMENT!
 
         $pengaduan->save();
 
         return redirect()->route('pengaduan.create')->with('success', 'Perbaikan berhasil dikirim! Laporan akan diverifikasi ulang oleh admin.');
     }
+
     public function show($id)
     {
         $pengaduan = Pengaduan::with(['user'])->findOrFail($id);
