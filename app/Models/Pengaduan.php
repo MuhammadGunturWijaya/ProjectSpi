@@ -19,6 +19,8 @@ class Pengaduan extends Model
      */
     protected $casts = [
         // JSON Fields
+        'bidang_id',
+        'role_bidang_id',
         'pelanggaran' => 'array',
         'kontak' => 'array',
         'terlapor' => 'array',
@@ -28,7 +30,7 @@ class Pengaduan extends Model
         'fields_to_fix' => 'array',
         'updated_fields' => 'array',
         'revision_count',
-        
+
 
         // Date/Time Fields
         'tanggal_pengaduan' => 'date',
@@ -151,7 +153,7 @@ class Pengaduan extends Model
     public function scopeNeedsCorrection($query)
     {
         return $query->where('status', 'laporan_dikirim')
-                     ->whereNotNull('rejected_at');
+            ->whereNotNull('rejected_at');
     }
 
     /**
@@ -160,5 +162,15 @@ class Pengaduan extends Model
     public function scopeByUser($query, $userId)
     {
         return $query->where('user_id', $userId);
+    }
+
+    public function bidang()
+    {
+        return $this->belongsTo(BidangPengaduan::class, 'bidang_id');
+    }
+
+    public function roleBidang()
+    {
+        return $this->belongsTo(RoleBidang::class, 'role_bidang_id');
     }
 }

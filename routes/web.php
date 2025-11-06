@@ -43,6 +43,9 @@ use App\Http\Controllers\Admin\TimelineController;
 use App\Http\Controllers\ProcessController;
 use App\Http\Controllers\BagianController;
 use App\Http\Controllers\AspirasiController;
+use App\Http\Controllers\BidangPengaduanController;
+use App\Http\Controllers\RoleBidangController;
+
 
 // Halaman landing
 Route::get('/', [LandingPageController::class, 'index'])->name('landingpage');
@@ -93,6 +96,11 @@ Route::get('/search-pedoman', [SearchPedomanController::class, 'index'])->name('
 // Routes untuk semua user (guest & authenticated)
 Route::get('/pengaduan/create', [PengaduanController::class, 'create'])->name('pengaduan.create');
 Route::get('/pengaduan/{id}', [PengaduanController::class, 'show'])->name('pengaduan.show');
+
+Route::middleware(['auth', 'admin'])->group(function () {
+    Route::post('/admin/pengaduan/{id}/verifikasi', [PengaduanController::class, 'verifikasi'])
+        ->name('pengaduan.verifikasi');
+});
 
 // Routes untuk authenticated users
 Route::middleware(['auth'])->group(function () {
@@ -218,30 +226,15 @@ Route::get('/konsideran-spi', [KonsideranSPIController::class, 'index'])
     ->name('konsideran-spi');
 
 
-// Route Ke halaman pedoman audit SPI
-Route::get('/pedoman-audit', [PedomanAuditController::class, 'index'])
-    ->name('pedoman-audit');
-
-// Route Ke halaman pedoman monev SPI
-// Route::get('/pedoman-monev', [PedomanMonevController::class, 'index'])->name('pedoman-monev');
-
-// Route Ke halaman pedoman reviu SPI
-Route::get('/pedoman-reviu', [PedomanReviuController::class, 'index'])->name('pedoman-reviu');
-
 
 // Route Ke halaman pedoman mr 
 Route::get('/pedoman/mr', [PedomanMRController::class, 'index'])->name('pedoman.mr');
-
-// Route Ke halaman manajemen perubahan
-Route::get('/manajemen-perubahan', [ManajemenPerubahanController::class, 'index'])->name('manajemen-perubahan');
 
 
 
 // Route Ke halaman PenguatanPengawasan
 Route::get('/penguatan-pengawasan', [PenguatanPengawasanController::class, 'index'])->name('pengawasan.index');
 
-// Route Ke halaman PeningkatanPelayanan
-Route::get('/pelayanan', [PeningkatanPelayananController::class, 'index'])->name('pelayanan');
 
 // Route Ke halaman SURVEY
 Route::post('/survey', [SurveyController::class, 'store'])->name('survey.store');
@@ -254,8 +247,6 @@ Route::middleware('auth')->group(function () {
 
 Route::delete('/surveys/{survey}', [SurveyController::class, 'destroy'])->name('surveys.destroy');
 
-// route ke halaman instrumen pengawasan
-Route::get('/instrumen-pengawasan', [InstrumenPengawasanController::class, 'index'])->name('instrumen.pengawasan');
 // route ke halaman program kerja SPI
 Route::get('/program-kerja', [ProgramKerjaController::class, 'index'])->name('program.kerja');
 // route ke halaman penataan sdm aparatur
@@ -292,7 +283,7 @@ Route::get('/pedoman-pengawasan/{id}', [DetailPengawasanController::class, 'show
     ->name('pedoman.detail');
 
 Route::delete('/pedoman/{id}', [PedomanPengawasanController::class, 'destroy'])->name('pedoman.destroy');
-Route::delete('/pedoman/audit', [PedomanController::class, 'destroyAll'])->name('pedoman.destroyAll');
+
 
 Route::get('/pedoman/{id}/edit', [PedomanPengawasanController::class, 'edit'])->name('pedoman.edit');
 Route::put('/pedoman/{id}', [PedomanPengawasanController::class, 'update'])->name('pedoman.update');
@@ -335,13 +326,6 @@ Route::get('/piagam/{id}', [PiagamSPIController::class, 'show'])->name('piagam.s
 
 // Route Ke halaman piagam SPI
 Route::get('/piagam-spi', [PiagamSPIController::class, 'index'])->name('piagam-spi');
-
-Route::get('/manajemen-perubahan', [ManajemenPerubahanController::class, 'index'])
-    ->name('manajemen.perubahan');
-
-
-Route::get('/manajemen-perubahan', [ManajemenPerubahanController::class, 'index'])->name('manajemen.perubahan');
-Route::post('/upload-Manajemen', [ManajemenPerubahanController::class, 'store'])->name('manajemen.store');
 
 //--------------------------------
 
@@ -784,4 +768,25 @@ Route::delete('/aspirasi/{aspirasi}', [AspirasiController::class, 'destroy'])->n
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin/aspirasi', [AspirasiController::class, 'adminIndex'])->name('aspirasi.admin');
     Route::get('/admin/aspirasi/{aspirasi}', [AspirasiController::class, 'adminShow'])->name('aspirasi.admin.show');
+});
+
+
+Route::middleware(['auth'])->group(function () {
+    Route::get('/bidang-pengaduan', [BidangPengaduanController::class, 'index'])->name('bidang.index');
+    Route::post('/bidang-pengaduan', [BidangPengaduanController::class, 'store'])->name('bidang.store');
+    Route::put('/bidang-pengaduan/{bidang}', [BidangPengaduanController::class, 'update'])->name('bidang.update');
+    Route::delete('/bidang-pengaduan/{bidang}', [BidangPengaduanController::class, 'destroy'])->name('bidang.destroy');
+    Route::patch('/bidang-pengaduan/{bidang}/toggle', [BidangPengaduanController::class, 'toggleStatus'])->name('bidang.toggleStatus');
+});
+
+
+Route::prefix('admin')->group(function () {
+    Route::prefix('role-bidang')->group(function () {
+        Route::resource('roleBidang', RoleBidangController::class);
+        Route::get('/', [RoleBidangController::class, 'index'])->name('admin.roleBidang.index');
+        Route::post('/', [RoleBidangController::class, 'store'])->name('admin.roleBidang.store');
+        Route::put('/{id}', [RoleBidangController::class, 'update'])->name('admin.roleBidang.update');
+        Route::delete('/{id}', [RoleBidangController::class, 'destroy'])->name('admin.roleBidang.destroy');
+        Route::patch('/{id}/toggle', [RoleBidangController::class, 'toggleStatus'])->name('admin.roleBidang.toggleStatus');
+    });
 });

@@ -47,11 +47,8 @@ class Kernel extends HttpKernel
      * These middleware may be assigned to groups or used individually.
      */
     protected $middlewareAliases = [
-        // Middleware default Laravel
         'auth' => \App\Http\Middleware\Authenticate::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-
-        // ✅ Tambahkan ini
         'admin' => \App\Http\Middleware\IsAdmin::class,
     ];
 

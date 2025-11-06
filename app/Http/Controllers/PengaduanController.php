@@ -8,7 +8,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
-
+use App\Models\BidangPengaduan;
+use App\Models\RoleBidang;
 class PengaduanController extends Controller
 {
 
@@ -70,7 +71,6 @@ class PengaduanController extends Controller
      */
     public function processVerification(Request $request, $id)
     {
-        // 1. Otorisasi dan Validasi
         if (auth()->user()->role !== 'admin') {
             abort(403, 'Akses ditolak.');
         }
@@ -81,7 +81,15 @@ class PengaduanController extends Controller
             $validated = $request->validate([
                 'verification_checks' => 'required|string',
                 'verification_notes' => 'nullable|string',
-                'action' => 'required|in:approve,reject'
+                'action' => 'required|in:approve,reject',
+                'bidang_id' => 'required_if:action,approve|nullable|exists:bidang_pengaduan,id',
+                // ✅ UBAH JADI role_bidang_id
+                'role_bidang_id' => 'required_if:action,approve|nullable|exists:role_bidang,id',
+            ], [
+                'bidang_id.required_if' => 'Bidang harus dipilih saat menyetujui pengaduan.',
+                'bidang_id.exists' => 'Bidang yang dipilih tidak valid.',
+                'role_bidang_id.required_if' => 'Role harus dipilih saat menyetujui pengaduan.',
+                'role_bidang_id.exists' => 'Role yang dipilih tidak valid.',
             ]);
 
             $verificationChecks = $request->verification_checks;
@@ -93,8 +101,6 @@ class PengaduanController extends Controller
                 return redirect()->back()->with('error', 'Harap verifikasi minimal satu field sebelum melanjutkan.');
             }
 
-            // 🔑 KUNCI UTAMA: Simpan data verifikasi PERMANEN di kolom terpisah
-            // Data ini TIDAK akan dihapus meskipun status berubah
             $pengaduan->verification_checks = json_encode($verificationChecks);
             $pengaduan->verification_notes = $request->verification_notes;
             $pengaduan->verified_by = auth()->id();
@@ -103,18 +109,25 @@ class PengaduanController extends Controller
             $message = '';
             $flashType = 'success';
 
-            // 3. Logika Aksi (Approve/Reject)
             if ($request->action === 'approve') {
+                // ✅ SIMPAN BIDANG_ID DAN ROLE_BIDANG_ID
+                $pengaduan->bidang_id = $request->bidang_id;
+                $pengaduan->role_bidang_id = $request->role_bidang_id; // ← UBAH INI
+
                 $pengaduan->status = 'tindak_lanjut';
                 $pengaduan->rejection_reason = null;
                 $pengaduan->rejected_at = null;
                 $pengaduan->rejected_by = null;
                 $pengaduan->fields_to_fix = null;
-                $pengaduan->updated_fields = null; // 🆕 Clear setelah approve
+                $pengaduan->updated_fields = null;
 
-                $message = 'Verifikasi **BERHASIL** disetujui. Laporan dilanjutkan ke tahap **Tindak Lanjut**.';
+                $bidang = \App\Models\BidangPengaduan::find($request->bidang_id);
+                $role = \App\Models\RoleBidang::find($request->role_bidang_id); // ← UBAH INI
+
+                $message = "Verifikasi **BERHASIL** disetujui. Laporan dilanjutkan ke tahap **Tindak Lanjut** dan diteruskan ke bidang **{$bidang->nama_bidang}** dengan role **{$role->nama_role}**.";
 
             } else {
+                // ... kode reject tetap sama
                 $pengaduan->status = 'laporan_dikirim';
                 $pengaduan->rejection_reason = $request->verification_notes;
                 $pengaduan->rejected_at = now();
@@ -128,15 +141,14 @@ class PengaduanController extends Controller
                 }
 
                 $pengaduan->fields_to_fix = json_encode($fieldsToFix);
-                $pengaduan->updated_fields = null; // 🆕 Clear setelah reject
+                $pengaduan->updated_fields = null;
 
                 $flashType = 'warning';
-                $message = 'Laporan **BERHASIL** dikembalikan ke pelapor (Status: **Laporan Dikirim**). Pelapor perlu memperbaiki **' . count($fieldsToFix) . ' field** yang ditandai. Data verifikasi sebelumnya tetap tersimpan.';
+                $message = 'Laporan **BERHASIL** dikembalikan ke pelapor.';
             }
 
             $pengaduan->save();
 
-            // 5. Berhasil Kirim
             return redirect()->route('pengaduan.index')->with($flashType, $message);
 
         } catch (\Illuminate\Validation\ValidationException $e) {
@@ -144,7 +156,7 @@ class PengaduanController extends Controller
 
         } catch (\Exception $e) {
             \Log::error("Error processing verification for pengaduan ID {$id}: " . $e->getMessage());
-            return redirect()->back()->with('error', 'Verifikasi **GAGAL** diproses karena kesalahan sistem. Silakan coba lagi. (Detail: ' . $e->getMessage() . ')');
+            return redirect()->back()->with('error', 'Verifikasi **GAGAL** diproses. (Detail: ' . $e->getMessage() . ')');
         }
     }
 
@@ -607,12 +619,31 @@ class PengaduanController extends Controller
     {
         $pengaduan = Pengaduan::with(['user'])->findOrFail($id);
 
-        // Opsional: batasi hanya admin yang boleh membuka halaman ini
+        // Batasi akses hanya untuk admin
         if (auth()->user()->role !== 'admin') {
             abort(403, 'Akses ditolak.');
         }
 
-        return view('admin.pengaduanShow', compact('pengaduan'));
+        // Ambil semua bidang pengaduan aktif (atau semua kalau mau)
+        $bidangPengaduans = BidangPengaduan::where('is_active', true)->get();
+        $roles = RoleBidang::active()->get();
+
+        return view('admin.pengaduanShow', compact('pengaduan', 'bidangPengaduans', 'roles'));
     }
+
+    public function verifikasi(Request $request, $id)
+    {
+        $request->validate([
+            'bidang_id' => 'required|exists:bidang_pengaduan,id',
+        ]);
+
+        $pengaduan = Pengaduan::findOrFail($id);
+        $pengaduan->bidang_id = $request->bidang_id;
+        $pengaduan->status = 'diverifikasi';
+        $pengaduan->save();
+
+        return redirect()->route('pengaduan.index')->with('success', 'Pengaduan berhasil diverifikasi dan diteruskan ke bidang terkait.');
+    }
+
 
 }

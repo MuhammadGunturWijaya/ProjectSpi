@@ -859,6 +859,28 @@
             margin-bottom: 15px;
             opacity: 0.5;
         }
+
+        /* SOLUSI PERBAIKAN Z-INDEX UNTUK MODAL */
+        /* Ini menimpa nilai default Bootstrap yang terganggu oleh Z-Index kustom Anda */
+
+        .modal-backdrop {
+            /* Backdrop harus berada di lapisan di bawah modal (1050 atau lebih rendah) */
+            z-index: 1049 !important;
+        }
+
+        .modal {
+            /* Modal harus berada di lapisan di atas backdrop (1050) DAN di atas saving-indicator (9999) */
+            /* Kita gunakan nilai yang cukup tinggi untuk mengalahkan semuanya */
+            z-index: 10000 !important;
+        }
+
+        /* Opsional: Turunkan z-index saving-indicator untuk manajemen yang lebih baik */
+        .saving-indicator {
+            z-index: 2000;
+            /* Nilai ini masih sangat tinggi, tapi tidak mengganggu modal utama */
+        }
+
+        /* AKHIR SOLUSI PERBAIKAN Z-INDEX */
     </style>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 
@@ -1520,13 +1542,14 @@
             </div>
 
             <div style="text-align: center; padding: 20px;">
-                <span class="status-badge 
-                                                                                                            @if($pengaduan->status == 'selesai') status-selesai
-                                                                                                            @elseif($pengaduan->status == 'tindak_lanjut') status-tindak
-                                                                                                            @elseif($pengaduan->status == 'diverifikasi') status-verifikasi
-                                                                                                            @elseif($pengaduan->status == 'tanggapan_pelapor') status-tanggapan
-                                                                                                            @else status-laporan
-                                                                                                            @endif">
+                <span
+                    class="status-badge 
+                                                                                                                                                                    @if($pengaduan->status == 'selesai') status-selesai
+                                                                                                                                                                    @elseif($pengaduan->status == 'tindak_lanjut') status-tindak
+                                                                                                                                                                    @elseif($pengaduan->status == 'diverifikasi') status-verifikasi
+                                                                                                                                                                    @elseif($pengaduan->status == 'tanggapan_pelapor') status-tanggapan
+                                                                                                                                                                    @else status-laporan
+                                                                                                                                                                    @endif">
                     <i class="bi bi-circle-fill" style="font-size: 0.6rem;"></i>
                     {{ str_replace('_', ' ', $pengaduan->status) }}
                 </span>
@@ -1542,7 +1565,7 @@
 
                 <!-- Action Buttons -->
                 <div class="btn-container">
-                    <button type="button" class="btn-verify-action btn-approve" onclick="submitVerification('approve')">
+                    <button type="button" class="btn-verify-action btn-approve" onclick="openBidangModal()">
                         <i class="bi bi-check-circle-fill"></i>
                         Setujui & Lanjutkan
                     </button>
@@ -1551,7 +1574,11 @@
                         Kembalikan ke Pelapor
                     </button>
                 </div>
+
+
+
             @endif
+
 
             <!-- Back Button -->
             <div class="btn-container">
@@ -1562,6 +1589,171 @@
             </div>
         </div>
     </div>
+    <!-- Modal Pilihan Bidang -->
+
+    <div class="modal fade" id="bidangModal" tabindex="-1" aria-labelledby="bidangModalLabel" aria-hidden="true"
+        data-bs-container="body">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-primary text-white">
+                    <h5 class="modal-title" id="bidangModalLabel">Pilih Bidang & Role Terkait</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formBidang">
+                        <!-- Pilih Bidang -->
+                        <div class="mb-3">
+                            <label for="bidang_id" class="form-label">Pilih Bidang</label>
+                            <select id="bidang_id" name="bidang_id" class="form-select" required>
+                                <option value="">-- Pilih Bidang --</option>
+                                @foreach($bidangPengaduans as $bidang)
+                                    <option value="{{ $bidang->id }}">{{ $bidang->nama_bidang }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <!-- ✅ UBAH ID DAN NAME -->
+                        <div class="mb-3">
+                            <label for="role_bidang_id" class="form-label">Pilih Role</label>
+                            <select id="role_bidang_id" name="role_bidang_id" class="form-select" required>
+                                <option value="">-- Pilih Role --</option>
+                                @foreach($roles as $role)
+                                    <option value="{{ $role->id }}">{{ $role->nama_role }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" onclick="submitBidang()">Kirim</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openBidangModal() {
+            const bidangModal = new bootstrap.Modal(document.getElementById('bidangModal'));
+            bidangModal.show();
+        }
+
+        // Di pengaduanShow.blade.php
+        function submitVerification(action, bidangId = null, roleId = null) {
+            let confirmationMessage;
+            const form = document.getElementById('verificationForm');
+
+            // Hapus input sementara sebelumnya (penting jika ada submit berulang)
+            document.getElementById('temp_bidang_id')?.remove();
+            document.getElementById('temp_role_id')?.remove();
+
+            if (action === 'approve') {
+                confirmationMessage = 'Anda yakin ingin MENYETUJUI verifikasi dan melanjutkan laporan ke Tindak Lanjut?';
+
+                // 1. BUAT & SISIPKAN HIDDEN FIELD untuk bidang_id
+                const inputBidang = document.createElement('input');
+                inputBidang.type = 'hidden';
+                inputBidang.name = 'bidang_id'; // Nama harus sesuai dengan validasi Laravel
+                inputBidang.value = bidangId;
+                inputBidang.id = 'temp_bidang_id';
+                form.appendChild(inputBidang);
+
+                // 2. BUAT & SISIPKAN HIDDEN FIELD untuk role_id
+                const inputRole = document.createElement('input');
+                inputRole.type = 'hidden';
+                inputRole.name = 'role_id'; // Nama harus sesuai dengan validasi Laravel
+                inputRole.value = roleId;
+                inputRole.id = 'temp_role_id';
+                form.appendChild(inputRole);
+
+            } else { // action === 'reject'
+                confirmationMessage = 'Anda yakin ingin MENGEMBALIKAN laporan ini ke Pelapor untuk perbaikan?';
+            }
+
+            if (!confirm(confirmationMessage)) {
+                // Jika user membatalkan, hapus kembali input yang baru dibuat
+                document.getElementById('temp_bidang_id')?.remove();
+                document.getElementById('temp_role_id')?.remove();
+                return;
+            }
+
+            // 3. Atur aksi dan SUBMIT form
+            document.getElementById('action_input').value = action;
+            form.submit();
+        }
+
+        // Fungsi submitBidang Anda tetap digunakan untuk memicu proses
+        function submitBidang() {
+            const bidangId = document.getElementById('bidang_id').value;
+            const roleBidangId = document.getElementById('role_bidang_id').value; // ← UBAH INI
+
+            console.log('📊 Submitting with:', {
+                bidangId: bidangId,
+                roleBidangId: roleBidangId, // ← UBAH INI
+                verificationData: verificationData
+            });
+
+            if (!bidangId || !roleBidangId) { // ← UBAH INI
+                alert('Silakan pilih bidang dan role terlebih dahulu.');
+                return;
+            }
+
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = "{{ route('pengaduan.processVerification', $pengaduan->id) }}";
+
+            // CSRF Token
+            const csrfInput = document.createElement('input');
+            csrfInput.type = 'hidden';
+            csrfInput.name = '_token';
+            csrfInput.value = '{{ csrf_token() }}';
+            form.appendChild(csrfInput);
+
+            // Action
+            const actionInput = document.createElement('input');
+            actionInput.type = 'hidden';
+            actionInput.name = 'action';
+            actionInput.value = 'approve';
+            form.appendChild(actionInput);
+
+            // Bidang ID
+            const bidangInput = document.createElement('input');
+            bidangInput.type = 'hidden';
+            bidangInput.name = 'bidang_id';
+            bidangInput.value = bidangId;
+            form.appendChild(bidangInput);
+
+            // ✅ Role Bidang ID (bukan role_id)
+            const roleInput = document.createElement('input');
+            roleInput.type = 'hidden';
+            roleInput.name = 'role_bidang_id'; // ← UBAH INI
+            roleInput.value = roleBidangId; // ← UBAH INI
+            form.appendChild(roleInput);
+
+            // Verification Notes
+            const notesInput = document.createElement('input');
+            notesInput.type = 'hidden';
+            notesInput.name = 'verification_notes';
+            notesInput.value = document.getElementById('verificationNotes')?.value || '';
+            form.appendChild(notesInput);
+
+            // Verification Checks
+            const checksInput = document.createElement('input');
+            checksInput.type = 'hidden';
+            checksInput.name = 'verification_checks';
+            checksInput.value = JSON.stringify(verificationData);
+            form.appendChild(checksInput);
+
+            document.body.appendChild(form);
+
+            const modal = bootstrap.Modal.getInstance(document.getElementById('bidangModal'));
+            modal.hide();
+
+            form.submit();
+        }
+    </script>
+
+
 
     @if($pengaduan->status === 'diverifikasi' && auth()->user()->role === 'admin')
         <script>
@@ -1747,44 +1939,34 @@
             function submitVerification(action) {
                 console.log('=== SUBMIT VERIFICATION DEBUG ===');
                 console.log('Action:', action);
-                console.log('Verification Data:', verificationData);
-                console.log('Total Checks:', Object.keys(verificationData).length);
 
+                if (action === 'approve') {
+                    // Untuk approve, buka modal
+                    openBidangModal();
+                    return;
+                }
+
+                // Untuk reject, langsung submit
                 const verificationNotes = document.getElementById('verificationNotes')?.value || '';
-
-                // ✅ VALIDASI DIPERBAIKI
                 const totalChecks = Object.keys(verificationData).length;
 
                 if (totalChecks === 0) {
-                    alert('Harap verifikasi minimal satu field (klik tombol ✓ atau ✗) sebelum melanjutkan.');
-                    console.error('No verification data found!');
+                    alert('Harap verifikasi minimal satu field sebelum melanjutkan.');
                     return;
                 }
 
-                // Validasi catatan untuk reject
-                if (action === 'reject') {
-                    const hasRejectedFields = Object.values(verificationData).some(v => v === 'no');
-
-                    if (hasRejectedFields && verificationNotes.trim() === '') {
-                        alert('Karena ada field yang ditolak (✗), Catatan Verifikasi wajib diisi untuk menjelaskan alasan penolakan.');
-                        document.getElementById('verificationNotes').focus();
-                        return;
-                    }
-                }
-
-                // Konfirmasi
-                let confirmationMessage = '';
-                if (action === 'approve') {
-                    confirmationMessage = 'Anda yakin ingin MENYETUJUI verifikasi dan melanjutkan laporan ke Tindak Lanjut?';
-                } else {
-                    confirmationMessage = 'Anda yakin ingin MENGEMBALIKAN laporan ini ke Pelapor untuk perbaikan?';
-                }
-
-                if (!confirm(confirmationMessage)) {
+                const hasRejectedFields = Object.values(verificationData).some(v => v === 'no');
+                if (hasRejectedFields && verificationNotes.trim() === '') {
+                    alert('Karena ada field yang ditolak (✗), Catatan Verifikasi wajib diisi.');
+                    document.getElementById('verificationNotes').focus();
                     return;
                 }
 
-                // Buat dan kirim form
+                if (!confirm('Anda yakin ingin MENGEMBALIKAN laporan ini ke Pelapor untuk perbaikan?')) {
+                    return;
+                }
+
+                // Buat form untuk reject
                 const form = document.createElement('form');
                 form.method = 'POST';
                 form.action = "{{ route('pengaduan.processVerification', $pengaduan->id) }}";
@@ -1798,7 +1980,7 @@
                 const actionInput = document.createElement('input');
                 actionInput.type = 'hidden';
                 actionInput.name = 'action';
-                actionInput.value = action;
+                actionInput.value = 'reject';
                 form.appendChild(actionInput);
 
                 const notesInput = document.createElement('input');
@@ -1813,12 +1995,6 @@
                 checksInput.value = JSON.stringify(verificationData);
                 form.appendChild(checksInput);
 
-                console.log('Form data being submitted:', {
-                    action: action,
-                    notes: verificationNotes,
-                    checks: verificationData
-                });
-
                 document.body.appendChild(form);
                 form.submit();
             }
@@ -1832,5 +2008,70 @@
                 });
             }
         </script>
+        @if(session('success'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Berhasil!',
+                        html: `{!! session('success') !!}`,
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#28a745',
+                        timer: 5000,
+                        timerProgressBar: true
+                    });
+                });
+            </script>
+        @endif
+
+        @if(session('error'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Terjadi Kesalahan!',
+                        html: `{!! session('error') !!}`,
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#dc3545'
+                    });
+                });
+            </script>
+        @endif
+
+        @if(session('warning'))
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Perhatian!',
+                        html: `{!! session('warning') !!}`,
+                        confirmButtonText: 'Mengerti',
+                        confirmButtonColor: '#ffc107'
+                    });
+                });
+            </script>
+        @endif
+
+        @if($errors->any())
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Validasi Gagal',
+                        html: `
+                                                                                                        <ul style="text-align: left; padding-left: 20px;">
+                                                                                                            @foreach($errors->all() as $error)
+                                                                                                                <li>{{ $error }}</li>
+                                                                                                            @endforeach
+                                                                                                        </ul>
+                                                                                                    `,
+                        confirmButtonText: 'OK',
+                        confirmButtonColor: '#dc3545'
+                    });
+                });
+            </script>
+        @endif
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @endif
 @endsection

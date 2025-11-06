@@ -542,6 +542,18 @@
             <h1><i class="bi bi-megaphone-fill"></i> Pengaduan Masyarakat</h1>
             <p>Transparansi & Akuntabilitas Pelayanan Publik</p>
         </div>
+<!-- Tambahkan setelah Page Header, sebelum Status Tabs -->
+
+        <div class="text-center mb-4">
+            <a href="{{ route('bidang.index') }}" class="btn-add">
+                <i class="bi bi-grid-3x3-gap-fill"></i> Kelola Bidang
+            </a>
+        </div>
+        <div class="text-center mb-4">
+            <a href="{{ route('admin.roleBidang.index') }}" class="btn-add">
+                <i class="bi bi-grid-3x3-gap-fill"></i> Kelola role
+            </a>
+        </div>
 
         @if(session('success'))
             <div class="alert alert-custom alert-dismissible fade show" role="alert">
@@ -751,11 +763,9 @@
                 {{-- Select Box --}}
                 @php $currentStatus = $p->status ?? 'laporan_dikirim'; @endphp
                 <select name="status" id="status-select" style="flex-grow: 1; padding: 10px 15px; border-radius: 8px; font-size: 16px; min-width: 200px;">
-                    <option value="laporan_dikirim" @selected($currentStatus == 'laporan_dikirim')>Laporan Dikirim</option>
+                    
                     <option value="diverifikasi" @selected($currentStatus == 'diverifikasi')>Diverifikasi</option>
-                    <option value="tindak_lanjut" @selected($currentStatus == 'tindak_lanjut')>Tindak Lanjut</option>
-                    <option value="tanggapan_pelapor" @selected($currentStatus == 'tanggapan_pelapor')>Tanggapan Pelapor</option>
-                    <option value="selesai" @selected($currentStatus == 'selesai')>Selesai</option>
+                  
                 </select>
 
                 {{-- Tombol Update --}}
