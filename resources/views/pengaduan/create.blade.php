@@ -220,6 +220,232 @@
 <body>
     @include('layouts.navbar')
 
+    {{-- Icon Notifikasi di Navbar --}}
+    @php
+        $needsCorrection = $userLaporans->where('rejected_at', '!=', null);
+        $needsResponse = $userLaporans->where('status', 'tanggapan_pelapor')->where('rejected_at', null);
+        $totalNotif = $needsCorrection->count() + $needsResponse->count();
+    @endphp
+
+    @if($totalNotif > 0)
+        <style>
+            .notif-badge {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                z-index: 1060;
+                cursor: pointer;
+                transition: transform 0.3s ease;
+            }
+
+            .notif-badge:hover {
+                transform: scale(1.1);
+            }
+
+            .notif-icon {
+                position: relative;
+                background: white;
+                border-radius: 50%;
+                width: 60px;
+                height: 60px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+                animation: pulse-red 2s infinite;
+            }
+
+            @keyframes pulse-red {
+
+                0%,
+                100% {
+                    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.4);
+                }
+
+                50% {
+                    box-shadow: 0 4px 25px rgba(220, 53, 69, 0.8);
+                }
+            }
+
+            .notif-count {
+                position: absolute;
+                top: -5px;
+                right: -5px;
+                background: #dc3545;
+                color: white;
+                border-radius: 50%;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 12px;
+                font-weight: bold;
+                animation: blink 1.5s infinite;
+            }
+
+            @keyframes blink {
+
+                0%,
+                100% {
+                    opacity: 1;
+                }
+
+                50% {
+                    opacity: 0.3;
+                }
+            }
+
+            .notif-dropdown {
+                position: fixed;
+                top: 90px;
+                right: 20px;
+                width: 400px;
+                max-height: 500px;
+                overflow-y: auto;
+                background: white;
+                border-radius: 15px;
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+                display: none;
+                z-index: 1055;
+            }
+
+            .notif-dropdown.show {
+                display: block;
+                animation: slideDown 0.3s ease;
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-20px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @media (max-width: 768px) {
+                .notif-badge {
+                    top: 10px;
+                    right: 10px;
+                }
+
+                .notif-icon {
+                    width: 50px;
+                    height: 50px;
+                }
+
+                .notif-dropdown {
+                    top: 70px;
+                    right: 10px;
+                    left: 10px;
+                    width: auto;
+                }
+            }
+        </style>
+
+        {{-- Notifikasi Badge --}}
+        <div class="notif-badge" onclick="toggleNotifDropdown()">
+            <div class="notif-icon">
+                <i class="bi bi-bell-fill text-danger fs-3"></i>
+                <span class="notif-count">{{ $totalNotif }}</span>
+            </div>
+        </div>
+
+        {{-- Dropdown Notifikasi --}}
+        <div class="notif-dropdown" id="notifDropdown">
+            <div class="p-3 border-bottom bg-danger text-white rounded-top">
+                <h6 class="mb-0 fw-bold">
+                    <i class="bi bi-bell-fill me-2"></i>Notifikasi ({{ $totalNotif }})
+                </h6>
+            </div>
+
+            <div class="p-3">
+                {{-- Notifikasi Perlu Perbaikan --}}
+                @if($needsCorrection->count() > 0)
+                    <div class="mb-3">
+                        <h6 class="text-warning fw-bold mb-2">
+                            <i class="bi bi-exclamation-triangle-fill"></i> Perlu Diperbaiki ({{ $needsCorrection->count() }})
+                        </h6>
+                        @foreach($needsCorrection as $laporan)
+                            <div class="card mb-2 border-warning">
+                                <div class="card-body p-3">
+                                    <h6 class="mb-1 fw-bold">{{ $laporan->perihal }}</h6>
+                                    <small class="text-muted d-block mb-2">
+                                        <i class="bi bi-clock"></i> {{ $laporan->rejected_at->format('d M Y, H:i') }}
+                                    </small>
+                                    <div class="d-flex gap-2">
+                                        <a href="{{ route('pengaduan.feedback', $laporan->id) }}"
+                                            class="btn btn-sm btn-warning flex-fill">
+                                            <i class="bi bi-chat-left-text"></i> Feedback
+                                        </a>
+                                        <a href="{{ route('pengaduan.edit', $laporan->id) }}"
+                                            class="btn btn-sm btn-primary flex-fill">
+                                            <i class="bi bi-pencil-square"></i> Perbaiki
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+
+                {{-- Notifikasi Ada Tanggapan --}}
+                @if($needsResponse->count() > 0)
+                    <div class="mb-3">
+                        <h6 class="text-info fw-bold mb-2">
+                            <i class="bi bi-chat-dots-fill"></i> Ada Tanggapan ({{ $needsResponse->count() }})
+                        </h6>
+                        @foreach($needsResponse as $laporan)
+                            <div class="card mb-2 border-info">
+                                <div class="card-body p-3">
+                                    <h6 class="mb-1 fw-bold">{{ $laporan->perihal }}</h6>
+                                    <small class="text-muted d-block mb-2">
+                                        <i class="bi bi-clock"></i>
+                                        {{ $laporan->tanggapan_admin_at ? \Carbon\Carbon::parse($laporan->tanggapan_admin_at)->format('d M Y, H:i') : '-' }}
+                                    </small>
+                                    <div class="d-flex gap-2">
+                                        <a href="{{ route('pengaduan.tanggapan', $laporan->id) }}"
+                                            class="btn btn-sm btn-info flex-fill">
+                                            <i class="bi bi-eye-fill"></i> Lihat
+                                        </a>
+                                        <button type="button" class="btn btn-sm btn-primary flex-fill" data-bs-toggle="modal"
+                                            data-bs-target="#tanggapanModal{{ $laporan->id }}">
+                                            <i class="bi bi-chat-right-text-fill"></i> Tanggapi
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        <script>
+            function toggleNotifDropdown() {
+                const dropdown = document.getElementById('notifDropdown');
+                dropdown.classList.toggle('show');
+            }
+
+            // Tutup dropdown saat klik di luar
+            document.addEventListener('click', function (event) {
+                const notifBadge = document.querySelector('.notif-badge');
+                const notifDropdown = document.getElementById('notifDropdown');
+
+                if (notifBadge && notifDropdown) {
+                    if (!notifBadge.contains(event.target) && !notifDropdown.contains(event.target)) {
+                        notifDropdown.classList.remove('show');
+                    }
+                }
+            });
+        </script>
+    @endif
+
+
     {{-- Timeline Alur Pengaduan --}}
     @php
         $steps = [
@@ -263,7 +489,7 @@
                 <i class="bi bi-journal-text me-1"></i> Lihat Laporan Saya
             </button>
         </div>
-        
+
 
         {{-- Modal Daftar Laporan --}}
         <div class="modal fade" id="laporanModal" tabindex="-1" aria-labelledby="laporanModalLabel" aria-hidden="true">
@@ -610,11 +836,11 @@
                                                         class="process-step {{ $step['class'] }} {{ $isActive ? 'active' : '' }} text-center flex-fill position-relative">
                                                         <div class="process-icon-container shadow-sm mb-2"
                                                             style="background: {{ $isActive ? $step['color'] : '#fff' }}; 
-                                                                                                                                    border: 2px solid {{ $isActive ? $step['color'] : '#dee2e6' }};
-                                                                                                                                    width: 60px; height: 60px; border-radius: 50%; 
-                                                                                                                                    display: flex; align-items: center; justify-content: center;
-                                                                                                                                    margin: 0 auto;
-                                                                                                                                    transition: all 0.3s ease;">
+                                                                                                                                                                        border: 2px solid {{ $isActive ? $step['color'] : '#dee2e6' }};
+                                                                                                                                                                        width: 60px; height: 60px; border-radius: 50%; 
+                                                                                                                                                                        display: flex; align-items: center; justify-content: center;
+                                                                                                                                                                        margin: 0 auto;
+                                                                                                                                                                        transition: all 0.3s ease;">
                                                             <i class="bi {{ $step['icon'] }} fs-4"
                                                                 style="color: {{ $isActive ? '#fff' : '#dee2e6' }}; transition: color 0.3s;"></i>
                                                         </div>
@@ -820,7 +1046,8 @@
 
     @if($needsResponse->count() > 0)
         <div class="container mt-4">
-            <div class="alert alert-info alert-dismissible fade show shadow-sm" role="alert">
+            <div class="alert alert-info alert-dismissible fade show shadow-smposition-relative" role="alert"
+                id="notifLaporan">
                 <div class="d-flex align-items-start">
                     <i class="bi bi-chat-dots-fill fs-3 me-3 text-info"></i>
                     <div class="flex-grow-1">
@@ -843,7 +1070,6 @@
                                                     {{ $laporan->tanggapan_admin_at
                             ? \Carbon\Carbon::parse($laporan->tanggapan_admin_at)->format('d M Y, H:i')
                             : '-' }}
-
                                                 </p>
                                                 <p class="mb-0 text-info small">
                                                     <i class="bi bi-person-badge"></i>
@@ -861,106 +1087,37 @@
                                             </div>
                                         </div>
                                     </div>
-
-                                    <!-- Modal Tanggapan -->
-                                    <div class="modal fade" id="tanggapanModal{{ $laporan->id }}" tabindex="-1" aria-hidden="true">
-                                        <div class="modal-dialog modal-lg">
-                                            <div class="modal-content">
-                                                <div class="modal-header bg-info text-white">
-                                                    <h5 class="modal-title">
-                                                        <i class="bi bi-chat-right-text-fill"></i> Tanggapi Laporan
-                                                    </h5>
-                                                    <button type="button" class="btn-close btn-close-white"
-                                                        data-bs-dismiss="modal"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                    <!-- Tampilkan Tanggapan Admin -->
-                                                    <div class="alert alert-light border">
-                                                        <h6 class="fw-bold text-primary mb-2">
-                                                            <i class="bi bi-person-badge-fill"></i> Tanggapan dari
-                                                            {{ $laporan->roleBidang->nama_role ?? 'Pihak Berwenang' }}
-                                                        </h6>
-                                                        <p class="mb-0">{{ $laporan->tanggapan_admin }}</p>
-                                                        <small class="text-muted">
-                                                            <i class="bi bi-clock"></i>
-                                                            {{ $laporan->tanggapan_admin_at
-                            ? \Carbon\Carbon::parse($laporan->tanggapan_admin_at)->format('d M Y, H:i')
-                            : '-' }}
-
-                                                        </small>
-                                                    </div>
-
-                                                    <!-- Form Tanggapan Pelapor -->
-                                                    <form action="{{ route('pengaduan.tanggapanPelapor', $laporan->id) }}"
-                                                        method="POST">
-                                                        @csrf
-
-                                                        <div class="form-group mb-3">
-                                                            <label class="form-label fw-bold">
-                                                                <i class="bi bi-question-circle"></i> Apakah Anda puas dengan tanggapan
-                                                                ini?
-                                                            </label>
-                                                            <div class="btn-group w-100" role="group">
-                                                                <input type="radio" class="btn-check" name="status_kepuasan"
-                                                                    id="puas{{ $laporan->id }}" value="puas" required
-                                                                    onchange="toggleTanggapanField({{ $laporan->id }}, false)">
-                                                                <label class="btn btn-outline-success" for="puas{{ $laporan->id }}">
-                                                                    <i class="bi bi-hand-thumbs-up"></i> Puas & Selesai
-                                                                </label>
-
-                                                                <input type="radio" class="btn-check" name="status_kepuasan"
-                                                                    id="tidak_puas{{ $laporan->id }}" value="tidak_puas" required
-                                                                    onchange="toggleTanggapanField({{ $laporan->id }}, true)">
-                                                                <label class="btn btn-outline-danger"
-                                                                    for="tidak_puas{{ $laporan->id }}">
-                                                                    <i class="bi bi-hand-thumbs-down"></i> Tidak Puas
-                                                                </label>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="form-group mb-3" id="tanggapan_wrapper{{ $laporan->id }}"
-                                                            style="display: none;">
-                                                            <label for="tanggapan_pelapor{{ $laporan->id }}" class="form-label fw-bold">
-                                                                <i class="bi bi-chat-text"></i> Tanggapan Anda (Wajib jika tidak puas)
-                                                            </label>
-                                                            <textarea name="tanggapan_pelapor" id="tanggapan_pelapor{{ $laporan->id }}"
-                                                                class="form-control" rows="5"
-                                                                placeholder="Jelaskan mengapa Anda tidak puas atau apa yang perlu ditindaklanjuti..."></textarea>
-                                                        </div>
-
-                                                        <div class="d-flex justify-content-end gap-2">
-                                                            <button type="button" class="btn btn-secondary"
-                                                                data-bs-dismiss="modal">Batal</button>
-                                                            <button type="submit" class="btn btn-primary">
-                                                                <i class="bi bi-send-check-fill"></i> Kirim Tanggapan
-                                                            </button>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
                         @endforeach
                     </div>
+                </div>
+                <!-- Progress Bar -->
+                <div class="progress position-absolute bottom-0 start-0 w-100" style="height: 5px;">
+                    <div class="progress-bar" role="progressbar" id="notifProgress"
+                        style="width: 0%; background-color: #0d6efd;"></div>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         </div>
 
         <script>
-            function toggleTanggapanField(laporanId, show) {
-                const wrapper = document.getElementById('tanggapan_wrapper' + laporanId);
-                const textarea = document.getElementById('tanggapan_pelapor' + laporanId);
+            document.addEventListener('DOMContentLoaded', function () {
+                const notif = document.getElementById('notifLaporan');
+                const progress = document.getElementById('notifProgress');
+                let width = 0;
+                const duration = 5000; // 5 detik
 
-                if (show) {
-                    wrapper.style.display = 'block';
-                    textarea.setAttribute('required', 'required');
-                } else {
-                    wrapper.style.display = 'none';
-                    textarea.removeAttribute('required');
-                    textarea.value = '';
-                }
-            }
+                const interval = setInterval(() => {
+                    width += 100 / (duration / 50); // update tiap 50ms
+                    progress.style.width = width + '%';
+
+                    if (width >= 100) {
+                        clearInterval(interval);
+                        notif.classList.remove('show');
+                        notif.classList.add('hide');
+                        setTimeout(() => notif.remove(), 500);
+                    }
+                }, 50);
+            });
         </script>
 
         <style>
@@ -983,8 +1140,20 @@
                 background-color: #dc3545;
                 border-color: #dc3545;
             }
+
+            /* Animasi fade out */
+            .alert.hide {
+                opacity: 0;
+                transition: opacity 0.5s;
+            }
+
+            /* Progress bar putih */
+            #notifProgress {
+                transition: width 0.05s linear;
+            }
         </style>
     @endif
+
 
 
 
@@ -1616,8 +1785,8 @@
 
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    
-    
+
+
     @include('layouts.NavbarBawah')
 </body>
 
