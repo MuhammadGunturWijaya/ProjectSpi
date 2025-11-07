@@ -63,4 +63,6 @@ class User extends Authenticatable
         return $this->belongsTo(RoleBidang::class, 'role_bidang_id');
     }
 
+    
+
 }

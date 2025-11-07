@@ -1534,12 +1534,12 @@
             @endif
 
             <!-- Status
-            <div class="section-header">
-                <div class="icon-box">
-                    <i class="bi bi-info-circle"></i>
-                </div>
-                <h5>Status Pengaduan</h5>
-            </div> -->
+                        <div class="section-header">
+                            <div class="icon-box">
+                                <i class="bi bi-info-circle"></i>
+                            </div>
+                            <h5>Status Pengaduan</h5>
+                        </div> -->
 
             <!-- Section Bidang & Role -->
             <div class="section-header">
@@ -1565,255 +1565,274 @@
                 @endif
             </div>
 
+            @php
+                use App\Models\RoleBidang;
+
+                $user = auth()->user();
+                $roleUser = RoleBidang::where('nama_role', $user->role)->first();
+
+                $isAdmin = $user->role === 'admin';
+                $isPelapor = $user->id === $pengaduan->user_id;
+                $isRolePenanggungJawab = $roleUser && $roleUser->id === $pengaduan->role_bidang_id;
+            @endphp
+
+
+
             <!-- Section Tanggapan -->
-            @if($pengaduan->status === 'tindak_lanjut' || $pengaduan->status === 'tanggapan_pelapor' || $pengaduan->status === 'selesai')
-                    <div class="section-header mt-5">
-                        <div class="icon-box">
-                            <i class="bi bi-chat-dots"></i>
+            @if($isAdmin || $isPelapor || $isRolePenanggungJawab)
+                @if($pengaduan->status === 'tindak_lanjut' || $pengaduan->status === 'tanggapan_pelapor' || $pengaduan->status === 'selesai')
+                        <div class="section-header mt-5">
+                            <div class="icon-box">
+                                <i class="bi bi-chat-dots"></i>
+                            </div>
+                            <h5>Tanggapan & Komunikasi</h5>
                         </div>
-                        <h5>Tanggapan & Komunikasi</h5>
+
+                        <!-- History Tanggapan -->
+                        @if($pengaduan->history_tanggapan && count($pengaduan->history_tanggapan) > 0)
+                            <div class="history-tanggapan mb-4">
+                                <h6 class="fw-bold text-primary mb-3">Riwayat Komunikasi</h6>
+                                @foreach($pengaduan->history_tanggapan as $history)
+                                    <div class="tanggapan-item {{ $history['type'] === 'admin' ? 'from-admin' : 'from-pelapor' }}">
+                                        <div class="tanggapan-header">
+                                            <i class="bi {{ $history['type'] === 'admin' ? 'bi-person-badge-fill' : 'bi-person-fill' }}"></i>
+                                            <strong>{{ $history['type'] === 'admin' ? 'Pihak Berwenang' : 'Pelapor' }}</strong>
+                                            <span
+                                                class="text-muted ms-2">{{ \Carbon\Carbon::parse($history['created_at'])->format('d M Y, H:i') }}</span>
+                                        </div>
+                                        <div class="tanggapan-content">
+                                            {{ $history['content'] }}
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @endif
+
+                        <!-- Form Tanggapan Admin (untuk status tindak_lanjut) -->
+                        @if(
+                                $pengaduan->status === 'tindak_lanjut' &&
+                                ($isAdmin || ($roleUser && $roleUser->id === $pengaduan->role_bidang_id))
+                            )
+
+                            <div class="tanggapan-form-section">
+                                <div class="alert alert-info">
+                                    <i class="bi bi-info-circle-fill"></i>
+                                    Pengaduan ini memerlukan tanggapan dari Anda sebagai
+                                    <strong>{{ $pengaduan->roleBidang->nama_role }}</strong>.
+                                </div>
+
+                                <form action="{{ route('pengaduan.tanggapanAdmin', $pengaduan->id) }}" method="POST">
+                                    @csrf
+                                    <div class="form-group mb-3">
+                                        <label for="tanggapan_admin" class="form-label fw-bold">
+                                            <i class="bi bi-pencil-square"></i> Berikan Tanggapan
+                                        </label>
+                                        <textarea name="tanggapan_admin" id="tanggapan_admin"
+                                            class="form-control @error('tanggapan_admin') is-invalid @enderror" rows="6"
+                                            placeholder="Tuliskan tanggapan atau tindak lanjut yang telah dilakukan..." required></textarea>
+                                        @error('tanggapan_admin')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+
+                                    <div class="d-flex justify-content-end gap-2">
+                                        <button type="submit" class="btn btn-verify-action btn-approve">
+                                            <i class="bi bi-send-fill"></i> Kirim Tanggapan
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        @endif
+
+                        <!-- Tampilan Tanggapan Admin (untuk pelapor) -->
+                        @if($pengaduan->status === 'tanggapan_pelapor' && $pengaduan->tanggapan_admin && auth()->id() === $pengaduan->user_id)
+                            <!-- <div class="tanggapan-display mb-4">
+                                                                                    <h6 class="fw-bold text-success mb-3">
+                                                                                        <i class="bi bi-chat-left-text-fill"></i> Tanggapan dari {{ $pengaduan->roleBidang->nama_role }}
+                                                                                    </h6>
+                                                                                    <div class="tanggapan-box">
+                                                                                        <div class="tanggapan-meta">
+                                                                                            <i class="bi bi-person-badge-fill text-primary"></i>
+                                                                                            <strong>{{ $pengaduan->tanggapanAdminBy->name ?? 'Pihak Berwenang' }}</strong>
+                                                                                            <span class="ms-2 text-muted">{{ $pengaduan->tanggapan_admin_at ? $pengaduan->tanggapan_admin_at->format('d M Y, H:i') : '-' }}</span>
+                                                                                        </div>
+                                                                                        <div class="tanggapan-text">
+                                                                                            {{ $pengaduan->tanggapan_admin }}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div> -->
+
+                            <!-- Form Tanggapan Pelapor -->
+                            <!-- <div class="tanggapan-form-section">
+                                                                                    <div class="alert alert-warning">
+                                                                                        <i class="bi bi-question-circle-fill"></i>
+                                                                                        Apakah Anda puas dengan tanggapan yang diberikan?
+                                                                                    </div>
+
+                                                                                    <form action="{{ route('pengaduan.tanggapanPelapor', $pengaduan->id) }}" method="POST">
+                                                                                        @csrf
+
+                                                                                        <div class="form-group mb-3">
+                                                                                            <label class="form-label fw-bold">Status Kepuasan</label>
+                                                                                            <div class="btn-group w-100" role="group">
+                                                                                                <input type="radio" class="btn-check" name="status_kepuasan" id="puas" value="puas" required>
+                                                                                                <label class="btn btn-outline-success" for="puas">
+                                                                                                    <i class="bi bi-hand-thumbs-up"></i> Puas & Selesai
+                                                                                                </label>
+
+                                                                                                <input type="radio" class="btn-check" name="status_kepuasan" id="tidak_puas" value="tidak_puas"
+                                                                                                    required>
+                                                                                                <label class="btn btn-outline-danger" for="tidak_puas">
+                                                                                                    <i class="bi bi-hand-thumbs-down"></i> Tidak Puas & Perlu Ditindaklanjuti
+                                                                                                </label>
+                                                                                            </div>
+                                                                                        </div>
+
+                                                                                        <div class="form-group mb-3" id="tanggapan_pelapor_wrapper" style="display: none;">
+                                                                                            <label for="tanggapan_pelapor" class="form-label fw-bold">
+                                                                                                <i class="bi bi-chat-right-text"></i> Tanggapan Anda (Wajib jika tidak puas)
+                                                                                            </label>
+                                                                                            <textarea name="tanggapan_pelapor" id="tanggapan_pelapor"
+                                                                                                class="form-control @error('tanggapan_pelapor') is-invalid @enderror" rows="5"
+                                                                                                placeholder="Jelaskan alasan Anda tidak puas atau tambahan yang perlu ditindaklanjuti..."></textarea>
+                                                                                            @error('tanggapan_pelapor')
+                                                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                                                            @enderror
+                                                                                        </div>
+
+                                                                                        <div class="d-flex justify-content-end gap-2">
+                                                                                            <button type="submit" class="btn btn-verify-action btn-approve">
+                                                                                                <i class="bi bi-send-check-fill"></i> Kirim Tanggapan
+                                                                                            </button>
+                                                                                        </div>
+                                                                                    </form>
+                                                                                </div> -->
+
+                            <script>
+                                // Toggle textarea tanggapan pelapor
+                                document.querySelectorAll('input[name="status_kepuasan"]').forEach(radio => {
+                                    radio.addEventListener('change', function () {
+                                        const wrapper = document.getElementById('tanggapan_pelapor_wrapper');
+                                        const textarea = document.getElementById('tanggapan_pelapor');
+
+                                        if (this.value === 'tidak_puas') {
+                                            wrapper.style.display = 'block';
+                                            textarea.setAttribute('required', 'required');
+                                        } else {
+                                            wrapper.style.display = 'none';
+                                            textarea.removeAttribute('required');
+                                            textarea.value = '';
+                                        }
+                                    });
+                                });
+                            </script>
+                        @endif
+
+                        <!-- Tampilan Selesai -->
+                        @if($pengaduan->status === 'selesai')
+                            <div class="alert alert-success">
+                                <i class="bi bi-check-circle-fill"></i>
+                                <strong>Pengaduan Selesai</strong><br>
+                                @if($pengaduan->status_kepuasan === 'puas')
+                                    Pelapor telah menyatakan puas dengan tanggapan yang diberikan.
+                                @else
+                                    Pengaduan telah diselesaikan.
+                                @endif
+                            </div>
+                        @endif
                     </div>
 
-                    <!-- History Tanggapan -->
-                    @if($pengaduan->history_tanggapan && count($pengaduan->history_tanggapan) > 0)
-                        <div class="history-tanggapan mb-4">
-                            <h6 class="fw-bold text-primary mb-3">Riwayat Komunikasi</h6>
-                            @foreach($pengaduan->history_tanggapan as $history)
-                                <div class="tanggapan-item {{ $history['type'] === 'admin' ? 'from-admin' : 'from-pelapor' }}">
-                                    <div class="tanggapan-header">
-                                        <i class="bi {{ $history['type'] === 'admin' ? 'bi-person-badge-fill' : 'bi-person-fill' }}"></i>
-                                        <strong>{{ $history['type'] === 'admin' ? 'Pihak Berwenang' : 'Pelapor' }}</strong>
-                                        <span
-                                            class="text-muted ms-2">{{ \Carbon\Carbon::parse($history['created_at'])->format('d M Y, H:i') }}</span>
-                                    </div>
-                                    <div class="tanggapan-content">
-                                        {{ $history['content'] }}
-                                    </div>
-                                </div>
-                            @endforeach
-                        </div>
-                    @endif
+                    <style>
+                        .history-tanggapan {
+                            max-height: 500px;
+                            overflow-y: auto;
+                            padding-right: 10px;
+                        }
 
-                    <!-- Form Tanggapan Admin (untuk status tindak_lanjut) -->
-                    @if($pengaduan->status === 'tindak_lanjut' && auth()->user()->role_bidang_id === $pengaduan->role_bidang_id || auth()->user()->role === 'admin')
-                        <div class="tanggapan-form-section">
-                            <div class="alert alert-info">
-                                <i class="bi bi-info-circle-fill"></i>
-                                Pengaduan ini memerlukan tanggapan dari Anda sebagai
-                                <strong>{{ $pengaduan->roleBidang->nama_role }}</strong>.
-                            </div>
+                        .tanggapan-item {
+                            background: #f8f9fa;
+                            border-left: 4px solid #6c757d;
+                            border-radius: 12px;
+                            padding: 15px 20px;
+                            margin-bottom: 15px;
+                            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+                        }
 
-                            <form action="{{ route('pengaduan.tanggapanAdmin', $pengaduan->id) }}" method="POST">
-                                @csrf
-                                <div class="form-group mb-3">
-                                    <label for="tanggapan_admin" class="form-label fw-bold">
-                                        <i class="bi bi-pencil-square"></i> Berikan Tanggapan
-                                    </label>
-                                    <textarea name="tanggapan_admin" id="tanggapan_admin"
-                                        class="form-control @error('tanggapan_admin') is-invalid @enderror" rows="6"
-                                        placeholder="Tuliskan tanggapan atau tindak lanjut yang telah dilakukan..." required></textarea>
-                                    @error('tanggapan_admin')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
+                        .tanggapan-item.from-admin {
+                            border-left-color: #0d6efd;
+                            background: linear-gradient(135deg, #e7f1ff, #f8f9fa);
+                        }
 
-                                <div class="d-flex justify-content-end gap-2">
-                                    <button type="submit" class="btn btn-verify-action btn-approve">
-                                        <i class="bi bi-send-fill"></i> Kirim Tanggapan
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-                    @endif
+                        .tanggapan-item.from-pelapor {
+                            border-left-color: #198754;
+                            background: linear-gradient(135deg, #d4edda, #f8f9fa);
+                        }
 
-                    <!-- Tampilan Tanggapan Admin (untuk pelapor) -->
-                    @if($pengaduan->status === 'tanggapan_pelapor' && $pengaduan->tanggapan_admin && auth()->id() === $pengaduan->user_id)
-                        <!-- <div class="tanggapan-display mb-4">
-                            <h6 class="fw-bold text-success mb-3">
-                                <i class="bi bi-chat-left-text-fill"></i> Tanggapan dari {{ $pengaduan->roleBidang->nama_role }}
-                            </h6>
-                            <div class="tanggapan-box">
-                                <div class="tanggapan-meta">
-                                    <i class="bi bi-person-badge-fill text-primary"></i>
-                                    <strong>{{ $pengaduan->tanggapanAdminBy->name ?? 'Pihak Berwenang' }}</strong>
-                                    <span class="ms-2 text-muted">{{ $pengaduan->tanggapan_admin_at ? $pengaduan->tanggapan_admin_at->format('d M Y, H:i') : '-' }}</span>
-                                </div>
-                                <div class="tanggapan-text">
-                                    {{ $pengaduan->tanggapan_admin }}
-                                </div>
-                            </div>
-                        </div> -->
+                        .tanggapan-header {
+                            display: flex;
+                            align-items: center;
+                            gap: 8px;
+                            margin-bottom: 10px;
+                            color: #495057;
+                        }
 
-                        <!-- Form Tanggapan Pelapor -->
-                        <!-- <div class="tanggapan-form-section">
-                            <div class="alert alert-warning">
-                                <i class="bi bi-question-circle-fill"></i>
-                                Apakah Anda puas dengan tanggapan yang diberikan?
-                            </div>
+                        .tanggapan-content {
+                            color: #212529;
+                            line-height: 1.6;
+                            padding-left: 28px;
+                        }
 
-                            <form action="{{ route('pengaduan.tanggapanPelapor', $pengaduan->id) }}" method="POST">
-                                @csrf
+                        .tanggapan-form-section {
+                            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+                            border: 2px solid #ffc107;
+                            border-radius: 15px;
+                            padding: 25px;
+                            margin-top: 20px;
+                        }
 
-                                <div class="form-group mb-3">
-                                    <label class="form-label fw-bold">Status Kepuasan</label>
-                                    <div class="btn-group w-100" role="group">
-                                        <input type="radio" class="btn-check" name="status_kepuasan" id="puas" value="puas" required>
-                                        <label class="btn btn-outline-success" for="puas">
-                                            <i class="bi bi-hand-thumbs-up"></i> Puas & Selesai
-                                        </label>
+                        .tanggapan-box {
+                            background: white;
+                            border: 2px solid #e9ecef;
+                            border-radius: 12px;
+                            padding: 20px;
+                            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+                        }
 
-                                        <input type="radio" class="btn-check" name="status_kepuasan" id="tidak_puas" value="tidak_puas"
-                                            required>
-                                        <label class="btn btn-outline-danger" for="tidak_puas">
-                                            <i class="bi bi-hand-thumbs-down"></i> Tidak Puas & Perlu Ditindaklanjuti
-                                        </label>
-                                    </div>
-                                </div>
+                        .tanggapan-meta {
+                            display: flex;
+                            align-items: center;
+                            gap: 8px;
+                            margin-bottom: 15px;
+                            padding-bottom: 12px;
+                            border-bottom: 2px solid #e9ecef;
+                        }
 
-                                <div class="form-group mb-3" id="tanggapan_pelapor_wrapper" style="display: none;">
-                                    <label for="tanggapan_pelapor" class="form-label fw-bold">
-                                        <i class="bi bi-chat-right-text"></i> Tanggapan Anda (Wajib jika tidak puas)
-                                    </label>
-                                    <textarea name="tanggapan_pelapor" id="tanggapan_pelapor"
-                                        class="form-control @error('tanggapan_pelapor') is-invalid @enderror" rows="5"
-                                        placeholder="Jelaskan alasan Anda tidak puas atau tambahan yang perlu ditindaklanjuti..."></textarea>
-                                    @error('tanggapan_pelapor')
-                                        <div class="invalid-feedback">{{ $message }}</div>
-                                    @enderror
-                                </div>
+                        .tanggapan-text {
+                            color: #212529;
+                            line-height: 1.8;
+                        }
 
-                                <div class="d-flex justify-content-end gap-2">
-                                    <button type="submit" class="btn btn-verify-action btn-approve">
-                                        <i class="bi bi-send-check-fill"></i> Kirim Tanggapan
-                                    </button>
-                                </div>
-                            </form>
-                        </div> -->
-
-                        <script>
-                            // Toggle textarea tanggapan pelapor
-                            document.querySelectorAll('input[name="status_kepuasan"]').forEach(radio => {
-                                radio.addEventListener('change', function () {
-                                    const wrapper = document.getElementById('tanggapan_pelapor_wrapper');
-                                    const textarea = document.getElementById('tanggapan_pelapor');
-
-                                    if (this.value === 'tidak_puas') {
-                                        wrapper.style.display = 'block';
-                                        textarea.setAttribute('required', 'required');
-                                    } else {
-                                        wrapper.style.display = 'none';
-                                        textarea.removeAttribute('required');
-                                        textarea.value = '';
-                                    }
-                                });
-                            });
-                        </script>
-                    @endif
-
-                    <!-- Tampilan Selesai -->
-                    @if($pengaduan->status === 'selesai')
-                        <div class="alert alert-success">
-                            <i class="bi bi-check-circle-fill"></i>
-                            <strong>Pengaduan Selesai</strong><br>
-                            @if($pengaduan->status_kepuasan === 'puas')
-                                Pelapor telah menyatakan puas dengan tanggapan yang diberikan.
-                            @else
-                                Pengaduan telah diselesaikan.
-                            @endif
-                        </div>
-                    @endif
-                </div>
-
-                <style>
-                    .history-tanggapan {
-                        max-height: 500px;
-                        overflow-y: auto;
-                        padding-right: 10px;
-                    }
-
-                    .tanggapan-item {
-                        background: #f8f9fa;
-                        border-left: 4px solid #6c757d;
-                        border-radius: 12px;
-                        padding: 15px 20px;
-                        margin-bottom: 15px;
-                        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-                    }
-
-                    .tanggapan-item.from-admin {
-                        border-left-color: #0d6efd;
-                        background: linear-gradient(135deg, #e7f1ff, #f8f9fa);
-                    }
-
-                    .tanggapan-item.from-pelapor {
-                        border-left-color: #198754;
-                        background: linear-gradient(135deg, #d4edda, #f8f9fa);
-                    }
-
-                    .tanggapan-header {
-                        display: flex;
-                        align-items: center;
-                        gap: 8px;
-                        margin-bottom: 10px;
-                        color: #495057;
-                    }
-
-                    .tanggapan-content {
-                        color: #212529;
-                        line-height: 1.6;
-                        padding-left: 28px;
-                    }
-
-                    .tanggapan-form-section {
-                        background: linear-gradient(135deg, #fff3cd, #ffeaa7);
-                        border: 2px solid #ffc107;
-                        border-radius: 15px;
-                        padding: 25px;
-                        margin-top: 20px;
-                    }
-
-                    .tanggapan-box {
-                        background: white;
-                        border: 2px solid #e9ecef;
-                        border-radius: 12px;
-                        padding: 20px;
-                        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-                    }
-
-                    .tanggapan-meta {
-                        display: flex;
-                        align-items: center;
-                        gap: 8px;
-                        margin-bottom: 15px;
-                        padding-bottom: 12px;
-                        border-bottom: 2px solid #e9ecef;
-                    }
-
-                    .tanggapan-text {
-                        color: #212529;
-                        line-height: 1.8;
-                    }
-
-                    .btn-group label {
-                        padding: 12px 20px;
-                        font-weight: 600;
-                    }
-                </style>
+                        .btn-group label {
+                            padding: 12px 20px;
+                            font-weight: 600;
+                        }
+                    </style>
+                @endif
             @endif
 
         <!-- <div style="text-align: center; padding: 20px;">
-            <span
-                class="status-badge 
-                                                                                                                                                                            @if($pengaduan->status == 'selesai') status-selesai
-                                                                                                                                                                            @elseif($pengaduan->status == 'tindak_lanjut') status-tindak
-                                                                                                                                                                            @elseif($pengaduan->status == 'diverifikasi') status-verifikasi
-                                                                                                                                                                            @elseif($pengaduan->status == 'tanggapan_pelapor') status-tanggapan
-                                                                                                                                                                            @else status-laporan
-                                                                                                                                                                            @endif">
-                <i class="bi bi-circle-fill" style="font-size: 0.6rem;"></i>
-                {{ str_replace('_', ' ', $pengaduan->status) }}
-            </span>
-        </div> -->
+                        <span
+                            class="status-badge 
+                                                                                                                                                                                        @if($pengaduan->status == 'selesai') status-selesai
+                                                                                                                                                                                        @elseif($pengaduan->status == 'tindak_lanjut') status-tindak
+                                                                                                                                                                                        @elseif($pengaduan->status == 'diverifikasi') status-verifikasi
+                                                                                                                                                                                        @elseif($pengaduan->status == 'tanggapan_pelapor') status-tanggapan
+                                                                                                                                                                                        @else status-laporan
+                                                                                                                                                                                        @endif">
+                            <i class="bi bi-circle-fill" style="font-size: 0.6rem;"></i>
+                            {{ str_replace('_', ' ', $pengaduan->status) }}
+                        </span>
+                    </div> -->
 
         @if($pengaduan->status === 'diverifikasi' && auth()->user()->role === 'admin')
             <!-- Notes Section -->
@@ -2319,12 +2338,12 @@
                         icon: 'error',
                         title: 'Validasi Gagal',
                         html: `
-                                                                                                                                <ul style="text-align: left; padding-left: 20px;">
-                                                                                                                                    @foreach($errors->all() as $error)
-                                                                                                                                        <li>{{ $error }}</li>
-                                                                                                                                    @endforeach
-                                                                                                                                </ul>
-                                                                                                                            `,
+                                                                                                                                                                    <ul style="text-align: left; padding-left: 20px;">
+                                                                                                                                                                        @foreach($errors->all() as $error)
+                                                                                                                                                                            <li>{{ $error }}</li>
+                                                                                                                                                                        @endforeach
+                                                                                                                                                                    </ul>
+                                                                                                                                                                `,
                         confirmButtonText: 'OK',
                         confirmButtonColor: '#dc3545'
                     });

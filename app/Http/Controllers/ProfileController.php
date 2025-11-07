@@ -133,41 +133,43 @@ class ProfileController extends Controller
 
         $user = auth()->user();
 
-        // Hanya admin bisa verifikasi
+        // Hanya admin yang boleh aktivasi
         if ($user->role !== 'admin') {
             return response()->json([
                 'success' => false,
-                'message' => 'Anda tidak memiliki akses untuk memverifikasi kode.',
+                'message' => 'Anda tidak memiliki akses untuk memverifikasi kode ini.',
             ], 403);
         }
 
         $code = trim($request->input('code'));
-
-        // Cari pendaftar berdasarkan kode
         $pendaftar = \App\Models\User::where('pegawai_code', $code)->first();
 
+        // Jika kode tidak ditemukan
         if (!$pendaftar) {
             return response()->json([
                 'success' => false,
-                'message' => 'Kode verifikasi tidak ditemukan.',
+                'message' => 'Kode pendaftar tidak ditemukan.',
             ], 404);
         }
 
-        // Cek apakah sudah diverifikasi
-        if ($pendaftar->role === 'pendaftar') {
+        // Cek apakah pegawai_role memiliki pasangan di tabel role_bidang
+        $roleBidang = \App\Models\RoleBidang::where('nama_role', 'LIKE', '%' . $pendaftar->pegawai_role . '%')->first();
+
+        if (!$roleBidang) {
             return response()->json([
                 'success' => false,
-                'message' => 'Kode ini sudah diverifikasi sebelumnya.',
+                'message' => 'Gagal Aktivasi: Role bidang tidak ditemukan untuk pendaftar ini (' . $pendaftar->pegawai_role . ').',
             ], 400);
         }
 
-        // Update role/akses pendaftar
-        $pendaftar->role = 'pendaftar';
+        // Jika ditemukan, update role pendaftar
+        $pendaftar->role = $roleBidang->nama_role;
         $pendaftar->save();
 
         return response()->json([
             'success' => true,
-            'message' => 'Verifikasi berhasil! Akses pendaftar telah diaktifkan.',
+            'message' => 'Aktivasi berhasil! Role pendaftar sekarang: ' . $roleBidang->nama_role,
         ], 200);
     }
+
 }

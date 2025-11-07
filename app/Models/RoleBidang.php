@@ -15,6 +15,7 @@ class RoleBidang extends Model
         'nama_role',
         'deskripsi',
         'is_active',
+        'can_view_pengaduan',
     ];
 
     protected $casts = [

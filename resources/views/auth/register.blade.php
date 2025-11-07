@@ -2,9 +2,10 @@
 <html lang="id">
 <style>
     body {
-                   overflow-x: hidden;
-        }
+        overflow-x: hidden;
+    }
 </style>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -640,16 +641,18 @@
                             <div class="radio-content">Pegawai Polije</div>
                             <div class="check-icon"></div>
                         </label>
-                        <div class="role-dropdown d-none" id="pegawaiRoleBox">
-                            <select name="pegawai_role" id="pegawaiRole" class="form-control">
-                                <option value="" disabled selected>-- Pilih Jabatan / Role --</option>
-                                <option value="pimpinan">Pimpinan</option>
-                                <option value="pejabat">Pejabat yang Ditunjuk</option>
-                                <option value="pegawai">Pegawai</option>
-                                <option value="admin">Admin</option>
-                                <option value="pengawas">Pengawas</option>
+                        @if(!empty($roleBidangs) && $roleBidangs->isNotEmpty())
+                            <select name="role_bidang_id" required class="form-select">
+                                <option value="">-- Pilih Role Bidang --</option>
+                                @foreach($roleBidangs as $role)
+                                    <option value="{{ $role->id }}">{{ $role->nama_role }}</option>
+                                @endforeach
                             </select>
-                        </div>
+                        @else
+                            <p class="text-danger">Belum ada Role Bidang aktif di sistem.</p>
+                        @endif
+
+
                         <label class="radio-card" for="whistleblower">
                             <input type="radio" name="user_type" id="whistleblower" value="whistleblower">
                             <div class="radio-content">Whistleblower</div>

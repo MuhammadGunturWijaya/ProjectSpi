@@ -28,18 +28,17 @@ class RoleBidangController extends Controller
             'nama_role' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
             'is_active' => 'nullable|boolean',
+            'can_view_pengaduan' => 'nullable|boolean',
         ]);
 
         $validated['is_active'] = $request->has('is_active');
+        $validated['can_view_pengaduan'] = $request->has('can_view_pengaduan');
 
         RoleBidang::create($validated);
 
         return redirect()->back()->with('success', 'Role bidang berhasil ditambahkan!');
     }
 
-    /**
-     * Update role.
-     */
     public function update(Request $request, $id)
     {
         $role = RoleBidang::findOrFail($id);
@@ -48,14 +47,17 @@ class RoleBidangController extends Controller
             'nama_role' => 'required|string|max:255',
             'deskripsi' => 'nullable|string',
             'is_active' => 'nullable|boolean',
+            'can_view_pengaduan' => 'nullable|boolean',
         ]);
 
         $validated['is_active'] = $request->has('is_active');
+        $validated['can_view_pengaduan'] = $request->has('can_view_pengaduan');
 
         $role->update($validated);
 
         return redirect()->back()->with('success', 'Role bidang berhasil diperbarui!');
     }
+
 
     /**
      * Hapus role.
@@ -78,5 +80,15 @@ class RoleBidangController extends Controller
         $role->save();
 
         return redirect()->back()->with('success', 'Status role berhasil diperbarui!');
+    }
+
+    public function create()
+    {
+        // Ambil semua role bidang yang aktif
+        $roles = RoleBidang::where('is_active', true)
+            ->orderBy('nama_role', 'asc')
+            ->get();
+
+        return view('auth.register', compact('roles'));
     }
 }

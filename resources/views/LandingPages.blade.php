@@ -1090,12 +1090,31 @@
                 </button>
             @endauth
 
-            @if(Auth::user()?->role === 'admin')
+            @php
+                use App\Models\RoleBidang;
+
+                $canView = false;
+
+                if (Auth::check()) {
+                    $userRoleName = Auth::user()->role;
+
+                    // Admin selalu bisa lihat semua
+                    if ($userRoleName === 'admin') {
+                        $canView = true;
+                    } else {
+                        $userRole = RoleBidang::where('nama_role', $userRoleName)->first();
+                        $canView = $userRole && $userRole->can_view_pengaduan;
+                    }
+                }
+            @endphp
+
+            @if($canView)
                 <a href="{{ route('pengaduan.index') }}" class="btn-report ms-3"
                     style="background: white; color: var(--primary);">
                     <i class="bi bi-list-check me-2"></i>Lihat Pengaduan
                 </a>
             @endif
+
         </div>
     </section>
 

@@ -128,7 +128,7 @@ Route::post('/pengaduan', [PengaduanController::class, 'store'])->name('pengadua
 Route::get('/pengaduan/{id}', [PengaduanController::class, 'show'])->name('pengaduan.show'); // semua user
 
 // Route admin (harus login & role admin)
-Route::middleware(['auth', IsAdmin::class])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('/admin/pengaduan', [PengaduanController::class, 'index'])->name('pengaduan.index');
     Route::delete('/admin/pengaduan/{id}', [PengaduanController::class, 'destroy'])->name('pengaduan.destroy');
     Route::patch('/admin/pengaduan/{id}/update-status', [PengaduanController::class, 'updateStatus'])->name('pengaduan.updateStatus');
@@ -798,3 +798,5 @@ Route::post('/pengaduan/{id}/tanggapan-pelapor', [PengaduanController::class, 's
     ->name('pengaduan.tanggapanPelapor');
 Route::get('/pengaduan/{id}/tanggapan', [PengaduanController::class, 'viewTanggapan'])
     ->name('pengaduan.tanggapan');
+
+

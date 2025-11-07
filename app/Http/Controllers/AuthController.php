@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User; // model user bawaan laravel
 use Illuminate\Support\Facades\Hash;
+use App\Models\RoleBidang;
 
 class AuthController extends Controller
 {
@@ -47,23 +48,36 @@ class AuthController extends Controller
     // Menampilkan form register
     public function showRegisterForm()
     {
-        return view('auth.register'); // file: resources/views/auth/register.blade.php
+        // Ambil hanya Role Bidang aktif
+        $roleBidangs = RoleBidang::where('is_active', true)->get();
+
+        // Debug sementara
+        // dd($roleBidangs);
+
+        return view('auth.register', compact('roleBidangs'));
     }
+
+
+
+
 
     // Proses daftar akun
     public function register(Request $request)
     {
         $request->validate([
+            'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6|confirmed',
+            'role_bidang_id' => 'required|exists:role_bidang,id', // pastikan tabel benar
         ]);
 
-        // Generate kode hanya untuk pegawai
-        $pegawaiCode = null;
-        if ($request->user_type === 'pegawai') {
-            $pegawaiCode = rand(100000, 999999); // kode 6 digit
-        }
+        // Ambil data role bidang yang dipilih
+        $roleBidang = \App\Models\RoleBidang::find($request->role_bidang_id);
 
+        // Generate kode hanya untuk pegawai
+        $pegawaiCode = $request->user_type === 'pegawai' ? rand(100000, 999999) : null;
+
+        // Buat user baru
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -72,17 +86,19 @@ class AuthController extends Controller
             'phone' => $request->phone,
             'address' => $request->address,
             'user_type' => $request->user_type,
-            'pegawai_role' => $request->pegawai_role,
+            'pegawai_role' => $roleBidang->nama_role, // otomatis dari role_bidang
+            'role_bidang_id' => $roleBidang->id,       // ✅ simpan id role bidang juga
             'gender' => $request->gender,
             'disability' => $request->disability,
             'disability_type' => $request->disability_type,
             'pegawai_code' => $pegawaiCode,
         ]);
 
-        // redirect ke login + kirim kode ke session
-        return redirect('/login')->with('success', 'Registrasi berhasil, silakan login!')
+        return redirect('/login')
+            ->with('success', 'Registrasi berhasil, silakan login!')
             ->with('pegawai_code', $pegawaiCode);
     }
+
 
 
     // Logout

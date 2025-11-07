@@ -320,6 +320,7 @@
                             <th width="25%">Nama Role</th>
                             <th width="35%">Deskripsi</th>
                             <th width="10%">Status</th>
+                            <th width="20%">Akses Fitur</th>
                             <th width="15%">Aksi</th>
                         </tr>
                     </thead>
@@ -329,11 +330,21 @@
                                 <td>{{ $index + 1 }}</td>
                                 <td><strong>{{ $role->nama_role }}</strong></td>
                                 <td>{{ $role->deskripsi ?? '-' }}</td>
+
+                                <!-- Status Aktif -->
                                 <td>
                                     <span class="badge-{{ $role->is_active ? 'active' : 'inactive' }}">
                                         {{ $role->is_active ? 'Aktif' : 'Nonaktif' }}
                                     </span>
                                 </td>
+
+                                <!-- Bisa Lihat Pengaduan -->
+                                <td>
+                                    <span class="badge-{{ $role->can_view_pengaduan ? 'active' : 'inactive' }}">
+                                        {{ $role->can_view_pengaduan ? 'Bisa' : 'Tidak Bisa' }}
+                                    </span>
+                                </td>
+
                                 <td>
                                     <!-- Tombol Edit -->
                                     <button class="btn-action btn-edit" data-bs-toggle="modal"
@@ -341,7 +352,7 @@
                                         <i class="bi bi-pencil-fill"></i>
                                     </button>
 
-                                    <!-- Tombol Toggle -->
+                                    <!-- Tombol Toggle Status Aktif
                                     <form action="{{ route('admin.roleBidang.toggleStatus', $role->id) }}" method="POST"
                                         style="display:inline;">
                                         @csrf
@@ -349,8 +360,7 @@
                                         <button type="submit" class="btn-action btn-toggle">
                                             <i class="bi bi-{{ $role->is_active ? 'toggle-on' : 'toggle-off' }}"></i>
                                         </button>
-                                    </form>
-
+                                    </form> -->
 
                                     <!-- Tombol Hapus -->
                                     <button class="btn-action btn-delete" data-bs-toggle="modal"
@@ -360,41 +370,61 @@
                                 </td>
                             </tr>
 
+
                             <!-- Modal Edit Role -->
-                            <div class="modal fade" id="editRoleModal{{ $role->id }}" tabindex="-1">
+                            <!-- Modal Edit Role -->
+                            <div class="modal fade" id="editRoleModal{{ $role->id }}" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title"><i class="bi bi-pencil-square"></i> Edit Role</h5>
+                                        <div class="modal-header bg-primary text-white">
+                                            <h5 class="modal-title"><i class="bi bi-pencil-square me-2"></i>Edit Role</h5>
                                             <button type="button" class="btn-close btn-close-white"
                                                 data-bs-dismiss="modal"></button>
                                         </div>
+
                                         <form action="{{ route('admin.roleBidang.update', $role->id) }}" method="POST">
                                             @csrf
                                             @method('PUT')
+
                                             <div class="modal-body">
                                                 <div class="mb-3">
-                                                    <label class="form-label">Nama Role *</label>
+                                                    <label class="form-label fw-semibold">Nama Role *</label>
                                                     <input type="text" name="nama_role" class="form-control"
                                                         value="{{ $role->nama_role }}" required>
                                                 </div>
+
                                                 <div class="mb-3">
-                                                    <label class="form-label">Deskripsi</label>
-                                                    <textarea name="deskripsi" class="form-control"
-                                                        rows="3">{{ $role->deskripsi }}</textarea>
+                                                    <label class="form-label fw-semibold">Deskripsi</label>
+                                                    <textarea name="deskripsi" class="form-control" rows="3"
+                                                        placeholder="Deskripsi singkat role ini">{{ $role->deskripsi }}</textarea>
                                                 </div>
-                                                <div class="mb-3">
-                                                    <div class="form-check form-switch">
-                                                        <input class="form-check-input" type="checkbox" name="is_active"
-                                                            value="1" {{ $role->is_active ? 'checked' : '' }}>
-                                                        <label class="form-check-label">Status Aktif</label>
-                                                    </div>
+
+                                                <div class="form-check form-switch mb-3">
+                                                    <input class="form-check-input" type="checkbox" name="is_active"
+                                                        value="1" id="is_active_edit_{{ $role->id }}" {{ $role->is_active ? 'checked' : '' }}>
+                                                    <label class="form-check-label" for="is_active_edit_{{ $role->id }}">
+                                                        Status Aktif
+                                                    </label>
+                                                </div>
+
+                                                <div class="form-check form-switch">
+                                                    <input class="form-check-input" type="checkbox"
+                                                        name="can_view_pengaduan" value="1"
+                                                        id="can_view_pengaduan_edit_{{ $role->id }}" {{ $role->can_view_pengaduan ? 'checked' : '' }}>
+                                                    <label class="form-check-label"
+                                                        for="can_view_pengaduan_edit_{{ $role->id }}">
+                                                        Bisa Lihat Pengaduan
+                                                    </label>
                                                 </div>
                                             </div>
+
                                             <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary"
-                                                    data-bs-dismiss="modal">Batal</button>
-                                                <button type="submit" class="btn btn-primary">Update</button>
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                    Batal
+                                                </button>
+                                                <button type="submit" class="btn btn-primary">
+                                                    <i class="bi bi-save me-1"></i>Update
+                                                </button>
                                             </div>
                                         </form>
                                     </div>
@@ -402,13 +432,13 @@
                             </div>
 
                             <!-- Modal Hapus Role -->
-                            <div class="modal fade" id="deleteRoleModal{{ $role->id }}" tabindex="-1">
+                            <div class="modal fade" id="deleteRoleModal{{ $role->id }}" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog">
                                     <div class="modal-content">
                                         <div class="modal-header bg-danger text-white">
-                                            <h5 class="modal-title"><i class="bi bi-exclamation-triangle-fill"></i>
-                                                Konfirmasi
-                                                Hapus</h5>
+                                            <h5 class="modal-title">
+                                                <i class="bi bi-exclamation-triangle-fill me-2"></i>Konfirmasi Hapus
+                                            </h5>
                                             <button type="button" class="btn-close btn-close-white"
                                                 data-bs-dismiss="modal"></button>
                                         </div>
@@ -421,15 +451,18 @@
                                             <button type="button" class="btn btn-secondary"
                                                 data-bs-dismiss="modal">Batal</button>
                                             <form action="{{ route('admin.roleBidang.destroy', $role->id) }}" method="POST"
-                                                style="display:inline;">
+                                                class="d-inline">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="btn btn-danger">Hapus</button>
+                                                <button type="submit" class="btn btn-danger">
+                                                    <i class="bi bi-trash me-1"></i>Hapus
+                                                </button>
                                             </form>
                                         </div>
                                     </div>
                                 </div>
                             </div>
+
                         @empty
                             <tr>
                                 <td colspan="5">
@@ -442,53 +475,68 @@
                         @endforelse
                     </tbody>
                 </table>
-            </div>
-        </div>
-           <div class="text-center">
-                <a href="{{ route('pengaduan.index') }}" class="btn-back">
-                    <i class="bi bi-arrow-left-circle"></i> Kembali ke Daftar Pengaduan
-                </a>
-            </div>
 
-        <!-- Modal Tambah Role -->
-        <div class="modal fade" id="addRoleModal" tabindex="-1">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title"><i class="bi bi-plus-circle-fill"></i> Tambah Role Baru</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                    </div>
-                    <form action="{{ route('admin.roleBidang.store') }}" method="POST">
-                        @csrf
-                        <div class="modal-body">
-                            <div class="mb-3">
-                                <label class="form-label">Nama Role *</label>
-                                <input type="text" name="nama_role" class="form-control"
-                                    placeholder="Contoh: Admin Bidang" required>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label">Deskripsi</label>
-                                <textarea name="deskripsi" class="form-control" rows="3"
-                                    placeholder="Deskripsi singkat role ini"></textarea>
-                            </div>
-                            <div class="mb-3">
-                                <div class="form-check form-switch">
-                                    <input class="form-check-input" type="checkbox" name="is_active" value="1" checked>
-                                    <label class="form-check-label">Status Aktif</label>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-primary">Simpan</button>
-                        </div>
-                    </form>
+                <!-- Tombol Kembali -->
+                <div class="text-center mt-3">
+                    <a href="{{ route('pengaduan.index') }}" class="btn-back">
+                        <i class="bi bi-arrow-left-circle me-1"></i> Kembali ke Daftar Pengaduan
+                    </a>
                 </div>
-            </div>
-        </div>
+
+                <!-- Modal Tambah Role -->
+                <div class="modal fade" id="addRoleModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header bg-success text-white">
+                                <h5 class="modal-title"><i class="bi bi-plus-circle-fill me-2"></i>Tambah Role Baru</h5>
+                                <button type="button" class="btn-close btn-close-white"
+                                    data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <form action="{{ route('admin.roleBidang.store') }}" method="POST">
+                                @csrf
+                                <div class="modal-body">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">Nama Role *</label>
+                                        <input type="text" name="nama_role" class="form-control"
+                                            placeholder="Contoh: Admin Bidang" required>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="form-label fw-semibold">Deskripsi</label>
+                                        <textarea name="deskripsi" class="form-control" rows="3"
+                                            placeholder="Deskripsi singkat role ini"></textarea>
+                                    </div>
+
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" name="is_active"
+                                            id="is_active_add" value="1" checked>
+                                        <label class="form-check-label" for="is_active_add">Status Aktif</label>
+                                    </div>
+
+                                    <div class="form-check form-switch">
+                                        <input class="form-check-input" type="checkbox" name="can_view_pengaduan"
+                                            id="can_view_pengaduan_add" value="1">
+                                        <label class="form-check-label" for="can_view_pengaduan_add">Bisa Lihat
+                                            Pengaduan</label>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary"
+                                        data-bs-dismiss="modal">Batal</button>
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="bi bi-save me-1"></i>Simpan
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
 
 
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+                <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>
