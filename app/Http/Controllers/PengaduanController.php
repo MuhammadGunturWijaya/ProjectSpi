@@ -13,34 +13,49 @@ use App\Models\RoleBidang;
 class PengaduanController extends Controller
 {
 
-    public function index()
+    public function index(Request $request)
     {
         $user = auth()->user();
 
+        // Base query
+        $query = Pengaduan::with(['bidangPengaduan', 'roleBidang']);
+
+        // Filter berdasarkan role
         if ($user->role === 'admin') {
             // Admin melihat semua
-            $pengaduans = Pengaduan::with(['bidangPengaduan', 'roleBidang'])
-                ->latest()
-                ->get();
         } else {
             // Ambil role bidang berdasarkan nama_role user
             $roleBidang = \App\Models\RoleBidang::where('nama_role', $user->role)->first();
 
             if ($roleBidang) {
                 // Hanya tampilkan pengaduan sesuai bidang & role yang menangani
-                $pengaduans = Pengaduan::with(['bidangPengaduan', 'roleBidang'])
-                    ->where(function ($query) use ($user, $roleBidang) {
-                        $query->where('user_id', $user->id)
-                            ->orWhere('bidang_id', $roleBidang->id)
-                            ->orWhere('role_bidang_id', $roleBidang->id);
-                    })
-                    ->latest()
-                    ->get();
+                $query->where(function ($q) use ($user, $roleBidang) {
+                    $q->where('user_id', $user->id)
+                        ->orWhere('bidang_id', $roleBidang->id)
+                        ->orWhere('role_bidang_id', $roleBidang->id);
+                });
             } else {
                 // Jika role bidang tidak ditemukan, tampilkan kosong
                 $pengaduans = collect();
+                return view('admin.pengaduanIndex', compact('pengaduans'));
             }
         }
+
+        // ✅ FITUR SEARCH - Filter berdasarkan input pencarian
+        if ($request->filled('kode_verifikasi')) {
+            $query->where('kode_verifikasi', 'like', '%' . $request->kode_verifikasi . '%');
+        }
+
+        if ($request->filled('kode_aduan')) {
+            $query->where('kode_aduan', 'like', '%' . $request->kode_aduan . '%');
+        }
+
+        if ($request->filled('perihal')) {
+            $query->where('perihal', 'like', '%' . $request->perihal . '%');
+        }
+
+        // Ambil hasil dengan sorting terbaru
+        $pengaduans = $query->latest()->get();
 
         return view('admin.pengaduanIndex', compact('pengaduans'));
     }
@@ -795,7 +810,7 @@ class PengaduanController extends Controller
         return view('pengaduan.tanggapan', compact('pengaduan'));
     }
 
-   
+
     public function storeTanggapan(Request $request, $id)
     {
         // Validasi input
