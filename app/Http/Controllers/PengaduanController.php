@@ -651,7 +651,7 @@ class PengaduanController extends Controller
         $user = auth()->user();
 
         // Admin bisa lihat semua
-      
+
         if ($user->role !== 'admin') {
             $roleBidang = \App\Models\RoleBidang::where('nama_role', $user->role)->first();
 
@@ -694,7 +694,7 @@ class PengaduanController extends Controller
         $user = auth()->user();
 
         // Debug sementara: tampilkan info user & pengaduan
-       
+
 
         // --- Validasi hak akses ---
         if ($user->role !== 'admin' && $user->role_bidang_id !== $pengaduan->role_bidang_id) {
@@ -793,6 +793,103 @@ class PengaduanController extends Controller
         }
 
         return view('pengaduan.tanggapan', compact('pengaduan'));
+    }
+
+   
+    public function storeTanggapan(Request $request, $id)
+    {
+        // Validasi input
+        $request->validate([
+            'status_kepuasan' => 'required|in:puas,tidak_puas',
+            'tanggapan_pelapor' => 'required_if:status_kepuasan,tidak_puas|nullable|string|min:10',
+        ], [
+            'status_kepuasan.required' => 'Status kepuasan wajib dipilih',
+            'tanggapan_pelapor.required_if' => 'Tanggapan wajib diisi jika Anda tidak puas',
+            'tanggapan_pelapor.min' => 'Tanggapan minimal 10 karakter',
+        ]);
+
+        // Cari laporan berdasarkan ID
+        $laporan = Pengaduan::findOrFail($id);
+
+        // Pastikan laporan milik user yang login
+        if ($laporan->user_id !== auth()->id()) {
+            return redirect()->back()->with('error', 'Anda tidak memiliki akses untuk menanggapi laporan ini.');
+        }
+
+        // Pastikan status laporan adalah 'tanggapan_pelapor'
+        if ($laporan->status !== 'tanggapan_pelapor') {
+            return redirect()->back()->with('error', 'Laporan ini tidak memerlukan tanggapan saat ini.');
+        }
+
+        // Simpan data tanggapan dan status kepuasan
+        $laporan->tanggapan_pelapor = $request->tanggapan_pelapor;
+        $laporan->status_kepuasan = $request->status_kepuasan;
+        $laporan->tanggapan_pelapor_at = now();
+
+        // Tentukan status berdasarkan kepuasan
+        if ($request->status_kepuasan === 'puas') {
+            // Jika puas, pengaduan selesai
+            $laporan->status = 'selesai';
+            $message = '✅ Terima kasih atas tanggapan Anda! Pengaduan ini telah **diselesaikan**.';
+
+            // Tambah ke history
+            $laporan->addTanggapanHistory('pelapor', 'Pelapor menyatakan PUAS dengan tanggapan', auth()->id());
+
+        } else {
+            // Jika tidak puas, kembali ke tindak lanjut
+            $laporan->status = 'tindak_lanjut';
+
+            // Reset tanggapan admin agar bisa ditanggapi ulang
+            $laporan->tanggapan_admin = null;
+            $laporan->tanggapan_admin_at = null;
+            $laporan->tanggapan_admin_by = null;
+
+            // Tambah ke history dengan tanggapan pelapor
+            $laporan->addTanggapanHistory('pelapor', $request->tanggapan_pelapor, auth()->id());
+
+            $message = '⚠️ Tanggapan Anda telah dikirim. Pengaduan akan **ditindaklanjuti kembali** oleh pihak berwenang.';
+        }
+
+        $laporan->save();
+
+        // Redirect ke halaman form pengaduan dengan pesan sukses
+        return redirect()->route('pengaduan.create')->with('success', $message);
+    }
+
+    /**
+     * Menampilkan halaman tanggapan (opsional, jika Anda ingin halaman terpisah)
+     */
+    public function showTanggapan($id)
+    {
+        $laporan = Pengaduan::with('roleBidang')->findOrFail($id);
+
+        // Pastikan laporan milik user yang login
+        if ($laporan->user_id !== auth()->id()) {
+            abort(403, 'Anda tidak memiliki akses untuk melihat tanggapan ini.');
+        }
+
+        return view('pengaduan.tanggapan', compact('laporan'));
+    }
+
+    /**
+     * Menampilkan halaman feedback untuk laporan yang ditolak
+     */
+    public function showFeedback($id)
+    {
+        $laporan = Pengaduan::findOrFail($id);
+
+        // Pastikan laporan milik user yang login
+        if ($laporan->user_id !== auth()->id()) {
+            abort(403, 'Anda tidak memiliki akses untuk melihat feedback ini.');
+        }
+
+        // Pastikan laporan memiliki feedback (rejected_at tidak null)
+        if (!$laporan->rejected_at) {
+            return redirect()->route('pengaduan.index')
+                ->with('error', 'Laporan ini tidak memiliki feedback.');
+        }
+
+        return view('pengaduan.feedback', compact('laporan'));
     }
 
 }

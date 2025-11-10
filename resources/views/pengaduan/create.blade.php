@@ -836,11 +836,11 @@
                                                         class="process-step {{ $step['class'] }} {{ $isActive ? 'active' : '' }} text-center flex-fill position-relative">
                                                         <div class="process-icon-container shadow-sm mb-2"
                                                             style="background: {{ $isActive ? $step['color'] : '#fff' }}; 
-                                                                                                                                                                        border: 2px solid {{ $isActive ? $step['color'] : '#dee2e6' }};
-                                                                                                                                                                        width: 60px; height: 60px; border-radius: 50%; 
-                                                                                                                                                                        display: flex; align-items: center; justify-content: center;
-                                                                                                                                                                        margin: 0 auto;
-                                                                                                                                                                        transition: all 0.3s ease;">
+                                                                                                                                                                                    border: 2px solid {{ $isActive ? $step['color'] : '#dee2e6' }};
+                                                                                                                                                                                    width: 60px; height: 60px; border-radius: 50%; 
+                                                                                                                                                                                    display: flex; align-items: center; justify-content: center;
+                                                                                                                                                                                    margin: 0 auto;
+                                                                                                                                                                                    transition: all 0.3s ease;">
                                                             <i class="bi {{ $step['icon'] }} fs-4"
                                                                 style="color: {{ $isActive ? '#fff' : '#dee2e6' }}; transition: color 0.3s;"></i>
                                                         </div>
@@ -1781,8 +1781,226 @@
         });
     </script>
 
+    <!-- Tambahkan kode ini SEBELUM tag penutup </body> di file Blade Anda -->
 
+    <!-- Modal untuk setiap laporan yang perlu tanggapan -->
+    @if($needsResponse->count() > 0)
+        @foreach($needsResponse as $laporan)
+            <div class="modal fade" id="tanggapanModal{{ $laporan->id }}" tabindex="-1"
+                aria-labelledby="tanggapanModalLabel{{ $laporan->id }}" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header bg-primary text-white">
+                            <h5 class="modal-title" id="tanggapanModalLabel{{ $laporan->id }}">
+                                <i class="bi bi-chat-right-text-fill me-2"></i>
+                                Beri Tanggapan untuk: {{ $laporan->perihal }}
+                            </h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+                        </div>
 
+                        <form action="{{ route('pengaduan.tanggapan.store', $laporan->id) }}" method="POST">
+                            @csrf
+                            <div class="modal-body">
+                                <!-- Info Laporan -->
+                                <div class="alert alert-info">
+                                    <h6 class="mb-2"><strong>Info Laporan:</strong></h6>
+                                    <p class="mb-1"><strong>Perihal:</strong> {{ $laporan->perihal }}</p>
+                                    <p class="mb-1"><strong>Tanggal Pengaduan:</strong> {{ $laporan->tanggal_pengaduan }}</p>
+                                    <p class="mb-0"><strong>Status:</strong>
+                                        <span
+                                            class="badge bg-primary">{{ str_replace('_', ' ', strtoupper($laporan->status)) }}</span>
+                                    </p>
+                                </div>
+
+                                <!-- Tanggapan dari Admin (jika ada) -->
+                                @if($laporan->tanggapan_admin)
+                                    <div class="card mb-3 border-info">
+                                        <div class="card-header bg-info text-white">
+                                            <i class="bi bi-chat-left-quote-fill me-2"></i>
+                                            Tanggapan dari {{ $laporan->roleBidang->nama_role ?? 'Pihak Berwenang' }}
+                                        </div>
+                                        <div class="card-body">
+                                            <p class="mb-0">{{ $laporan->tanggapan_admin }}</p>
+                                            <small class="text-muted">
+                                                <i class="bi bi-clock"></i>
+                                                {{ $laporan->tanggapan_admin_at ? \Carbon\Carbon::parse($laporan->tanggapan_admin_at)->format('d M Y, H:i') : '-' }}
+                                            </small>
+                                        </div>
+                                    </div>
+                                @endif
+
+                                <!-- Form Tanggapan Pelapor -->
+                                <div class="mb-3" id="tanggapanContainer{{ $laporan->id }}">
+                                    <label for="tanggapanPelapor{{ $laporan->id }}" class="form-label">
+                                        <strong>Tanggapan Anda:</strong> <span class="text-danger"
+                                            id="requiredStar{{ $laporan->id }}">*</span>
+                                    </label>
+                                    <textarea id="tanggapanPelapor{{ $laporan->id }}" name="tanggapan_pelapor"
+                                        class="form-control" rows="5"
+                                        placeholder="Tuliskan tanggapan Anda terhadap penjelasan dari pihak berwenang..."
+                                        required>{{ $laporan->tanggapan_pelapor ?? '' }}</textarea>
+                                    <small class="text-muted">
+                                        Jelaskan apakah Anda puas dengan tanggapan yang diberikan atau masih ada yang perlu
+                                        ditindaklanjuti.
+                                    </small>
+                                </div>
+
+                                <!-- Status Kepuasan -->
+                                <div class="mb-3">
+                                    <label class="form-label d-block">
+                                        <strong>Apakah Anda puas dengan tanggapan yang diberikan?</strong>
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="btn-group w-100" role="group">
+                                        <input type="radio" class="btn-check" name="status_kepuasan" id="puas{{ $laporan->id }}"
+                                            value="puas" {{ $laporan->status_kepuasan == 'puas' ? 'checked' : '' }}
+                                            onchange="toggleTanggapanField({{ $laporan->id }}, 'puas')" required>
+                                        <label class="btn btn-outline-success" for="puas{{ $laporan->id }}">
+                                            <i class="bi bi-hand-thumbs-up-fill"></i> Puas
+                                        </label>
+
+                                        <input type="radio" class="btn-check" name="status_kepuasan"
+                                            id="tidak_puas{{ $laporan->id }}" value="tidak_puas" {{ $laporan->status_kepuasan == 'tidak_puas' ? 'checked' : '' }}
+                                            onchange="toggleTanggapanField({{ $laporan->id }}, 'tidak_puas')" required>
+                                        <label class="btn btn-outline-danger" for="tidak_puas{{ $laporan->id }}">
+                                            <i class="bi bi-hand-thumbs-down-fill"></i> Tidak Puas
+                                        </label>
+                                    </div>
+
+                                    <!-- Info Status Alert -->
+                                    <div id="statusInfo{{ $laporan->id }}" class="alert mt-3" style="display: none;">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    <i class="bi bi-x-circle me-1"></i> Batal
+                                </button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-send-fill me-1"></i> Kirim Tanggapan
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        @endforeach
+    @endif
+
+    <style>
+        .btn-group label {
+            padding: 12px 20px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-check:checked+.btn-outline-success {
+            background-color: #198754;
+            border-color: #198754;
+            color: white;
+        }
+
+        .btn-check:checked+.btn-outline-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+            color: white;
+        }
+
+        /* Animasi smooth untuk hide/show textarea */
+        .slide-up {
+            animation: slideUp 0.3s ease-out;
+            overflow: hidden;
+        }
+
+        .slide-down {
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                max-height: 200px;
+                opacity: 1;
+            }
+
+            to {
+                max-height: 0;
+                opacity: 0;
+            }
+        }
+
+        @keyframes slideDown {
+            from {
+                max-height: 0;
+                opacity: 0;
+            }
+
+            to {
+                max-height: 200px;
+                opacity: 1;
+            }
+        }
+    </style>
+
+    <script>
+        function toggleTanggapanField(laporanId, status) {
+            const container = document.getElementById('tanggapanContainer' + laporanId);
+            const textarea = document.getElementById('tanggapanPelapor' + laporanId);
+            const requiredStar = document.getElementById('requiredStar' + laporanId);
+            const statusInfo = document.getElementById('statusInfo' + laporanId);
+
+            if (status === 'puas') {
+                // Jika puas, sembunyikan textarea dan hapus validasi required
+                container.classList.add('slide-up');
+                setTimeout(() => {
+                    container.style.display = 'none';
+                }, 300);
+
+                textarea.removeAttribute('required');
+                textarea.value = ''; // Kosongkan value
+
+                // Tampilkan info status SELESAI
+                statusInfo.style.display = 'block';
+                statusInfo.className = 'alert alert-success mt-3';
+                statusInfo.innerHTML = '<i class="bi bi-check-circle-fill me-2"></i><strong>Status laporan akan berubah menjadi SELESAI</strong> ✅';
+
+            } else {
+                // Jika tidak puas, tampilkan textarea dan tambahkan validasi required
+                container.style.display = 'block';
+                container.classList.remove('slide-up');
+                container.classList.add('slide-down');
+
+                textarea.setAttribute('required', 'required');
+
+                // Tampilkan info status TINDAK LANJUT
+                statusInfo.style.display = 'block';
+                statusInfo.className = 'alert alert-warning mt-3';
+                statusInfo.innerHTML = '<i class="bi bi-arrow-repeat me-2"></i><strong>Laporan akan dikembalikan ke tahap TINDAK LANJUT</strong> untuk ditinjau ulang oleh pihak berwenang. 🔄';
+            }
+        }
+
+        // Jalankan saat modal pertama kali dibuka untuk set kondisi awal
+        document.addEventListener('DOMContentLoaded', function () {
+            // Cek setiap modal yang ada
+            @if($needsResponse->count() > 0)
+                @foreach($needsResponse as $laporan)
+                        (function () {
+                            const laporanId = {{ $laporan->id }};
+                            const puasRadio = document.getElementById('puas' + laporanId);
+                            const tidakPuasRadio = document.getElementById('tidak_puas' + laporanId);
+
+                            // Set kondisi awal berdasarkan data yang ada
+                            @if($laporan->status_kepuasan == 'puas')
+                                toggleTanggapanField(laporanId, 'puas');
+                            @elseif($laporan->status_kepuasan == 'tidak_puas')
+                                toggleTanggapanField(laporanId, 'tidak_puas');
+                            @endif
+                    })();
+                @endforeach
+            @endif
+});
+    </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 

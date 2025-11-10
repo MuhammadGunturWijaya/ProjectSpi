@@ -799,4 +799,5 @@ Route::post('/pengaduan/{id}/tanggapan-pelapor', [PengaduanController::class, 's
 Route::get('/pengaduan/{id}/tanggapan', [PengaduanController::class, 'viewTanggapan'])
     ->name('pengaduan.tanggapan');
 
-
+Route::post('/pengaduan/{id}/tanggapan', [PengaduanController::class, 'storeTanggapan'])
+    ->name('pengaduan.tanggapan.store');
