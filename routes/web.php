@@ -303,7 +303,7 @@ Route::get('/KonsideranSPI/{id}', [KonsideranSPIController::class, 'show'])->nam
 Route::get('/piagam', [PiagamSPIController::class, 'index'])->name('piagam.index');
 Route::get('/piagam/{id}', [PiagamSPIController::class, 'show'])->name('piagam.show');
 Route::get('/piagam/create', [PiagamSPIController::class, 'create'])->middleware('auth')->name('piagam.create');
-Route::post('/piagam', [PiagamSPIController::class, 'store'])->middleware('auth')->name('piagam.store');
+
 Route::get('/piagam/{id}/edit', [PiagamSPIController::class, 'edit'])->middleware('auth')->name('piagam.edit');
 Route::put('/piagam/{id}', [PiagamSPIController::class, 'update'])->middleware('auth')->name('piagam.update');
 Route::delete('/piagam/{id}', [PiagamSPIController::class, 'destroy'])->middleware('auth')->name('piagam.destroy');
