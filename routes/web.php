@@ -730,6 +730,7 @@ Route::put('/processes/{process}', [ProcessController::class, 'update'])->name('
 Route::delete('/processes/{process}', [ProcessController::class, 'destroy'])->name('processes.destroy');
 
 Route::get('/proses-bisnis-spi', [ProcessController::class, 'index'])->name('proses-bisnis-spi');
+<<<<<<< HEAD
 Route::delete('/instrumen/{id}', [InstrumenController::class, 'destroy'])->name('instrumen.destroy');
 Route::get('/instrumen/{id}/edit', [InstrumenController::class, 'edit'])->name('instrumen.edit');
 Route::resource('instrumen', App\Http\Controllers\Instrumen\InstrumenController::class);
@@ -801,3 +802,13 @@ Route::get('/pengaduan/{id}/tanggapan', [PengaduanController::class, 'viewTangga
 
 Route::post('/pengaduan/{id}/tanggapan', [PengaduanController::class, 'storeTanggapan'])
     ->name('pengaduan.tanggapan.store');
+=======
+
+Route::get('/program-kerja/{id}', [ProgramKerjaSPIController::class, 'show'])
+    ->name('program-kerja.show');
+
+    Route::get('/KonsideranSPI/{id}', [KonsideranSPIController::class, 'show'])
+    ->name('konsideranspi.show');
+
+Route::get('/pedomanmr/{id}', [PedomanMRController::class, 'show'])->name('pedomanmr.show');
+>>>>>>> dd86691 (l)

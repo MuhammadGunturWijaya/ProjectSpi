@@ -27,42 +27,47 @@
 
 
     <div class="search-wrapper">
-        <div class="input-group">
-            <i class="fa fa-search"></i>
-            <input type="text" placeholder="Cari peraturan ...">
-        </div>
-        <button class="search-btn"><i class="fa fa-search"></i> Cari</button>
-        <button class="adv-btn"><i class="fa fa-sliders-h"></i> Adv. Search</button>
+        <form action="{{ route('piagamspi.search') }}" method="GET" class="search-form" style="display: contents;">
+            <div class="input-group">
+                <input type="text" name="keyword" placeholder="Cari peraturan ..." value="{{ $keyword ?? '' }}">
+            </div>
+            <button type="submit" class="search-btn"><i class="fa fa-search"></i> Cari</button>
+            <button type="button" class="adv-btn"><i class="fa fa-sliders-h"></i> Adv. Search</button>
+        </form>
     </div>
 
     <div id="advModal" class="modal">
         <div class="modal-box">
             <span class="close">&times;</span>
             <h2 class="modal-title"><i class="fa fa-sliders-h"></i> Advanced Search</h2>
-            <form class="adv-form">
+            <form class="adv-form" action="{{ route('search.searchPedomanPengawasan') }}" method="GET">
                 <div class="form-group">
                     <label for="tentang">Tentang</label>
-                    <input type="text" id="tentang" placeholder="Masukkan kata kunci ...">
+                    <input type="text" name="judul" id="tentang" placeholder="Masukkan kata kunci ..."
+                        value="{{ request('judul') }}">
                 </div>
 
                 <div class="form-group">
                     <label for="nomor">Nomor</label>
-                    <input type="text" id="nomor" placeholder="Contoh: 12">
+                    <input type="text" name="nomor" id="nomor" placeholder="Contoh: 12" value="{{ request('nomor') }}">
                 </div>
 
                 <div class="form-group">
                     <label for="tahun">Tahun</label>
-                    <input type="number" id="tahun" placeholder="2023">
+                    <input type="number" name="tahun" id="tahun" placeholder="2023" value="{{ request('tahun') }}">
                 </div>
+
 
                 <div class="form-group">
                     <label for="entitas">Entitas</label>
-                    <input type="text" id="entitas" placeholder="Nama instansi ...">
+                    <input type="text" name="entitas" id="entitas" placeholder="Nama instansi ..."
+                        value="{{ request('entitas') }}">
                 </div>
 
                 <div class="form-group">
                     <label for="tag">Tag</label>
-                    <input type="text" id="tag" placeholder="Pisahkan dengan koma">
+                    <input type="text" name="kata_kunci" id="tag" placeholder="Pisahkan dengan koma"
+                        value="{{ request('kata_kunci') }}">
                 </div>
 
                 <div class="form-actions">
@@ -73,6 +78,7 @@
             </form>
         </div>
     </div>
+
 
     <script>
         const advBtn = document.querySelector('.adv-btn');
