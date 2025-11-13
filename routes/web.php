@@ -270,7 +270,7 @@ Route::get('/instrumen/detail/{id}', [InstrumenController::class, 'getDetail'])-
 Route::post('/instrumen', [InstrumenController::class, 'store'])->name('instrumen.store');
 Route::delete('/instrumen/{id}', [InstrumenController::class, 'destroy'])->name('instrumen.destroy');
 Route::get('/instrumen/{id}/edit', [InstrumenController::class, 'edit'])->name('instrumen.edit');
-Route::resource('instrumen', InstrumenController::class);
+
 
 // Program Kerja SPI
 Route::prefix('spi')->name('programKerja.')->group(function () {
