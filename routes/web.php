@@ -53,20 +53,18 @@ Route::get('/landing', [LandingPageController::class, 'index'])->name('landing')
 
 // Berita
 Route::get('/berita', [BeritaController::class, 'index'])->name('berita.index');
+Route::get('/berita/search', [BeritaController::class, 'search'])->name('berita.search');
 Route::get('/berita/{id}', [BeritaController::class, 'show'])->name('berita.show');
-
 
 // Group admin middleware
 Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () {
     Route::resource('timeline', TimelineController::class);
 });
 
-
 Route::get('/spi/sejarah', [TimelineController::class, 'index'])->name('spi.sejarah');
 Route::get('/sejarah', function () {
     return redirect()->route('spi.sejarah');
 })->name('sejarah');
-
 
 Route::middleware(['auth'])->prefix('admin/berita')->group(function () {
     Route::get('create', [BeritaController::class, 'create'])->name('admin.berita.create');
@@ -75,7 +73,6 @@ Route::middleware(['auth'])->prefix('admin/berita')->group(function () {
     Route::put('{id}', [BeritaController::class, 'update'])->name('berita.update');
 });
 
-
 // Struktur organisasi - halaman publik
 Route::get('/struktur-organisasi', [StrukturController::class, 'index'])->name('struktur.index');
 
@@ -83,21 +80,15 @@ Route::get('/struktur-organisasi', [StrukturController::class, 'index'])->name('
 Route::get('/profile-spi', [App\Http\Controllers\PageController::class, 'ProfileSpi'])->name('profile.spi');
 
 // Pencarian
-//Route::get('/search', [SearchController::class, 'index'])->name('search');
-
+Route::get('/search/pedoman-pengawasan', function () {
+    return view('search.searchPedomanPengawasan');
+})->name('search.searchPedomanPengawasan');
 
 Route::get('/search-pedoman', [SearchPedomanController::class, 'index'])->name('search.pedoman');
 
-Route::get('/search-pedoman', [SearchPedomanController::class, 'index'])->name('search.searchPedomanPengawasan');
-
-// Routes untuk semua user (guest & authenticated)
+// Pengaduan - Routes untuk semua user (guest & authenticated)
 Route::get('/pengaduan/create', [PengaduanController::class, 'create'])->name('pengaduan.create');
 Route::get('/pengaduan/{id}', [PengaduanController::class, 'show'])->name('pengaduan.show');
-
-Route::middleware(['auth', 'admin'])->group(function () {
-    Route::post('/admin/pengaduan/{id}/verifikasi', [PengaduanController::class, 'verifikasi'])
-        ->name('pengaduan.verifikasi');
-});
 
 // Routes untuk authenticated users
 Route::middleware(['auth'])->group(function () {
@@ -108,60 +99,34 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/pengaduan/{id}/feedback', [PengaduanController::class, 'viewFeedback'])->name('pengaduan.feedback');
     Route::get('/pengaduan/{id}/edit', [PengaduanController::class, 'edit'])->name('pengaduan.edit');
     Route::put('/pengaduan/{id}', [PengaduanController::class, 'update'])->name('pengaduan.update');
-
-    // Delete (user bisa hapus laporan sendiri jika masih status laporan_dikirim)
     Route::delete('/pengaduan/{id}', [PengaduanController::class, 'destroy'])->name('pengaduan.destroy');
+
+    // Verifikasi & Tanggapan
+    Route::get('/pengaduan/{id}/verify', [PengaduanController::class, 'verify'])->name('pengaduan.verify');
+    Route::post('/pengaduan/{id}/verify', [PengaduanController::class, 'processVerification'])->name('pengaduan.processVerification');
+    Route::post('/pengaduan/{id}/auto-save-verification', [PengaduanController::class, 'autoSaveVerification'])->name('pengaduan.autoSaveVerification');
+    Route::get('/pengaduan/{id}/tanggapan', [PengaduanController::class, 'viewTanggapan'])->name('pengaduan.tanggapan');
+    Route::post('/pengaduan/{id}/tanggapan', [PengaduanController::class, 'storeTanggapan'])->name('pengaduan.tanggapan.store');
+    Route::post('/pengaduan/{id}/tanggapan-admin', [PengaduanController::class, 'submitTanggapanAdmin'])->name('pengaduan.tanggapanAdmin');
+    Route::post('/pengaduan/{id}/tanggapan-pelapor', [PengaduanController::class, 'submitTanggapanPelapor'])->name('pengaduan.tanggapanPelapor');
 
     // Admin only routes
     Route::middleware([IsAdmin::class])->prefix('admin')->group(function () {
         Route::get('/pengaduan', [PengaduanController::class, 'index'])->name('pengaduan.index');
         Route::patch('/pengaduan/{id}/update-status', [PengaduanController::class, 'updateStatus'])->name('pengaduan.updateStatus');
-        Route::post('/pengaduan/{id}/auto-save-verification', [PengaduanController::class, 'autoSaveVerification'])->name('pengaduan.autoSaveVerification');
-        Route::post('/pengaduan/{id}/process-verification', [PengaduanController::class, 'processVerification'])->name('pengaduan.processVerification');
+        Route::post('/pengaduan/{id}/verifikasi', [PengaduanController::class, 'verifikasi'])->name('pengaduan.verifikasi');
     });
 });
-// Route umum (user biasa)
-Route::post('/pengaduan', [PengaduanController::class, 'store'])->name('pengaduan.store'); // semua user
-Route::get('/pengaduan/{id}', [PengaduanController::class, 'show'])->name('pengaduan.show'); // semua user
 
-// Route admin (harus login & role admin)
-Route::middleware(['auth'])->group(function () {
-    Route::get('/admin/pengaduan', [PengaduanController::class, 'index'])->name('pengaduan.index');
-    Route::delete('/admin/pengaduan/{id}', [PengaduanController::class, 'destroy'])->name('pengaduan.destroy');
-    Route::patch('/admin/pengaduan/{id}/update-status', [PengaduanController::class, 'updateStatus'])->name('pengaduan.updateStatus');
-});
-
-Route::delete('/pengaduan/{id}', [PengaduanController::class, 'destroy'])
-    ->name('pengaduan.destroy')
-    ->middleware('auth'); // pastikan user login
-
-
-
-// Pengaduan
-Route::get('/pengaduan', [PengaduanController::class, 'create'])->name('pengaduan.create');
-
-
-// Hanya user login yang boleh kirim
-Route::middleware(['auth'])->group(function () {
-    Route::post('/pengaduan', [PengaduanController::class, 'store'])->name('pengaduan.store');
-    Route::get('/pengaduan/{id}/verify', [PengaduanController::class, 'verify'])->name('pengaduan.verify');
-    Route::post('/pengaduan/{id}/verify', [PengaduanController::class, 'processVerification'])->name('pengaduan.processVerification');
-    Route::post('/pengaduan/{id}/auto-save-verification', [PengaduanController::class, 'autoSaveVerification'])
-        ->name('pengaduan.autoSaveVerification');
-});
-
-
+Route::get('/lapor-guest', [GuestReportController::class, 'createGuest'])->name('pengaduan.createGuest');
 
 // Visi Misi
-// Halaman publik
 Route::get('/visi-misi', [VisiMisiController::class, 'index'])->name('visi-misi.index');
 
-// Admin
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin/visi-misi/edit', [VisiMisiController::class, 'edit'])->name('visi-misi.edit');
     Route::post('/admin/visi-misi/update', [VisiMisiController::class, 'update'])->name('visi-misi.update');
 });
-
 
 // Login/Register
 Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -185,24 +150,22 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/struktur/edit', [StrukturController::class, 'edit'])->name('struktur.edit');
     Route::post('/struktur/update', [StrukturController::class, 'update'])->name('struktur.update');
 
-    // Edit pengurus
-    Route::get('/pengurus/{id}/edit', [PengurusController::class, 'edit'])->name('pengurus.edit');
-    Route::post('/pengurus/{id}/update', [PengurusController::class, 'update'])->name('pengurus.update');
+    // Pengurus
+    Route::get('/pengurus', [PengurusController::class, 'index'])->name('pengurus.index');
     Route::get('/pengurus/create', [PengurusController::class, 'create'])->name('pengurus.create');
     Route::post('/pengurus/store', [PengurusController::class, 'store'])->name('pengurus.store');
-    //  route delete 
+    Route::get('/pengurus/{id}/edit', [PengurusController::class, 'edit'])->name('pengurus.edit');
+    Route::post('/pengurus/{id}/update', [PengurusController::class, 'update'])->name('pengurus.update');
     Route::delete('/pengurus/{id}', [PengurusController::class, 'destroy'])->name('pengurus.destroy');
-    Route::get('/pengurus', [PengurusController::class, 'index'])->name('pengurus.index');
 
+    // Profile
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::post('/pendaftar/check', [ProfileController::class, 'checkPendaftar'])->name('pendaftar.check');
+    Route::post('/pendaftar/verify', [ProfileController::class, 'verifyPendaftar'])->name('pendaftar.verify');
 });
 
-//Sumber daya manusia
-Route::get('/SumberDayaManusia', function () {
-    return view('Sumber-Daya-Manusia');
-});
-
-Route::get('/Sumber-Daya-Manusia', [SdmController::class, 'index'])->name('sdm.index');
-
+// Sumber daya manusia
 Route::get('/sumber-daya-manusia', [SdmController::class, 'index'])->name('sdm.index');
 Route::get('/sumber-daya-manusia/create', [SdmController::class, 'create'])->name('sdm.create');
 Route::post('/sumber-daya-manusia/store', [SdmController::class, 'store'])->name('sdm.store');
@@ -210,324 +173,192 @@ Route::get('/sumber-daya-manusia/{id}/edit', [SdmController::class, 'edit'])->na
 Route::post('/sumber-daya-manusia/{id}/update', [SdmController::class, 'update'])->name('sdm.update');
 Route::delete('/sumber-daya-manusia/{id}', [SdmController::class, 'destroy'])->name('sdm.destroy');
 
-Route::get('/sumber-daya-manusia/{id}/edit', [SdmController::class, 'edit'])->name('sdm.edit');
-Route::post('/sumber-daya-manusia/{id}/update', [SdmController::class, 'update'])->name('sdm.update');
-
-
 // Route ke halaman Kode Etik SPI
-Route::get('/kode-etik-spi', [KodeEtikSPIController::class, 'index'])
-    ->name('kode-etik-spi');
+Route::get('/kode-etik-spi', [KodeEtikSPIController::class, 'index'])->name('kode-etik-spi');
 
 // Route Ke halaman Konsideran SPI
-Route::get('/konsideran-spi', [KonsideranSPIController::class, 'index'])
-    ->name('konsideran-spi');
-
-
+Route::get('/konsideran-spi', [KonsideranSPIController::class, 'index'])->name('konsideran-spi');
 
 // Route Ke halaman pedoman mr 
 Route::get('/pedoman/mr', [PedomanMRController::class, 'index'])->name('pedoman.mr');
 
-Route::delete('/pedoman/destroy-all', [PedomanPengawasanController::class, 'destroyAll'])
-    ->name('pedoman.destroyAll')
-    ->middleware('auth'); 
-
 // Route Ke halaman PenguatanPengawasan
 Route::get('/penguatan-pengawasan', [PenguatanPengawasanController::class, 'index'])->name('pengawasan.index');
 
-
 // Route Ke halaman SURVEY
-Route::post('/survey', [SurveyController::class, 'store'])->name('survey.store');
-
 Route::middleware('auth')->group(function () {
     Route::post('/survey', [SurveyController::class, 'store'])->name('survey.store');
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-    Route::post('/profile', [ProfileController::class, 'update'])->name('profile.update');
 });
 
 Route::delete('/surveys/{survey}', [SurveyController::class, 'destroy'])->name('surveys.destroy');
+Route::get('/survey', [SurveyController::class, 'index'])->name('survey.index');
 
 // route ke halaman program kerja SPI
 Route::get('/program-kerja', [ProgramKerjaController::class, 'index'])->name('program.kerja');
+
 // route ke halaman penataan sdm aparatur
-Route::get('/penataan-sdm-aparatur', [SDMAparaturController::class, 'index'])
-    ->name('penataan.sdm.aparatur');
+Route::get('/penataan-sdm-aparatur', [SDMAparaturController::class, 'index'])->name('penataan.sdm.aparatur');
+
 // route ke halaman penguatan akuntabilitas
-Route::get('/penguatan-akuntabilitas', [AkuntabilitasController::class, 'index'])
-    ->name('penguatan.akuntabilitas');
+Route::get('/penguatan-akuntabilitas', [AkuntabilitasController::class, 'index'])->name('penguatan.akuntabilitas');
 
 // Halaman utama Pedoman Pengawasan
-Route::get('/pedoman-pengawasan', [PedomanPengawasanController::class, 'index'])
-    ->name('pedoman.pengawasan');
-
-
+Route::get('/pedoman-pengawasan', [PedomanPengawasanController::class, 'index'])->name('pedoman.pengawasan');
 
 // Halaman detail pedoman
 Route::get('/pedoman/{id}', [PedomanPengawasanController::class, 'show'])->name('pedoman.show');
-
-// 
 Route::get('/pedoman/detail/{id}', [PedomanPengawasanController::class, 'getDetail'])->name('pedoman.detail');
-Route::get('/pedoman/detail/{id}', [PedomanPengawasanController::class, 'getDetail']);
-Route::get('/pedoman/detail/{id}', [PedomanPengawasanController::class, 'detailJson']);
 
-//route ke halaman tambah pedoman
-Route::post('/pedoman', [TambahPedomanController::class, 'store'])
-    ->name('pedoman.store');
+// route ke halaman tambah pedoman
+Route::post('/pedoman', [TambahPedomanController::class, 'store'])->name('pedoman.store');
 
 // Route untuk Detail Pengawasan
-Route::get('/detail-pengawasan', [DetailPengawasanController::class, 'index'])
-    ->name('detail.pengawasan');
-
-// Route detail pedoman pengawasan
-Route::get('/pedoman-pengawasan/{id}', [DetailPengawasanController::class, 'show'])
-    ->name('pedoman.detail');
+Route::get('/detail-pengawasan', [DetailPengawasanController::class, 'index'])->name('detail.pengawasan');
 
 Route::delete('/pedoman/{id}', [PedomanPengawasanController::class, 'destroy'])->name('pedoman.destroy');
-
+Route::delete('/pedoman/destroy-all', [PedomanPengawasanController::class, 'destroyAll'])->name('pedoman.destroyAll')->middleware('auth');
 
 Route::get('/pedoman/{id}/edit', [PedomanPengawasanController::class, 'edit'])->name('pedoman.edit');
 Route::put('/pedoman/{id}', [PedomanPengawasanController::class, 'update'])->name('pedoman.update');
 
-// Halaman detail pedoman (Blade)
-Route::get('/pedoman-pengawasan/{id}', [PedomanPengawasanController::class, 'show'])
-    ->name('pedoman.show');
-
 // API detail lengkap (JSON)
-Route::get('/pedoman-pengawasan/{id}/detail', [PedomanPengawasanController::class, 'getDetail'])
-    ->name('pedoman.detail.json');
+Route::get('/pedoman-pengawasan/{id}/detail', [PedomanPengawasanController::class, 'getDetail'])->name('pedoman.detail.json');
 
 // API detail ringkas (JSON)
-Route::get('/pedoman-pengawasan/{id}/json', [PedomanPengawasanController::class, 'detailJson'])
-    ->name('pedoman.json');
+Route::get('/pedoman-pengawasan/{id}/json', [PedomanPengawasanController::class, 'detailJson'])->name('pedoman.json');
 
 // Halaman detail pedoman audit (lihat lebih / list audit)
-Route::get('/pedoman-audit', [DetailPengawasanController::class, 'index'])
-    ->name('pedoman.audit');
+Route::get('/pedoman-audit', [DetailPengawasanController::class, 'index'])->name('pedoman.audit');
 
-
-//button kembali 
-Route::get('/pedomanpengawasan/detail', [PedomanPengawasanController::class, 'index'])
-    ->name('pedomanpengawasan.detail-pedoman');
-
-
-
-
+// Search pedoman
+Route::get('/pedoman/search', [PedomanPengawasanController::class, 'search'])->name('pedoman.search');
 
 // Untuk AJAX detail
 Route::get('/pos-ap/detail/{id}', [PosApPengawasanController::class, 'detailJson']);
+
 // Route untuk AJAX detail PosAp
 Route::get('/posap/detail/{id}', [PosApPengawasanController::class, 'getDetail'])->name('posap.detail');
-Route::get('/posap/audit', [PosApPengawasanController::class, 'showByJenis'])
-    ->name('posap.audit');
+Route::get('/posap/audit', [PosApPengawasanController::class, 'showByJenis'])->name('posap.audit');
 
+// Piagam SPI
 Route::post('/upload-piagam', [PiagamSPIController::class, 'store'])->name('piagam.store');
 Route::get('/piagam', [PiagamSPIController::class, 'index'])->name('piagam.index');
 Route::get('/piagam/{id}', [PiagamSPIController::class, 'show'])->name('piagam.show');
-
-// Route Ke halaman piagam SPI
 Route::get('/piagam-spi', [PiagamSPIController::class, 'index'])->name('piagam-spi');
 
-//--------------------------------
-
-// routes/web.php
+// PosAp
 Route::prefix('posAp')->name('posAp.')->group(function () {
     Route::get('/', [PosApPengawasanController::class, 'index'])->name('index');
     Route::post('/store', [PosApPengawasanController::class, 'store'])->name('store');
     Route::delete('/{id}', [PosApPengawasanController::class, 'destroy'])->name('destroy');
     Route::get('/{id}/edit', [PosApPengawasanController::class, 'edit'])->name('edit');
     Route::put('/{id}', [PosApPengawasanController::class, 'update'])->name('update');
-
-    // detail per pos ap
     Route::get('/show/{id}', [PosApPengawasanController::class, 'show'])->name('show');
-
-    // lihat lebih
     Route::get('/lihat/{jenis}', [PosApPengawasanController::class, 'lihat'])->name('lihat');
 });
 
+// Search Pos AP
+Route::get('/search/posappengawasan', [PosApPengawasanController::class, 'searchPosApPengawasan'])->name('search.searchPosApPengawasan');
+Route::get('/posap/search', [PosApPengawasanController::class, 'search'])->name('posap.search');
 
-// -----------------------------------
-// Halaman daftar instrumen berdasarkan jenis
-Route::get('/instrumen/lihat/{jenis}', [InstrumenController::class, 'lihat'])
-    ->name('instrumen.lihat');
+// Instrumen
+Route::get('/instrumen/lihat/{jenis}', [InstrumenController::class, 'lihat'])->name('instrumen.lihat');
 Route::get('/instrumen/search', [InstrumenController::class, 'search'])->name('instrumen.search');
-
-// Halaman index instrumen
-Route::get('/instrumen', [InstrumenController::class, 'index'])
-    ->name('instrumen.index');
-
-// Halaman detail instrumen
-Route::get('/instrumen/{id}', [InstrumenController::class, 'show'])
-    ->name('instrumen.show');
-
-// Route untuk AJAX detail
-Route::get('/instrumen/detail/{id}', [InstrumenController::class, 'getDetail'])
-    ->name('instrumen.getDetail');
-
-
-
+Route::get('/instrumen', [InstrumenController::class, 'index'])->name('instrumen.index');
+Route::get('/instrumen/{id}', [InstrumenController::class, 'show'])->name('instrumen.show');
+Route::get('/instrumen/detail/{id}', [InstrumenController::class, 'getDetail'])->name('instrumen.getDetail');
+Route::post('/instrumen', [InstrumenController::class, 'store'])->name('instrumen.store');
+Route::delete('/instrumen/{id}', [InstrumenController::class, 'destroy'])->name('instrumen.destroy');
+Route::get('/instrumen/{id}/edit', [InstrumenController::class, 'edit'])->name('instrumen.edit');
 Route::resource('instrumen', InstrumenController::class);
 
-
-
-//--------------------------------
+// Program Kerja SPI
 Route::prefix('spi')->name('programKerja.')->group(function () {
-    Route::get('/', [ProgramKerjaSPIController::class, 'index'])->name('index');   // programKerja.index
+    Route::get('/', [ProgramKerjaSPIController::class, 'index'])->name('index');
     Route::get('/lihat/{jenis?}', [ProgramKerjaSPIController::class, 'lihat'])->name('lihat');
-    // programKerja.lihat
-    Route::get('/create', [ProgramKerjaSPIController::class, 'create'])->name('create'); // programKerja.create
-    Route::post('/store', [ProgramKerjaSPIController::class, 'store'])->name('store'); // programKerja.store
-    Route::get('/{id}', [ProgramKerjaSPIController::class, 'show'])->name('show'); // programKerja.show
-    Route::get('/{id}/edit', [ProgramKerjaSPIController::class, 'edit'])->name('edit'); // programKerja.edit
-    Route::put('/{id}', [ProgramKerjaSPIController::class, 'update'])->name('update'); // programKerja.update
-    Route::delete('/{id}', [ProgramKerjaSPIController::class, 'destroy'])->name('destroy'); // programKerja.destroy
+    Route::get('/create', [ProgramKerjaSPIController::class, 'create'])->name('create');
+    Route::post('/store', [ProgramKerjaSPIController::class, 'store'])->name('store');
+    Route::get('/{id}', [ProgramKerjaSPIController::class, 'show'])->name('show');
+    Route::get('/{id}/edit', [ProgramKerjaSPIController::class, 'edit'])->name('edit');
+    Route::put('/{id}', [ProgramKerjaSPIController::class, 'update'])->name('update');
+    Route::delete('/{id}', [ProgramKerjaSPIController::class, 'destroy'])->name('destroy');
 });
 
-//------------------------------------------
-// Halaman daftar semua Konsideran SPI berdasarkan jenis
+Route::get('/program-kerja/search', [ProgramKerjaSPIController::class, 'search'])->name('program-kerja.search');
+Route::get('/program-kerja/{id}', [ProgramKerjaSPIController::class, 'show'])->name('program-kerja.show');
+
+// Konsideran SPI
 Route::get('/konsideran/{jenis?}', [KonsideranSPIController::class, 'index'])->name('konsideran.index');
-
-// Halaman detail Konsideran SPI
 Route::get('/konsideran/detail/{id}', [KonsideranSPIController::class, 'show'])->name('konsideran.show');
-
-// Form tambah Konsideran SPI
 Route::get('/konsideran/tambah', [KonsideranSPIController::class, 'create'])->name('konsideran.create');
-
-// Simpan Konsideran SPI baru
 Route::post('/konsideran/store', [KonsideranSPIController::class, 'store'])->name('konsideran.store');
-
-// Form edit Konsideran SPI
 Route::get('/konsideran/edit/{id}', [KonsideranSPIController::class, 'edit'])->name('konsideran.edit');
-
-// Update Konsideran SPI
 Route::put('/konsideran/update/{id}', [KonsideranSPIController::class, 'update'])->name('konsideran.update');
-
-// Hapus Konsideran SPI
 Route::delete('/konsideran/destroy/{id}', [KonsideranSPIController::class, 'destroy'])->name('konsideran.destroy');
-
 Route::get('/KonsideranSPI/lihat/', [KonsideranSPIController::class, 'lihat'])->name('konsideran.lihat');
+Route::get('/konsideranspi/search', [KonsideranSPIController::class, 'search'])->name('konsideranspi.search');
+Route::get('/KonsideranSPI/{id}', [KonsideranSPIController::class, 'show'])->name('konsideranspi.show');
 
-//------------------------------------------
-// Halaman daftar semua Piagam SPI
-Route::get('/piagam', [PiagamSPIController::class, 'index'])
-    ->name('piagam.index');
-
-// Halaman detail Piagam SPI
-Route::get('/piagam/{id}', [PiagamSPIController::class, 'show'])
-    ->name('piagam.show');
-
-// Halaman form tambah Piagam SPI
-Route::get('/piagam/create', [PiagamSPIController::class, 'create'])
-    ->middleware('auth')
-    ->name('piagam.create');
-
-// Simpan data Piagam SPI baru
-Route::post('/piagam', [PiagamSPIController::class, 'store'])
-    ->middleware('auth')
-    ->name('piagam.store');
-
-// Halaman edit Piagam SPI
-Route::get('/piagam/{id}/edit', [PiagamSPIController::class, 'edit'])
-    ->middleware('auth')
-    ->name('piagam.edit');
-
-// Update data Piagam SPI
-Route::put('/piagam/{id}', [PiagamSPIController::class, 'update'])
-    ->middleware('auth')
-    ->name('piagam.update');
-
-// Hapus Piagam SPI
-Route::delete('/piagam/{id}', [PiagamSPIController::class, 'destroy'])
-    ->middleware('auth')
-    ->name('piagam.destroy');
-
-// Halaman daftar Piagam SPI (versi lihat)
-Route::get('/PiagamSPI/lihat', [PiagamSPIController::class, 'lihat'])
-    ->name('piagam.lihat');
-
-// (Opsional) Route pencarian Piagam SPI
-Route::get('/piagam/search', [PiagamSPIController::class, 'search'])
-    ->name('piagam.search');
-
+// Piagam SPI (Detail)
+Route::get('/piagam', [PiagamSPIController::class, 'index'])->name('piagam.index');
+Route::get('/piagam/{id}', [PiagamSPIController::class, 'show'])->name('piagam.show');
+Route::get('/piagam/create', [PiagamSPIController::class, 'create'])->middleware('auth')->name('piagam.create');
+Route::post('/piagam', [PiagamSPIController::class, 'store'])->middleware('auth')->name('piagam.store');
+Route::get('/piagam/{id}/edit', [PiagamSPIController::class, 'edit'])->middleware('auth')->name('piagam.edit');
+Route::put('/piagam/{id}', [PiagamSPIController::class, 'update'])->middleware('auth')->name('piagam.update');
+Route::delete('/piagam/{id}', [PiagamSPIController::class, 'destroy'])->middleware('auth')->name('piagam.destroy');
+Route::get('/PiagamSPI/lihat', [PiagamSPIController::class, 'lihat'])->name('piagam.lihat');
+Route::get('/piagam/search', [PiagamSPIController::class, 'search'])->name('piagam.search');
 Route::get('/piagamspi/detail/{id}', [PiagamSPIController::class, 'showJson']);
+Route::get('/piagamspi/search', [PiagamSPIController::class, 'search'])->name('piagamspi.search');
 
+Route::prefix('piagamspi')->group(function () {
+    Route::get('/', [PiagamSPIController::class, 'index'])->name('piagamspi.index');
+    Route::get('/{id}', [PiagamSPIController::class, 'show'])->name('piagamspi.show');
+});
 
-//------------------------------
+// Perubahan
 Route::resource('perubahan', PerubahanController::class);
+Route::get('/Perubahan/lihat', [PerubahanController::class, 'lihat'])->name('perubahan.lihat');
+Route::get('/Perubahan/{id}', [PerubahanController::class, 'show'])->name('Perubahan.show');
 
-// Tambahan untuk method lihat()
-Route::get('/Perubahan/lihat', [PerubahanController::class, 'lihat'])
-    ->name('perubahan.lihat');
-
-
+// Penataan
 Route::resource('penataan', PenataanTataKelolaController::class);
-
-Route::get('/Penataan/lihat', [PenataanTataKelolaController::class, 'lihat'])
-    ->name('penataan.lihat');
+Route::get('/Penataan/lihat', [PenataanTataKelolaController::class, 'lihat'])->name('penataan.lihat');
+Route::get('/penataan_tata_kelola/{id}', [PenataanTataKelolaController::class, 'show'])->name('penataan_tata_kelola.show');
 
 Route::resource('penataanSistem', PenataanSistemController::class);
+Route::get('/PenataanSistem/lihat', [PenataanSistemController::class, 'lihat'])->name('penataanSistem.lihat');
+Route::get('/penataan_sistem/{id}', [PenataanSistemController::class, 'show'])->name('penataan_sistem.show');
 
-// Route tambahan untuk halaman daftar/lihat
-Route::get('/PenataanSistem/lihat', [PenataanSistemController::class, 'lihat'])
-    ->name('penataanSistem.lihat');
-
-
-//SURVEY KEPUASAN
+// SURVEY KEPUASAN
 Route::get('/survey-kepuasan', function () {
     return view('SurveyKepuasan.Survey-Kepuasan');
 })->name('survey.kepuasan');
 
-Route::post('/survey-kepuasan', [SurveyController::class, 'store'])
-    ->name('survey.kepuasan.store');
-
-Route::get('/survey-kepuasan/data', [SurveyController::class, 'showAll'])
-    ->name('survey.kepuasan.data');
+Route::post('/survey-kepuasan', [SurveyController::class, 'store'])->name('survey.kepuasan.store');
+Route::get('/survey-kepuasan/data', [SurveyController::class, 'showAll'])->name('survey.kepuasan.data');
 Route::delete('/survey/{survey}', [SurveyController::class, 'destroy'])->name('survey.destroy');
-Route::get('/survey', [SurveyController::class, 'index'])->name('survey.index');
-// Routes Baru untuk Kelola Pertanyaan Custom (hanya admin)
-Route::middleware(['auth'])->group(function () {
-    Route::get('/survey/questions/manage', [SurveyController::class, 'manageQuestions'])
-        ->name('survey.questions.manage');
-    Route::post('/survey/questions', [SurveyController::class, 'storeQuestion'])
-        ->name('survey.question.store');
-    Route::put('/survey/questions/{question}', [SurveyController::class, 'updateQuestion'])
-        ->name('survey.question.update');
-    Route::delete('/survey/questions/{question}', [SurveyController::class, 'deleteQuestion'])
-        ->name('survey.question.delete');
-});
-
 Route::get('/surveys/download', [SurveyController::class, 'download'])->name('surveys.download');
 
+// Routes Baru untuk Kelola Pertanyaan Custom (hanya admin)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/survey/questions/manage', [SurveyController::class, 'manageQuestions'])->name('survey.questions.manage');
+    Route::post('/survey/questions', [SurveyController::class, 'storeQuestion'])->name('survey.question.store');
+    Route::put('/survey/questions/{question}', [SurveyController::class, 'updateQuestion'])->name('survey.question.update');
+    Route::delete('/survey/questions/{question}', [SurveyController::class, 'deleteQuestion'])->name('survey.question.delete');
+});
 
-// Identifikasi Risiko (form edit)
-Route::get('/identifikasi-risiko', function () {
-    return view('identifikasi.editRisiko'); // sesuaikan dengan nama file baru
-})->name('identifikasi.risiko');
-
-// Tampilkan form
-Route::get('/identifikasi-risiko', function () {
-    return view('identifikasi.identifikasiRisiko');
-})->name('identifikasi.risiko');
-
-// Simpan data form
-Route::post('/identifikasi-risiko', [App\Http\Controllers\IdentifikasiRisikoController::class, 'store'])
-    ->name('identifikasi.risiko.store');
-
-// Tampilkan daftar identifikasi risiko
-Route::get('/identifikasi-risiko', [IdentifikasiRisikoController::class, 'index'])
-    ->name('identifikasi.risiko.index');
-
-// Halaman form tambah/edit risiko
-Route::get('/identifikasi-risiko/create', [IdentifikasiRisikoController::class, 'create'])
-    ->name('identifikasi.risiko.create');
-
-// Route edit & update
+// Identifikasi Risiko
+Route::get('/identifikasi-risiko', [IdentifikasiRisikoController::class, 'index'])->name('identifikasi.risiko.index');
+Route::get('/identifikasi-risiko/create', [IdentifikasiRisikoController::class, 'create'])->name('identifikasi.risiko.create');
+Route::post('/identifikasi-risiko', [IdentifikasiRisikoController::class, 'store'])->name('identifikasi.risiko.store');
 Route::get('/identifikasi-risiko/{id}/edit', [IdentifikasiRisikoController::class, 'edit'])->name('identifikasi.risiko.edit');
 Route::put('/identifikasi-risiko/{id}', [IdentifikasiRisikoController::class, 'update'])->name('identifikasi.risiko.update');
-
 Route::delete('/identifikasi-risiko/{id}', [IdentifikasiRisikoController::class, 'destroy'])->name('identifikasi.risiko.destroy');
+Route::get('/identifikasi/evaluasi-mr', [IdentifikasiRisikoController::class, 'evaluasiMr'])->name('identifikasi.risiko.evaluasiMr');
 
-Route::get('/identifikasi/evaluasi-mr', [IdentifikasiRisikoController::class, 'evaluasiMr'])
-    ->name('identifikasi.risiko.evaluasiMr');
-
+// Evaluasi MR
 Route::prefix('evaluasiMr')->name('evaluasiMr.')->group(function () {
     Route::get('/', [IdentifikasiRisikoController::class, 'evaluasiMr'])->name('index');
     Route::get('/create', [IdentifikasiRisikoController::class, 'createEvaluasiMr'])->name('create');
@@ -535,252 +366,77 @@ Route::prefix('evaluasiMr')->name('evaluasiMr.')->group(function () {
     Route::get('/edit/{id}', [IdentifikasiRisikoController::class, 'editEvaluasiMr'])->name('edit');
     Route::put('/update/{id}', [IdentifikasiRisikoController::class, 'updateEvaluasiMr'])->name('update');
     Route::delete('/delete/{id}', [IdentifikasiRisikoController::class, 'destroyEvaluasiMr'])->name('destroy');
+    Route::post('/update-order', [IdentifikasiRisikoController::class, 'updateOrder'])->name('updateOrder')->middleware('auth');
+    Route::post('/tambah-bagian', [IdentifikasiRisikoController::class, 'ajaxTambahBagian'])->name('ajaxTambahBagian');
 });
 
+// route untuk menyimpan unit via AJAX
+Route::post('/unit/store', [IdentifikasiRisikoController::class, 'storeUnit'])->name('unit.store');
+Route::post('/bagian/store', [BagianController::class, 'store'])->name('bagian.store');
+Route::get('/bagian/list', [BagianController::class, 'list'])->name('bagian.list');
+Route::delete('/bagian/{id}', [IdentifikasiRisikoController::class, 'destroy'])->name('bagian.destroy');
+Route::put('/bagian/{id}', [IdentifikasiRisikoController::class, 'updateBagian'])->name('bagian.update');
 
-// Halaman utama daftar dokumen
-Route::get('/penguatan-pengawasan', [PenguatanPengawasanController::class, 'index'])
-    ->name('penguatanPengawasan.index');
+// Penguatan Pengawasan
+Route::get('/penguatan-pengawasan', [PenguatanPengawasanController::class, 'index'])->name('penguatanPengawasan.index');
+Route::get('/penguatan-pengawasan/create', [PenguatanPengawasanController::class, 'create'])->name('penguatanPengawasan.create');
+Route::post('/penguatan-pengawasan', [PenguatanPengawasanController::class, 'store'])->name('penguatanPengawasan.store');
+Route::get('/penguatan-pengawasan/{id}', [PenguatanPengawasanController::class, 'show'])->name('penguatanPengawasan.show');
+Route::get('/penguatan-pengawasan/{id}/edit', [PenguatanPengawasanController::class, 'edit'])->name('penguatanPengawasan.edit');
+Route::put('/penguatan-pengawasan/{id}', [PenguatanPengawasanController::class, 'update'])->name('penguatanPengawasan.update');
+Route::delete('/penguatan-pengawasan/{id}', [PenguatanPengawasanController::class, 'destroy'])->name('penguatanPengawasan.destroy');
+Route::get('/PenguatanPengawasan/lihat', [PenguatanPengawasanController::class, 'lihat'])->name('penguatanPengawasan.lihat');
+Route::get('/penguatan_pengawasan/{id}', [PenguatanPengawasanController::class, 'show'])->name('penguatan_pengawasan.show');
 
-// Halaman tambah dokumen
-Route::get('/penguatan-pengawasan/create', [PenguatanPengawasanController::class, 'create'])
-    ->name('penguatanPengawasan.create');
+// Peningkatan Kualitas
+Route::get('/PeningkatanKualitas', [PeningkatanKualitasController::class, 'index'])->name('peningkatanKualitas.index');
+Route::get('/PeningkatanKualitas/lihat', [PeningkatanKualitasController::class, 'lihat'])->name('peningkatanKualitas.lihat');
+Route::get('/PeningkatanKualitas/show/{id}', [PeningkatanKualitasController::class, 'show'])->name('peningkatanKualitas.show');
+Route::post('/PeningkatanKualitas/store', [PeningkatanKualitasController::class, 'store'])->name('peningkatanKualitas.store');
+Route::get('/PeningkatanKualitas/edit/{id}', [PeningkatanKualitasController::class, 'edit'])->name('peningkatanKualitas.edit');
+Route::put('/PeningkatanKualitas/update/{id}', [PeningkatanKualitasController::class, 'update'])->name('peningkatanKualitas.update');
+Route::delete('/PeningkatanKualitas/destroy/{id}', [PeningkatanKualitasController::class, 'destroy'])->name('peningkatanKualitas.destroy');
+Route::get('/PeningkatanKualitas/json/{id}', [PeningkatanKualitasController::class, 'showJson'])->name('peningkatanKualitas.showJson');
+Route::get('/peningkatan_kualitas/{id}', [PeningkatanKualitasController::class, 'show'])->name('peningkatan_kualitas.show');
 
-// Simpan dokumen baru
-Route::post('/penguatan-pengawasan', [PenguatanPengawasanController::class, 'store'])
-    ->name('penguatanPengawasan.store');
-
-// Halaman detail dokumen
-Route::get('/penguatan-pengawasan/{id}', [PenguatanPengawasanController::class, 'show'])
-    ->name('penguatanPengawasan.show');
-
-// Halaman edit dokumen
-Route::get('/penguatan-pengawasan/{id}/edit', [PenguatanPengawasanController::class, 'edit'])
-    ->name('penguatanPengawasan.edit');
-
-// Update dokumen
-Route::put('/penguatan-pengawasan/{id}', [PenguatanPengawasanController::class, 'update'])
-    ->name('penguatanPengawasan.update');
-
-// Hapus dokumen
-Route::delete('/penguatan-pengawasan/{id}', [PenguatanPengawasanController::class, 'destroy'])
-    ->name('penguatanPengawasan.destroy');
-
-// Optional: Lihat lebih (misal untuk AJAX / popup daftar ringkas)
-Route::get('/PenguatanPengawasan/lihat', [PenguatanPengawasanController::class, 'lihat'])
-    ->name('penguatanPengawasan.lihat');
-
-
-
-
-
-// Halaman index utama
-Route::get('/PeningkatanKualitas', [PeningkatanKualitasController::class, 'index'])
-    ->name('peningkatanKualitas.index');
-
-// Halaman lihat lebih / daftar lengkap
-Route::get('/PeningkatanKualitas/lihat', [PeningkatanKualitasController::class, 'lihat'])
-    ->name('peningkatanKualitas.lihat');
-
-// Halaman detail dokumen
-Route::get('/PeningkatanKualitas/show/{id}', [PeningkatanKualitasController::class, 'show'])
-    ->name('peningkatanKualitas.show');
-
-// Simpan dokumen baru
-Route::post('/PeningkatanKualitas/store', [PeningkatanKualitasController::class, 'store'])
-    ->name('peningkatanKualitas.store');
-
-// Halaman edit dokumen
-Route::get('/PeningkatanKualitas/edit/{id}', [PeningkatanKualitasController::class, 'edit'])
-    ->name('peningkatanKualitas.edit');
-
-// Update dokumen
-Route::put('/PeningkatanKualitas/update/{id}', [PeningkatanKualitasController::class, 'update'])
-    ->name('peningkatanKualitas.update');
-
-// Hapus dokumen
-Route::delete('/PeningkatanKualitas/destroy/{id}', [PeningkatanKualitasController::class, 'destroy'])
-    ->name('peningkatanKualitas.destroy');
-
-// Optional: show JSON (misal AJAX)
-Route::get('/PeningkatanKualitas/json/{id}', [PeningkatanKualitasController::class, 'showJson'])
-    ->name('peningkatanKualitas.showJson');
-
-
-// Resource route
+// Penguatan Akuntabilitas
 Route::resource('penguatanAkuntabilitas', PenguatanAkuntabilitasController::class);
+Route::get('/PenguatanAkuntabilitas/lihat', [PenguatanAkuntabilitasController::class, 'lihat'])->name('penguatanAkuntabilitas.lihat');
+Route::get('/penguatan_akuntabilitas/{id}', [PenguatanAkuntabilitasController::class, 'show'])->name('penguatan_akuntabilitas.show');
 
-// Route tambahan untuk halaman daftar/lihat Penguatan Akuntabilitas
-Route::get('/PenguatanAkuntabilitas/lihat', [PenguatanAkuntabilitasController::class, 'lihat'])
-    ->name('penguatanAkuntabilitas.lihat');
-
-
-// Resource utama Pedoman MR
+// Pedoman MR
 Route::resource('pedomanmr', PedomanMRController::class);
-
-// Route tambahan untuk halaman daftar/lihat Pedoman MR
-Route::get('/PedomanMR/lihat', [PedomanMRController::class, 'lihat'])
-    ->name('pedomanmr.lihat');
-
+Route::get('/PedomanMR/lihat', [PedomanMRController::class, 'lihat'])->name('pedomanmr.lihat');
 Route::get('/pedomanmr/detail/{id}', [PedomanMRController::class, 'detail'])->name('pedomanmr.detail');
-
-
-// web.php
-Route::get('/lapor-guest', [GuestReportController::class, 'createGuest'])->name('pengaduan.createGuest');
-
-
-
-Route::post('/verify-pendaftar', [ProfileController::class, 'verifyPendaftar'])->name('pendaftar.verify');
-
-
-Route::post('/pendaftar/verify', [App\Http\Controllers\PendaftarController::class, 'verify'])->name('pendaftar.verify');
-
-Route::post('/pendaftar/check', [App\Http\Controllers\PendaftarController::class, 'check'])
-    ->name('pendaftar.check')
-    ->withoutMiddleware('auth');
-
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-    Route::post('/profile/update', [ProfileController::class, 'update'])->name('profile.update');
-    Route::post('/pendaftar/check', [ProfileController::class, 'checkPendaftar'])->name('pendaftar.check');
-    Route::post('/pendaftar/verify', [ProfileController::class, 'verifyPendaftar'])->name('pendaftar.verify');
-});
-
-// Route untuk search
-Route::get('/berita/search', [BeritaController::class, 'search'])->name('berita.search');
-
-// Route untuk detail berita (perlu diletakkan setelah search)
-Route::get('/berita/{id}', [BeritaController::class, 'show'])->name('berita.show');
-
-
-Route::resource('berita', App\Http\Controllers\BeritaController::class);
-
-Route::resource('sdm', App\Http\Controllers\SdmController::class);
-
-
-Route::get('/pedoman/search', [PedomanPengawasanController::class, 'search'])->name('pedoman.search');
-
-Route::get('/piagamspi/search', [App\Http\Controllers\Piagam\PiagamSPIController::class, 'search'])
-    ->name('piagamspi.search');
-
-Route::prefix('piagamspi')->group(function () {
-    Route::get('/', [PiagamSPIController::class, 'index'])->name('piagamspi.index');
-    Route::get('/{id}', [PiagamSPIController::class, 'show'])->name('piagamspi.show');
-});
-
-Route::get('/search/posappengawasan', [PosApPengawasanController::class, 'searchPosApPengawasan'])
-    ->name('search.searchPosApPengawasan');
-
-// Route search Pos AP
-Route::get('/posap/search', [PosApPengawasanController::class, 'search'])->name('posap.search');
-
-// Route show detail Pos AP
-Route::get('/posap/{id}', [PosApPengawasanController::class, 'show'])->name('posap.show');
-
-Route::get('/program-kerja/search', [ProgramKerjaSPIController::class, 'search'])->name('program-kerja.search');
-
-Route::get('/konsideranspi/search', [KonsideranSPIController::class, 'search'])->name('konsideranspi.search');
-
-
-// route detail POS AP
-Route::get('/posap/{id}', [PosApPengawasanController::class, 'show'])->name('posap.show');
-
-// Halaman detail instrumen (show)
-Route::get('/instrumen/{id}', [InstrumenController::class, 'show'])->name('instrumen.show');
-
-Route::post('/instrumen', [InstrumenController::class, 'store'])->name('instrumen.store');
-
-// Halaman detail Program Kerja
-Route::get('/program_kerja/{id}', [App\Http\Controllers\ProgramKerjaController::class, 'show'])
-    ->name('program_kerja.show');
-
-Route::get('/konsideran_SPI/{id}', [KonsideranSPIController::class, 'show'])
-    ->name('konsideran_SPI.show');
-
 Route::get('/pedomanmr/{id}', [PedomanMRController::class, 'show'])->name('pedomanmr.show');
 
-Route::get('/Perubahan/{id}', [PerubahanController::class, 'show'])
-    ->name('Perubahan.show');
-
-// Route detail data Penguatan Akuntabilitas
-Route::get('/penguatan_akuntabilitas/{id}', [PenguatanAkuntabilitasController::class, 'show'])
-    ->name('penguatan_akuntabilitas.show');
-
-// Route detail data Penataan Tata Kelola
-Route::get('/penataan_tata_kelola/{id}', [PenataanTataKelolaController::class, 'show'])
-    ->name('penataan_tata_kelola.show');
-
-Route::get('/penataan_sistem/{id}', [PenataanSistemController::class, 'show'])
-    ->name('penataan_sistem.show');
-
-Route::get('/penguatan_pengawasan/{id}', [PenguatanPengawasanController::class, 'show'])
-    ->name('penguatan_pengawasan.show');
-
-Route::get('/peningkatan_kualitas/{id}', [PeningkatanKualitasController::class, 'show'])
-    ->name('peningkatan_kualitas.show');
-
-Route::put('/posap/{id}', [PosApPengawasanController::class, 'update'])->name('posAp.update');
-
+// Proses Bisnis SPI
 Route::get('/processes', [ProcessController::class, 'index'])->name('processes.index');
 Route::get('/processes/create', [ProcessController::class, 'create'])->name('processes.create');
 Route::post('/processes', [ProcessController::class, 'store'])->name('processes.store');
 Route::get('/processes/{process}/edit', [ProcessController::class, 'edit'])->name('processes.edit');
 Route::put('/processes/{process}', [ProcessController::class, 'update'])->name('processes.update');
 Route::delete('/processes/{process}', [ProcessController::class, 'destroy'])->name('processes.destroy');
-
 Route::get('/proses-bisnis-spi', [ProcessController::class, 'index'])->name('proses-bisnis-spi');
 
+// Resource Routes
+Route::resource('berita', BeritaController::class);
+Route::resource('sdm', SdmController::class);
 
-Route::get('/program-kerja/{id}', [ProgramKerjaSPIController::class, 'show'])
-    ->name('program-kerja.show');
-
-    Route::get('/KonsideranSPI/{id}', [KonsideranSPIController::class, 'show'])
-    ->name('konsideranspi.show');
-
-Route::get('/pedomanmr/{id}', [PedomanMRController::class, 'show'])->name('pedomanmr.show');
-
-Route::delete('/instrumen/{id}', [InstrumenController::class, 'destroy'])->name('instrumen.destroy');
-Route::get('/instrumen/{id}/edit', [InstrumenController::class, 'edit'])->name('instrumen.edit');
-Route::resource('instrumen', App\Http\Controllers\Instrumen\InstrumenController::class);
-
-// route untuk menyimpan unit via AJAX
-Route::post('/unit/store', [IdentifikasiRisikoController::class, 'storeUnit'])->name('unit.store');
-Route::post('/bagian/store', [BagianController::class, 'store'])->name('bagian.store');
-Route::get('/bagian/list', [BagianController::class, 'list'])->name('bagian.list');
-Route::post('/evaluasi-mr/tambah-bagian', [IdentifikasiRisikoController::class, 'ajaxTambahBagian'])->name('evaluasiMr.ajaxTambahBagian');
-
-
-Route::delete('/bagian/{id}', [App\Http\Controllers\IdentifikasiRisikoController::class, 'destroy'])
-    ->name('bagian.destroy');
-Route::put('/bagian/{id}', [App\Http\Controllers\IdentifikasiRisikoController::class, 'updateBagian'])
-    ->name('bagian.update');
-
-// Route untuk Evaluasi MR
-Route::get('/evaluasi-mr', [IdentifikasiRisikoController::class, 'evaluasiMr'])->name('evaluasiMr.index');
-Route::get('/evaluasi-mr/create', [IdentifikasiRisikoController::class, 'createEvaluasiMr'])->name('evaluasiMr.create');
-Route::post('/evaluasi-mr', [IdentifikasiRisikoController::class, 'storeEvaluasiMr'])->name('evaluasiMr.store');
-Route::get('/evaluasi-mr/{id}/edit', [IdentifikasiRisikoController::class, 'editEvaluasiMr'])->name('evaluasiMr.edit');
-Route::put('/evaluasi-mr/{id}', [IdentifikasiRisikoController::class, 'updateEvaluasiMr'])->name('evaluasiMr.update');
-Route::delete('/evaluasi-mr/{id}', [IdentifikasiRisikoController::class, 'destroyEvaluasiMr'])->name('evaluasiMr.destroy');
-
-// Route baru untuk update urutan (Drag & Drop)
-Route::post('/evaluasi-mr/update-order', [IdentifikasiRisikoController::class, 'updateOrder'])
-    ->name('evaluasiMr.updateOrder')
-    ->middleware('auth');
-
+// Aspirasi
 Route::get('/aspirasi', [AspirasiController::class, 'index'])->name('aspirasi.index');
 Route::get('/aspirasi/create', [AspirasiController::class, 'create'])->name('aspirasi.create');
 Route::post('/aspirasi', [AspirasiController::class, 'store'])->name('aspirasi.store');
 Route::get('/aspirasi/{aspirasi}', [AspirasiController::class, 'show'])->name('aspirasi.show');
 Route::delete('/aspirasi/{aspirasi}', [AspirasiController::class, 'destroy'])->name('aspirasi.destroy');
 
-// Routes untuk admin
+// Routes untuk admin aspirasi
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin/aspirasi', [AspirasiController::class, 'adminIndex'])->name('aspirasi.admin');
     Route::get('/admin/aspirasi/{aspirasi}', [AspirasiController::class, 'adminShow'])->name('aspirasi.admin.show');
 });
 
-
+// Bidang Pengaduan
 Route::middleware(['auth'])->group(function () {
     Route::get('/bidang-pengaduan', [BidangPengaduanController::class, 'index'])->name('bidang.index');
     Route::post('/bidang-pengaduan', [BidangPengaduanController::class, 'store'])->name('bidang.store');
@@ -789,7 +445,7 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/bidang-pengaduan/{bidang}/toggle', [BidangPengaduanController::class, 'toggleStatus'])->name('bidang.toggleStatus');
 });
 
-
+// Role Bidang
 Route::prefix('admin')->group(function () {
     Route::prefix('role-bidang')->group(function () {
         Route::resource('roleBidang', RoleBidangController::class);
@@ -801,23 +457,7 @@ Route::prefix('admin')->group(function () {
     });
 });
 
-// Route untuk tanggapan
-Route::post('/pengaduan/{id}/tanggapan-admin', [PengaduanController::class, 'submitTanggapanAdmin'])
-    ->name('pengaduan.tanggapanAdmin');
-Route::post('/pengaduan/{id}/tanggapan-pelapor', [PengaduanController::class, 'submitTanggapanPelapor'])
-    ->name('pengaduan.tanggapanPelapor');
-Route::get('/pengaduan/{id}/tanggapan', [PengaduanController::class, 'viewTanggapan'])
-    ->name('pengaduan.tanggapan');
-
-Route::post('/pengaduan/{id}/tanggapan', [PengaduanController::class, 'storeTanggapan'])
-    ->name('pengaduan.tanggapan.store');
-
-
-Route::get('/program-kerja/{id}', [ProgramKerjaSPIController::class, 'show'])
-    ->name('program-kerja.show');
-
-    Route::get('/KonsideranSPI/{id}', [KonsideranSPIController::class, 'show'])
-    ->name('konsideranspi.show');
-
-Route::get('/pedomanmr/{id}', [PedomanMRController::class, 'show'])->name('pedomanmr.show');
-
+// Pendaftar Check (tanpa auth)
+Route::post('/pendaftar/check', [App\Http\Controllers\PendaftarController::class, 'check'])
+    ->name('pendaftar.check')
+    ->withoutMiddleware('auth');
