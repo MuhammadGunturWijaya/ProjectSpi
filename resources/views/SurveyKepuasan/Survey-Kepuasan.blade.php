@@ -5,6 +5,7 @@
         overflow-x: hidden;
     }
 </style>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -148,20 +149,23 @@
 
                                     <div id="survey-form-content">
                                         @php
-                                            // Ambil semua pertanyaan dari database berdasarkan order
+                                            // Ambil semua pertanyaan dari database berdasarkan urutan
                                             $allQuestions = \App\Models\SurveyQuestion::orderBy('order')->get();
                                             $totalQuestions = $allQuestions->count();
-                                            
-                                            // Pisahkan 9 pertanyaan pertama sebagai default
-                                            $defaultQuestions = $allQuestions->take(9);
-                                            $customQuestions = $allQuestions->skip(9);
+
+                                           
+                                            $defaultQuestions = $allQuestions;
+                                            $customQuestions = collect(); // Kosong karena tidak ada yang di-skip
                                         @endphp
+
 
                                         {{-- 9 Pertanyaan Default (dari database) --}}
                                         @foreach($defaultQuestions as $index => $question)
-                                            <div class="mb-5 question-block" data-step="{{ $index + 1 }}" @if($index > 0) style="display:none;" @endif>
+                                            <div class="mb-5 question-block" data-step="{{ $index + 1 }}" @if($index > 0)
+                                            style="display:none;" @endif>
                                                 <div class="d-flex justify-content-between align-items-center mb-3">
-                                                    <h4 class="fw-bold mb-0">Pertanyaan {{ $index + 1 }} dari {{ $totalQuestions }}</h4>
+                                                    <h4 class="fw-bold mb-0">Pertanyaan {{ $index + 1 }} dari
+                                                        {{ $totalQuestions }}</h4>
                                                     <div class="progress" style="width: 50%;">
                                                         <div class="progress-bar" role="progressbar"
                                                             style="width: {{ (($index + 1) / $totalQuestions) * 100 }}%;"
@@ -170,10 +174,12 @@
                                                     </div>
                                                 </div>
 
-                                                <label class="form-label fw-semibold fs-5 mb-3">{{ $question->question_text }}</label>
+                                                <label
+                                                    class="form-label fw-semibold fs-5 mb-3">{{ $question->question_text }}</label>
                                                 <div class="d-flex justify-content-around rating-options">
                                                     <label class="rating-item text-center cursor-pointer">
-                                                        <input type="radio" name="jawaban[{{ $index }}]" value="Sangat Puas" required>
+                                                        <input type="radio" name="jawaban[{{ $index }}]" value="Sangat Puas"
+                                                            required>
                                                         <span class="emoji">🌟</span>
                                                         <span class="d-block mt-2">Sangat Puas</span>
                                                     </label>
@@ -183,12 +189,14 @@
                                                         <span class="d-block mt-2">Puas</span>
                                                     </label>
                                                     <label class="rating-item text-center cursor-pointer">
-                                                        <input type="radio" name="jawaban[{{ $index }}]" value="Cukup Puas" required>
+                                                        <input type="radio" name="jawaban[{{ $index }}]" value="Cukup Puas"
+                                                            required>
                                                         <span class="emoji">😐</span>
                                                         <span class="d-block mt-2">Cukup Puas</span>
                                                     </label>
                                                     <label class="rating-item text-center cursor-pointer">
-                                                        <input type="radio" name="jawaban[{{ $index }}]" value="Kurang Puas" required>
+                                                        <input type="radio" name="jawaban[{{ $index }}]" value="Kurang Puas"
+                                                            required>
                                                         <span class="emoji">🙁</span>
                                                         <span class="d-block mt-2">Kurang Puas</span>
                                                     </label>
@@ -201,7 +209,8 @@
                                             @php
                                                 $currentStep = 9 + $customIndex + 1;
                                             @endphp
-                                            <div class="mb-5 question-block" data-step="{{ $currentStep }}" style="display:none;">
+                                            <div class="mb-5 question-block" data-step="{{ $currentStep }}"
+                                                style="display:none;">
                                                 <div class="d-flex justify-content-between align-items-center mb-3">
                                                     <h4 class="fw-bold mb-0">
                                                         Pertanyaan {{ $currentStep }} dari {{ $totalQuestions }}
@@ -215,25 +224,30 @@
                                                     </div>
                                                 </div>
 
-                                                <label class="form-label fw-semibold fs-5 mb-3">{{ $customQ->question_text }}</label>
+                                                <label
+                                                    class="form-label fw-semibold fs-5 mb-3">{{ $customQ->question_text }}</label>
                                                 <div class="d-flex justify-content-around rating-options">
                                                     <label class="rating-item text-center cursor-pointer">
-                                                        <input type="radio" name="jawaban_custom[{{ $customQ->id }}]" value="Sangat Puas" required>
+                                                        <input type="radio" name="jawaban_custom[{{ $customQ->id }}]"
+                                                            value="Sangat Puas" required>
                                                         <span class="emoji">🌟</span>
                                                         <span class="d-block mt-2">Sangat Puas</span>
                                                     </label>
                                                     <label class="rating-item text-center cursor-pointer">
-                                                        <input type="radio" name="jawaban_custom[{{ $customQ->id }}]" value="Puas" required>
+                                                        <input type="radio" name="jawaban_custom[{{ $customQ->id }}]"
+                                                            value="Puas" required>
                                                         <span class="emoji">😊</span>
                                                         <span class="d-block mt-2">Puas</span>
                                                     </label>
                                                     <label class="rating-item text-center cursor-pointer">
-                                                        <input type="radio" name="jawaban_custom[{{ $customQ->id }}]" value="Cukup Puas" required>
+                                                        <input type="radio" name="jawaban_custom[{{ $customQ->id }}]"
+                                                            value="Cukup Puas" required>
                                                         <span class="emoji">😐</span>
                                                         <span class="d-block mt-2">Cukup Puas</span>
                                                     </label>
                                                     <label class="rating-item text-center cursor-pointer">
-                                                        <input type="radio" name="jawaban_custom[{{ $customQ->id }}]" value="Kurang Puas" required>
+                                                        <input type="radio" name="jawaban_custom[{{ $customQ->id }}]"
+                                                            value="Kurang Puas" required>
                                                         <span class="emoji">🙁</span>
                                                         <span class="d-block mt-2">Kurang Puas</span>
                                                     </label>
@@ -241,7 +255,8 @@
                                             </div>
                                         @endforeach
 
-                                        <div class="mb-5 question-block" data-step="{{ $totalQuestions + 1 }}" style="display:none;">
+                                        <div class="mb-5 question-block" data-step="{{ $totalQuestions + 1 }}"
+                                            style="display:none;">
                                             <h4 class="fw-bold mb-3">Masukan & Saran</h4>
                                             <div class="form-floating mb-4">
                                                 <textarea name="kendala" id="kendala" rows="4"
@@ -462,11 +477,25 @@
         }
 
         @keyframes shake {
-            0% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            50% { transform: translateX(10px); }
-            75% { transform: translateX(-10px); }
-            100% { transform: translateX(0); }
+            0% {
+                transform: translateX(0);
+            }
+
+            25% {
+                transform: translateX(-10px);
+            }
+
+            50% {
+                transform: translateX(10px);
+            }
+
+            75% {
+                transform: translateX(-10px);
+            }
+
+            100% {
+                transform: translateX(0);
+            }
         }
 
         .modal-content.shake {
@@ -502,7 +531,8 @@
                 <div class="modal-body text-center p-5">
                     <i class="fas fa-check-circle fa-4x text-success mb-3"></i>
                     <h4 class="fw-bold mb-3">Terima Kasih!</h4>
-                    <p class="mb-4">Terima kasih telah mengisi survey kepuasan. Masukan Anda sangat berharga untuk kami.</p>
+                    <p class="mb-4">Terima kasih telah mengisi survey kepuasan. Masukan Anda sangat berharga untuk kami.
+                    </p>
                     <button type="button" class="btn btn-gradient px-4 py-2 rounded-pill" data-bs-dismiss="modal">
                         Tutup
                     </button>
@@ -538,4 +568,5 @@
 
     @include('layouts.NavbarBawah')
 </body>
+
 </html>
