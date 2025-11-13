@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelola Pertanyaan Survey - SPI Polije</title>
+    <title>Kelola pernyataan Survey - SPI Polije</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -17,9 +17,9 @@
             <div class="row mb-4">
                 <div class="col">
                     <h1 class="fw-bold">
-                        <i class="fas fa-list-check me-2"></i> Kelola Pertanyaan Survey
+                        <i class="fas fa-list-check me-2"></i> Kelola pernyataan Survey
                     </h1>
-                    <p class="text-muted">Tambah, edit, atau hapus pertanyaan custom untuk survey</p>
+                    <p class="text-muted">Tambah, edit, atau hapus pernyataan custom untuk survey</p>
                 </div>
             </div>
 
@@ -30,17 +30,17 @@
                 </div>
             @endif
 
-            <!-- Form Tambah Pertanyaan -->
+            <!-- Form Tambah pernyataan -->
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
                     <h5 class="card-title fw-bold mb-3">
-                        <i class="fas fa-plus-circle me-2"></i> Tambah Pertanyaan Baru
+                        <i class="fas fa-plus-circle me-2"></i> Tambah Pernyataan Baru
                     </h5>
                     <form action="{{ route('survey.question.store') }}" method="POST">
                         @csrf
                         <div class="input-group">
                             <input type="text" name="question_text" class="form-control" 
-                                   placeholder="Masukkan teks pertanyaan baru..." required>
+                                   placeholder="Masukkan teks pernyataan baru..." required>
                             <button class="btn btn-primary" type="submit">
                                 <i class="fas fa-plus me-1"></i> Tambah
                             </button>
@@ -49,17 +49,17 @@
                 </div>
             </div>
 
-            <!-- Daftar Pertanyaan -->
+            <!-- Daftar pernyataan -->
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h5 class="card-title fw-bold mb-3">
-                        <i class="fas fa-list me-2"></i> Daftar Pertanyaan Custom
+                        <i class="fas fa-list me-2"></i> Daftar pernyataan Custom
                     </h5>
                     
                     @if($questions->isEmpty())
                         <div class="text-center py-5 text-muted">
                             <i class="fas fa-inbox fa-3x mb-3 opacity-50"></i>
-                            <p>Belum ada pertanyaan custom. Tambahkan pertanyaan di atas.</p>
+                            <p>Belum ada pernyataan custom. Tambahkan pernyataan di atas.</p>
                         </div>
                     @else
                         <div class="table-responsive">
@@ -67,7 +67,7 @@
                                 <thead class="table-light">
                                     <tr>
                                         <th width="50">#</th>
-                                        <th>Pertanyaan</th>
+                                        <th>pernyataan</th>
                                         <th width="150" class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
@@ -109,7 +109,7 @@
                                                 <form action="{{ route('survey.question.delete', $question) }}" 
                                                       method="POST" 
                                                       class="d-inline"
-                                                      onsubmit="return confirm('Yakin ingin menghapus pertanyaan ini?')">
+                                                      onsubmit="return confirm('Yakin ingin menghapus pernyataan ini?')">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button class="btn btn-sm btn-danger">
