@@ -74,25 +74,23 @@ class SurveyController extends Controller
         $surveys = Survey::latest()->get();
         $questions = SurveyQuestion::orderBy('order')->get();
 
-        // Buat label otomatis Q1, Q2, dst sesuai jumlah pertanyaan
+        // Label otomatis Q1, Q2, dst
         $questionLabels = [];
         for ($i = 1; $i <= $questions->count(); $i++) {
             $questionLabels[] = "Q{$i}";
         }
 
-        // Hitung rata-rata skor setiap pertanyaan
+        // Hitung rata-rata skor per pertanyaan
         $criteriaScores = [];
 
         foreach ($questions as $question) {
-            $surveysData = Survey::all();
             $totalScore = 0;
             $count = 0;
 
-            foreach ($surveysData as $survey) {
-                $jawaban = $survey->jawaban;
-                if (is_string($jawaban)) {
-                    $jawaban = json_decode($jawaban, true) ?? [];
-                }
+            foreach ($surveys as $survey) {
+                $jawaban = is_string($survey->jawaban)
+                    ? json_decode($survey->jawaban, true)
+                    : $survey->jawaban;
 
                 if (!empty($jawaban[$question->id]['jawaban'])) {
                     $value = match ($jawaban[$question->id]['jawaban']) {
@@ -110,13 +108,35 @@ class SurveyController extends Controller
             $criteriaScores[] = $count > 0 ? round($totalScore / $count, 2) : 0;
         }
 
-        // Kirim semua data ke view
+        // ✅ Buat label pertanyaan
+        $questionLabels = $questions->pluck('pertanyaan')->toArray();
+
+        // Distribusi Kepuasan (pie chart)
+        $dataKepuasan = [
+            'Sangat Puas' => 0,
+            'Puas' => 0,
+            'Cukup Puas' => 0,
+            'Kurang Puas' => 0,
+        ];
+
+        foreach ($surveys as $survey) {
+            $jawaban = json_decode($survey->jawaban, true) ?? [];
+            foreach ($jawaban as $item) {
+                if (!empty($item['jawaban']) && isset($dataKepuasan[$item['jawaban']])) {
+                    $dataKepuasan[$item['jawaban']]++;
+                }
+            }
+        }
+
+        // ✅ Kirim semua data ke view
         return view('SurveyKepuasan.lihat-survey', compact(
             'surveys',
             'questions',
             'questionLabels',
-            'criteriaScores'
+            'criteriaScores',
+            'dataKepuasan'
         ));
+
     }
 
 

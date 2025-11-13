@@ -699,6 +699,7 @@
 
             <!-- Charts -->
             <div class="row g-4 mb-5">
+                <!-- === Distribusi Kepuasan === -->
                 <div class="col-lg-5 fade-in" style="animation-delay: 0.4s;">
                     <div class="chart-card-modern">
                         <h5 class="chart-title">
@@ -711,6 +712,7 @@
                     </div>
                 </div>
 
+                <!-- === Performa Per Kriteria === -->
                 <div class="col-lg-7 fade-in" style="animation-delay: 0.5s;">
                     <div class="chart-card-modern">
                         <h5 class="chart-title">
@@ -722,283 +724,403 @@
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Data Table -->
-            <div class="table-card fade-in" style="animation-delay: 0.6s;">
-                <div class="table-responsive" style="max-height: 800px;">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th><i class="fas fa-at me-2"></i>Email</th>
-                                <th><i class="fas fa-venus-mars me-2"></i>Gender</th>
-                                <th><i class="fas fa-graduation-cap me-2"></i>Pendidikan</th>
-                                <th><i class="fas fa-briefcase me-2"></i>Pekerjaan</th>
-                                @foreach($questions as $index => $question)
-                                    <th>Q{{ $index + 1 }}</th>
-                                @endforeach
-                                <th><i class="fas fa-exclamation-circle me-2"></i>Kendala</th>
-                                <th><i class="fas fa-comment-dots me-2"></i>Saran</th>
-                                <th><i class="fas fa-calendar-alt me-2"></i>Tanggal</th>
-                                <th><i class="fas fa-clock me-2"></i>Waktu</th>
-                                <th><i class="fas fa-trash me-2"></i>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($surveys as $survey)
+                <!-- === Semua Script Chart di bawah sini === -->
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        // ✅ Ambil data langsung dari backend (Blade)
+                        const dataKepuasan = @json($dataKepuasan);
+                        const questionLabels = @json($questionLabels);
+                        const criteriaScores = @json($criteriaScores);
+
+                        // ✅ Debugging (optional)
+                        console.log('Data Kepuasan:', dataKepuasan);
+                        console.log('Labels:', questionLabels);
+                        console.log('Scores:', criteriaScores);
+
+                        const ctxDistribution = document.getElementById('scoreDistributionChart');
+
+                        // ✅ Jika backend sudah kirim data, tampilkan langsung tanpa ubah controller
+                        if (ctxDistribution) {
+                            new Chart(ctxDistribution, {
+                                type: 'pie',
+                                data: {
+                                    labels: Object.keys(dataKepuasan),
+                                    datasets: [{
+                                        data: Object.values(dataKepuasan),
+                                        backgroundColor: [
+                                            '#4CAF50', // Sangat Puas
+                                            '#2196F3', // Puas
+                                            '#FFC107', // Cukup Puas
+                                            '#FF5722'  // Kurang Puas
+                                        ],
+                                        borderWidth: 1
+                                    }]
+                                },
+                                options: {
+                                    responsive: true,
+                                    plugins: {
+                                        legend: {
+                                            position: 'bottom'
+                                        },
+                                        title: {
+                                            display: true,
+                                            text: 'Distribusi Kepuasan Responden'
+                                        },
+                                        tooltip: {
+                                            callbacks: {
+                                                label: ctx => `${ctx.label}: ${ctx.parsed} responden`
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    });
+                </script>
+                <script>
+                    // Ambil data dari backend pakai Blade
+                    const questionLabels = @json($questionLabels ?? []);
+                    const criteriaScores = @json($criteriaScores ?? []);
+                </script>
+
+                <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                <script>
+                    document.addEventListener("DOMContentLoaded", function () {
+                        console.log("Question Labels:", questionLabels);
+                        console.log("Criteria Scores:", criteriaScores);
+
+                        const ctxCriteria = document.getElementById('criteriaPerformanceChart');
+                        if (!ctxCriteria) {
+                            console.warn("⚠️ Canvas 'criteriaPerformanceChart' tidak ditemukan.");
+                            return;
+                        }
+
+                        if (questionLabels.length === 0 || criteriaScores.length === 0) {
+                            console.warn("⚠️ Data chart performa kosong — chart tidak ditampilkan.");
+                            return;
+                        }
+
+                        new Chart(ctxCriteria, {
+                            type: 'bar',
+                            data: {
+                                labels: questionLabels,
+                                datasets: [{
+                                    label: 'Rata-rata Skor',
+                                    data: criteriaScores,
+                                    backgroundColor: '#42A5F5',
+                                    borderRadius: 6
+                                }]
+                            },
+                            options: {
+                                responsive: true,
+                                scales: {
+                                    y: {
+                                        beginAtZero: true,
+                                        suggestedMax: 5,
+                                        title: {
+                                            display: true,
+                                            text: 'Skor Rata-rata (1–5)'
+                                        }
+                                    }
+                                },
+                                plugins: {
+                                    legend: { display: false },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: ctx => `Skor: ${ctx.parsed.y}`
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    });
+                </script>
+
+
+
+
+
+                <!-- Data Table -->
+                <div class="table-card fade-in" style="animation-delay: 0.6s;">
+                    <div class="table-responsive" style="max-height: 800px;">
+                        <table class="table table-hover">
+                            <thead>
                                 <tr>
-                                    <td><a href="mailto:{{ $survey->email }}" class="email-link">{{ $survey->email }}</a>
-                                    </td>
-                                    <td>{{ $survey->jenis_kelamin ?? '-' }}</td>
-                                    <td>{{ $survey->pendidikan ?? '-' }}</td>
-                                    <td>{{ $survey->pekerjaan ?? '-' }}</td>
-
-                                    @php
-                                        // Decode JSON menjadi array asosiatif
-                                        $answers = json_decode($survey->jawaban, true) ?? [];
-                                    @endphp
-
-                                    @foreach($answers as $answer)
-                                        @php
-                                            $jawaban = $answer['jawaban'] ?? '-';
-                                            $badgeClass = match ($jawaban) {
-                                                'Sangat Puas' => 'sangat-puas',
-                                                'Puas' => 'puas',
-                                                'Cukup Puas' => 'cukup-puas',
-                                                'Kurang Puas' => 'kurang-puas',
-                                                default => 'secondary',
-                                            };
-                                        @endphp
-                                        <td><span class="badge-modern {{ $badgeClass }}">{{ $jawaban }}</span></td>
+                                    <th><i class="fas fa-at me-2"></i>Email</th>
+                                    <th><i class="fas fa-venus-mars me-2"></i>Gender</th>
+                                    <th><i class="fas fa-graduation-cap me-2"></i>Pendidikan</th>
+                                    <th><i class="fas fa-briefcase me-2"></i>Pekerjaan</th>
+                                    @foreach($questions as $index => $question)
+                                        <th>Q{{ $index + 1 }}</th>
                                     @endforeach
-
-
-
-                                    <td class="long-text-cell">{{ $survey->kendala ?? '-' }}</td>
-                                    <td class="long-text-cell">{{ $survey->saran ?? '-' }}</td>
-                                    <td>{{ $survey->tanggal ? \Carbon\Carbon::parse($survey->tanggal)->format('d M Y') : '-' }}
-                                    </td>
-                                    <td>{{ $survey->created_at->format('d/M H:i') }}</td>
-                                    <td>
-                                        <form action="{{ route('surveys.destroy', $survey->id) }}" method="POST"
-                                            onsubmit="return confirm('Yakin ingin menghapus data ini?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn-delete">
-                                                <i class="fas fa-trash"></i>
-                                            </button>
-                                        </form>
-                                    </td>
+                                    <th><i class="fas fa-exclamation-circle me-2"></i>Kendala</th>
+                                    <th><i class="fas fa-comment-dots me-2"></i>Saran</th>
+                                    <th><i class="fas fa-calendar-alt me-2"></i>Tanggal</th>
+                                    <th><i class="fas fa-clock me-2"></i>Waktu</th>
+                                    <th><i class="fas fa-trash me-2"></i>Aksi</th>
                                 </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
+                            </thead>
+                            <tbody>
+                                @foreach($surveys as $survey)
+                                    <tr>
+                                        <td><a href="mailto:{{ $survey->email }}"
+                                                class="email-link">{{ $survey->email }}</a>
+                                        </td>
+                                        <td>{{ $survey->jenis_kelamin ?? '-' }}</td>
+                                        <td>{{ $survey->pendidikan ?? '-' }}</td>
+                                        <td>{{ $survey->pekerjaan ?? '-' }}</td>
 
-                <div class="footer-stats">
-                    <small class="text-muted"><strong>{{ count($surveys) }}</strong> entri ditampilkan</small>
-                    <a href="{{ route('surveys.download') }}" class="btn-modern primary">
-                        <i class="fas fa-download me-2"></i>Download Laporan CSV
-                    </a>
+                                        @php
+                                            // Decode JSON menjadi array asosiatif
+                                            $answers = json_decode($survey->jawaban, true) ?? [];
+                                        @endphp
+
+                                        @foreach($answers as $answer)
+                                            @php
+                                                $jawaban = $answer['jawaban'] ?? '-';
+                                                $badgeClass = match ($jawaban) {
+                                                    'Sangat Puas' => 'sangat-puas',
+                                                    'Puas' => 'puas',
+                                                    'Cukup Puas' => 'cukup-puas',
+                                                    'Kurang Puas' => 'kurang-puas',
+                                                    default => 'secondary',
+                                                };
+                                            @endphp
+                                            <td><span class="badge-modern {{ $badgeClass }}">{{ $jawaban }}</span></td>
+                                        @endforeach
+
+
+
+                                        <td class="long-text-cell">{{ $survey->kendala ?? '-' }}</td>
+                                        <td class="long-text-cell">{{ $survey->saran ?? '-' }}</td>
+                                        <td>{{ $survey->tanggal ? \Carbon\Carbon::parse($survey->tanggal)->format('d M Y') : '-' }}
+                                        </td>
+                                        <td>{{ $survey->created_at->format('d/M H:i') }}</td>
+                                        <td>
+                                            <form action="{{ route('surveys.destroy', $survey->id) }}" method="POST"
+                                                onsubmit="return confirm('Yakin ingin menghapus data ini?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn-delete">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="footer-stats">
+                        <small class="text-muted"><strong>{{ count($surveys) }}</strong> entri ditampilkan</small>
+                        <a href="{{ route('surveys.download') }}" class="btn-modern primary">
+                            <i class="fas fa-download me-2"></i>Download Laporan CSV
+                        </a>
+                    </div>
                 </div>
             </div>
+
+
         </div>
 
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                console.log("Question Labels:", @json($questionLabels));
+                console.log("Criteria Scores:", @json($criteriaScores));
 
-    </div>
+                // Initialize tooltips
+                var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Initialize tooltips
-            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-            tooltipTriggerList.map(function (tooltipTriggerEl) {
-                return new bootstrap.Tooltip(tooltipTriggerEl);
-            });
-
-            // Doughnut Chart dengan warna yang benar
-            const ctxDistribution = document.getElementById('scoreDistributionChart');
-            new Chart(ctxCriteria, {
-                type: 'bar',
-                data: {
-                    labels: @json($questionLabels), // ← pakai label dari controller
-                    datasets: [{
-                        label: 'Rata-rata Skor (Skala 5)',
-                        data: @json($criteriaScores),
-                        backgroundColor: context => {
-                            const value = context.parsed.y;
-                            if (value >= 4.5) return '#198754'; // Hijau - Sangat Puas
-                            if (value >= 4.0) return '#0d6efd'; // Biru - Puas
-                            if (value >= 3.5) return '#ffc107'; // Kuning - Cukup Puas
-                            return '#dc3545'; // Merah - Kurang Puas
-                        },
-                        borderRadius: 10,
-                        borderSkipped: false,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 5,
-                        }
+                // Doughnut Chart dengan warna yang benar
+                const ctxDistribution = document.getElementById('scoreDistributionChart');
+                new Chart(ctxCriteria, {
+                    type: 'bar',
+                    data: {
+                        labels: @json($questionLabels), // ← pakai label dari controller
+                        datasets: [{
+                            label: 'Rata-rata Skor (Skala 5)',
+                            data: @json($criteriaScores),
+                            backgroundColor: context => {
+                                const value = context.parsed.y;
+                                if (value >= 4.5) return '#198754'; // Hijau - Sangat Puas
+                                if (value >= 4.0) return '#0d6efd'; // Biru - Puas
+                                if (value >= 3.5) return '#ffc107'; // Kuning - Cukup Puas
+                                return '#dc3545'; // Merah - Kurang Puas
+                            },
+                            borderRadius: 10,
+                            borderSkipped: false,
+                        }]
                     },
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: context => `Skor: ${context.parsed.y.toFixed(2)}`
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 5,
+                            }
+                        },
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: context => `Skor: ${context.parsed.y.toFixed(2)}`
+                                }
                             }
                         }
                     }
-                }
-            });
+                });
 
-            // Bar Chart dengan warna yang benar
-            const ctxCriteria = document.getElementById('criteriaPerformanceChart');
-            new Chart(ctxCriteria, {
-                type: 'bar',
-                data: {
-                    labels: @json($questionLabels), // ✅ Otomatis menyesuaikan jumlah pertanyaan
-                    datasets: [{
-                        label: 'Rata-rata Skor (Skala 5)',
-                        data: @json($criteriaScores), // ✅ Rata-rata dari controller
-                        backgroundColor: context => {
-                            const value = context.parsed.y;
-                            if (value >= 4.5) return '#198754'; // Hijau - Sangat Puas
-                            if (value >= 4.0) return '#0d6efd'; // Biru - Puas
-                            if (value >= 3.5) return '#ffc107'; // Kuning - Cukup Puas
-                            return '#dc3545'; // Merah - Kurang Puas
-                        },
-                        borderRadius: 10,
-                        borderSkipped: false,
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            max: 5,
-                            grid: {
-                                color: 'rgba(0, 0, 0, 0.05)'
+                // Bar Chart dengan warna yang benar
+                const ctxCriteria = document.getElementById('criteriaPerformanceChart');
+                new Chart(ctxCriteria, {
+                    type: 'bar',
+                    data: {
+                        labels: @json($questionLabels), // ✅ Otomatis menyesuaikan jumlah pertanyaan
+                        datasets: [{
+                            label: 'Rata-rata Skor (Skala 5)',
+                            data: @json($criteriaScores), // ✅ Rata-rata dari controller
+                            backgroundColor: context => {
+                                const value = context.parsed.y;
+                                if (value >= 4.5) return '#198754'; // Hijau - Sangat Puas
+                                if (value >= 4.0) return '#0d6efd'; // Biru - Puas
+                                if (value >= 3.5) return '#ffc107'; // Kuning - Cukup Puas
+                                return '#dc3545'; // Merah - Kurang Puas
                             },
-                            ticks: {
-                                font: {
-                                    family: 'Poppins'
+                            borderRadius: 10,
+                            borderSkipped: false,
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 5,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)'
+                                },
+                                ticks: {
+                                    font: {
+                                        family: 'Poppins'
+                                    }
+                                },
+                                title: {
+                                    display: true,
+                                    text: 'Rata-rata Skor',
+                                    font: {
+                                        size: 13,
+                                        family: 'Poppins',
+                                        weight: '600'
+                                    }
                                 }
                             },
-                            title: {
-                                display: true,
-                                text: 'Rata-rata Skor',
-                                font: {
-                                    size: 13,
-                                    family: 'Poppins',
-                                    weight: '600'
+                            x: {
+                                grid: {
+                                    display: false
+                                },
+                                ticks: {
+                                    font: {
+                                        family: 'Poppins'
+                                    }
                                 }
                             }
                         },
-                        x: {
-                            grid: {
+                        plugins: {
+                            legend: {
                                 display: false
                             },
-                            ticks: {
-                                font: {
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                padding: 12,
+                                titleFont: {
+                                    size: 14,
                                     family: 'Poppins'
+                                },
+                                bodyFont: {
+                                    size: 13,
+                                    family: 'Poppins'
+                                },
+                                callbacks: {
+                                    label: context => `Skor: ${context.parsed.y.toFixed(2)}`
                                 }
                             }
                         }
-                    },
-                    plugins: {
-                        legend: {
-                            display: false
-                        },
-                        tooltip: {
-                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                            padding: 12,
-                            titleFont: {
-                                size: 14,
-                                family: 'Poppins'
-                            },
-                            bodyFont: {
-                                size: 13,
-                                family: 'Poppins'
-                            },
-                            callbacks: {
-                                label: context => `Skor: ${context.parsed.y.toFixed(2)}`
-                            }
-                        }
                     }
-                }
-            });
-            // Dark Mode Toggle
-            const darkModeToggle = document.getElementById('darkModeToggle');
-            const body = document.body;
-            const icon = darkModeToggle.querySelector('i');
+                });
+                // Dark Mode Toggle
+                const darkModeToggle = document.getElementById('darkModeToggle');
+                const body = document.body;
+                const icon = darkModeToggle.querySelector('i');
 
-            // Check for saved dark mode preference
-            if (localStorage.getItem('darkMode') === 'enabled') {
-                body.classList.add('dark-mode');
-                icon.classList.remove('fa-moon');
-                icon.classList.add('fa-sun');
-            }
-
-            darkModeToggle.addEventListener('click', () => {
-                body.classList.toggle('dark-mode');
-
-                if (body.classList.contains('dark-mode')) {
+                // Check for saved dark mode preference
+                if (localStorage.getItem('darkMode') === 'enabled') {
+                    body.classList.add('dark-mode');
                     icon.classList.remove('fa-moon');
                     icon.classList.add('fa-sun');
-                    localStorage.setItem('darkMode', 'enabled');
-                } else {
-                    icon.classList.remove('fa-sun');
-                    icon.classList.add('fa-moon');
-                    localStorage.setItem('darkMode', null);
                 }
-            });
 
-            // Scroll to Top Button
-            const scrollTop = document.getElementById('scrollTop');
+                darkModeToggle.addEventListener('click', () => {
+                    body.classList.toggle('dark-mode');
 
-            window.addEventListener('scroll', () => {
-                if (window.pageYOffset > 300) {
-                    scrollTop.classList.add('visible');
-                } else {
-                    scrollTop.classList.remove('visible');
-                }
-            });
-
-            scrollTop.addEventListener('click', () => {
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
-            });
-
-            // Fade in animations on scroll
-            const observerOptions = {
-                threshold: 0.1,
-                rootMargin: '0px 0px -50px 0px'
-            };
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
+                    if (body.classList.contains('dark-mode')) {
+                        icon.classList.remove('fa-moon');
+                        icon.classList.add('fa-sun');
+                        localStorage.setItem('darkMode', 'enabled');
+                    } else {
+                        icon.classList.remove('fa-sun');
+                        icon.classList.add('fa-moon');
+                        localStorage.setItem('darkMode', null);
                     }
                 });
-            }, observerOptions);
 
-            document.querySelectorAll('.fade-in').forEach(el => {
-                observer.observe(el);
+                // Scroll to Top Button
+                const scrollTop = document.getElementById('scrollTop');
+
+                window.addEventListener('scroll', () => {
+                    if (window.pageYOffset > 300) {
+                        scrollTop.classList.add('visible');
+                    } else {
+                        scrollTop.classList.remove('visible');
+                    }
+                });
+
+                scrollTop.addEventListener('click', () => {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                });
+
+                // Fade in animations on scroll
+                const observerOptions = {
+                    threshold: 0.1,
+                    rootMargin: '0px 0px -50px 0px'
+                };
+
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }
+                    });
+                }, observerOptions);
+
+                document.querySelectorAll('.fade-in').forEach(el => {
+                    observer.observe(el);
+                });
             });
-        });
-    </script>
-    @include('layouts.NavbarBawah')
+        </script>
+        @include('layouts.NavbarBawah')
 </body>
 
 </html>
