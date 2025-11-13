@@ -155,7 +155,7 @@
 
                                            
                                             $defaultQuestions = $allQuestions;
-                                            $customQuestions = collect(); // Kosong karena tidak ada yang di-skip
+                                            $customQuestions = collect(); 
                                         @endphp
 
 

@@ -85,9 +85,6 @@ Route::get('/profile-spi', [App\Http\Controllers\PageController::class, 'Profile
 // Pencarian
 //Route::get('/search', [SearchController::class, 'index'])->name('search');
 
-Route::get('/search/pedoman-pengawasan', function () {
-    return view('search.searchPedomanPengawasan');
-})->name('search.searchPedomanPengawasan');
 
 Route::get('/search-pedoman', [SearchPedomanController::class, 'index'])->name('search.pedoman');
 
@@ -230,7 +227,9 @@ Route::get('/konsideran-spi', [KonsideranSPIController::class, 'index'])
 // Route Ke halaman pedoman mr 
 Route::get('/pedoman/mr', [PedomanMRController::class, 'index'])->name('pedoman.mr');
 
-
+Route::delete('/pedoman/destroy-all', [PedomanPengawasanController::class, 'destroyAll'])
+    ->name('pedoman.destroyAll')
+    ->middleware('auth'); 
 
 // Route Ke halaman PenguatanPengawasan
 Route::get('/penguatan-pengawasan', [PenguatanPengawasanController::class, 'index'])->name('pengawasan.index');
