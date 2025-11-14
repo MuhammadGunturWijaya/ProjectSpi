@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 use App\Models\Survey;
 use App\Models\SurveyQuestion;
+use Illuminate\Support\Facades\Log;
 
 class SurveyController extends Controller
 {
@@ -16,56 +17,66 @@ class SurveyController extends Controller
 
     public function store(Request $request)
     {
-        $allQuestions = SurveyQuestion::orderBy('order')->get();
-        $defaultQuestions = $allQuestions->take(9);
-        $customQuestions = $allQuestions->skip(9);
+        try {
+            // Ambil semua pertanyaan
+            $allQuestions = SurveyQuestion::orderBy('order')->get();
 
-        $rules = [];
-        for ($i = 0; $i < $defaultQuestions->count(); $i++) {
-            $rules["jawaban.$i"] = 'required|string';
+            // ✅ Validasi data demografi
+            $validated = $request->validate([
+                'jenis_kelamin' => 'required|string',
+                'pendidikan' => 'required|string',
+                'pekerjaan' => 'required|string',
+                'tanggal' => 'required|date',
+                'kendala' => 'nullable|string',
+                'saran' => 'nullable|string',
+            ]);
+
+            // ✅ Proses jawaban - semua pertanyaan menggunakan format jawaban[index]
+            $answers = [];
+            
+            foreach ($allQuestions as $index => $question) {
+                $jawabanValue = $request->input("jawaban.{$index}");
+                
+                // ✅ Validasi setiap jawaban harus ada
+                if (empty($jawabanValue)) {
+                    return back()->withErrors([
+                        'jawaban' => "Pertanyaan nomor " . ($index + 1) . " harus dijawab."
+                    ])->withInput();
+                }
+                
+                $answers[$question->id] = [
+                    'pertanyaan' => $question->question_text,
+                    'jawaban' => $jawabanValue
+                ];
+            }
+
+            // ✅ Debug log (opsional, untuk troubleshooting)
+            Log::info('Survey Data:', [
+                'email' => Auth::user()->email,
+                'answers_count' => count($answers),
+                'validated' => $validated
+            ]);
+
+            // ✅ Simpan ke database
+            Survey::create([
+                'email' => Auth::user()->email,
+                'tanggal' => $validated['tanggal'],
+                'jenis_kelamin' => $validated['jenis_kelamin'],
+                'pendidikan' => $validated['pendidikan'],
+                'pekerjaan' => $validated['pekerjaan'],
+                'jawaban' => json_encode($answers),
+                'kendala' => $validated['kendala'] ?? null,
+                'saran' => $validated['saran'] ?? null,
+            ]);
+
+            return back()->with('survey_success', 'Terima kasih telah mengisi survey!');
+
+        } catch (\Exception $e) {
+            Log::error('Survey Error: ' . $e->getMessage());
+            return back()->withErrors([
+                'error' => 'Terjadi kesalahan saat menyimpan survey. Silakan coba lagi.'
+            ])->withInput();
         }
-
-        foreach ($customQuestions as $question) {
-            $rules["jawaban_custom.{$question->id}"] = 'required|string';
-        }
-
-        $rules['kendala'] = 'nullable|string';
-        $rules['saran'] = 'nullable|string';
-        $rules['tanggal'] = 'required|date';
-        $rules['jenis_kelamin'] = 'required|string';
-        $rules['pendidikan'] = 'required|string';
-        $rules['pekerjaan'] = 'required|string';
-
-        $validated = $request->validate($rules);
-
-        $answers = [];
-
-        foreach ($defaultQuestions as $index => $question) {
-            $answers[$question->id] = [
-                'pertanyaan' => $question->question_text,
-                'jawaban' => $validated['jawaban'][$index] ?? '-'
-            ];
-        }
-
-        foreach ($customQuestions as $question) {
-            $answers[$question->id] = [
-                'pertanyaan' => $question->question_text,
-                'jawaban' => $request->input("jawaban_custom.{$question->id}") ?? '-'
-            ];
-        }
-
-        Survey::create([
-            'email' => Auth::user()->email,
-            'tanggal' => $validated['tanggal'],
-            'jenis_kelamin' => $validated['jenis_kelamin'],
-            'pendidikan' => $validated['pendidikan'],
-            'pekerjaan' => $validated['pekerjaan'],
-            'jawaban' => json_encode($answers),
-            'kendala' => $validated['kendala'] ?? null,
-            'saran' => $validated['saran'] ?? null,
-        ]);
-
-        return back()->with('survey_success', 'Terima kasih telah mengisi survey!');
     }
 
     public function showAll()
@@ -80,7 +91,7 @@ class SurveyController extends Controller
             $questionLabels[] = "Q{$i}";
         }
 
-        // Hitung rata-rata skor per pertanyaan
+        // ✅ Hitung rata-rata skor per pertanyaan
         $criteriaScores = [];
 
         foreach ($questions as $question) {
@@ -97,7 +108,7 @@ class SurveyController extends Controller
                         'Sangat Puas' => 5,
                         'Puas' => 4,
                         'Cukup Puas' => 3,
-                        'Kurang Puas' => 2,
+                        'Kurang Puas' => 1,
                         default => 0,
                     };
                     $totalScore += $value;
@@ -108,10 +119,7 @@ class SurveyController extends Controller
             $criteriaScores[] = $count > 0 ? round($totalScore / $count, 2) : 0;
         }
 
-        // ✅ Buat label pertanyaan
-        $questionLabels = $questions->pluck('pertanyaan')->toArray();
-
-        // Distribusi Kepuasan (pie chart)
+        // ✅ Distribusi Kepuasan (pie chart)
         $dataKepuasan = [
             'Sangat Puas' => 0,
             'Puas' => 0,
@@ -136,10 +144,7 @@ class SurveyController extends Controller
             'criteriaScores',
             'dataKepuasan'
         ));
-
     }
-
-
 
     public function download()
     {
@@ -176,7 +181,6 @@ class SurveyController extends Controller
                 if (is_string($jawaban)) {
                     $jawaban = json_decode($jawaban, true) ?? [];
                 }
-
 
                 $row = [
                     $survey->email,
@@ -248,5 +252,4 @@ class SurveyController extends Controller
         $question->delete();
         return back()->with('success', 'Pertanyaan berhasil dihapus!');
     }
-
 }

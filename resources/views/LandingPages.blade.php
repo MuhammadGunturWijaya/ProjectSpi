@@ -878,8 +878,7 @@
         <div class="stat-card2">
             <i class="bi bi-star-fill"></i>
             <div class="stat-info">
-                <!-- <h3>{{ $ikm }}%</h3> -->
-                <h3>87%</h3>
+                <h3>{{ $ikm }}%</h3>
                 <p>Tingkat Kepuasan Hari Ini</p>
             </div>
         </div>

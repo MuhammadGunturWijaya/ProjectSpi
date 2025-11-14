@@ -583,7 +583,7 @@
                 // Total responden
                 $totalRespondents = count($surveys);
 
-                // Fungsi kategori berdasarkan skor 0–100
+                // ✅ Fungsi kategori berdasarkan skor IKM 0–100 (DIPERBAIKI)
                 function getCategoryByScore($score)
                 {
                     if ($score >= 88.31)
@@ -601,35 +601,51 @@
                 $totalScore = 0;
                 $totalCount = 0;
                 $criteriaScores = [];
+                $questionLabels = [];
 
-                for ($i = 1; $i <= 9; $i++) {
+                // ✅ Ambil jumlah pertanyaan dari data survey pertama
+                $firstSurvey = $surveys->first();
+                $answersArray = json_decode($firstSurvey->jawaban ?? '[]', true);
+                $totalQuestions = count($answersArray);
+
+                // ✅ Generate label pertanyaan (Q1, Q2, dst)
+                for ($i = 1; $i <= $totalQuestions; $i++) {
+                    $questionLabels[] = "Q{$i}";
+                }
+
+                // ✅ Hitung rata-rata skor per kriteria
+                for ($i = 0; $i < $totalQuestions; $i++) {
                     $criteriaTotal = 0;
                     $criteriaCount = 0;
 
                     foreach ($surveys as $survey) {
-                        $jawaban = $survey->{'jawaban_' . $i} ?? null;
+                        $answers = json_decode($survey->jawaban ?? '[]', true);
 
-                        if ($jawaban && isset($scoreMap[$jawaban])) {
-                            $criteriaTotal += $scoreMap[$jawaban];
-                            $criteriaCount++;
-                            $totalScore += $scoreMap[$jawaban];
-                            $totalCount++;
+                        if (isset($answers[$i]['jawaban'])) {
+                            $jawaban = $answers[$i]['jawaban'];
+
+                            if (isset($scoreMap[$jawaban])) {
+                                $criteriaTotal += $scoreMap[$jawaban];
+                                $criteriaCount++;
+                                $totalScore += $scoreMap[$jawaban];
+                                $totalCount++;
+                            }
                         }
                     }
 
                     $criteriaScores[] = $criteriaCount > 0 ? round($criteriaTotal / $criteriaCount, 2) : 0;
                 }
 
-                // Rata-rata keseluruhan
+                // ✅ Rata-rata keseluruhan (skala 1-5)
                 $averageScore = $totalCount > 0 ? round($totalScore / $totalCount, 2) : 0;
 
-                // Konversi rata-rata skor ke IKM
-                $ikm = $averageScore * 20;
-                $ikm = round($ikm, 2);
+                // ✅ Konversi rata-rata skor ke IKM (skala 0-100)
+                // Formula: (Rata-rata Skor / 5) × 100
+                $ikm = round(($averageScore / 5) * 100, 2);
                 $ikmCategory = getCategoryByScore($ikm);
 
-                // Inisialisasi distribusi & survei perlu perhatian
-                $scoreCategories = [
+                // ✅ Inisialisasi distribusi kepuasan
+                $dataKepuasan = [
                     'Sangat Puas' => 0,
                     'Puas' => 0,
                     'Cukup Puas' => 0,
@@ -637,31 +653,35 @@
                 ];
                 $attentionCount = 0;
 
-                // Hitung distribusi & survei perlu perhatian berdasarkan IKM individu
+                // ✅ Hitung distribusi kepuasan berdasarkan IKM per responden
                 foreach ($surveys as $survey) {
                     $totalScoreRespondent = 0;
                     $totalCountRespondent = 0;
 
-                    for ($i = 1; $i <= 9; $i++) {
-                        $jawaban = $survey->{'jawaban_' . $i} ?? null;
+                    $answers = json_decode($survey->jawaban ?? '[]', true);
+
+                    foreach ($answers as $answer) {
+                        $jawaban = $answer['jawaban'] ?? null;
+
                         if ($jawaban && isset($scoreMap[$jawaban])) {
-                            $totalScoreRespondent += $scoreMap[$jawaban] * 20;
+                            $totalScoreRespondent += $scoreMap[$jawaban];
                             $totalCountRespondent++;
                         }
                     }
 
-                    $avgScoreRespondent = $totalCountRespondent > 0 ? $totalScoreRespondent / $totalCountRespondent : 0;
-                    $category = getCategoryByScore($avgScoreRespondent);
+                    if ($totalCountRespondent > 0) {
+                        $avgScoreRespondent = $totalScoreRespondent / $totalCountRespondent;
+                        // Konversi ke IKM (0-100)
+                        $ikmRespondent = ($avgScoreRespondent / 5) * 100;
+                        $category = getCategoryByScore($ikmRespondent);
 
-                    $scoreCategories[$category]++;
+                        $dataKepuasan[$category]++;
 
-                    if ($category === 'Kurang Puas') {
-                        $attentionCount++;
+                        if ($category === 'Kurang Puas') {
+                            $attentionCount++;
+                        }
                     }
                 }
-
-                $distributionLabels = array_keys($scoreCategories);
-                $distributionData = array_values($scoreCategories);
             @endphp
 
             <!-- Stats Cards -->
