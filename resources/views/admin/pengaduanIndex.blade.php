@@ -899,11 +899,11 @@
                                     <div class="card-header-custom">
                                         <h5 class="card-title-custom">{{ $p->perihal }}</h5>
                                         <span class="badge-status {{ 
-                                                    $p->status === 'selesai' ? 'badge-selesai' :
+                                                                $p->status === 'selesai' ? 'badge-selesai' :
                             ($p->status === 'tindak_lanjut' ? 'badge-tindak' :
                                 ($p->status === 'diverifikasi' ? 'badge-verifikasi' :
                                     ($p->status === 'tanggapan_pelapor' ? 'badge-tanggapan' : 'badge-laporan')))
-                                                }}">
+                                                            }}">
                                             {{ str_replace('_', ' ', ucfirst($p->status)) }}
                                         </span>
                                     </div>
@@ -1060,20 +1060,24 @@
             <hr style="border: 2px solid rgba(255,255,255,0.3); margin: 50px 0;">
         @endif
 
-        <style>/* Highlight untuk hasil pencarian */
-.pengaduan-card[style*="border: 3px solid"] {
-    animation: pulseHighlight 2s ease-in-out;
-}
+        <style>
+            /* Highlight untuk hasil pencarian */
+            .pengaduan-card[style*="border: 3px solid"] {
+                animation: pulseHighlight 2s ease-in-out;
+            }
 
-@keyframes pulseHighlight {
-    0%, 100% {
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-    }
-    50% {
-        box-shadow: 0 20px 50px rgba(102, 126, 234, 0.5);
-    }
-}
-</style>
+            @keyframes pulseHighlight {
+
+                0%,
+                100% {
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+                }
+
+                50% {
+                    box-shadow: 0 20px 50px rgba(102, 126, 234, 0.5);
+                }
+            }
+        </style>
 
         <!-- Search Results Info -->
         @if(request()->hasAny(['kode_verifikasi', 'kode_aduan', 'perihal']))
@@ -1254,29 +1258,7 @@
                             </div>
                         </div>
 
-                        <!-- Delete Modal -->
-                        <div class="modal fade" id="deleteModal{{ $p->id }}" tabindex="-1">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title">Konfirmasi Hapus</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                    </div>
-                                    <div class="modal-body">
-                                        Apakah Anda yakin ingin menghapus pengaduan ini?
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                                        <form action="{{ route('pengaduan.destroy', $p->id) }}" method="POST"
-                                            style="display: inline;">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="btn btn-danger">Hapus</button>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+
                     @endforeach
                 @else
                     <div class="col-12">
@@ -1298,165 +1280,165 @@
                 @endphp
                 @if($diverifikasi->count() > 0)
                     @foreach($diverifikasi as $p)
-                                                    <div class="col-md-6 col-lg-4">
-                                                        <div class="pengaduan-card">
-                                                            <div class="card-header-custom">
-                                                                <h5 class="card-title-custom">{{ $p->perihal }}</h5>
-                                                                <span class="badge-status {{ 
-                                                                                        $p->status === 'selesai' ? 'badge-selesai' :
+                            <div class="col-md-6 col-lg-4">
+                                <div class="pengaduan-card">
+                                    <div class="card-header-custom">
+                                        <h5 class="card-title-custom">{{ $p->perihal }}</h5>
+                                        <span class="badge-status {{ 
+                                                                                                    $p->status === 'selesai' ? 'badge-selesai' :
                         ($p->status === 'tindak_lanjut' ? 'badge-tindak' :
                             ($p->status === 'diverifikasi' ? 'badge-verifikasi' :
                                 ($p->status === 'tanggapan_pelapor' ? 'badge-tanggapan' : 'badge-laporan')))
-                                                                                    }}">
-                                                                    @if($p->status === 'tanggapan_pelapor' && $p->rejected_at)
-                                                                        <i class="bi bi-arrow-return-left"></i> Dikembalikan
-                                                                    @else
-                                                                        {{ str_replace('_', ' ', ucfirst($p->status)) }}
-                                                                    @endif
-                                                                </span>
-                                                            </div>
+                                                                                                }}">
+                                            @if($p->status === 'tanggapan_pelapor' && $p->rejected_at)
+                                                <i class="bi bi-arrow-return-left"></i> Dikembalikan
+                                            @else
+                                                {{ str_replace('_', ' ', ucfirst($p->status)) }}
+                                            @endif
+                                        </span>
+                                    </div>
 
-                                                            @if($p->status === 'tanggapan_pelapor' && $p->rejected_at)
-                                                                <div class="alert alert-warning alert-sm mt-2 mb-2">
-                                                                    <i class="bi bi-exclamation-triangle-fill"></i>
-                                                                    <small>
-                                                                        <strong>Perlu Perbaikan:</strong>
-                                                                        {{ $p->rejected_fields_count ?? 0 }} field perlu dikoreksi
-                                                                    </small>
-                                                                </div>
-                                                            @endif
+                                    @if($p->status === 'tanggapan_pelapor' && $p->rejected_at)
+                                        <div class="alert alert-warning alert-sm mt-2 mb-2">
+                                            <i class="bi bi-exclamation-triangle-fill"></i>
+                                            <small>
+                                                <strong>Perlu Perbaikan:</strong>
+                                                {{ $p->rejected_fields_count ?? 0 }} field perlu dikoreksi
+                                            </small>
+                                        </div>
+                                    @endif
 
-                                                            <div class="info-grid">
-                                                                <div class="info-item">
-                                                                    <div class="info-icon"><i class="bi bi-calendar-event"></i></div>
-                                                                    <div class="info-content">
-                                                                        <strong>Tanggal</strong>
-                                                                        {{ \Carbon\Carbon::parse($p->tanggal_pengaduan)->format('d M Y') }}
-                                                                    </div>
-                                                                </div>
-                                                                <div class="info-item">
-                                                                    <div class="info-icon"><i class="bi bi-clock"></i></div>
-                                                                    <div class="info-content">
-                                                                        <strong>Dibuat</strong>
-                                                                        {{ $p->created_at->format('d M Y') }}
-                                                                    </div>
-                                                                </div>
-                                                                <div class="info-item">
-                                                                    <div class="info-icon"><i class="bi bi-mortarboard"></i></div>
-                                                                    <div class="info-content">
-                                                                        <strong>Pendidikan</strong>
-                                                                        {{ $p->pendidikan }}
-                                                                    </div>
-                                                                </div>
-                                                                <div class="info-item">
-                                                                    <div class="info-icon"><i class="bi bi-briefcase"></i></div>
-                                                                    <div class="info-content">
-                                                                        <strong>Pekerjaan</strong>
-                                                                        {{ $p->pekerjaan }}
-                                                                    </div>
-                                                                </div>
-                                                                @if($p->bidang_id)
-                                                                    <div class="info-item">
-                                                                        <div class="info-icon"><i class="bi bi-diagram-3"></i></div>
-                                                                        <div class="info-content">
-                                                                            <strong>Bidang</strong>
-                                                                            {{ $p->bidangPengaduan->nama_bidang ?? '-' }}
-                                                                        </div>
-                                                                    </div>
-                                                                @endif
+                                    <div class="info-grid">
+                                        <div class="info-item">
+                                            <div class="info-icon"><i class="bi bi-calendar-event"></i></div>
+                                            <div class="info-content">
+                                                <strong>Tanggal</strong>
+                                                {{ \Carbon\Carbon::parse($p->tanggal_pengaduan)->format('d M Y') }}
+                                            </div>
+                                        </div>
+                                        <div class="info-item">
+                                            <div class="info-icon"><i class="bi bi-clock"></i></div>
+                                            <div class="info-content">
+                                                <strong>Dibuat</strong>
+                                                {{ $p->created_at->format('d M Y') }}
+                                            </div>
+                                        </div>
+                                        <div class="info-item">
+                                            <div class="info-icon"><i class="bi bi-mortarboard"></i></div>
+                                            <div class="info-content">
+                                                <strong>Pendidikan</strong>
+                                                {{ $p->pendidikan }}
+                                            </div>
+                                        </div>
+                                        <div class="info-item">
+                                            <div class="info-icon"><i class="bi bi-briefcase"></i></div>
+                                            <div class="info-content">
+                                                <strong>Pekerjaan</strong>
+                                                {{ $p->pekerjaan }}
+                                            </div>
+                                        </div>
+                                        @if($p->bidang_id)
+                                            <div class="info-item">
+                                                <div class="info-icon"><i class="bi bi-diagram-3"></i></div>
+                                                <div class="info-content">
+                                                    <strong>Bidang</strong>
+                                                    {{ $p->bidangPengaduan->nama_bidang ?? '-' }}
+                                                </div>
+                                            </div>
+                                        @endif
 
-                                                                @if($p->role_bidang_id)
-                                                                    <div class="info-item">
-                                                                        <div class="info-icon"><i class="bi bi-person-badge"></i></div>
-                                                                        <div class="info-content">
-                                                                            <strong>Ditangani oleh</strong>
-                                                                            {{ $p->roleBidang->nama_role ?? '-' }}
-                                                                        </div>
-                                                                    </div>
-                                                                @endif
+                                        @if($p->role_bidang_id)
+                                            <div class="info-item">
+                                                <div class="info-icon"><i class="bi bi-person-badge"></i></div>
+                                                <div class="info-content">
+                                                    <strong>Ditangani oleh</strong>
+                                                    {{ $p->roleBidang->nama_role ?? '-' }}
+                                                </div>
+                                            </div>
+                                        @endif
 
-                                                                <!-- Badge untuk menampilkan status tanggapan -->
-                                                                @if($p->status === 'tanggapan_pelapor')
-                                                                    <div class="col-12">
-                                                                        @if($p->tanggapan_admin)
-                                                                            <div class="alert alert-info alert-sm">
-                                                                                <i class="bi bi-chat-left-text-fill"></i>
-                                                                                <small><strong>Tanggapan diberikan</strong> pada
-                                                                                    {{ $p->tanggapan_admin_at->format('d M Y, H:i') }}</small>
-                                                                            </div>
-                                                                        @endif
-                                                                    </div>
-                                                                @endif
-
-                                                                @if($p->status === 'tindak_lanjut' && $p->tanggapan_pelapor)
-                                                                    <div class="col-12">
-                                                                        <div class="alert alert-warning alert-sm">
-                                                                            <i class="bi bi-arrow-clockwise"></i>
-                                                                            <small><strong>Tindak lanjut ulang</strong> - Pelapor memberikan tanggapan
-                                                                                kembali</small>
-                                                                        </div>
-                                                                    </div>
-                                                                @endif
-
-                                                                <style>
-                                                                    .alert-sm {
-                                                                        padding: 8px 12px;
-                                                                        margin-bottom: 10px;
-                                                                        border-radius: 8px;
-                                                                        font-size: 0.85rem;
-                                                                    }
-                                                                </style>
-                                                            </div>
-
-                                                            @auth
-                                                                @if(auth()->user()->role === 'admin')
-                                                                    {{-- Kontainer dengan gaya background kuning dan sudut bulat --}}
-                                                                    <div
-                                                                        style="background-color: #ffeebf; padding: 30px 20px 20px; border-radius: 15px; position: relative; display: flex; align-items: center; gap: 15px;">
-
-                                                                        <form action="{{ route('pengaduan.updateStatus', $p->id) }}" method="POST"
-                                                                            style="display: flex; align-items: center; width: 100%; gap: 15px;">
-                                                                            @csrf
-                                                                            @method('PATCH')
-
-                                                                            {{-- Label Melayang --}}
-                                                                            <label for="status-select"
-                                                                                style="background-color: #ff9933; color: white; padding: 5px 10px; border-radius: 8px; font-weight: bold; position: absolute; top: -15px; left: 10px; z-index: 10;">
-                                                                                status laporan saat ini :
-                                                                            </label>
-
-                                                                            {{-- Select Box --}}
-                                                                            @php $currentStatus = $p->status ?? 'laporan_dikirim'; @endphp
-                                                                            <select name="status" id="status-select"
-                                                                                style="flex-grow: 1; padding: 10px 15px; border-radius: 8px; font-size: 16px; min-width: 200px;">
-
-                                                                                <option value="diverifikasi" @selected($currentStatus == 'diverifikasi')>Diverifikasi
-                                                                                </option>
-
-                                                                            </select>
-
-                                                                            {{-- Tombol Update --}}
-                                                                            <button type="submit"
-                                                                                style="background-color: #ff9933; color: white; border: none; padding: 10px 25px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;">
-                                                                                Update
-                                                                            </button>
-                                                                        </form>
-                                                                    </div>
-                                                                @endif
-                                                            @endauth
-
-                                                            <div class="action-buttons">
-                                                                <button class="btn-action btn-view"
-                                                                    onclick="window.location.href='{{ route('pengaduan.show', $p->id) }}'">
-                                                                    <i class="bi bi-eye-fill"></i> Lihat
-                                                                </button>
-                                                                <button class="btn-action btn-delete" data-bs-toggle="modal"
-                                                                    data-bs-target="#deleteModal{{ $p->id }}">
-                                                                    <i class="bi bi-trash-fill"></i> Hapus
-                                                                </button>
-                                                            </div>
-                                                        </div>
+                                        <!-- Badge untuk menampilkan status tanggapan -->
+                                        @if($p->status === 'tanggapan_pelapor')
+                                            <div class="col-12">
+                                                @if($p->tanggapan_admin)
+                                                    <div class="alert alert-info alert-sm">
+                                                        <i class="bi bi-chat-left-text-fill"></i>
+                                                        <small><strong>Tanggapan diberikan</strong> pada
+                                                            {{ $p->tanggapan_admin_at->format('d M Y, H:i') }}</small>
                                                     </div>
+                                                @endif
+                                            </div>
+                                        @endif
+
+                                        @if($p->status === 'tindak_lanjut' && $p->tanggapan_pelapor)
+                                            <div class="col-12">
+                                                <div class="alert alert-warning alert-sm">
+                                                    <i class="bi bi-arrow-clockwise"></i>
+                                                    <small><strong>Tindak lanjut ulang</strong> - Pelapor memberikan tanggapan
+                                                        kembali</small>
+                                                </div>
+                                            </div>
+                                        @endif
+
+                                        <style>
+                                            .alert-sm {
+                                                padding: 8px 12px;
+                                                margin-bottom: 10px;
+                                                border-radius: 8px;
+                                                font-size: 0.85rem;
+                                            }
+                                        </style>
+                                    </div>
+
+                                    @auth
+                                        @if(auth()->user()->role === 'admin')
+                                            {{-- Kontainer dengan gaya background kuning dan sudut bulat --}}
+                                            <div
+                                                style="background-color: #ffeebf; padding: 30px 20px 20px; border-radius: 15px; position: relative; display: flex; align-items: center; gap: 15px;">
+
+                                                <form action="{{ route('pengaduan.updateStatus', $p->id) }}" method="POST"
+                                                    style="display: flex; align-items: center; width: 100%; gap: 15px;">
+                                                    @csrf
+                                                    @method('PATCH')
+
+                                                    {{-- Label Melayang --}}
+                                                    <label for="status-select"
+                                                        style="background-color: #ff9933; color: white; padding: 5px 10px; border-radius: 8px; font-weight: bold; position: absolute; top: -15px; left: 10px; z-index: 10;">
+                                                        status laporan saat ini :
+                                                    </label>
+
+                                                    {{-- Select Box --}}
+                                                    @php $currentStatus = $p->status ?? 'laporan_dikirim'; @endphp
+                                                    <select name="status" id="status-select"
+                                                        style="flex-grow: 1; padding: 10px 15px; border-radius: 8px; font-size: 16px; min-width: 200px;">
+
+                                                        <option value="diverifikasi" @selected($currentStatus == 'diverifikasi')>Diverifikasi
+                                                        </option>
+
+                                                    </select>
+
+                                                    {{-- Tombol Update --}}
+                                                    <button type="submit"
+                                                        style="background-color: #ff9933; color: white; border: none; padding: 10px 25px; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer;">
+                                                        Update
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        @endif
+                                    @endauth
+
+                                    <div class="action-buttons">
+                                        <button class="btn-action btn-view"
+                                            onclick="window.location.href='{{ route('pengaduan.show', $p->id) }}'">
+                                            <i class="bi bi-eye-fill"></i> Lihat
+                                        </button>
+                                        <button class="btn-action btn-delete" data-bs-toggle="modal"
+                                            data-bs-target="#deleteModal{{ $p->id }}">
+                                            <i class="bi bi-trash-fill"></i> Hapus
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
                     @endforeach
                 @else
                     <div class="col-12">
@@ -1923,6 +1905,164 @@
             </a>
         </div>
     </div>
+
+    {{-- KUMPULAN DELETE MODAL --}}
+    @foreach($laporanDikirim as $p)
+        <div class="modal fade" id="deleteModal{{ $p->id }}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+
+                    <div class="modal-header">
+                        <h5 class="modal-title">Konfirmasi Hapus</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        Apakah Anda yakin ingin menghapus pengaduan ini?
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+
+                        <form action="{{ route('pengaduan.destroy', $p->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">Hapus</button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    @endforeach
+
+    {{-- KUMPULAN DELETE MODAL - SEMUA STATUS --}}
+    
+    {{-- Modal untuk Laporan Dikirim --}}
+    @foreach($laporanDikirim as $p)
+        <div class="modal fade" id="deleteModal{{ $p->id }}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Konfirmasi Hapus</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        Apakah Anda yakin ingin menghapus pengaduan ini?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <form action="{{ route('pengaduan.destroy', $p->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">Hapus</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
+
+    {{-- Modal untuk Diverifikasi --}}
+    @foreach($diverifikasi as $p)
+        <div class="modal fade" id="deleteModal{{ $p->id }}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Konfirmasi Hapus</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        Apakah Anda yakin ingin menghapus pengaduan ini?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <form action="{{ route('pengaduan.destroy', $p->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">Hapus</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
+
+    {{-- Modal untuk Tindak Lanjut --}}
+    @foreach($tindakLanjut as $p)
+        <div class="modal fade" id="deleteModal{{ $p->id }}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Konfirmasi Hapus</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        Apakah Anda yakin ingin menghapus pengaduan ini?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <form action="{{ route('pengaduan.destroy', $p->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">Hapus</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
+
+    {{-- Modal untuk Tanggapan Pelapor --}}
+    @foreach($tanggapanPelapor as $p)
+        <div class="modal fade" id="deleteModal{{ $p->id }}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Konfirmasi Hapus</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        Apakah Anda yakin ingin menghapus pengaduan ini?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <form action="{{ route('pengaduan.destroy', $p->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">Hapus</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
+
+    {{-- Modal untuk Selesai --}}
+    @foreach($selesai as $p)
+        <div class="modal fade" id="deleteModal{{ $p->id }}" tabindex="-1">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Konfirmasi Hapus</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        Apakah Anda yakin ingin menghapus pengaduan ini?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <form action="{{ route('pengaduan.destroy', $p->id) }}" method="POST" style="display:inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">Hapus</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
+
 
     {{-- Navbar Bawah --}}
     @include('layouts.NavbarBawah')

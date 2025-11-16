@@ -64,9 +64,28 @@ class Pengaduan extends Model
      */
     public function getPelanggaranAttribute($value)
     {
-        return $this->decodeJson($value);
-    }
+        if (is_null($value)) {
+            return [];
+        }
 
+        if (is_array($value)) {
+            return $value;
+        }
+
+        // Bersihkan escape berlebihan
+        $clean = trim($value, '"');
+        $clean = stripslashes($clean);
+
+        // Decode JSON
+        $decoded = json_decode($clean, true);
+
+        // Fallback jika decode pertama gagal
+        if (!is_array($decoded)) {
+            $decoded = json_decode($value, true);
+        }
+
+        return is_array($decoded) ? $decoded : [];
+    }
     public function getKontakAttribute($value)
     {
         return $this->decodeJson($value);

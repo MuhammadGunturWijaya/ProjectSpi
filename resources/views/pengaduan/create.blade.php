@@ -621,28 +621,51 @@
                                                 <p class="mb-1 text-secondary">Pelanggaran:</p>
                                                 <ul>
                                                     @php
-                                                        // Parse JSON dengan safety check
-                                                        $pelanggaranList = $laporan->pelanggaran;
+                                                        // ✅ PERBAIKAN: Ambil raw value dari database
+                                                        $rawPelanggaran = $laporan->getAttributes()['pelanggaran'] ?? null;
 
-                                                        // Jika masih string, decode jadi array
-                                                        if (is_string($pelanggaranList)) {
-                                                            $pelanggaranList = json_decode($pelanggaranList, true) ?? [];
+                                                        // Debug (hapus setelah testing)
+                                                        // dd($rawPelanggaran, gettype($rawPelanggaran));
+
+                                                        $pelanggaranList = [];
+
+                                                        // Cek apakah sudah array (dari accessor/cast)
+                                                        if (is_array($laporan->pelanggaran)) {
+                                                            $pelanggaranList = $laporan->pelanggaran;
                                                         }
+                                                        // Jika masih string JSON, decode manual
+                                                        elseif (is_string($rawPelanggaran)) {
+                                                            // Bersihkan escape characters berlebihan
+                                                            $clean = trim($rawPelanggaran, '"');
+                                                            $clean = stripslashes($clean);
 
-                                                        // Jika null, jadikan array kosong
-                                                        $pelanggaranList = $pelanggaranList ?? [];
+                                                            // Decode JSON
+                                                            $decoded = json_decode($clean, true);
+
+                                                            // Jika decode gagal, coba decode langsung
+                                                            if (!is_array($decoded)) {
+                                                                $decoded = json_decode($rawPelanggaran, true);
+                                                            }
+
+                                                            $pelanggaranList = is_array($decoded) ? $decoded : [];
+                                                        }
                                                     @endphp
 
                                                     @if(count($pelanggaranList) > 0)
                                                         @foreach($pelanggaranList as $p)
-                                                            <li>{{ $p }}</li>
+                                                            @if($p !== 'Lainnya')
+                                                                <li>{{ $p }}</li>
+                                                            @endif
                                                         @endforeach
+
+                                                        {{-- Tampilkan "Lainnya" dengan text custom jika ada --}}
+                                                        @if(in_array('Lainnya', $pelanggaranList) && !empty($laporan->pelanggaran_lain))
+                                                            <li><strong>Lainnya:</strong> {{ $laporan->pelanggaran_lain }}</li>
+                                                        @elseif(in_array('Lainnya', $pelanggaranList))
+                                                            <li>Lainnya</li>
+                                                        @endif
                                                     @else
                                                         <li class="text-muted">Tidak ada pelanggaran tercatat</li>
-                                                    @endif
-
-                                                    @if(!empty($laporan->pelanggaran_lain))
-                                                        <li>Lainnya: {{ $laporan->pelanggaran_lain }}</li>
                                                     @endif
                                                 </ul>
                                             </div>
@@ -836,11 +859,11 @@
                                                         class="process-step {{ $step['class'] }} {{ $isActive ? 'active' : '' }} text-center flex-fill position-relative">
                                                         <div class="process-icon-container shadow-sm mb-2"
                                                             style="background: {{ $isActive ? $step['color'] : '#fff' }}; 
-                                                                                                                                                                                    border: 2px solid {{ $isActive ? $step['color'] : '#dee2e6' }};
-                                                                                                                                                                                    width: 60px; height: 60px; border-radius: 50%; 
-                                                                                                                                                                                    display: flex; align-items: center; justify-content: center;
-                                                                                                                                                                                    margin: 0 auto;
-                                                                                                                                                                                    transition: all 0.3s ease;">
+                                                                                                                                                                                                border: 2px solid {{ $isActive ? $step['color'] : '#dee2e6' }};
+                                                                                                                                                                                                width: 60px; height: 60px; border-radius: 50%; 
+                                                                                                                                                                                                display: flex; align-items: center; justify-content: center;
+                                                                                                                                                                                                margin: 0 auto;
+                                                                                                                                                                                                transition: all 0.3s ease;">
                                                             <i class="bi {{ $step['icon'] }} fs-4"
                                                                 style="color: {{ $isActive ? '#fff' : '#dee2e6' }}; transition: color 0.3s;"></i>
                                                         </div>
@@ -1985,18 +2008,18 @@
             // Cek setiap modal yang ada
             @if($needsResponse->count() > 0)
                 @foreach($needsResponse as $laporan)
-                        (function () {
-                            const laporanId = {{ $laporan->id }};
-                            const puasRadio = document.getElementById('puas' + laporanId);
-                            const tidakPuasRadio = document.getElementById('tidak_puas' + laporanId);
+                    (function () {
+                        const laporanId = {{ $laporan->id }};
+                        const puasRadio = document.getElementById('puas' + laporanId);
+                        const tidakPuasRadio = document.getElementById('tidak_puas' + laporanId);
 
-                            // Set kondisi awal berdasarkan data yang ada
-                            @if($laporan->status_kepuasan == 'puas')
-                                toggleTanggapanField(laporanId, 'puas');
-                            @elseif($laporan->status_kepuasan == 'tidak_puas')
-                                toggleTanggapanField(laporanId, 'tidak_puas');
-                            @endif
-                    })();
+                        // Set kondisi awal berdasarkan data yang ada
+                        @if($laporan->status_kepuasan == 'puas')
+                            toggleTanggapanField(laporanId, 'puas');
+                        @elseif($laporan->status_kepuasan == 'tidak_puas')
+                            toggleTanggapanField(laporanId, 'tidak_puas');
+                        @endif
+                        })();
                 @endforeach
             @endif
 });
