@@ -19,6 +19,210 @@
 
     @include('layouts.navbar')
 
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden;
+        }
+
+        .text-gradient {
+            background: linear-gradient(45deg, #007bff, #28a745);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+
+        .survey-card {
+            border-radius: 1.5rem;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            position: relative;
+            z-index: 1;
+            padding: 2rem;
+        }
+
+        .survey-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
+        }
+
+        .rating-options {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .rating-item {
+            width: 130px;
+            padding: 1.2rem;
+            border-radius: 1rem;
+            background-color: #f1f3f5;
+            transition: all 0.2s ease;
+            cursor: pointer;
+            text-align: center;
+            border: 3px solid transparent;
+        }
+
+        .rating-item:hover {
+            background-color: #e0e5ef;
+            transform: translateY(-4px) scale(1.05);
+        }
+
+        .rating-item input[type="radio"] {
+            display: none;
+        }
+
+        /* Warna untuk Sangat Puas - Hijau */
+        .rating-item:has(input[value="Sangat Puas"]:checked) {
+            background-color: #d4edda;
+            border-color: #28a745;
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        .rating-item:has(input[value="Sangat Puas"]:checked) .emoji {
+            transform: scale(1.5) rotate(10deg);
+        }
+
+        .rating-item:has(input[value="Sangat Puas"]:checked) span {
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        /* Warna untuk Puas - Kuning */
+        .rating-item:has(input[value="Puas"]:checked) {
+            background-color: #fff3cd;
+            border-color: #ffc107;
+            box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);
+        }
+
+        .rating-item:has(input[value="Puas"]:checked) .emoji {
+            transform: scale(1.5) rotate(10deg);
+        }
+
+        .rating-item:has(input[value="Puas"]:checked) span {
+            font-weight: bold;
+            color: #ffc107;
+        }
+
+        /* Warna untuk Cukup Puas - Orange */
+        .rating-item:has(input[value="Cukup Puas"]:checked) {
+            background-color: #ffe5d0;
+            border-color: #fd7e14;
+            box-shadow: 0 4px 15px rgba(253, 126, 20, 0.3);
+        }
+
+        .rating-item:has(input[value="Cukup Puas"]:checked) .emoji {
+            transform: scale(1.5) rotate(10deg);
+        }
+
+        .rating-item:has(input[value="Cukup Puas"]:checked) span {
+            font-weight: bold;
+            color: #fd7e14;
+        }
+
+        /* Warna untuk Kurang Puas - Merah */
+        .rating-item:has(input[value="Kurang Puas"]:checked) {
+            background-color: #f8d7da;
+            border-color: #dc3545;
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+        }
+
+        .rating-item:has(input[value="Kurang Puas"]:checked) .emoji {
+            transform: scale(1.5) rotate(10deg);
+        }
+
+        .rating-item:has(input[value="Kurang Puas"]:checked) span {
+            font-weight: bold;
+            color: #dc3545;
+        }
+
+        .emoji {
+            font-size: 3rem;
+            display: block;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .btn-gradient {
+            background: linear-gradient(90deg, #007bff, #28a745);
+            color: white;
+            border: none;
+            box-shadow: 0 4px 20px rgba(0, 123, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .btn-gradient:hover {
+            box-shadow: 0 6px 25px rgba(0, 123, 255, 0.3);
+            transform: translateY(-2px);
+            color: #fff;
+        }
+
+        .progress {
+            height: 10px;
+            border-radius: 10px;
+            background-color: #e9ecef;
+        }
+
+        .progress-bar {
+            background: linear-gradient(90deg, #007bff, #28a745);
+            transition: width 0.4s ease-in-out;
+        }
+
+        .survey-section {
+            background: linear-gradient(135deg, #e0f7fa, #ffffff);
+            position: relative;
+            overflow: hidden;
+            min-height: 100vh;
+            padding: 3rem 0;
+        }
+
+        .survey-section::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 200px;
+            height: 200px;
+            background: rgba(0, 123, 255, 0.1);
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        .survey-section::after {
+            content: "";
+            position: absolute;
+            bottom: -50px;
+            left: -50px;
+            width: 250px;
+            height: 250px;
+            background: rgba(40, 167, 69, 0.1);
+            border-radius: 50%;
+            z-index: 0;
+        }
+
+        .input-group-text {
+            background: linear-gradient(90deg, #007bff, #28a745);
+            font-size: 1.2rem;
+            padding: 0.75rem 1rem;
+        }
+
+        input[type="date"] {
+            font-size: 1rem;
+            background-color: #f9fafb;
+            transition: all 0.2s ease;
+        }
+
+        input[type="date"]:hover {
+            background-color: #eef5ff;
+        }
+
+        input[type="date"]:focus {
+            background-color: #fff;
+            box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
+        }
+    </style>
+</head>
+<body class="bg-light">
     <section class="survey-section py-5 min-vh-100 d-flex align-items-center" id="survey">
         <div class="container">
             <div class="text-center mb-5">
@@ -103,7 +307,6 @@
                             @auth
                                 <form method="POST" action="{{ route('survey.store') }}" class="animate-fade">
                                     @csrf
-
                                     {{-- Pertanyaan Demografis --}}
                                     <div class="mb-5 question-block" data-step="0">
                                         <h4 class="fw-bold mb-3">Data Diri</h4>
@@ -264,33 +467,32 @@
                                                     placeholder="Kendala/Masalah yang Anda alami (boleh kosong)"></textarea>
                                                 <label for="kendala">Kendala/Masalah yang Anda alami (boleh kosong)</label>
                                             </div>
-                                            <div class="form-floating mb-4">
-                                                <textarea name="saran" id="saran" rows="4" class="form-control rounded-4"
-                                                    style="height: 120px;"
-                                                    placeholder="Saran Perbaikan Layanan (boleh kosong)"></textarea>
-                                                <label for="saran">Saran Perbaikan Layanan (boleh kosong)</label>
-                                            </div>
-                                        </div>
+                                    <div class="form-floating mb-4">
+                                        <textarea name="saran" id="saran" rows="4" class="form-control rounded-4"
+                                            style="height: 120px;"
+                                            placeholder="Saran Perbaikan Layanan (boleh kosong)"></textarea>
+                                        <label for="saran">Saran Perbaikan Layanan (boleh kosong)</label>
                                     </div>
+                                </div>
 
-                                    <div class="d-flex justify-content-between mt-4">
-                                        <button type="button" id="prev-btn"
-                                            class="btn btn-outline-secondary px-4 py-2 rounded-pill shadow-sm"
-                                            style="display:none;">
-                                            <i class="fas fa-arrow-left me-2"></i> Kembali
-                                        </button>
-                                        <button type="button" id="next-btn"
-                                            class="btn btn-gradient px-4 py-2 rounded-pill ms-auto">
-                                            Lanjut <i class="fas fa-arrow-right ms-2"></i>
-                                        </button>
-                                        <button type="submit" id="submit-btn"
-                                            class="btn btn-gradient btn-lg px-5 py-2 rounded-pill shadow fw-bold"
-                                            style="display:none;">
-                                            <i class="fas fa-paper-plane me-2"></i> Kirim Survey
-                                        </button>
-                                    </div>
-                                </form>
-                            @endauth
+                                <div class="d-flex justify-content-between mt-4">
+                                    <button type="button" id="prev-btn"
+                                        class="btn btn-outline-secondary px-4 py-2 rounded-pill shadow-sm"
+                                        style="display:none;">
+                                        <i class="fas fa-arrow-left me-2"></i> Kembali
+                                    </button>
+                                    <button type="button" id="next-btn"
+                                        class="btn btn-gradient px-4 py-2 rounded-pill ms-auto">
+                                        Lanjut <i class="fas fa-arrow-right ms-2"></i>
+                                    </button>
+                                    <button type="submit" id="submit-btn"
+                                        class="btn btn-gradient btn-lg px-5 py-2 rounded-pill shadow fw-bold"
+                                        style="display:none;">
+                                        <i class="fas fa-paper-plane me-2"></i> Kirim Survey
+                                    </button>
+                                </div>
+                            </form>
+                        @endauth
                         </div>
                     </div>
                 </div>
@@ -354,176 +556,6 @@
         });
     </script>
 
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif;
-        }
-
-        .text-gradient {
-            background: linear-gradient(45deg, #007bff, #28a745);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 700;
-        }
-
-        .survey-card {
-            border-radius: 1.5rem;
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.08);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-            position: relative;
-            z-index: 1;
-            padding: 2rem;
-        }
-
-        .survey-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.12);
-        }
-
-        .rating-options {
-            display: flex;
-            justify-content: space-around;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .rating-item {
-            width: 130px;
-            padding: 1.2rem;
-            border-radius: 1rem;
-            background-color: #f1f3f5;
-            transition: all 0.2s ease;
-            cursor: pointer;
-            text-align: center;
-        }
-
-        .rating-item:hover {
-            background-color: #e0e5ef;
-            transform: translateY(-4px) scale(1.05);
-        }
-
-        .rating-item input[type="radio"] {
-            display: none;
-        }
-
-        .rating-item input[type="radio"]:checked+.emoji {
-            transform: scale(1.5) rotate(10deg);
-        }
-
-        .rating-item input[type="radio"]:checked~span {
-            font-weight: bold;
-            color: #007bff;
-        }
-
-        .emoji {
-            font-size: 3rem;
-            display: block;
-            transition: transform 0.3s ease-in-out;
-        }
-
-        .btn-gradient {
-            background: linear-gradient(90deg, #007bff, #28a745);
-            color: white;
-            border: none;
-            box-shadow: 0 4px 20px rgba(0, 123, 255, 0.2);
-            transition: all 0.3s ease;
-        }
-
-        .btn-gradient:hover {
-            box-shadow: 0 6px 25px rgba(0, 123, 255, 0.3);
-            transform: translateY(-2px);
-            color: #fff;
-        }
-
-        .progress {
-            height: 10px;
-            border-radius: 10px;
-            background-color: #e9ecef;
-        }
-
-        .progress-bar {
-            background: linear-gradient(90deg, #007bff, #28a745);
-            transition: width 0.4s ease-in-out;
-        }
-
-        .survey-section {
-            background: linear-gradient(135deg, #e0f7fa, #ffffff);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .survey-section::before {
-            content: "";
-            position: absolute;
-            top: -50px;
-            right: -50px;
-            width: 200px;
-            height: 200px;
-            background: rgba(0, 123, 255, 0.1);
-            border-radius: 50%;
-            z-index: 0;
-        }
-
-        .survey-section::after {
-            content: "";
-            position: absolute;
-            bottom: -50px;
-            left: -50px;
-            width: 250px;
-            height: 250px;
-            background: rgba(40, 167, 69, 0.1);
-            border-radius: 50%;
-            z-index: 0;
-        }
-
-        @keyframes shake {
-            0% {
-                transform: translateX(0);
-            }
-
-            25% {
-                transform: translateX(-10px);
-            }
-
-            50% {
-                transform: translateX(10px);
-            }
-
-            75% {
-                transform: translateX(-10px);
-            }
-
-            100% {
-                transform: translateX(0);
-            }
-        }
-
-        .modal-content.shake {
-            animation: shake 0.5s;
-        }
-
-        .input-group-text {
-            background: linear-gradient(90deg, #007bff, #28a745);
-            font-size: 1.2rem;
-            padding: 0.75rem 1rem;
-        }
-
-        input[type="date"] {
-            font-size: 1rem;
-            background-color: #f9fafb;
-            transition: all 0.2s ease;
-        }
-
-        input[type="date"]:hover {
-            background-color: #eef5ff;
-        }
-
-        input[type="date"]:focus {
-            background-color: #fff;
-            box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
-        }
-    </style>
-
     <!-- Modal Terima Kasih -->
     <div class="modal fade" id="thankYouModal" tabindex="-1" aria-labelledby="thankYouModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -568,5 +600,4 @@
 
     @include('layouts.NavbarBawah')
 </body>
-
 </html>

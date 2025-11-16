@@ -582,9 +582,20 @@
                                                 <option value="">-- Pilih Kategori --</option>
                                                 <option value="agama">Agama</option>
                                                 <option value="kesehatan">Kesehatan</option>
-                                                <option value="keuangan">Keuangan</option>
                                                 <option value="pendidikan">Pendidikan</option>
                                                 <option value="infrastruktur">Infrastruktur</option>
+                                                <option value="akademik">akademik</option>
+                                                <option value="kemahasiswaan">kemahasiswaan</option>
+                                                <option value="keuangan">keuangan</option>
+                                                <option value="sarana_prasarana">sarana prasarana</option>
+                                                <option value="layanan_administrasi">layanan administrasi</option>
+                                                <option value="kerja_sama">kerja sama </option>
+                                                <option value="kepegawaian">kepegawaian</option>
+                                                <option value="perencanaan_dan_kegiatan">perencanaan dan kegiatan </option>
+                                                <option value="tata_kelola">tata kelola</option>
+                                                <option value="unit_bisnis_dan_teaching_factory">unit bisnis dan teaching factory</option>
+                                                <option value="lingkungan">lingkungan</option>
+                                                <option value="sistem_informasi_dan_komunikasi">sistem informasi dan komunikasi</option>
                                                 <option value="lainnya">Lainnya</option>
                                             </select>
                                         </div>

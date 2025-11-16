@@ -42,16 +42,16 @@ class AspirasiController extends Controller
         // Search
         if ($request->filled('search')) {
             $search = $request->search;
-            $query->where(function($q) use ($search) {
+            $query->where(function ($q) use ($search) {
                 $q->where('judul', 'like', "%{$search}%")
-                  ->orWhere('keterangan', 'like', "%{$search}%")
-                  ->orWhere('asal_pelapor', 'like', "%{$search}%")
-                  ->orWhere('instansi', 'like', "%{$search}%");
+                    ->orWhere('keterangan', 'like', "%{$search}%")
+                    ->orWhere('asal_pelapor', 'like', "%{$search}%")
+                    ->orWhere('instansi', 'like', "%{$search}%");
             });
         }
 
         $aspirasis = $query->orderBy('created_at', 'desc')->paginate(15);
-        
+
         // Statistik
         $stats = [
             'total' => Aspirasi::count(),
@@ -60,8 +60,20 @@ class AspirasiController extends Controller
             'keuangan' => Aspirasi::where('kategori', 'keuangan')->count(),
             'pendidikan' => Aspirasi::where('kategori', 'pendidikan')->count(),
             'infrastruktur' => Aspirasi::where('kategori', 'infrastruktur')->count(),
+            'akademik' => Aspirasi::where('kategori', 'akademik')->count(),
+            'kemahasiswaan' => Aspirasi::where('kategori', 'kemahasiswaan')->count(),
+            'sarana_prasarana' => Aspirasi::where('kategori', 'sarana_prasarana')->count(),
+            'layanan_administrasi' => Aspirasi::where('kategori', 'layanan_administrasi')->count(),
+            'kerja_sama' => Aspirasi::where('kategori', 'kerja_sama')->count(),
+            'kepegawaian' => Aspirasi::where('kategori', 'kepegawaian')->count(),
+            'perencanaan_dan_kegiatan' => Aspirasi::where('kategori', 'perencanaan_dan_kegiatan')->count(),
+            'tata_kelola' => Aspirasi::where('kategori', 'tata_kelola')->count(),
+            'unit_bisnis_dan_teaching_factory' => Aspirasi::where('kategori', 'unit_bisnis_dan_teaching_factory')->count(),
+            'lingkungan' => Aspirasi::where('kategori', 'lingkungan')->count(),
+            'sistem_informasi_dan_komunikasi' => Aspirasi::where('kategori', 'sistem_informasi_dan_komunikasi')->count(),
             'lainnya' => Aspirasi::where('kategori', 'lainnya')->count(),
         ];
+
 
         return view('aspirasi.admin', compact('aspirasis', 'stats'));
     }
@@ -79,7 +91,7 @@ class AspirasiController extends Controller
             'asal_pelapor' => 'required|string|max:255',
             'instansi' => 'required|string|max:255',
             'tanggal' => 'required|date',
-            'kategori' => 'required|in:agama,kesehatan,keuangan,pendidikan,infrastruktur,lainnya',
+            'kategori' => 'required|in:agama,kesehatan,keuangan,pendidikan,infrastruktur,akademik,kemahasiswaan,sarana_prasarana,layanan_administrasi,kerja_sama,kepegawaian,perencanaan_dan_kegiatan,tata_kelola,unit_bisnis_dan_teaching_factory,lingkungan,sistem_informasi_dan_komunikasi,lainnya',
             'kategori_lainnya' => 'required_if:kategori,lainnya|nullable|string|max:255',
             'lampiran' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:5120',
         ], [
