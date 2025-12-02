@@ -247,7 +247,7 @@ Route::get('/piagam/{id}', [PiagamSPIController::class, 'show'])->name('piagam.s
 Route::get('/piagam-spi', [PiagamSPIController::class, 'index'])->name('piagam-spi');
 
 // PosAp
-Route::prefix('posAp')->name('posAp.')->group(function () {
+Route::prefix('posap')->name('posap.')->group(function () {
     Route::get('/', [PosApPengawasanController::class, 'index'])->name('index');
     Route::post('/store', [PosApPengawasanController::class, 'store'])->name('store');
     Route::delete('/{id}', [PosApPengawasanController::class, 'destroy'])->name('destroy');

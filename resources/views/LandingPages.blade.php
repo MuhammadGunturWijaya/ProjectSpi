@@ -767,7 +767,7 @@
                             <li><a class="dropdown-item" href="{{ route('piagam.index') }}">Piagam SPI</a></li>
                             <li><a class="dropdown-item" href="{{ route('pedoman.pengawasan') }}">Pedoman Pengawasan</a>
                             </li>
-                            <li><a class="dropdown-item" href="{{ route('posAp.index') }}">POS AP Pengawasan</a></li>
+                            <li><a class="dropdown-item" href="{{ route('posap.index') }}">POS AP Pengawasan</a></li>
                             <li><a class="dropdown-item" href="{{ route('instrumen.index') }}">Instrumen Pengawasan</a>
                             </li>
                             <li><a class="dropdown-item" href="{{ route('programKerja.index') }}">Program Kerja SPI</a>

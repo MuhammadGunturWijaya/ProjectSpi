@@ -212,7 +212,7 @@
                         <p class="card-subtitle">Tahun: {{ $PosAp->tahun ?? '-' }}</p>
                     </div>
                     <div class="card-actions">
-                        <a href="{{ route('posAp.show', $PosAp->id) }}" class="action-btn view-btn">
+                        <a href="{{ route('posap.show', $PosAp->id) }}" class="action-btn view-btn">
                             <i class="fa fa-eye"></i> Lihat
                         </a>
 

@@ -763,7 +763,7 @@ class _LoginPageState extends State<LoginPage>
     setState(() => _isLoading = true);
 
     try {
-      var url = Uri.parse("http://192.168.0.104/backend/api/login.php");
+      var url = Uri.parse("http://localhost/backend/api/login.php");
 
       var response = await http.post(
         url,

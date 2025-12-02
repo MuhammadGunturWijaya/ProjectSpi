@@ -430,7 +430,7 @@
         <div class="classification-header">
             <h2>POS AP <span class="audit-text">Audit</span></h2>
             <div class="header-actions">
-                <a href="{{ route('posAp.lihat', 'audit') }}">
+                <a href="{{ route('posap.lihat', 'audit') }}">
                     <i class="fa fa-chart-bar"></i> Lihat Lebih
                 </a>
                 @if(Auth::check() && Auth::user()->role === 'admin')
@@ -451,7 +451,7 @@
                         <h3>{{ $PosAp->judul }}</h3>
                         <p>Tahun: {{ $PosAp->tahun ?? '-' }}</p>
                     </div>
-                    <a href="{{ route('posAp.show', $PosAp->id) }}" class="card-link">
+                    <a href="{{ route('posap.show', $PosAp->id) }}" class="card-link">
                         Lihat Dokumen →
                     </a>
                 </div>
@@ -466,7 +466,7 @@
         <div class="classification-header">
             <h2>POS AP <span class="audit-text">Reviu</span></h2>
             <div class="header-actions">
-                <a href="{{ route('posAp.lihat', 'reviu') }}">
+                <a href="{{ route('posap.lihat', 'reviu') }}">
                     <i class="fa fa-chart-bar"></i> Lihat Lebih
                 </a>
                 @if(Auth::check() && Auth::user()->role === 'admin')
@@ -487,7 +487,7 @@
                         <h3>{{ $PosAp->judul }}</h3>
                         <p>Tahun: {{ $PosAp->tahun ?? '-' }}</p>
                     </div>
-                    <a href="{{ route('posAp.show', $PosAp->id) }}" class="card-link">
+                    <a href="{{ route('posap.show', $PosAp->id) }}" class="card-link">
                         Lihat Dokumen →
                     </a>
                 </div>
@@ -502,7 +502,7 @@
         <div class="classification-header">
             <h2>POS AP <span class="audit-text">Monev</span></h2>
             <div class="header-actions">
-                <a href="{{ route('posAp.lihat', 'monev') }}">
+                <a href="{{ route('posap.lihat', 'monev') }}">
                     <i class="fa fa-chart-bar"></i> Lihat Lebih
                 </a>
                 @if(Auth::check() && Auth::user()->role === 'admin')
@@ -523,7 +523,7 @@
                         <h3>{{ $PosAp->judul }}</h3>
                         <p>Tahun: {{ $PosAp->tahun ?? '-' }}</p>
                     </div>
-                    <a href="{{ route('posAp.show', $PosAp->id) }}" class="card-link">
+                    <a href="{{ route('posap.show', $PosAp->id) }}" class="card-link">
                         Lihat Dokumen →
                     </a>
                 </div>
@@ -571,7 +571,7 @@
                 </button>
             </div>
 
-            <form id="formTambahPosAp" action="{{ route('posAp.store') }}" method="POST" enctype="multipart/form-data"
+            <form id="formTambahPosAp" action="{{ route('posap.store') }}" method="POST" enctype="multipart/form-data"
                 novalidate>
                 @csrf
 

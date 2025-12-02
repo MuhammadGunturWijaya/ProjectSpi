@@ -132,7 +132,7 @@
                             <li><a class="dropdown-item" href="{{ route('piagam.index') }}">Piagam SPI</a></li>
                             <li><a class="dropdown-item" href="{{ route('pedoman.pengawasan') }}">Pedoman Pengawasan</a></li>
                             <li>
-                                <a class="dropdown-item" href="{{ route('posAp.index') }}">
+                                <a class="dropdown-item" href="{{ route('posap.index') }}">
                                     POS AP Pengawasan
                                 </a>
                             </li>

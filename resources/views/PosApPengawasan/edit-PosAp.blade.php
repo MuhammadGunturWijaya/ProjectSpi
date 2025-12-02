@@ -138,7 +138,7 @@
             <div class="d-flex justify-content-end mt-5">
                 <button type="submit" class="btn btn-gradient-primary me-3 fw-semibold"><i
                         class="bi bi-save me-1"></i>Simpan Perubahan</button>
-                <a href="{{ route('posAp.index') }}" class="btn btn-outline-secondary fw-semibold">Batal</a>
+                <a href="{{ route('posap.index') }}" class="btn btn-outline-secondary fw-semibold">Batal</a>
             </div>
         </form>
     </div>
