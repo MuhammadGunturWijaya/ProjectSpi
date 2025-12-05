@@ -29,7 +29,7 @@ class VisiMisiController extends Controller
             'visi' => 'required',
             'misi' => 'required',
             'tanggal' => 'nullable|date',
-            'jam' => 'nullable|date_format:H:i',
+            'jam' => 'nullable|regex:/^\d{2}:\d{2}(:\d{2})?$/',
         ]);
 
         $visimisi = VisiMisi::firstOrCreate([]);

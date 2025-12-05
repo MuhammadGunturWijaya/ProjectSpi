@@ -113,7 +113,7 @@
             <div class="carousel-track-container">
                 <div class="carousel-track">
                     @foreach($popular as $item)
-                        <a href="{{ route('konsideran_SPI.show', $item->id) }}" class="card-link">
+                        <a href="{{ route('konsideran.show', $item->id) }}" class="card-link">
                             <div class="card-item-new">
                                 <div class="card-glow"></div>
                                 <div class="card-icon-new">

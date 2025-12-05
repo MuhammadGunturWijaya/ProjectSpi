@@ -444,9 +444,10 @@
     </section>
 
     <div class="back-button-container">
-        <a href="{{ route('pedomanpengawasan.detail-pedoman') }}" class="modern-back-button">
-            &larr; Kembali
-        </a>
+        <a href="{{ route('pedoman.pengawasan') }}" class="modern-back-button">
+    &larr; Kembali
+</a>
+
     </div>
 
     <style>

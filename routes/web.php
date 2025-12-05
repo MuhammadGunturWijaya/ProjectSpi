@@ -239,6 +239,9 @@ Route::get('/pos-ap/detail/{id}', [PosApPengawasanController::class, 'detailJson
 // Route untuk AJAX detail PosAp
 Route::get('/posap/detail/{id}', [PosApPengawasanController::class, 'getDetail'])->name('posap.detail');
 Route::get('/posap/audit', [PosApPengawasanController::class, 'showByJenis'])->name('posap.audit');
+Route::get('/posAp/{id}/edit', [PosApPengawasanController::class, 'edit'])->name('posAp.edit');
+Route::delete('/posAp/{id}', [PosApPengawasanController::class, 'destroy'])->name('posAp.destroy');
+Route::put('/posAp/{id}', [PosApPengawasanController::class, 'update'])->name('posAp.update');
 
 // Piagam SPI
 Route::post('/upload-piagam', [PiagamSPIController::class, 'store'])->name('piagam.store');

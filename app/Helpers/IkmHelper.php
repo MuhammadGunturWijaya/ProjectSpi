@@ -4,12 +4,6 @@ namespace App\Helpers;
 
 class IkmHelper
 {
-    /**
-     * Hitung IKM dari collection surveys
-     * 
-     * @param \Illuminate\Support\Collection $surveys
-     * @return array ['ikm' => float, 'category' => string, 'averageScore' => float]
-     */
     public static function calculateIkm($surveys)
     {
         $scoreMap = [
@@ -23,39 +17,47 @@ class IkmHelper
         $totalCount = 0;
 
         foreach ($surveys as $survey) {
-            $answers = json_decode($survey->jawaban ?? '[]', true);
 
-            if (is_array($answers)) {
-                foreach ($answers as $answer) {
-                    if (isset($answer['jawaban']) && isset($scoreMap[$answer['jawaban']])) {
-                        $totalScore += $scoreMap[$answer['jawaban']];
-                        $totalCount++;
-                    }
+            // *** Perbaikan disini ***
+            $rawAnswers = $survey->jawaban;
+
+            // Jika sudah array → langsung pakai
+            if (is_array($rawAnswers)) {
+                $answers = $rawAnswers;
+            }
+            // Jika string JSON → decode
+            elseif (is_string($rawAnswers)) {
+                $answers = json_decode($rawAnswers, true) ?? [];
+            }
+            // Selain itu → kosongkan
+            else {
+                $answers = [];
+            }
+
+            // Hitung skor
+            foreach ($answers as $answer) {
+                if (isset($answer['jawaban']) && isset($scoreMap[$answer['jawaban']])) {
+                    $totalScore += $scoreMap[$answer['jawaban']];
+                    $totalCount++;
                 }
             }
         }
 
-        // Rata-rata skor (1-5)
+        // Rata-rata skor
         $averageScore = $totalCount > 0 ? $totalScore / $totalCount : 0;
 
-        // Konversi ke IKM (0-100)
+        // Konversi ke IKM (0–100)
         $ikm = round(($averageScore / 5) * 100, 2);
-
-        // Kategori
-        $category = self::getCategoryByScore($ikm);
 
         return [
             'ikm' => $ikm,
-            'category' => $category,
+            'category' => self::getCategoryByScore($ikm),
             'averageScore' => round($averageScore, 2),
             'totalAnswers' => $totalCount,
             'totalScore' => $totalScore
         ];
     }
 
-    /**
-     * Get category berdasarkan skor IKM
-     */
     public static function getCategoryByScore($score)
     {
         if ($score >= 88.31) return 'Sangat Puas';

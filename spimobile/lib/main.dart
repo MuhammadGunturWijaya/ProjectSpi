@@ -5,6 +5,7 @@ import 'RegisterPage.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import 'survey_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -585,12 +586,10 @@ class _MenuScreenState extends State<MenuScreen>
                               icon: Icons.rate_review_outlined,
                               color: const Color(0xFF388E3C),
                               onTap: () {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'Survey Kepuasan segera hadir',
-                                    ),
-                                    duration: Duration(seconds: 2),
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => const SurveyPage(),
                                   ),
                                 );
                               },

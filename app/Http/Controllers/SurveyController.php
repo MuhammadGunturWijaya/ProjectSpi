@@ -99,9 +99,8 @@ class SurveyController extends Controller
             $count = 0;
 
             foreach ($surveys as $survey) {
-                $jawaban = is_string($survey->jawaban)
-                    ? json_decode($survey->jawaban, true)
-                    : $survey->jawaban;
+                // FIX: Pastikan jawaban adalah array
+                $jawaban = $this->decodeJsonSafely($survey->jawaban);
 
                 if (!empty($jawaban[$question->id]['jawaban'])) {
                     $value = match ($jawaban[$question->id]['jawaban']) {
@@ -128,7 +127,9 @@ class SurveyController extends Controller
         ];
 
         foreach ($surveys as $survey) {
-            $jawaban = json_decode($survey->jawaban, true) ?? [];
+            // FIX: Pastikan jawaban adalah array
+            $jawaban = $this->decodeJsonSafely($survey->jawaban);
+            
             foreach ($jawaban as $item) {
                 if (!empty($item['jawaban']) && isset($dataKepuasan[$item['jawaban']])) {
                     $dataKepuasan[$item['jawaban']]++;
@@ -177,10 +178,10 @@ class SurveyController extends Controller
             fputcsv($file, $columns);
 
             foreach ($surveys as $survey) {
-                $jawaban = $survey->jawaban;
-                if (is_string($jawaban)) {
-                    $jawaban = json_decode($jawaban, true) ?? [];
-                }
+                // FIX: Gunakan helper function inline karena $this tidak tersedia di closure
+                $jawaban = is_array($survey->jawaban) 
+                    ? $survey->jawaban 
+                    : (is_string($survey->jawaban) ? json_decode($survey->jawaban, true) : []);
 
                 $row = [
                     $survey->email,
@@ -251,5 +252,25 @@ class SurveyController extends Controller
     {
         $question->delete();
         return back()->with('success', 'Pertanyaan berhasil dihapus!');
+    }
+
+    /**
+     * Helper function untuk decode JSON dengan aman
+     * Mengatasi error ketika data sudah berupa array
+     */
+    private function decodeJsonSafely($data)
+    {
+        // Jika sudah array, return langsung
+        if (is_array($data)) {
+            return $data;
+        }
+        
+        // Jika string, decode JSON
+        if (is_string($data)) {
+            return json_decode($data, true) ?? [];
+        }
+        
+        // Fallback jika tipe data tidak diketahui
+        return [];
     }
 }

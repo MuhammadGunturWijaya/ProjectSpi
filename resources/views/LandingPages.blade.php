@@ -980,15 +980,15 @@
             <div id="tentangKamiCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000">
                 <div class="carousel-inner">
                     <div class="carousel-item active">
-                        <img src="https://tse3.mm.bing.net/th/id/OIP.IHBoHa-ktdGJkEIvMgv0YwHaE7?o=7rm=3&rs=1&pid=ImgDetMain"
+                        <img src="https://polije.ac.id/wp-content/uploads/2025/10/Web-banner-dies-37-no-logo.png"
                             class="d-block w-100 carousel-img" alt="Banner 1">
                     </div>
                     <div class="carousel-item">
-                        <img src="https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AA1I4jGQ.img?w=768&h=512&m=6"
+                        <img src="https://polije.ac.id/wp-content/uploads/2024/04/polije.png"
                             class="d-block w-100 carousel-img" alt="Banner 2">
                     </div>
                     <div class="carousel-item">
-                        <img src="https://img-s-msn-com.akamaized.net/tenant/amp/entityid/AA1NpXMJ.img?w=768&h=514&m=6"
+                        <img src="https://polije.ac.id/wp-content/uploads/2024/04/Web-Banner-Zona-Integritas.png"
                             class="d-block w-100 carousel-img" alt="Banner 3">
                     </div>
                 </div>
