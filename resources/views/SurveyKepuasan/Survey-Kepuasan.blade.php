@@ -221,8 +221,16 @@
             box-shadow: 0 0 0 0.25rem rgba(0, 123, 255, 0.25);
         }
     </style>
-</head>
-<body class="bg-light">
+
+    @php
+        // Ambil semua pertanyaan dari database berdasarkan urutan
+        $allQuestions = \App\Models\SurveyQuestion::orderBy('order')->get();
+        $totalQuestions = $allQuestions->count();
+        
+        $defaultQuestions = $allQuestions;
+        $customQuestions = collect(); 
+    @endphp
+
     <section class="survey-section py-5 min-vh-100 d-flex align-items-center" id="survey">
         <div class="container">
             <div class="text-center mb-5">
@@ -351,17 +359,6 @@
                                     </div>
 
                                     <div id="survey-form-content">
-                                        @php
-                                            // Ambil semua pertanyaan dari database berdasarkan urutan
-                                            $allQuestions = \App\Models\SurveyQuestion::orderBy('order')->get();
-                                            $totalQuestions = $allQuestions->count();
-
-                                           
-                                            $defaultQuestions = $allQuestions;
-                                            $customQuestions = collect(); 
-                                        @endphp
-
-
                                         {{-- 9 Pertanyaan Default (dari database) --}}
                                         @foreach($defaultQuestions as $index => $question)
                                             <div class="mb-5 question-block" data-step="{{ $index + 1 }}" @if($index > 0)
@@ -467,32 +464,33 @@
                                                     placeholder="Kendala/Masalah yang Anda alami (boleh kosong)"></textarea>
                                                 <label for="kendala">Kendala/Masalah yang Anda alami (boleh kosong)</label>
                                             </div>
-                                    <div class="form-floating mb-4">
-                                        <textarea name="saran" id="saran" rows="4" class="form-control rounded-4"
-                                            style="height: 120px;"
-                                            placeholder="Saran Perbaikan Layanan (boleh kosong)"></textarea>
-                                        <label for="saran">Saran Perbaikan Layanan (boleh kosong)</label>
+                                            <div class="form-floating mb-4">
+                                                <textarea name="saran" id="saran" rows="4" class="form-control rounded-4"
+                                                    style="height: 120px;"
+                                                    placeholder="Saran Perbaikan Layanan (boleh kosong)"></textarea>
+                                                <label for="saran">Saran Perbaikan Layanan (boleh kosong)</label>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="d-flex justify-content-between mt-4">
-                                    <button type="button" id="prev-btn"
-                                        class="btn btn-outline-secondary px-4 py-2 rounded-pill shadow-sm"
-                                        style="display:none;">
-                                        <i class="fas fa-arrow-left me-2"></i> Kembali
-                                    </button>
-                                    <button type="button" id="next-btn"
-                                        class="btn btn-gradient px-4 py-2 rounded-pill ms-auto">
-                                        Lanjut <i class="fas fa-arrow-right ms-2"></i>
-                                    </button>
-                                    <button type="submit" id="submit-btn"
-                                        class="btn btn-gradient btn-lg px-5 py-2 rounded-pill shadow fw-bold"
-                                        style="display:none;">
-                                        <i class="fas fa-paper-plane me-2"></i> Kirim Survey
-                                    </button>
-                                </div>
-                            </form>
-                        @endauth
+                                    <div class="d-flex justify-content-between mt-4">
+                                        <button type="button" id="prev-btn"
+                                            class="btn btn-outline-secondary px-4 py-2 rounded-pill shadow-sm"
+                                            style="display:none;">
+                                            <i class="fas fa-arrow-left me-2"></i> Kembali
+                                        </button>
+                                        <button type="button" id="next-btn"
+                                            class="btn btn-gradient px-4 py-2 rounded-pill ms-auto">
+                                            Lanjut <i class="fas fa-arrow-right ms-2"></i>
+                                        </button>
+                                        <button type="submit" id="submit-btn"
+                                            class="btn btn-gradient btn-lg px-5 py-2 rounded-pill shadow fw-bold"
+                                            style="display:none;">
+                                            <i class="fas fa-paper-plane me-2"></i> Kirim Survey
+                                        </button>
+                                    </div>
+                                </form>
+                            @endauth
                         </div>
                     </div>
                 </div>
