@@ -45,7 +45,8 @@ use App\Http\Controllers\BagianController;
 use App\Http\Controllers\AspirasiController;
 use App\Http\Controllers\BidangPengaduanController;
 use App\Http\Controllers\RoleBidangController;
-
+use App\Http\Controllers\UserListController;
+use App\Http\Controllers\Auth\PasswordResetOtpController;
 
 // Halaman landing
 Route::get('/', [LandingPageController::class, 'index'])->name('landingpage');
@@ -470,4 +471,38 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/profile/add-member', [ProfileController::class, 'showAddMember'])->name('profile.add-member');
     Route::post('/profile/store-member', [ProfileController::class, 'storeMember'])->name('profile.store-member');
+});
+
+Route::middleware(['auth'])->group(function () {
+    // Route yang sudah ada...
+
+    // Route untuk daftar pengguna
+    Route::get('/users', [UserListController::class, 'index'])->name('users.index');
+    Route::get('/users/{id}/edit', [UserListController::class, 'edit'])->name('users.edit');
+    Route::put('/users/{id}', [UserListController::class, 'update'])->name('users.update');
+    Route::delete('/users/{id}', [UserListController::class, 'destroy'])->name('users.destroy');
+});
+
+Route::middleware('guest')->group(function () {
+    // Request OTP
+    Route::get('/password/request-otp', [PasswordResetOtpController::class, 'showRequestForm'])
+        ->name('password.request-otp');
+    Route::post('/password/send-otp', [PasswordResetOtpController::class, 'sendOtp'])
+        ->name('password.send-otp');
+    
+    // Verify OTP
+    Route::get('/password/verify-otp', [PasswordResetOtpController::class, 'showVerifyForm'])
+        ->name('password.verify-otp-form');
+    Route::post('/password/verify-otp', [PasswordResetOtpController::class, 'verifyOtp'])
+        ->name('password.verify-otp');
+    
+    // Reset Password
+    Route::get('/password/reset-password', [PasswordResetOtpController::class, 'showResetForm'])
+        ->name('password.reset-form');
+    Route::post('/password/reset', [PasswordResetOtpController::class, 'resetPassword'])
+        ->name('password.reset');
+    
+    // Resend OTP
+    Route::post('/password/resend-otp', [PasswordResetOtpController::class, 'resendOtp'])
+        ->name('password.resend-otp');
 });

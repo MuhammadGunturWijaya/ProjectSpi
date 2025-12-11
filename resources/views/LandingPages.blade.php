@@ -821,6 +821,13 @@
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
+                            @if(auth()->user()->role === 'admin')
+                                <li><a href="{{ route('users.index') }}" class="dropdown-item"><i
+                                            class="bi bi-person-fill me-2"></i> Daftar Akun</a></li>
+                                <li>
+                            @endif
+                                <hr class="dropdown-divider">
+                            </li>
                             <li>
                                 <form action="{{ route('logout') }}" method="POST" class="d-inline">
                                     @csrf

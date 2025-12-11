@@ -62,17 +62,34 @@ class AuthController extends Controller
 
 
     // Proses daftar akun
+    // Proses daftar akun
     public function register(Request $request)
     {
-        $request->validate([
+        // Validasi dasar
+        $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'password' => 'required|min:6|confirmed',
-            'role_bidang_id' => 'required|exists:role_bidang,id', // pastikan tabel benar
-        ]);
+            'user_type' => 'required|in:pegawai,whistleblower,masyarakat',
+        ];
 
-        // Ambil data role bidang yang dipilih
-        $roleBidang = \App\Models\RoleBidang::find($request->role_bidang_id);
+        // Tambahkan validasi role_bidang_id HANYA jika user_type adalah pegawai
+        if ($request->user_type === 'pegawai') {
+            $rules['role_bidang_id'] = 'required|exists:role_bidang,id';
+        }
+
+        $request->validate($rules);
+
+        // Ambil data role bidang hanya untuk pegawai
+        $roleBidang = null;
+        $pegawaiRole = null;
+        $roleBidangId = null;
+
+        if ($request->user_type === 'pegawai' && $request->role_bidang_id) {
+            $roleBidang = \App\Models\RoleBidang::find($request->role_bidang_id);
+            $pegawaiRole = $roleBidang->nama_role;
+            $roleBidangId = $roleBidang->id;
+        }
 
         // Generate kode hanya untuk pegawai
         $pegawaiCode = $request->user_type === 'pegawai' ? rand(100000, 999999) : null;
@@ -86,8 +103,8 @@ class AuthController extends Controller
             'phone' => $request->phone,
             'address' => $request->address,
             'user_type' => $request->user_type,
-            'pegawai_role' => $roleBidang->nama_role, // otomatis dari role_bidang
-            'role_bidang_id' => $roleBidang->id,       // ✅ simpan id role bidang juga
+            'pegawai_role' => $pegawaiRole, // null untuk non-pegawai
+            'role_bidang_id' => $roleBidangId, // null untuk non-pegawai
             'gender' => $request->gender,
             'disability' => $request->disability,
             'disability_type' => $request->disability_type,

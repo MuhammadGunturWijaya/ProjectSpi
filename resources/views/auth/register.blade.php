@@ -726,10 +726,6 @@
 
             <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-
-
-
-
             <script>
                 document.addEventListener("DOMContentLoaded", function () {
                     const nextStepBtn = document.getElementById("nextStepBtn");
@@ -754,38 +750,152 @@
                         step1.classList.remove("d-none");
                     });
 
-                    // Toggle role dropdown untuk pegawai
-                    const radioCards = document.querySelectorAll('.radio-card');
+                    // ===== KODE BARU: Toggle Kategori Internal & Eksternal =====
                     const pegawaiRadio = document.getElementById("pegawaiPolije");
-                    const roleBoxPegawai = document.getElementById("pegawaiRoleBox");
+                    const whistleRadio = document.getElementById("whistleblower");
+                    const masyarakatRadio = document.getElementById("masyarakat");
 
-                    radioCards.forEach(card => {
-                        card.addEventListener('click', function () {
-                            radioCards.forEach(c => c.classList.remove('active'));
-                            const radio = this.querySelector('input[type="radio"]');
-                            if (radio) {
-                                radio.checked = true;
-                                this.classList.add('active');
-                                // toggle role box
-                                if (pegawaiRadio.checked) roleBoxPegawai.classList.remove('d-none');
-                                else roleBoxPegawai.classList.add('d-none');
+                    const pegawaiCard = pegawaiRadio.closest('.radio-card');
+                    const whistleCard = whistleRadio.closest('.radio-card');
+                    const masyarakatCard = masyarakatRadio.closest('.radio-card');
+
+                    const roleBidangSelect = document.querySelector('select[name="role_bidang_id"]');
+
+                    let selectedCategory = null; // Track kategori yang dipilih
+
+                    // Handler untuk Pegawai Polije
+                    pegawaiCard.addEventListener('click', function (e) {
+                        e.preventDefault();
+
+                        if (selectedCategory === 'pegawai') {
+                            // Batal pilih - tampilkan semua opsi lagi
+                            pegawaiRadio.checked = false;
+                            pegawaiCard.classList.remove('active');
+                            whistleCard.classList.remove('d-none');
+                            masyarakatCard.classList.remove('d-none');
+                            if (roleBidangSelect) {
+                                roleBidangSelect.classList.add('d-none');
+                                roleBidangSelect.required = false;
+                                roleBidangSelect.disabled = true;
                             }
+                            selectedCategory = null;
+                        } else {
+                            // Pilih Pegawai - sembunyikan yang lain, tampilkan dropdown
+                            pegawaiRadio.checked = true;
+                            pegawaiCard.classList.add('active');
+                            whistleCard.classList.add('d-none');
+                            masyarakatCard.classList.add('d-none');
+                            whistleRadio.checked = false;
+                            masyarakatRadio.checked = false;
+                            whistleCard.classList.remove('active');
+                            masyarakatCard.classList.remove('active');
+
+                            if (roleBidangSelect) {
+                                roleBidangSelect.classList.remove('d-none');
+                                roleBidangSelect.required = true;
+                                roleBidangSelect.disabled = false;
+                            }
+                            selectedCategory = 'pegawai';
+                        }
+                    });
+
+                    // Handler untuk Whistleblower
+                    whistleCard.addEventListener('click', function (e) {
+                        e.preventDefault();
+
+                        if (selectedCategory === 'whistleblower') {
+                            // Batal pilih
+                            whistleRadio.checked = false;
+                            whistleCard.classList.remove('active');
+                            pegawaiCard.classList.remove('d-none');
+                            masyarakatCard.classList.remove('d-none');
+                            selectedCategory = null;
+                        } else {
+                            // Pilih Whistleblower - sembunyikan yang lain
+                            whistleRadio.checked = true;
+                            whistleCard.classList.add('active');
+                            pegawaiCard.classList.add('d-none');
+                            masyarakatCard.classList.add('d-none');
+                            pegawaiRadio.checked = false;
+                            masyarakatRadio.checked = false;
+                            pegawaiCard.classList.remove('active');
+                            masyarakatCard.classList.remove('active');
+
+                            if (roleBidangSelect) {
+                                roleBidangSelect.classList.add('d-none');
+                                roleBidangSelect.required = false;
+                                roleBidangSelect.value = '';
+                                roleBidangSelect.disabled = true; // Disable agar tidak terkirim
+                            }
+                            selectedCategory = 'whistleblower';
+                        }
+                    });
+
+                    // Handler untuk Masyarakat
+                    masyarakatCard.addEventListener('click', function (e) {
+                        e.preventDefault();
+
+                        if (selectedCategory === 'masyarakat') {
+                            // Batal pilih
+                            masyarakatRadio.checked = false;
+                            masyarakatCard.classList.remove('active');
+                            pegawaiCard.classList.remove('d-none');
+                            whistleCard.classList.remove('d-none');
+                            selectedCategory = null;
+                        } else {
+                            // Pilih Masyarakat - sembunyikan yang lain
+                            masyarakatRadio.checked = true;
+                            masyarakatCard.classList.add('active');
+                            pegawaiCard.classList.add('d-none');
+                            whistleCard.classList.add('d-none');
+                            pegawaiRadio.checked = false;
+                            whistleRadio.checked = false;
+                            pegawaiCard.classList.remove('active');
+                            whistleCard.classList.remove('active');
+
+                            if (roleBidangSelect) {
+                                roleBidangSelect.classList.add('d-none');
+                                roleBidangSelect.required = false;
+                                roleBidangSelect.value = '';
+                                roleBidangSelect.disabled = true; // Disable agar tidak terkirim
+                            }
+                            selectedCategory = 'masyarakat';
+                        }
+                    });
+                    // ===== AKHIR KODE BARU =====
+
+                    // Toggle jenis kelamin
+                    const genderRadios = document.querySelectorAll('input[name="gender"]');
+                    genderRadios.forEach(r => {
+                        const card = r.closest('.radio-card');
+                        card.addEventListener('click', function () {
+                            genderRadios.forEach(r2 => r2.closest('.radio-card').classList.remove('active'));
+                            r.checked = true;
+                            card.classList.add('active');
                         });
                     });
 
-                    // Toggle dropdown disabilitas
+                    // Toggle disabilitas
                     const disabYes = document.getElementById("disab_yes");
                     const disabNo = document.getElementById("disab_no");
                     const disabilityBox = document.getElementById("disabilityTypeBox");
 
-                    [disabYes, disabNo].forEach(el => {
-                        el.addEventListener("change", function () {
-                            if (disabYes.checked) disabilityBox.classList.remove("d-none");
-                            else disabilityBox.classList.add("d-none");
+                    [disabYes, disabNo].forEach(r => {
+                        const card = r.closest('.radio-card');
+                        card.addEventListener('click', function () {
+                            [disabYes, disabNo].forEach(r2 => r2.closest('.radio-card').classList.remove('active'));
+                            r.checked = true;
+                            card.classList.add('active');
+
+                            if (r.id === 'disab_yes') {
+                                disabilityBox.classList.remove("d-none");
+                            } else {
+                                disabilityBox.classList.add("d-none");
+                                document.getElementById("disabilityType").selectedIndex = 0;
+                            }
                         });
                     });
                 });
-
             </script>
 
             <div class="form-footer">

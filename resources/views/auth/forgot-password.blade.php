@@ -323,13 +323,11 @@
                     @enderror
                 </div>
                 <button type="submit" class="btn-login">Kirim Link Reset</button>
-                <!-- <a href="{{ route('password.reset', ['token' => Str::random(60)]) }}" class="btn-login">
-                    Kirim Link Reset
-                </a> -->
-
             </form>
 
+            <!-- Ganti dengan link ke fitur OTP yang baru: -->
             <div class="form-footer">
+                <p><a href="{{ route('password.request-otp') }}">🔐 Gunakan Kode OTP</a></p>
                 <p><a href="{{ route('login') }}">⬅ Kembali ke Login</a></p>
             </div>
         </div>

@@ -489,7 +489,7 @@
             </form>
 
             <div class="form-footer">
-                <p><a href="{{ route('password.request') }}">Lupa Password?</a></p>
+                <p><a href="{{ route('password.request-otp') }}">Lupa Password?</a></p>
                 <div class="divider">
                     <span>atau</span>
                 </div>
