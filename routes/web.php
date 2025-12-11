@@ -464,3 +464,10 @@ Route::prefix('admin')->group(function () {
 Route::post('/pendaftar/check', [App\Http\Controllers\PendaftarController::class, 'check'])
     ->name('pendaftar.check')
     ->withoutMiddleware('auth');
+
+Route::middleware(['auth'])->group(function () {
+    // ... route lainnya
+
+    Route::get('/profile/add-member', [ProfileController::class, 'showAddMember'])->name('profile.add-member');
+    Route::post('/profile/store-member', [ProfileController::class, 'storeMember'])->name('profile.store-member');
+});
