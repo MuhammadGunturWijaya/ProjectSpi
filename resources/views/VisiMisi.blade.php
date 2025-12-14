@@ -104,12 +104,9 @@
         }
 
         @keyframes float {
-
-            0%,
-            100% {
+            0%, 100% {
                 transform: translateY(0px) rotate(0deg);
             }
-
             50% {
                 transform: translateY(40px) rotate(5deg);
             }
@@ -173,7 +170,6 @@
                 opacity: 0;
                 transform: translateY(-50px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -185,7 +181,6 @@
                 opacity: 0;
                 transform: translateY(50px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -309,7 +304,6 @@
                 opacity: 0;
                 transform: translateY(40px);
             }
-
             to {
                 opacity: 1;
                 transform: translateY(0);
@@ -332,76 +326,7 @@
             animation-delay: 0.4s;
         }
 
-        /* ===== VISION CARD ===== */
-        .vision-card {
-            background: linear-gradient(135deg, #0d2d50 0%, #1a4d7a 100%);
-            color: white;
-            border-radius: 25px;
-            padding: 60px;
-            position: relative;
-            overflow: hidden;
-            border: 1px solid rgba(0, 212, 255, 0.2);
-            box-shadow: 0 30px 80px rgba(13, 45, 80, 0.3);
-            margin-bottom: 50px;
-        }
-
-        .vision-card::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -20%;
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, rgba(0, 212, 255, 0.1) 0%, transparent 70%);
-            border-radius: 50%;
-            animation: float 8s ease-in-out infinite;
-        }
-
-        .vision-card::after {
-            content: '';
-            position: absolute;
-            bottom: -30%;
-            left: -10%;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(255, 107, 157, 0.08) 0%, transparent 70%);
-            border-radius: 50%;
-            animation: float 10s ease-in-out infinite reverse;
-        }
-
-        .vision-content {
-            position: relative;
-            z-index: 2;
-        }
-
-        .vision-icon {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 60px;
-            height: 60px;
-            background: rgba(0, 212, 255, 0.2);
-            border-radius: 15px;
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-            border: 1px solid rgba(0, 212, 255, 0.3);
-        }
-
-        .vision-card h3 {
-            font-size: 2.2rem;
-            font-weight: 800;
-            margin-bottom: 25px;
-            letter-spacing: -0.5px;
-        }
-
-        .vision-card p {
-            font-size: 1.1rem;
-            line-height: 1.8;
-            opacity: 0.95;
-            letter-spacing: 0.3px;
-        }
-
-        /* ===== MISSION & TUJUAN CARDS ===== */
+        /* ===== CONTENT CARDS ===== */
         .content-card {
             background: var(--white);
             border-radius: 25px;
@@ -458,21 +383,22 @@
             margin: 0;
         }
 
-        .list-container ol {
+        /* Style untuk list dengan nomor (Misi) */
+        .list-container ol.numbered-list {
             list-style: none;
             counter-reset: item;
             margin: 0;
             padding: 0;
         }
 
-        .list-container li {
+        .list-container ol.numbered-list li {
             counter-increment: item;
             margin-bottom: 35px;
             padding-left: 80px;
             position: relative;
         }
 
-        .list-container li::before {
+        .list-container ol.numbered-list li::before {
             content: counter(item);
             position: absolute;
             left: 0;
@@ -491,9 +417,35 @@
             transition: all 0.3s ease;
         }
 
-        .list-container li:hover::before {
+        .list-container ol.numbered-list li:hover::before {
             transform: scale(1.1) rotateZ(5deg);
             box-shadow: 0 15px 40px rgba(0, 212, 255, 0.4);
+        }
+
+        /* Style untuk list tanpa nomor (Visi) */
+        .list-container ul.no-number-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
+        .list-container ul.no-number-list li {
+            margin-bottom: 25px;
+            padding-left: 40px;
+            position: relative;
+            line-height: 1.8;
+            color: var(--text-light);
+            font-size: 1.05rem;
+        }
+
+        .list-container ul.no-number-list li::before {
+            content: '●';
+            position: absolute;
+            left: 0;
+            top: 0;
+            font-size: 1.5rem;
+            color: var(--accent);
+            font-weight: bold;
         }
 
         .list-container li p {
@@ -568,10 +520,6 @@
                 padding: 35px 25px;
             }
 
-            .vision-card {
-                padding: 40px 25px;
-            }
-
             .section-title {
                 font-size: 1.6rem;
                 gap: 10px;
@@ -581,11 +529,11 @@
                 font-size: 2rem;
             }
 
-            .list-container li {
+            .list-container ol.numbered-list li {
                 padding-left: 70px;
             }
 
-            .list-container li::before {
+            .list-container ol.numbered-list li::before {
                 width: 50px;
                 height: 50px;
                 font-size: 1.1rem;
@@ -614,29 +562,16 @@
                 padding: 25px 20px;
             }
 
-            .list-container li {
+            .list-container ol.numbered-list li {
                 padding-left: 65px;
             }
         }
-    </style>
 
-    <!-- CSS Animations untuk Hero Section -->
-    <style>
-        /* ===== HERO SECTION ANIMATIONS ===== */
-
-        /* Animasi Background - Gradient Shift */
+        /* ===== HERO ANIMATIONS ===== */
         @keyframes bgGradientShift {
-            0% {
-                background-position: 0% 50%;
-            }
-
-            50% {
-                background-position: 100% 50%;
-            }
-
-            100% {
-                background-position: 0% 50%;
-            }
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
 
         .hero {
@@ -645,384 +580,20 @@
             animation: bgGradientShift 15s ease infinite;
         }
 
-        /* Animasi Particle Effect - Floating Dust */
-        @keyframes particleFloat {
-            0% {
-                opacity: 0;
-                transform: translateY(100px) translateX(0);
-            }
-
-            10% {
-                opacity: 1;
-            }
-
-            90% {
-                opacity: 1;
-            }
-
-            100% {
-                opacity: 0;
-                transform: translateY(-100vh) translateX(100px);
-            }
-        }
-
-        .hero::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            top: 0;
-            left: 0;
-            background-image:
-                radial-gradient(2px 2px at 20px 30px, rgba(0, 212, 255, 0.5), transparent),
-                radial-gradient(2px 2px at 60px 70px, rgba(255, 107, 157, 0.5), transparent),
-                radial-gradient(1px 1px at 50px 50px, rgba(255, 165, 2, 0.5), transparent),
-                radial-gradient(1px 1px at 130px 80px, rgba(0, 212, 255, 0.5), transparent);
-            background-size: 200px 200px;
-            animation: particleFloat 20s infinite linear;
-            pointer-events: none;
-        }
-
-        /* Animasi Grid dengan Wave Effect */
-        @keyframes gridWave {
-            0% {
-                transform: translateY(0);
-                opacity: 0.05;
-            }
-
-            50% {
-                opacity: 0.15;
-            }
-
-            100% {
-                transform: translateY(-20px);
-                opacity: 0.05;
-            }
-        }
-
-        .hero-grid {
-            animation: gridWave 6s ease-in-out infinite !important;
-        }
-
-        /* Animasi Orb Background - Multiple Floating */
-        @keyframes orbFloat1 {
-
-            0%,
-            100% {
-                transform: translate(0, 0) scale(1);
-            }
-
-            25% {
-                transform: translate(50px, -30px) scale(1.1);
-            }
-
-            50% {
-                transform: translate(0, -60px) scale(0.9);
-            }
-
-            75% {
-                transform: translate(-50px, -30px) scale(1.05);
-            }
-        }
-
-        @keyframes orbFloat2 {
-
-            0%,
-            100% {
-                transform: translate(0, 0) scale(1);
-            }
-
-            25% {
-                transform: translate(-60px, 40px) scale(0.95);
-            }
-
-            50% {
-                transform: translate(0, 60px) scale(1.1);
-            }
-
-            75% {
-                transform: translate(60px, 40px) scale(0.9);
-            }
-        }
-
-        .hero::before {
-            animation: orbFloat1 12s ease-in-out infinite !important;
-        }
-
-        /* Additional Orb Layer untuk efek lebih dalam */
-        .hero-content::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: 30%;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(255, 107, 157, 0.1) 0%, transparent 70%);
-            border-radius: 50%;
-            animation: orbFloat2 14s ease-in-out infinite;
-            pointer-events: none;
-        }
-
-        /* Light Ray Animation */
-        @keyframes lightRay {
-            0% {
-                opacity: 0;
-                transform: scaleY(0);
-            }
-
-            50% {
-                opacity: 0.2;
-            }
-
-            100% {
-                opacity: 0;
-                transform: scaleY(1);
-            }
-        }
-
-        /* Blur Background Intensity Pulse */
-        @keyframes blurPulse {
-
-            0%,
-            100% {
-                filter: blur(0px) brightness(1);
-            }
-
-            50% {
-                filter: blur(1px) brightness(1.05);
-            }
-        }
-
-        .hero {
-            animation: bgGradientShift 15s ease infinite, blurPulse 4s ease-in-out infinite;
-        }
-
-        /* Vignette Effect dengan Animation */
-        .hero {
-            box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.4), inset 0 0 60px rgba(0, 212, 255, 0.1);
-        }
-
-        /* Animasi Badge - Fade In + Scale */
-        @keyframes badgePulse {
-            0% {
-                opacity: 0;
-                transform: scale(0.8) translateY(-20px);
-            }
-
-            100% {
-                opacity: 1;
-                transform: scale(1) translateY(0);
-            }
-        }
-
-        .hero-badge {
-            animation: badgePulse 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        /* Animasi Title - Slide In Down */
-        @keyframes titleSlideDown {
-            0% {
-                opacity: 0;
-                transform: translateY(-60px);
-                letter-spacing: 3px;
-            }
-
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-                letter-spacing: -0.5px;
-            }
-        }
-
-        .hero-content h1 {
-            animation: titleSlideDown 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
-        }
-
-        /* Animasi Subtitle - Fade In Up */
-        @keyframes subtitleFadeInUp {
-            0% {
-                opacity: 0;
-                transform: translateY(40px);
-                filter: blur(10px);
-            }
-
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-                filter: blur(0);
-            }
-        }
-
-        .hero-content .subtitle {
-            animation: subtitleFadeInUp 1s ease-out 0.5s both;
-        }
-
-        /* Animasi Floating Circles - Infinite Float */
-        @keyframes floatCircles {
-
-            0%,
-            100% {
-                transform: translateY(0px) rotate(0deg);
-            }
-
-            50% {
-                transform: translateY(40px) rotate(5deg);
-            }
-        }
-
-        .hero::before {
-            animation: floatCircles 8s ease-in-out infinite;
-        }
-
-        .hero::after {
-            animation: floatCircles 10s ease-in-out infinite reverse;
-        }
-
-        /* Animasi Grid Background - Subtle Pulse */
-        @keyframes gridPulse {
-
-            0%,
-            100% {
-                opacity: 0.05;
-            }
-
-            50% {
-                opacity: 0.1;
-            }
-        }
-
-        .hero-grid {
-            animation: gridPulse 4s ease-in-out infinite;
-        }
-
-        /* Animasi Text Shimmer pada Title */
         @keyframes textShimmer {
-            0% {
-                background-position: -1000px 0;
-            }
-
-            100% {
-                background-position: 1000px 0;
-            }
+            0% { background-position: -1000px 0; }
+            100% { background-position: 1000px 0; }
         }
 
         .hero-content h1 {
             background: linear-gradient(90deg, #ffffff, #00d4ff, #ffffff, #ff6b9d, #ffffff);
             background-size: 1000px 100%;
             background-position: 0 0;
-            animation: titleSlideDown 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both,
+            animation: slideInDown 1s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both,
                 textShimmer 6s ease-in-out 1.2s infinite;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-        }
-
-        /* Animasi Icon pada Badge - Rotate */
-        @keyframes iconBounce {
-
-            0%,
-            100% {
-                transform: translateY(0) rotate(0deg);
-            }
-
-            50% {
-                transform: translateY(-8px) rotate(10deg);
-            }
-        }
-
-        .hero-badge i {
-            display: inline-block;
-            animation: iconBounce 1.5s ease-in-out infinite;
-            margin-right: 8px;
-        }
-
-        /* Stagger Animation untuk Content */
-        .hero-content {
-            animation: heroContentFadeIn 1.2s ease-out;
-        }
-
-        @keyframes heroContentFadeIn {
-            0% {
-                opacity: 0;
-            }
-
-            100% {
-                opacity: 1;
-            }
-        }
-
-        /* Animasi Scroll Down Button - Bounce */
-        @keyframes bounceArrow {
-
-            0%,
-            20%,
-            50%,
-            80%,
-            100% {
-                transform: translateY(0);
-                opacity: 1;
-            }
-
-            40% {
-                transform: translateY(-20px);
-                opacity: 0.7;
-            }
-
-            60% {
-                transform: translateY(-10px);
-                opacity: 0.8;
-            }
-        }
-
-        .scroll-down-btn {
-            animation: bounceArrow 2s infinite;
-            display: inline-block;
-        }
-
-        /* Hover Effect pada Hero Content */
-        .hero-content h1:hover {
-            filter: drop-shadow(0 0 15px rgba(0, 212, 255, 0.6));
-            transition: filter 0.3s ease;
-        }
-
-        /* Line Reveal Animation untuk Accent */
-        @keyframes lineReveal {
-            0% {
-                width: 0;
-                opacity: 0;
-            }
-
-            100% {
-                width: 60px;
-                opacity: 1;
-            }
-        }
-
-        /* Optional: Add decorative line under subtitle */
-        .hero-content .subtitle::after {
-            content: '';
-            display: block;
-            width: 60px;
-            height: 3px;
-            background: linear-gradient(90deg, var(--accent), var(--accent-2));
-            margin: 20px auto 0;
-            animation: lineReveal 1s ease-out 0.8s both;
-            border-radius: 2px;
-        }
-
-        /* Responsive adjustments */
-        @media (max-width: 768px) {
-            .hero-content h1 {
-                animation: titleSlideDown 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.2s both;
-            }
-
-            .hero-content .subtitle {
-                animation: subtitleFadeInUp 0.8s ease-out 0.4s both;
-            }
-
-            .hero-badge {
-                animation: badgePulse 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-            }
         }
     </style>
 </head>
@@ -1031,7 +602,7 @@
     <!-- NAVBAR -->
     @include('layouts.navbar')
 
-    <!-- HTML HERO SECTION -->
+    <!-- HERO SECTION -->
     <section class="hero">
         <div class="hero-grid"></div>
         <div class="hero-content">
@@ -1040,7 +611,6 @@
             </div>
             <h1>Visi, Misi & Tujuan</h1>
             <p class="subtitle">Komitmen kami untuk Good Governance dan Profesionalisme</p>
-            <a href="#carousel" class="scroll-down-btn">⌄</a>
         </div>
     </section>
 
@@ -1050,8 +620,7 @@
             <!-- BREADCRUMB -->
             <nav aria-label="breadcrumb" class="breadcrumb-custom" style="padding-top: 40px;">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="#" style="color: white;"><i class="bi bi-house"></i>
-                            Beranda</a></li>
+                    <li class="breadcrumb-item"><a href="#" style="color: white;"><i class="bi bi-house"></i> Beranda</a></li>
                     <li class="breadcrumb-item"><a href="#" style="color: white;">Profil</a></li>
                     <li class="breadcrumb-item active" style="color: grey;">Visi, Misi, Tujuan</li>
                 </ol>
@@ -1077,77 +646,64 @@
                 </div>
             </div>
 
-            <!-- TUJUAN -->
+            <!-- VISI (Teks Biasa) -->
             <div class="card-intro section-card">
-                <h2 class="section-title"><i class="bi bi-bullseye"></i> Tujuan</h2>
-                <p>{!! $visimisi->tujuan ?? 'Belum ada data tujuan.' !!}</p>
-            </div>
-
-            <div class="content-card section-card">
                 <h2 class="section-title"><i class="bi bi-eye"></i> Visi</h2>
-                <div class="list-container">
+                <div style="color: var(--text-light); line-height: 1.9;">
                     @if($visimisi && $visimisi->visi)
-                        <ol class="spaced-list"> {{-- Tambahkan class di sini --}}
-                            @foreach(explode("\n", $visimisi->visi) as $item)
-                                <li>{{ $item }}</li>
-                            @endforeach
-                        </ol>
+                        <p style="margin: 0; text-align: justify;">{{ $visimisi->visi }}</p>
                     @else
                         <p>Belum ada data visi.</p>
                     @endif
                 </div>
             </div>
 
+            <!-- MISI (Dengan Nomor) -->
             <div class="content-card section-card">
                 <h2 class="section-title"><i class="bi bi-flag"></i> Misi</h2>
                 <div class="list-container">
                     @if($visimisi && $visimisi->misi)
-                        <ol class="spaced-list"> {{-- Tambahkan class di sini --}}
-                            @foreach(explode("\n", $visimisi->misi) as $item)
-                                <li>{{ $item }}</li>
+                        <ol class="numbered-list">
+                            @foreach(explode("\n", trim($visimisi->misi)) as $item)
+                                @if(trim($item))
+                                    <li><p>{{ trim($item) }}</p></li>
+                                @endif
                             @endforeach
                         </ol>
                     @else
-                        <p>Belum ada data misi.</p>
+                        <p style="color: var(--text-light);">Belum ada data misi.</p>
                     @endif
                 </div>
             </div>
 
-            <style>
-                /* Untuk membuat item daftar lebih berjarak */
-                .spaced-list li {
-                    margin-bottom: 50px;
-                    /* Jarak antar item */
-                    line-height: 1.6;
-                    /* Kerapatan baris (jika itemnya panjang) */
-                }
-
-                /* Untuk memastikan penomoran dan teks sejajar dengan baik */
-                .list-container ol {
-                    /* Atur ulang padding default browser jika diperlukan,
-       biasanya padding-left-nya yang perlu diatur */
-                    padding-left: 20px;
-                    /* Sesuaikan angka ini agar penomoran terlihat rapi */
-                }
-
-                .list-container ol li {
-                    /* Ini adalah default, tapi bisa membantu: */
-                    list-style-position: outside;
-                    padding-top: 10px;
-                    /* Penomoran di luar blok konten LI */
-                    /* Tambahkan clear fix atau pengaturan display jika penomoran tidak rapi */
-                }
-            </style>
-
+            <!-- TUJUAN (Dengan Nomor) -->
+            <div class="content-card section-card">
+                <h2 class="section-title"><i class="bi bi-bullseye"></i> Tujuan</h2>
+                <div class="list-container">
+                    @if($visimisi && $visimisi->tujuan)
+                        <ol class="numbered-list">
+                            @foreach(explode("\n", trim($visimisi->tujuan)) as $item)
+                                @if(trim($item))
+                                    <li><p>{{ trim($item) }}</p></li>
+                                @endif
+                            @endforeach
+                        </ol>
+                    @else
+                        <p style="color: var(--text-light);">Belum ada data tujuan.</p>
+                    @endif
+                </div>
+            </div>
 
             <!-- Tombol Edit (hanya untuk admin) -->
             @auth
                 @if(Auth::user()->role === 'admin')
-                    <a href="{{ route('visi-misi.edit') }}" class="btn btn-warning">Edit</a>
+                    <div class="text-center mb-5">
+                        <a href="{{ route('visi-misi.edit') }}" class="btn btn-warning btn-lg">
+                            <i class="bi bi-pencil-square me-2"></i>Edit Visi, Misi & Tujuan
+                        </a>
+                    </div>
                 @endif
             @endauth
-
-
         </div>
     </div>
 
@@ -1157,8 +713,7 @@
             <div class="row">
                 <div class="col-md-4 mb-4">
                     <img src="{{ asset('images/logoPolije.png') }}" alt="Logo Polije" class="footer-logo">
-                    <p class="mt-3">Satuan Pengawas Internal Politeknik Negeri Jember berkomitmen untuk menjaga
-                        integritas dan akuntabilitas institusi melalui pengawasan yang profesional dan independen.</p>
+                    <p class="mt-3">Satuan Pengawas Internal Politeknik Negeri Jember berkomitmen untuk menjaga integritas dan akuntabilitas institusi melalui pengawasan yang profesional dan independen.</p>
                 </div>
                 <div class="col-md-4 mb-4">
                     <div class="footer-section">
@@ -1173,11 +728,9 @@
                 <div class="col-md-4 mb-4">
                     <div class="footer-section">
                         <h4>Kontak Kami</h4>
-                        <p><i class="bi bi-geo-alt-fill me-2" style="color: var(--accent);"></i>Jl. Mastrip PO BOX
-                            164<br>Jember, Jawa Timur, Indonesia</p>
+                        <p><i class="bi bi-geo-alt-fill me-2" style="color: var(--accent);"></i>Jl. Mastrip PO BOX 164<br>Jember, Jawa Timur, Indonesia</p>
                         <p><i class="bi bi-envelope-fill me-2" style="color: var(--accent);"></i>
-                            <a href="mailto:politeknik@polije.ac.id"
-                                class="text-white text-decoration-none">politeknik@polije.ac.id</a>
+                            <a href="mailto:politeknik@polije.ac.id" class="text-white text-decoration-none">politeknik@polije.ac.id</a>
                         </p>
                         <p><i class="bi bi-telephone-fill me-2" style="color: var(--accent);"></i>+62 331 333533</p>
                         <p><i class="bi bi-telephone-fill me-2" style="color: var(--accent);"></i>+62 331 333531</p>
@@ -1185,13 +738,11 @@
                 </div>
             </div>
             <div class="text-center mt-4 pt-4" style="border-top: 1px solid rgba(255,255,255,0.1);">
-                <p class="mb-0" style="color: rgba(255,255,255,0.7);">© 2025 Satuan Pengawas Internal - Politeknik
-                    Negeri Jember. All Rights Reserved.</p>
+                <p class="mb-0" style="color: rgba(255,255,255,0.7);">© 2025 Satuan Pengawas Internal - Politeknik Negeri Jember. All Rights Reserved.</p>
             </div>
         </div>
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-
 </html>

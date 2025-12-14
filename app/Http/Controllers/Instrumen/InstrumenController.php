@@ -68,9 +68,18 @@ class InstrumenController extends Controller
 
         // Simpan file PDF jika ada
         if ($request->hasFile('file_pdf')) {
-            $path = $request->file('file_pdf')->store('Instrumen_pdfs', 'public');
-            $instrumen->file_pdf = $path;
+            $file = $request->file('file_pdf');
+            $originalName = $file->getClientOriginalName();
+
+            $path = $file->storeAs(
+                '',
+                $originalName,
+                'public'
+            );
+
+            $instrumen->file_pdf = $path; // contoh: Instrumen_Audit_2024.pdf
         }
+
 
         $instrumen->views = 0; // inisialisasi awal jumlah views
         $instrumen->save();
@@ -184,13 +193,24 @@ class InstrumenController extends Controller
 
         // Update file jika ada file baru
         if ($request->hasFile('file_pdf')) {
+
+            // hapus file lama
             if ($instrumen->file_pdf && Storage::disk('public')->exists($instrumen->file_pdf)) {
                 Storage::disk('public')->delete($instrumen->file_pdf);
             }
 
-            $path = $request->file('file_pdf')->store('Instrumen_pdfs', 'public');
+            $file = $request->file('file_pdf');
+            $originalName = $file->getClientOriginalName();
+
+            $path = $file->storeAs(
+                '',
+                $originalName,
+                'public'
+            );
+
             $instrumen->file_pdf = $path;
         }
+
 
         $instrumen->save();
 

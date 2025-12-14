@@ -63,10 +63,19 @@ class ProgramKerjaSPIController extends Controller
         $programKerja->bidang = $request->bidang;
 
         // File PDF
+        // File PDF (tanpa folder)
         if ($request->hasFile('file_pdf')) {
-            $path = $request->file('file_pdf')->store('ProgramKerjaSPI_pdfs', 'public');
-            $programKerja->file_pdf = $path;
+
+            $file = $request->file('file_pdf');
+            $filename = time() . '_' . $file->getClientOriginalName();
+
+            // Simpan langsung ke storage/app/public
+            $file->storeAs('', $filename, 'public');
+
+            // Simpan nama file saja ke DB
+            $programKerja->file_pdf = $filename;
         }
+
 
         $programKerja->mencabut = $request->mencabut;
         $programKerja->save();
@@ -157,12 +166,22 @@ class ProgramKerjaSPIController extends Controller
         $programKerja->bidang = $request->bidang;
 
         if ($request->hasFile('file_pdf')) {
+
+            // Hapus file lama
             if ($programKerja->file_pdf && Storage::disk('public')->exists($programKerja->file_pdf)) {
                 Storage::disk('public')->delete($programKerja->file_pdf);
             }
-            $path = $request->file('file_pdf')->store('ProgramKerjaSPI_pdfs', 'public');
-            $programKerja->file_pdf = $path;
+
+            $file = $request->file('file_pdf');
+            $filename = time() . '_' . $file->getClientOriginalName();
+
+            // Simpan langsung ke root public storage
+            $file->storeAs('', $filename, 'public');
+
+            // Simpan nama file ke DB
+            $programKerja->file_pdf = $filename;
         }
+
 
         $programKerja->mencabut = $request->mencabut;
         $programKerja->save();

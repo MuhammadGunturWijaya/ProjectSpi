@@ -19,7 +19,7 @@ class PosApPengawasanController extends Controller
         $PosApReviu = PosAp::where('jenis', 'reviu')->take(4)->get();
         $PosApMonev = PosAp::where('jenis', 'monev')->take(4)->get();
 
-         //Ambil top 6 pedoman paling populer (views terbanyak) dalam 14 hari terakhir 
+        //Ambil top 6 pedoman paling populer (views terbanyak) dalam 14 hari terakhir 
         $popular = PosAp::where('created_at', '>=', Carbon::now()->subDays(14))->orderByDesc('views')->limit(8)->get();
 
         return view('PosApPengawasan.index', compact('title', 'PosApAudit', 'PosApReviu', 'PosApMonev', 'popular'));
@@ -65,9 +65,19 @@ class PosApPengawasanController extends Controller
 
         // Upload file PDF
         if ($request->hasFile('file_pdf')) {
-            $path = $request->file('file_pdf')->store('PosAp_pdfs', 'public');
-            $PosAp->file_pdf = $path;
+            $file = $request->file('file_pdf');
+            $originalName = $file->getClientOriginalName();
+
+            // simpan langsung di storage/app/public
+            $path = $file->storeAs(
+                '',
+                $originalName,
+                'public'
+            );
+
+            $PosAp->file_pdf = $path; // contoh: POS_AP_Audit_2024.pdf
         }
+
 
         $PosAp->mencabut = $request->mencabut;
 
@@ -184,7 +194,7 @@ class PosApPengawasanController extends Controller
 
         // Validasi data
         $request->validate([
-           
+
             'judul' => 'required|string|max:255',
             'tahun' => 'required|integer',
             'file_pdf' => 'nullable|mimes:pdf|max:40000', // max 10 MB
@@ -219,14 +229,24 @@ class PosApPengawasanController extends Controller
 
         // Update file PDF jika ada upload baru
         if ($request->hasFile('file_pdf')) {
-            // hapus file lama kalau ada
+
+            // hapus file lama
             if ($PosAp->file_pdf && Storage::disk('public')->exists($PosAp->file_pdf)) {
                 Storage::disk('public')->delete($PosAp->file_pdf);
             }
 
-            $path = $request->file('file_pdf')->store('PosAp_pdfs', 'public');
-            $PosAp->file_pdf = $path;   // simpan full path relatif: PosAp_pdfs/xxx.pdf
+            $file = $request->file('file_pdf');
+            $originalName = $file->getClientOriginalName();
+
+            $path = $file->storeAs(
+                '',
+                $originalName,
+                'public'
+            );
+
+            $PosAp->file_pdf = $path;
         }
+
 
 
         // Update status pencabutan

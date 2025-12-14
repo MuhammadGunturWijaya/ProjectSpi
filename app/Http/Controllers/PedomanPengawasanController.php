@@ -20,7 +20,7 @@ class PedomanPengawasanController extends Controller
         //1
         //Ambil top 6 pedoman paling populer (views terbanyak) dalam 14 hari terakhir 
         $popular = Pedoman::where('created_at', '>=', Carbon::now()->subDays(14))->orderByDesc('views')->limit(8)->get();
-        
+
         return view('pedomanpengawasan.index', compact('title', 'pedomanAudit', 'pedomanReviu', 'pedomanMonev', 'popular'));
     }
 
@@ -156,14 +156,25 @@ class PedomanPengawasanController extends Controller
 
         // Update file PDF jika ada upload baru
         if ($request->hasFile('file_pdf')) {
-            // hapus file lama kalau ada
+
+            // hapus file lama
             if ($pedoman->file_pdf && Storage::disk('public')->exists($pedoman->file_pdf)) {
                 Storage::disk('public')->delete($pedoman->file_pdf);
             }
 
-            $path = $request->file('file_pdf')->store('pedoman_pdfs', 'public');
-            $pedoman->file_pdf = $path;   // simpan full path relatif: pedoman_pdfs/xxx.pdf
+            $file = $request->file('file_pdf');
+            $originalName = $file->getClientOriginalName();
+
+            $path = $file->storeAs(
+                '',
+                $originalName,
+                'public'
+            );
+
+
+            $pedoman->file_pdf = $path;
         }
+
 
 
         // Update status pencabutan

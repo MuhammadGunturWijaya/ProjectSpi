@@ -58,9 +58,21 @@ class PiagamSPIController extends Controller
         $piagam->bidang = $request->bidang;
 
         if ($request->hasFile('file_pdf')) {
-            $path = $request->file('file_pdf')->store('PiagamSPI_pdfs', 'public');
+            $file = $request->file('file_pdf');
+
+            $originalName = $file->getClientOriginalName();
+
+            // Simpan langsung di public storage (tanpa folder)
+            $path = $file->storeAs(
+                '',
+                $originalName,
+                'public'
+            );
+
             $piagam->file_pdf = $path;
         }
+
+
 
         $piagam->mencabut = $request->mencabut;
         $piagam->save();
@@ -116,12 +128,24 @@ class PiagamSPIController extends Controller
         $piagam->bidang = $request->bidang;
 
         if ($request->hasFile('file_pdf')) {
+
             if ($piagam->file_pdf && Storage::disk('public')->exists($piagam->file_pdf)) {
                 Storage::disk('public')->delete($piagam->file_pdf);
             }
-            $path = $request->file('file_pdf')->store('PiagamSPI_pdfs', 'public');
+
+            $file = $request->file('file_pdf');
+            $originalName = $file->getClientOriginalName();
+
+            $path = $file->storeAs(
+                '',
+                $originalName,
+                'public'
+            );
+
             $piagam->file_pdf = $path;
         }
+
+
 
         $piagam->mencabut = $request->mencabut;
         $piagam->save();

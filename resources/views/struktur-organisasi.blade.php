@@ -2,8 +2,8 @@
 <html lang="id">
 <style>
     body {
-                   overflow-x: hidden;
-        }
+        overflow-x: hidden;
+    }
 </style>
 <head>
     <meta charset="UTF-8">
@@ -69,9 +69,15 @@
 
         .row-cols-custom {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 280px));
             gap: 25px;
             justify-content: center;
+        }
+
+        /* Ketika hanya 1-3 card, buat lebar maksimal tetap */
+        .row-cols-custom > *:only-child {
+            max-width: 280px;
+            margin: 0 auto;
         }
 
         .fade-in {

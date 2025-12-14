@@ -14,7 +14,7 @@ class KonsideranSPIController extends Controller
     {
         $title = "KONSIDERAN SPI";
         $konsiderans = KonsideranSPI::all();
-         // Tambahkan data piagam terpopuler (2 minggu terakhir)
+        // Tambahkan data piagam terpopuler (2 minggu terakhir)
         $popular = KonsideranSPI::where('created_at', '>=', now()->subDays(14))
             ->orderByDesc('views')
             ->take(10)
@@ -60,9 +60,17 @@ class KonsideranSPIController extends Controller
         $Konsideran->bidang = $request->bidang;
 
         if ($request->hasFile('file_pdf')) {
-            $path = $request->file('file_pdf')->store('KonsideranSPI_pdfs', 'public');
-            $Konsideran->file_pdf = $path;
+
+            $file = $request->file('file_pdf');
+            $filename = time() . '_' . $file->getClientOriginalName();
+
+            // Simpan langsung ke storage/app/public (tanpa folder)
+            $file->storeAs('', $filename, 'public');
+
+            // Simpan nama file saja ke DB
+            $Konsideran->file_pdf = $filename;
         }
+
 
         $Konsideran->mencabut = $request->mencabut;
         $Konsideran->save();
@@ -73,7 +81,7 @@ class KonsideranSPIController extends Controller
     public function show($id)
     {
         $Konsideran = KonsideranSPI::findOrFail($id);
-         $Konsideran->increment('views');
+        $Konsideran->increment('views');
         return view('KonsideranSPI.detail', compact('Konsideran'));
     }
 
@@ -120,13 +128,22 @@ class KonsideranSPIController extends Controller
         $Konsideran->bidang = $request->bidang;
 
         if ($request->hasFile('file_pdf')) {
+
+            // Hapus file lama
             if ($Konsideran->file_pdf && Storage::disk('public')->exists($Konsideran->file_pdf)) {
                 Storage::disk('public')->delete($Konsideran->file_pdf);
             }
 
-            $path = $request->file('file_pdf')->store('KonsideranSPI_pdfs', 'public');
-            $Konsideran->file_pdf = $path;
+            $file = $request->file('file_pdf');
+            $filename = time() . '_' . $file->getClientOriginalName();
+
+            // Simpan langsung ke root public storage
+            $file->storeAs('', $filename, 'public');
+
+            // Simpan nama file ke DB
+            $Konsideran->file_pdf = $filename;
         }
+
 
         $Konsideran->mencabut = $request->mencabut;
         $Konsideran->save();
