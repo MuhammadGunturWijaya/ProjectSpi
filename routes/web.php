@@ -46,6 +46,7 @@ use App\Http\Controllers\AspirasiController;
 use App\Http\Controllers\BidangPengaduanController;
 use App\Http\Controllers\RoleBidangController;
 use App\Http\Controllers\UserListController;
+use App\Http\Controllers\SPI\KinerjaSPIController;
 use App\Http\Controllers\Auth\PasswordResetOtpController;
 
 // Halaman landing
@@ -506,3 +507,13 @@ Route::middleware('guest')->group(function () {
     Route::post('/password/resend-otp', [PasswordResetOtpController::class, 'resendOtp'])
         ->name('password.resend-otp');
 });
+
+// Kinerja SPI Routes
+Route::post('/kinerja-spi/store', [KinerjaSPIController::class, 'store'])->name('kinerjaSPI.store');
+Route::get('/kinerja-spi/{id}', [KinerjaSPIController::class, 'show'])->name('kinerjaSPI.show');
+Route::get('/kinerja-spi/{id}/detail', [KinerjaSPIController::class, 'getDetail'])->name('kinerjaSPI.detail');
+Route::get('/kinerja-spi/{id}/edit', [KinerjaSPIController::class, 'edit'])->name('kinerjaSPI.edit');
+Route::put('/kinerja-spi/{id}', [KinerjaSPIController::class, 'update'])->name('kinerjaSPI.update');
+Route::delete('/kinerja-spi/{id}', [KinerjaSPIController::class, 'destroy'])->name('kinerjaSPI.destroy');
+Route::get('/kinerja-spi-lihat', [KinerjaSPIController::class, 'lihat'])->name('kinerjaSPI.lihat');
+Route::get('/kinerja-spi/search', [KinerjaSPIController::class, 'search'])->name('kinerjaSPI.search');

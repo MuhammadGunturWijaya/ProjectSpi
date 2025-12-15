@@ -4,6 +4,7 @@ namespace App\Http\Controllers\SPI;
 
 use App\Http\Controllers\Controller;
 use App\Models\ProgramKerjaSPI;
+use App\Models\KinerjaSPI;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
@@ -15,16 +16,18 @@ class ProgramKerjaSPIController extends Controller
     {
         $title = "PROGRAM KERJA SPI";
 
-        // Ambil semua data tanpa filter jenis
         $programKerjaList = ProgramKerjaSPI::take(4)->get();
 
-        // Ambil top 8 paling populer dalam 14 hari terakhir
+        // TAMBAHKAN INI
+        $kinerjaList = KinerjaSPI::take(4)->get();
+
         $popular = ProgramKerjaSPI::where('created_at', '>=', Carbon::now()->subDays(14))
             ->orderByDesc('views')
             ->limit(8)
             ->get();
 
-        return view('program-kerja.index', compact('title', 'programKerjaList', 'popular'));
+        // UPDATE COMPACT INI
+        return view('program-kerja.index', compact('title', 'programKerjaList', 'kinerjaList', 'popular'));
     }
 
     // Simpan data baru

@@ -2,9 +2,10 @@
 <html lang="id">
 <style>
     body {
-                   overflow-x: hidden;
-        }
+        overflow-x: hidden;
+    }
 </style>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -105,7 +106,7 @@
         });
     </script>
 
-   <section class="popular">
+    <section class="popular">
         <h2>Peraturan Terpopuler 2 Minggu Terakhir</h2>
         <div class="carousel-wrapper">
             <button id="carousel-prev" class="carousel-btn prev-btn">
@@ -209,7 +210,7 @@
         .card-item-new {
             width: 270px;
             min-height: 280px;
-            background:  color: var(--primary);
+            background: color: var(--primary);
             /* warna card  */
             border-radius: 16px;
             position: relative;
@@ -440,6 +441,41 @@
         </div>
     </section>
 
+    <section class="classification" id="kinerja-spi">
+        <div class="classification-header">
+            <h2>Kinerja <span class="spi-text">SPI</span></h2>
+            <div class="header-actions">
+                <a href="{{ route('kinerjaSPI.lihat') }}">
+                    <i class="fa fa-chart-bar"></i> Lihat Lebih
+                </a>
+                @if(Auth::check() && Auth::user()->role === 'admin')
+                    <a href="#" id="btnTambahKinerjaSPI">
+                        <i class="fa fa-plus"></i> Tambah Kinerja
+                    </a>
+                @endif
+            </div>
+        </div>
+
+        <div class="grid">
+            @forelse($kinerjaList as $kinerjaSPI)
+                <div class="card">
+                    <div class="card-icon-wrapper">
+                        <i class="fa fa-chart-line"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>{{ $kinerjaSPI->judul }}</h3>
+                        <p>Tahun: {{ $kinerjaSPI->tahun ?? '-' }}</p>
+                    </div>
+                    <a href="{{ route('kinerjaSPI.show', $kinerjaSPI->id) }}" class="card-link">
+                        Lihat Detail →
+                    </a>
+                </div>
+            @empty
+                <p>Tidak ada Kinerja SPI.</p>
+            @endforelse
+        </div>
+    </section>
+
 
     <div id="modalTambahProgramKerja" class="modal">
         <div class="modal-box">
@@ -651,6 +687,322 @@
         </div>
     </div>
 
+    <div id="modalTambahKinerja" class="modal">
+        <div class="modal-box">
+            <button class="close" id="closeModalTambahKinerja" aria-label="Close modal">&times;</button>
+            <h2 class="modal-title">Tambah Dokumen Kinerja SPI</h2>
+
+            @if (session('error_kinerja'))
+                <div class="alert alert-danger" role="alert">
+                    {{ session('error_kinerja') }}
+                </div>
+            @endif
+
+            @if ($errors->any())
+                <div class="alert alert-danger" role="alert">
+                    <ul style="margin:0; padding-left:20px;">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
+
+            <div class="stepper-nav" role="tablist" aria-label="Form Steps">
+                <button class="step-nav-item active" data-step="1" role="tab" aria-selected="true"
+                    aria-controls="step1-content-kinerja" id="step1-kinerja">
+                    <span class="step-number">1</span> Materi Pokok
+                </button>
+                <button class="step-nav-item" data-step="2" role="tab" aria-selected="false"
+                    aria-controls="step2-content-kinerja" id="step2-kinerja">
+                    <span class="step-number">2</span> Metadata
+                </button>
+                <button class="step-nav-item" data-step="3" role="tab" aria-selected="false"
+                    aria-controls="step3-content-kinerja" id="step3-kinerja">
+                    <span class="step-number">3</span> Berkas & Status
+                </button>
+            </div>
+
+            <form id="formTambahKinerja" action="{{ route('kinerjaSPI.store') }}" method="POST"
+                enctype="multipart/form-data" novalidate>
+                @csrf
+
+                <section class="step-content active" data-step="1" id="step1-content-kinerja">
+                    <div class="form-section-header">
+                        <h4>Materi Pokok Dokumen</h4>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="judul-kinerja">Judul <span class="required">*</span></label>
+                        <input type="text" id="judul-kinerja" name="judul" required
+                            placeholder="Masukkan judul dokumen">
+                    </div>
+                    <div class="form-group">
+                        <label for="tahun-kinerja">Tahun <span class="required">*</span></label>
+                        <select id="tahun-kinerja" name="tahun" required>
+                            <option value="">Pilih Tahun</option>
+                            @for ($y = date('Y'); $y >= 1900; $y--)
+                                <option value="{{ $y }}">{{ $y }}</option>
+                            @endfor
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="kata_kunci-kinerja">Kata Kunci</label>
+                        <input type="text" id="kata_kunci-kinerja" name="kata_kunci"
+                            placeholder="Pisahkan dengan koma, contoh: pajak, bea cukai">
+                    </div>
+                    <div class="form-group">
+                        <label for="abstrak-kinerja">Abstrak</label>
+                        <textarea id="abstrak-kinerja" name="abstrak" rows="4"
+                            placeholder="Tuliskan ringkasan isi dokumen"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="catatan-kinerja">Catatan</label>
+                        <textarea id="catatan-kinerja" name="catatan" rows="2"
+                            placeholder="Catatan atau informasi tambahan"></textarea>
+                    </div>
+                </section>
+
+                <section class="step-content" data-step="2" id="step2-content-kinerja">
+                    <div class="form-section-header">
+                        <h4>Metadata Dokumen</h4>
+                        <p class="section-desc">Detail teknis dokumen seperti nomor, tanggal, dan sumber.</p>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label for="tipe_dokumen-kinerja">Tipe Dokumen</label>
+                            <input type="text" id="tipe_dokumen-kinerja" name="tipe_dokumen"
+                                placeholder="Contoh: Laporan Kinerja">
+                        </div>
+                        <div class="form-group">
+                            <label for="judul_meta-kinerja">Judul Metadata</label>
+                            <input type="text" id="judul_meta-kinerja" name="judul_meta" placeholder="Judul metadata">
+                        </div>
+                        <div class="form-group">
+                            <label for="teu-kinerja">T.E.U.</label>
+                            <input type="text" id="teu-kinerja" name="teu" placeholder="Tanda Efektif Umum">
+                        </div>
+                        <div class="form-group">
+                            <label for="nomor-kinerja">Nomor</label>
+                            <input type="text" id="nomor-kinerja" name="nomor" placeholder="Nomor dokumen">
+                        </div>
+                        <div class="form-group">
+                            <label for="bentuk-kinerja">Bentuk</label>
+                            <input type="text" id="bentuk-kinerja" name="bentuk" placeholder="Bentuk dokumen">
+                        </div>
+                        <div class="form-group">
+                            <label for="bentuk_singkat-kinerja">Bentuk Singkat</label>
+                            <input type="text" id="bentuk_singkat-kinerja" name="bentuk_singkat"
+                                placeholder="Singkatan bentuk">
+                        </div>
+                        <div class="form-group">
+                            <label for="tahun_meta-kinerja">Tahun Metadata</label>
+                            <select id="tahun_meta-kinerja" name="tahun_meta">
+                                <option value="">Pilih Tahun</option>
+                                @for ($y = date('Y'); $y >= 1900; $y--)
+                                    <option value="{{ $y }}">{{ $y }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="tempat_penetapan-kinerja">Tempat Penetapan</label>
+                            <input type="text" id="tempat_penetapan-kinerja" name="tempat_penetapan"
+                                placeholder="Lokasi penetapan">
+                        </div>
+                        <div class="form-group">
+                            <label for="tanggal_penetapan-kinerja">Tanggal Penetapan</label>
+                            <input type="date" id="tanggal_penetapan-kinerja" name="tanggal_penetapan">
+                        </div>
+                        <div class="form-group">
+                            <label for="tanggal_pengundangan-kinerja">Tanggal Pengundangan</label>
+                            <input type="date" id="tanggal_pengundangan-kinerja" name="tanggal_pengundangan">
+                        </div>
+                        <div class="form-group">
+                            <label for="tanggal_berlaku-kinerja">Tanggal Berlaku</label>
+                            <input type="date" id="tanggal_berlaku-kinerja" name="tanggal_berlaku">
+                        </div>
+                        <div class="form-group">
+                            <label for="sumber-kinerja">Sumber</label>
+                            <input type="text" id="sumber-kinerja" name="sumber" placeholder="Sumber dokumen">
+                        </div>
+                        <div class="form-group">
+                            <label for="subjek-kinerja">Subjek</label>
+                            <input type="text" id="subjek-kinerja" name="subjek" placeholder="Subjek terkait">
+                        </div>
+                        <div class="form-group">
+                            <label for="status-kinerja">Status</label>
+                            <input type="text" id="status-kinerja" name="status" placeholder="Status dokumen">
+                        </div>
+                        <div class="form-group">
+                            <label for="bahasa-kinerja">Bahasa</label>
+                            <input type="text" id="bahasa-kinerja" name="bahasa" placeholder="Bahasa dokumen">
+                        </div>
+                        <div class="form-group">
+                            <label for="lokasi-kinerja">Lokasi</label>
+                            <input type="text" id="lokasi-kinerja" name="lokasi" placeholder="Lokasi penyimpanan">
+                        </div>
+                        <div class="form-group">
+                            <label for="bidang-kinerja">Bidang</label>
+                            <input type="text" id="bidang-kinerja" name="bidang" placeholder="Bidang terkait">
+                        </div>
+                    </div>
+                </section>
+
+                <section class="step-content" data-step="3" id="step3-content-kinerja">
+                    <div class="form-section-header">
+                        <h4>Berkas Dokumen & Status</h4>
+                        <p class="section-desc">Unggah file dokumen dan isi informasi status.</p>
+                    </div>
+                    <div class="form-group file-upload-group">
+                        <label for="file_pdf-kinerja" class="file-label">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" class="icon-upload">
+                                <path
+                                    d="M4 14.899V20a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5.101M16 16l-4-4-4 4M12 12.5V2.5" />
+                            </svg>
+                            Pilih Berkas PDF
+                        </label>
+                        <input type="file" id="file_pdf-kinerja" name="file_pdf" accept="application/pdf"
+                            aria-describedby="fileHelp-kinerja" />
+                        <span id="file-name-kinerja" class="file-name-display">Belum ada file yang dipilih.</span>
+                        <small id="fileHelp-kinerja" class="file-help">Format: PDF, maksimal 10MB.</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="mencabut-kinerja">Mencabut</label>
+                        <input type="text" id="mencabut-kinerja" name="mencabut"
+                            placeholder="Tuliskan dokumen yang dicabut">
+                    </div>
+                </section>
+
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" id="prevStep-kinerja" style="display:none;">
+                        Kembali
+                    </button>
+                    <button type="button" class="btn btn-primary" id="nextStep-kinerja">
+                        Lanjut
+                    </button>
+                    <button type="submit" class="btn btn-submit" id="submitBtn-kinerja" style="display:none">
+                        Simpan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Modal Kinerja
+            const modalKinerja = document.getElementById("modalTambahKinerja");
+            const btnOpenModalKinerja = document.getElementById("btnTambahKinerjaSPI");
+            const btnCloseModalKinerja = document.getElementById("closeModalTambahKinerja");
+
+            const stepsKinerja = document.querySelectorAll("#modalTambahKinerja .step-nav-item");
+            const contentsKinerja = document.querySelectorAll("#modalTambahKinerja .step-content");
+            const nextBtnKinerja = document.getElementById("nextStep-kinerja");
+            const prevBtnKinerja = document.getElementById("prevStep-kinerja");
+            const submitBtnKinerja = document.getElementById("submitBtn-kinerja");
+            let currentStepKinerja = 0;
+
+            function showStepKinerja(index) {
+                contentsKinerja.forEach((c, i) => c.classList.toggle("active", i === index));
+                stepsKinerja.forEach((s, i) => s.classList.toggle("active", i === index));
+
+                prevBtnKinerja.style.display = index === 0 ? "none" : "inline-flex";
+                nextBtnKinerja.style.display = index === contentsKinerja.length - 1 ? "none" : "inline-flex";
+                submitBtnKinerja.style.display = index === contentsKinerja.length - 1 ? "inline-flex" : "none";
+            }
+
+            function validateStepKinerja(index) {
+                const currentContent = contentsKinerja[index];
+                const requiredInputs = currentContent.querySelectorAll("[required]");
+                let isValid = true;
+
+                requiredInputs.forEach(input => {
+                    if (!input.value) {
+                        input.classList.add("is-invalid");
+                        isValid = false;
+                    } else {
+                        input.classList.remove("is-invalid");
+                    }
+                });
+
+                if (!isValid) {
+                    alert("Harap lengkapi semua bidang yang wajib diisi (*).");
+                }
+                return isValid;
+            }
+
+            if (btnOpenModalKinerja) {
+                btnOpenModalKinerja.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    modalKinerja.style.display = "block";
+                    currentStepKinerja = 0;
+                    showStepKinerja(currentStepKinerja);
+                });
+            }
+
+            if (btnCloseModalKinerja) {
+                btnCloseModalKinerja.addEventListener("click", function () {
+                    modalKinerja.style.display = "none";
+                });
+            }
+
+            window.addEventListener("click", function (e) {
+                if (e.target === modalKinerja) {
+                    modalKinerja.style.display = "none";
+                }
+            });
+
+            stepsKinerja.forEach((step, idx) => {
+                step.addEventListener("click", () => {
+                    if (idx < currentStepKinerja) {
+                        currentStepKinerja = idx;
+                        showStepKinerja(currentStepKinerja);
+                    } else if (idx > currentStepKinerja) {
+                        if (validateStepKinerja(currentStepKinerja)) {
+                            currentStepKinerja = idx;
+                            showStepKinerja(currentStepKinerja);
+                        }
+                    }
+                });
+            });
+
+            nextBtnKinerja.addEventListener("click", () => {
+                if (validateStepKinerja(currentStepKinerja)) {
+                    if (currentStepKinerja < contentsKinerja.length - 1) {
+                        currentStepKinerja++;
+                        showStepKinerja(currentStepKinerja);
+                    }
+                }
+            });
+
+            prevBtnKinerja.addEventListener("click", () => {
+                if (currentStepKinerja > 0) {
+                    currentStepKinerja--;
+                    showStepKinerja(currentStepKinerja);
+                }
+            });
+
+            showStepKinerja(currentStepKinerja);
+
+            // File input display untuk Kinerja
+            const fileInputKinerja = document.getElementById("file_pdf-kinerja");
+            const fileNameDisplayKinerja = document.getElementById("file-name-kinerja");
+
+            if (fileInputKinerja && fileNameDisplayKinerja) {
+                fileInputKinerja.addEventListener("change", function () {
+                    if (this.files.length > 0) {
+                        fileNameDisplayKinerja.textContent = this.files[0].name;
+                    } else {
+                        fileNameDisplayKinerja.textContent = "Belum ada file yang dipilih.";
+                    }
+                });
+            }
+        });
+    </script>
+
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
@@ -667,7 +1019,7 @@
 
             // --- Button Jenis Program Kerja ---
             const jenisButtons = document.querySelectorAll('.button-group .btn-outline');
-           
+
 
             jenisButtons.forEach(btn => {
                 btn.addEventListener('click', () => {
