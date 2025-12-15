@@ -859,11 +859,11 @@
                                                         class="process-step {{ $step['class'] }} {{ $isActive ? 'active' : '' }} text-center flex-fill position-relative">
                                                         <div class="process-icon-container shadow-sm mb-2"
                                                             style="background: {{ $isActive ? $step['color'] : '#fff' }}; 
-                                                                                                                                                                                                border: 2px solid {{ $isActive ? $step['color'] : '#dee2e6' }};
-                                                                                                                                                                                                width: 60px; height: 60px; border-radius: 50%; 
-                                                                                                                                                                                                display: flex; align-items: center; justify-content: center;
-                                                                                                                                                                                                margin: 0 auto;
-                                                                                                                                                                                                transition: all 0.3s ease;">
+                                                                                                                                                                                                                        border: 2px solid {{ $isActive ? $step['color'] : '#dee2e6' }};
+                                                                                                                                                                                                                        width: 60px; height: 60px; border-radius: 50%; 
+                                                                                                                                                                                                                        display: flex; align-items: center; justify-content: center;
+                                                                                                                                                                                                                        margin: 0 auto;
+                                                                                                                                                                                                                        transition: all 0.3s ease;">
                                                             <i class="bi {{ $step['icon'] }} fs-4"
                                                                 style="color: {{ $isActive ? '#fff' : '#dee2e6' }}; transition: color 0.3s;"></i>
                                                         </div>
@@ -1218,12 +1218,239 @@
                     </div>
 
                     <div class="mt-4">
-                        <label for="bukti_file" class="form-label">Upload File / Foto / Video (maksimal 100 MB per
-                            file)</label>
+                        <label for="bukti_file" class="form-label">
+                            Upload File / Foto (maksimal 5 MB per file)
+                            <span class="badge bg-info">Max 10 file</span>
+                        </label>
                         <input type="file" id="bukti_file" name="bukti_file[]" class="form-control"
-                            accept="image/*,video/*,.pdf,.doc,.docx" multiple>
-                        <small class="text-muted">Anda dapat mengupload lebih dari satu file</small>
+                            accept="image/*,.pdf,.doc,.docx" multiple>
+                        <small class="text-muted d-block mt-1">
+                            <i class="bi bi-info-circle"></i> Anda dapat mengupload lebih dari satu file (JPG, PNG, PDF,
+                            DOC, DOCX)
+                        </small>
+
+                        <!-- Preview Container -->
+                        <div id="filePreviewContainer" class="mt-3 row g-2"></div>
+
+                        <!-- File Counter -->
+                        <div id="fileCounter" class="mt-2 text-muted small"></div>
                     </div>
+
+                    <style>
+                        .file-preview-item {
+                            position: relative;
+                            border: 2px solid #dee2e6;
+                            border-radius: 8px;
+                            padding: 10px;
+                            background: #f8f9fa;
+                            transition: all 0.3s;
+                        }
+
+                        .file-preview-item:hover {
+                            border-color: #0d6efd;
+                            box-shadow: 0 2px 8px rgba(13, 110, 253, 0.2);
+                        }
+
+                        .file-preview-img {
+                            width: 100%;
+                            height: 120px;
+                            object-fit: cover;
+                            border-radius: 6px;
+                            margin-bottom: 8px;
+                        }
+
+                        .file-preview-doc {
+                            width: 100%;
+                            height: 120px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                            border-radius: 6px;
+                            margin-bottom: 8px;
+                        }
+
+                        .file-preview-doc i {
+                            font-size: 3rem;
+                            color: white;
+                        }
+
+                        .file-remove-btn {
+                            position: absolute;
+                            top: 5px;
+                            right: 5px;
+                            width: 30px;
+                            height: 30px;
+                            border-radius: 50%;
+                            background: #dc3545;
+                            color: white;
+                            border: 2px solid white;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            cursor: pointer;
+                            transition: all 0.3s;
+                            z-index: 10;
+                        }
+
+                        .file-remove-btn:hover {
+                            background: #bb2d3b;
+                            transform: scale(1.1);
+                        }
+
+                        .file-name {
+                            font-size: 0.85rem;
+                            font-weight: 600;
+                            color: #495057;
+                            white-space: nowrap;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            margin-bottom: 4px;
+                        }
+
+                        .file-size {
+                            font-size: 0.75rem;
+                            color: #6c757d;
+                        }
+
+                        .file-size.text-danger {
+                            font-weight: bold;
+                        }
+                    </style>
+
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function () {
+                            const fileInput = document.getElementById('bukti_file');
+                            const previewContainer = document.getElementById('filePreviewContainer');
+                            const fileCounter = document.getElementById('fileCounter');
+                            const maxFiles = 10;
+                            const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+
+                            let selectedFiles = [];
+
+                            fileInput.addEventListener('change', function (e) {
+                                const files = Array.from(e.target.files);
+
+                                // Validasi jumlah file
+                                if (selectedFiles.length + files.length > maxFiles) {
+                                    alert(`Maksimal ${maxFiles} file yang dapat diupload!`);
+                                    return;
+                                }
+
+                                files.forEach(file => {
+                                    // Validasi ukuran file
+                                    if (file.size > maxSizeInBytes) {
+                                        alert(`File "${file.name}" melebihi batas 5MB!`);
+                                        return;
+                                    }
+
+                                    // Validasi tipe file
+                                    const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'application/pdf',
+                                        'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+                                    if (!validTypes.includes(file.type)) {
+                                        alert(`File "${file.name}" bukan format yang diizinkan!`);
+                                        return;
+                                    }
+
+                                    selectedFiles.push(file);
+                                });
+
+                                updateFileList();
+                                updateCounter();
+                            });
+
+                            function updateFileList() {
+                                previewContainer.innerHTML = '';
+
+                                selectedFiles.forEach((file, index) => {
+                                    const col = document.createElement('div');
+                                    col.className = 'col-md-3 col-sm-4 col-6';
+
+                                    const previewItem = document.createElement('div');
+                                    previewItem.className = 'file-preview-item';
+
+                                    // Remove button
+                                    const removeBtn = document.createElement('div');
+                                    removeBtn.className = 'file-remove-btn';
+                                    removeBtn.innerHTML = '<i class="bi bi-x"></i>';
+                                    removeBtn.onclick = () => removeFile(index);
+
+                                    // Preview (image or icon)
+                                    let previewContent = '';
+                                    if (file.type.startsWith('image/')) {
+                                        const reader = new FileReader();
+                                        reader.onload = function (e) {
+                                            const img = previewItem.querySelector('.file-preview-img');
+                                            if (img) img.src = e.target.result;
+                                        };
+                                        reader.readAsDataURL(file);
+                                        previewContent = '<img src="" class="file-preview-img" alt="Preview">';
+                                    } else {
+                                        let iconClass = 'bi-file-earmark';
+                                        if (file.type.includes('pdf')) iconClass = 'bi-file-pdf-fill';
+                                        else if (file.type.includes('word')) iconClass = 'bi-file-word-fill';
+
+                                        previewContent = `<div class="file-preview-doc"><i class="bi ${iconClass}"></i></div>`;
+                                    }
+
+                                    // File info
+                                    const fileName = document.createElement('div');
+                                    fileName.className = 'file-name';
+                                    fileName.textContent = file.name;
+                                    fileName.title = file.name;
+
+                                    const fileSize = document.createElement('div');
+                                    fileSize.className = 'file-size';
+                                    const sizeInMB = (file.size / (1024 * 1024)).toFixed(2);
+                                    fileSize.innerHTML = `<i class="bi bi-hdd"></i> ${sizeInMB} MB`;
+
+                                    if (file.size > maxSizeInBytes) {
+                                        fileSize.classList.add('text-danger');
+                                        fileSize.innerHTML += ' <i class="bi bi-exclamation-triangle-fill"></i>';
+                                    }
+
+                                    previewItem.innerHTML = previewContent;
+                                    previewItem.appendChild(removeBtn);
+                                    previewItem.appendChild(fileName);
+                                    previewItem.appendChild(fileSize);
+
+                                    col.appendChild(previewItem);
+                                    previewContainer.appendChild(col);
+                                });
+
+                                // Update actual input files
+                                updateInputFiles();
+                            }
+
+                            function updateInputFiles() {
+                                const dataTransfer = new DataTransfer();
+                                selectedFiles.forEach(file => {
+                                    dataTransfer.items.add(file);
+                                });
+                                fileInput.files = dataTransfer.files;
+                            }
+
+                            function removeFile(index) {
+                                selectedFiles.splice(index, 1);
+                                updateFileList();
+                                updateCounter();
+                            }
+
+                            function updateCounter() {
+                                if (selectedFiles.length === 0) {
+                                    fileCounter.innerHTML = '';
+                                } else {
+                                    const totalSize = selectedFiles.reduce((sum, file) => sum + file.size, 0);
+                                    const totalSizeInMB = (totalSize / (1024 * 1024)).toFixed(2);
+
+                                    fileCounter.innerHTML = `
+                <i class="bi bi-files"></i> ${selectedFiles.length}/${maxFiles} file terpilih 
+                | <i class="bi bi-hdd"></i> Total: ${totalSizeInMB} MB
+            `;
+                                }
+                            }
+                        });
+                    </script>
 
                     <div class="mt-3">
                         <label for="link_video" class="form-label">Link Video (YouTube, Vimeo, dll)</label>
@@ -2019,7 +2246,7 @@
                         @elseif($laporan->status_kepuasan == 'tidak_puas')
                             toggleTanggapanField(laporanId, 'tidak_puas');
                         @endif
-                        })();
+                                })();
                 @endforeach
             @endif
 });

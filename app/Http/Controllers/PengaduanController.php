@@ -261,7 +261,8 @@ class PengaduanController extends Controller
             'tanggal_pengaduan' => 'required|date',
             'perihal' => 'required|string|max:255',
             'uraian' => 'required|string',
-            'bukti_file.*' => 'nullable|file|max:102400', // 100MB per file
+            'bukti_file' => 'nullable|array|max:10',
+            'bukti_file.*' => 'nullable|file|mimes:jpeg,jpg,png,pdf,doc,docx|max:5120', // 5MB per file
             'link_video' => 'nullable|url|max:255',
 
             // Informasi Pendukung
@@ -516,7 +517,7 @@ class PengaduanController extends Controller
 
             // Handle bukti file
             if (strpos($field, 'bukti_file_') === 0) {
-                $rules['bukti_file.*'] = 'nullable|file|max:102400';
+                $rules['bukti_file.*'] = 'nullable|file|mimes:jpeg,jpg,png,pdf,doc,docx|max:5120';
             }
 
             // Handle link video
@@ -598,7 +599,13 @@ class PengaduanController extends Controller
         }
 
         // Handle file upload jika perlu diperbaiki
+        // Handle bukti file jika perlu diperbaiki
         if (in_array('bukti_file', $fieldsToFix) && $request->hasFile('bukti_file')) {
+            $validated = $request->validate([
+                'bukti_file' => 'nullable|array|max:10',
+                'bukti_file.*' => 'nullable|file|mimes:jpeg,jpg,png,pdf,doc,docx|max:5120'
+            ]);
+
             $files = [];
             foreach ($request->file('bukti_file') as $file) {
                 $files[] = $file->store('bukti', 'public');

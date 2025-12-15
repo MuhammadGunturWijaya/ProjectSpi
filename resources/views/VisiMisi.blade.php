@@ -403,8 +403,8 @@
             position: absolute;
             left: 0;
             top: 5px;
-            width: 60px;
-            height: 60px;
+            width: 45px;
+            height: 45px;
             border-radius: 12px;
             display: flex;
             align-items: center;
