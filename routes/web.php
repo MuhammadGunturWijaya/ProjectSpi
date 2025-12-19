@@ -48,6 +48,7 @@ use App\Http\Controllers\RoleBidangController;
 use App\Http\Controllers\UserListController;
 use App\Http\Controllers\SPI\KinerjaSPIController;
 use App\Http\Controllers\Auth\PasswordResetOtpController;
+use Illuminate\Support\Facades\Storage;
 
 // Halaman landing
 Route::get('/', [LandingPageController::class, 'index'])->name('landingpage');
@@ -490,19 +491,19 @@ Route::middleware('guest')->group(function () {
         ->name('password.request-otp');
     Route::post('/password/send-otp', [PasswordResetOtpController::class, 'sendOtp'])
         ->name('password.send-otp');
-    
+
     // Verify OTP
     Route::get('/password/verify-otp', [PasswordResetOtpController::class, 'showVerifyForm'])
         ->name('password.verify-otp-form');
     Route::post('/password/verify-otp', [PasswordResetOtpController::class, 'verifyOtp'])
         ->name('password.verify-otp');
-    
+
     // Reset Password
     Route::get('/password/reset-password', [PasswordResetOtpController::class, 'showResetForm'])
         ->name('password.reset-form');
     Route::post('/password/reset', [PasswordResetOtpController::class, 'resetPassword'])
         ->name('password.reset');
-    
+
     // Resend OTP
     Route::post('/password/resend-otp', [PasswordResetOtpController::class, 'resendOtp'])
         ->name('password.resend-otp');
@@ -517,3 +518,14 @@ Route::put('/kinerja-spi/{id}', [KinerjaSPIController::class, 'update'])->name('
 Route::delete('/kinerja-spi/{id}', [KinerjaSPIController::class, 'destroy'])->name('kinerjaSPI.destroy');
 Route::get('/kinerja-spi-lihat', [KinerjaSPIController::class, 'lihat'])->name('kinerjaSPI.lihat');
 Route::get('/kinerja-spi/search', [KinerjaSPIController::class, 'search'])->name('kinerjaSPI.search');
+use App\Services\GoogleDriveService;
+
+Route::get('/test-drive', function (GoogleDriveService $drive) {
+    $path = storage_path('app/test.txt');
+    file_put_contents($path, 'Laravel 12 Upload to Google Drive OK');
+
+    $drive->upload($path, 'test-drive.txt');
+
+    return 'UPLOAD GOOGLE DRIVE BERHASIL';
+});
+
